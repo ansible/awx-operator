@@ -1,0 +1,8 @@
+---
+- name: Ensure configured Tower Postgres resources exist in the cluster.
+  k8s:
+    definition: "{{ lookup('template', item) | from_yaml }}"
+  with_items:
+    - tower_postgres_secret.yaml.j2
+    - tower_postgres_statefulset.yaml.j2
+    - tower_postgres_service.yaml.j2

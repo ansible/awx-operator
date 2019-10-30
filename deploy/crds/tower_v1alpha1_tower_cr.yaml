@@ -1,0 +1,13 @@
+apiVersion: tower.ansible.com/v1alpha1
+kind: Tower
+metadata:
+  name: example-tower
+  namespace: example-tower
+spec:
+  tower_task_image: awx_task:1.0.0.8
+  tower_web_image: awx_web:1.0.0.8
+  tower_memcached_image: memcached:alpine
+  tower_rabbitmq_image: rabbitmq:3
+  tower_postgres_pass: awxpass
+  tower_postgres_image: postgres:9.6
+  tower_postgres_storage_request: 8Gi
