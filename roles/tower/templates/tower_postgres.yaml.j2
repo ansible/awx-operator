@@ -1,3 +1,14 @@
+# Postgres Secret.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: '{{ meta.name }}-postgres-pass'
+  namespace: {{ meta.namespace }}
+data:
+  password: {{ tower_postgres_pass | b64encode }}
+
+# Postgres StatefulSet.
 ---
 apiVersion: v1
 kind: StatefulSet
@@ -20,7 +31,7 @@ spec:
         app: tower-postgres
     spec:
       containers:
-        - image: '{{ mariadb_image }}'
+        - image: '{{ tower_postgres_image }}'
           name: postgres
           env:
             - name: POSTGRES_DB
@@ -48,3 +59,20 @@ spec:
         resources:
           requests:
             storage: '{{ tower_postgres_storage_request }}'
+
+# Postgres Service.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ meta.name }}-postgres'
+  namespace: '{{ meta.namespace }}'
+  labels:
+    app: tower-postgres
+spec:
+  ports:
+    - port: 5432
+  clusterIP: None
+  selector:
+    app: tower-postgres
+
