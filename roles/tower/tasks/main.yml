@@ -5,3 +5,4 @@
   with_items:
     - tower_postgres.yaml.j2
     - tower_memcached.yaml.j2
+    - tower_rabbitmq.yaml.j2
