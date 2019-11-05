@@ -1,8 +1,8 @@
 ---
 - name: Ensure configured Tower resources exist in the cluster.
   k8s:
-    definition: "{{ lookup('template', item) | from_yaml }}"
+    definition: "{{ lookup('template', item) | from_yaml_all | list }}"
   with_items:
-    - tower_postgres.yaml.j2
     - tower_memcached.yaml.j2
+    - tower_postgres.yaml.j2
     - tower_rabbitmq.yaml.j2

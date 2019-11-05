@@ -9,6 +9,9 @@ metadata:
     app: tower-memcached
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: tower-memcached
   template:
     metadata:
       labels:
