@@ -41,8 +41,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: tower-operator
-            # - name: ANSIBLE_VERBOSITY
-            #   value: '4'
+            - name: ANSIBLE_VERBOSITY
+              value: '3'
       volumes:
         - name: runner
           emptyDir: {}

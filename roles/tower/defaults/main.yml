@@ -1,6 +1,7 @@
 ---
-tower_task_image: awx_task:1.0.0.8
-tower_web_image: awx_web:1.0.0.8
+tower_secret_key: aabbcc
+tower_task_image: ansible/awx_task:9.0.1
+tower_web_image: ansible/awx_web:9.0.1
 tower_memcached_image: memcached:alpine
 tower_rabbitmq_image: rabbitmq:3
 tower_postgres_pass: awxpass

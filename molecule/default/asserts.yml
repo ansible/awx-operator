@@ -15,9 +15,9 @@
           - app=tower
       register: tower_pods
 
-    - name: Verify there are two tower pods
+    - name: Verify there is one tower pod
       assert:
-        that: '{{ (tower_pods.resources | length) == 2 }}'
+        that: '{{ (tower_pods.resources | length) == 1 }}'
 
 - name: Verify tower functionality
   hosts: k8s

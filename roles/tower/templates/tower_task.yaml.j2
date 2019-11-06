@@ -1,0 +1,27 @@
+# Tower Task Deployment.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ meta.name }}-tower-task'
+  namespace: {{ meta.namespace }}
+  labels:
+    app: tower-task
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tower-task
+  template:
+    metadata:
+      labels:
+         app: tower-task
+    spec:
+      containers:
+      - image: '{{ tower_task_image }}'
+        name: tower-task
+        envFrom:
+        - configMapRef:
+            name: '{{ meta.name }}-tower-configmap'
+        - secretRef:
+            name: '{{ meta.name }}-tower-secret'
