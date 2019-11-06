@@ -8,7 +8,7 @@
 
   tasks:
     - name: Get tower Pod data
-      k8s_facts:
+      k8s_info:
         kind: Pod
         namespace: example-tower
         label_selectors:
@@ -18,10 +18,3 @@
     - name: Verify there is one tower pod
       assert:
         that: '{{ (tower_pods.resources | length) == 1 }}'
-
-- name: Verify tower functionality
-  hosts: k8s
-
-  vars: []
-
-  tasks: []

@@ -10,7 +10,7 @@ lint:
   name: yamllint
   enabled: False
 platforms:
-- name: test-cluster
+- name: test-minikube
   groups:
   - k8s
 provisioner:
@@ -18,14 +18,14 @@ provisioner:
   inventory:
     group_vars:
       all:
-        namespace: ${TEST_NAMESPACE:-default}
+        operator_namespace: ${TEST_NAMESPACE:-default}
   lint:
     name: ansible-lint
     enabled: False
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
 scenario:
-  name: test-cluster
+  name: test-minikube
   test_sequence:
     - lint
     - destroy

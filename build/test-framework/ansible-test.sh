@@ -4,4 +4,4 @@ export WATCH_NAMESPACE=${TEST_NAMESPACE}
 trap "kill $!" SIGINT SIGTERM EXIT
 
 cd ${HOME}/project
-exec molecule test -s test-cluster
+exec molecule test -s test-minikube

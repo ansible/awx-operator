@@ -1,5 +1,5 @@
 ---
-- name: Build Operator in Kubernetes docker container
+- name: Build Operator in Kind container
   hosts: k8s
 
   vars:
@@ -29,7 +29,9 @@
     custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_cr.yaml'])) | from_yaml }}"
 
   tasks:
+
   - block:
+
     - name: Delete the Operator Deployment
       k8s:
         state: absent
@@ -39,7 +41,7 @@
       when: hostvars[groups.k8s.0].build_cmd.changed
 
     - name: Wait 30s for Operator Deployment to terminate
-      k8s_facts:
+      k8s_info:
         api_version: '{{ definition.apiVersion }}'
         kind: '{{ definition.kind }}'
         namespace: '{{ operator_namespace }}'
@@ -71,7 +73,7 @@
         definition: '{{ custom_resource }}'
 
     - name: Wait 5m for reconciliation to run
-      k8s_facts:
+      k8s_info:
         api_version: '{{ custom_resource.apiVersion }}'
         kind: '{{ custom_resource.kind }}'
         namespace: '{{ custom_resource.metadata.namespace }}'
@@ -81,46 +83,48 @@
       - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
       delay: 6
       retries: 50
+
     rescue:
-    - name: debug cr
-      ignore_errors: yes
-      failed_when: false
-      debug:
-        var: debug_cr
-      vars:
-        debug_cr: '{{ lookup("k8s",
-          kind=custom_resource.kind,
-          api_version=custom_resource.apiVersion,
-          namespace=custom_resource.metadata.namespace,
-          resource_name=custom_resource.metadata.name
-        )}}'
 
-    - name: debug tower deployment
-      ignore_errors: yes
-      failed_when: false
-      debug:
-        var: deploy
-      vars:
-        deploy: '{{ lookup("k8s",
-          kind="Deployment",
-          api_version="apps/v1",
-          namespace=custom_resource.metadata.namespace,
-          label_selector="app=tower"
-        )}}'
+      - name: debug cr
+        ignore_errors: yes
+        failed_when: false
+        debug:
+          var: debug_cr
+        vars:
+          debug_cr: '{{ lookup("k8s",
+            kind=custom_resource.kind,
+            api_version=custom_resource.apiVersion,
+            namespace=custom_resource.metadata.namespace,
+            resource_name=custom_resource.metadata.name
+          )}}'
 
-    - name: get operator logs
-      ignore_errors: yes
-      failed_when: false
-      command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ operator_namespace }} -c operator
-      environment:
-        KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
-      vars:
-        definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
-      register: log
+      - name: debug tower deployment
+        ignore_errors: yes
+        failed_when: false
+        debug:
+          var: deploy
+        vars:
+          deploy: '{{ lookup("k8s",
+            kind="Deployment",
+            api_version="apps/v1",
+            namespace=custom_resource.metadata.namespace,
+            label_selector="app=tower"
+          )}}'
 
-    - debug: var=log.stdout_lines
+      - name: get operator logs
+        ignore_errors: yes
+        failed_when: false
+        command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ operator_namespace }} -c operator
+        environment:
+          KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
+        vars:
+          definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
+        register: log
 
-    - fail:
-        msg: "Failed on action: converge"
+      - debug: var=log.stdout_lines
+
+      - fail:
+          msg: "Failed on action: converge"
 
 - import_playbook: '{{ playbook_dir }}/../default/asserts.yml'
