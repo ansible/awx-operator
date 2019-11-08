@@ -4,9 +4,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: '{{ meta.name }}-postgres-pass'
-  namespace: {{ meta.namespace }}
+  namespace: '{{ meta.namespace }}'
 data:
-  password: {{ tower_postgres_pass | b64encode }}
+  password: '{{ tower_postgres_pass | b64encode }}'
 
 # Postgres StatefulSet.
 ---

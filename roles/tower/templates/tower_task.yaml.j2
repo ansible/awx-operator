@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: '{{ meta.name }}-tower-task'
-  namespace: {{ meta.namespace }}
+  namespace: '{{ meta.namespace }}'
   labels:
     app: tower-task
 spec:
@@ -25,3 +25,35 @@ spec:
             name: '{{ meta.name }}-tower-configmap'
         - secretRef:
             name: '{{ meta.name }}-tower-secret'
+        volumeMounts:
+          - name: secret-key
+            mountPath: /etc/tower/SECRET_KEY
+            subPath: SECRET_KEY
+            readOnly: true
+          - name: environment
+            mountPath: /etc/tower/conf.d/environment.sh
+            subPath: environment.sh
+            readOnly: true
+          - name: settings
+            mountPath: /etc/tower/settings.py
+            subPath: settings.py
+            readOnly: true
+      volumes:
+        - name: secret-key
+          secret:
+            secretName: '{{ meta.name }}-tower-secret'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: environment
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: environment
+                path: environment.sh
+        - name: settings
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: settings
+                path: settings.py
