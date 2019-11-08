@@ -4,33 +4,10 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: '{{ meta.name }}-tower-secret'
-  namespace: {{ meta.namespace }}
+  namespace: '{{ meta.namespace }}'
 data:
-  SECRET_KEY: {{ tower_secret_key | b64encode }}
-
-# Tower Web ConfigMap.
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: '{{ meta.name }}-tower-configmap'
-  namespace: {{ meta.namespace }}
-  labels:
-    app: tower
-data:
-  # SECRET_KEY: {{ tower_secret_key }}
-  DATABASE_USER: awx
-  DATABASE_PASSWORD: awxpass
-  DATABASE_NAME: awx
-  DATABASE_PORT: '5432'
-  DATABASE_HOST: {{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local
-  RABBITMQ_USER: guest
-  RABBITMQ_PASSWORD: guest
-  RABBITMQ_HOST: {{ meta.name }}-rabbitmq.{{ meta.namespace }}.svc.cluster.local
-  RABBITMQ_PORT: '5672'
-  RABBITMQ_VHOST: awx
-  MEMCACHED_HOST: {{ meta.name }}-memcached.{{ meta.namespace }}.svc.cluster.local
-  MEMCACHED_PORT: '11211'
+  secret_key: '{{ tower_secret_key | b64encode }}'
+  admin_password: '{{ tower_admin_password | b64encode }}'
 
 # Tower Web Deployment.
 ---
@@ -38,7 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: '{{ meta.name }}-tower'
-  namespace: {{ meta.namespace }}
+  namespace: '{{ meta.namespace }}'
   labels:
     app: tower
 spec:
@@ -54,20 +31,57 @@ spec:
       containers:
       - image: '{{ tower_web_image }}'
         name: tower
-        envFrom:
-        - configMapRef:
-            name: '{{ meta.name }}-tower-configmap'
-        - secretRef:
-            name: '{{ meta.name }}-tower-secret'
         ports:
-        - containerPort: 80
+        - containerPort: 8052
+        volumeMounts:
+          - name: secret-key
+            mountPath: /etc/tower/SECRET_KEY
+            subPath: SECRET_KEY
+            readOnly: true
+          - name: environment
+            mountPath: /etc/tower/conf.d/environment.sh
+            subPath: environment.sh
+            readOnly: true
+          - name: settings
+            mountPath: /etc/tower/settings.py
+            subPath: settings.py
+            readOnly: true
+          - name: nginx-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+      volumes:
+        - name: secret-key
+          secret:
+            secretName: '{{ meta.name }}-tower-secret'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: environment
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: environment
+                path: environment.sh
+        - name: settings
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: settings
+                path: settings.py
+        - name: nginx-conf
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: nginx_conf
+                path: nginx.conf
 
 # Tower Web Service.
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: '{{ meta.name }}-tower'
+  name: '{{ meta.name }}-service'
   namespace: '{{ meta.namespace }}'
   labels:
     app: tower
@@ -75,6 +89,23 @@ spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 80
+    targetPort: 8052
   selector:
     app: tower
+
+# Tower Web Ingress.
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: '{{ meta.name }}-ingress'
+  namespace: '{{ meta.namespace }}'
+spec:
+  rules:
+  - host: '{{ tower_hostname }}'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: '{{ meta.name }}-service'
+          servicePort: 80

@@ -1,4 +1,7 @@
 ---
+# TODO: For some reason prepare is not run after a destroy in the Minikube env.
+- import_playbook: ../default/prepare.yml
+
 - name: Build Operator in Minikube
   hosts: localhost
   connection: local
