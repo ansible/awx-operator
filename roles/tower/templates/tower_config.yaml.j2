@@ -18,8 +18,6 @@ data:
     MEMCACHED_PORT='11211'
     RABBITMQ_HOST='{{ meta.name }}-rabbitmq.{{ meta.namespace }}.svc.cluster.local'
     RABBITMQ_PORT='5672'
-    AWX_ADMIN_USER={{ tower_admin_user }}
-    AWX_ADMIN_PASSWORD={{ tower_admin_password | quote }}
 
   settings: |
     import os

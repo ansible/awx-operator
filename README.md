@@ -4,6 +4,35 @@
 
 An [Ansible Tower](https://www.ansible.com/products/tower) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
+## Purpose
+
+There are already OpenShift/Kubernetes installers available for both AWX and Ansible Tower:
+
+  - [AWX on Kubernetes](https://github.com/ansible/awx/blob/devel/INSTALL.md#kubernetes)
+  - [Ansible Tower on Kubernetes](https://docs.ansible.com/ansible-tower/latest/html/administration/openshift_configuration.html)
+
+This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via a Tower Custom Resource Definition (CRD).
+
+So instead of having to maintain a separate playbook, inventory, and installation configuration for each Tower instance, you can deploy the following Custom Resource (CR) to an existing Kubernetes or OpenShift cluster:
+
+    apiVersion: tower.ansible.com/v1alpha1
+    kind: Tower
+    metadata:
+      name: tower
+      namespace: ansible-tower
+    spec:
+      tower_hostname: tower.mycompany.com
+      tower_secret_key: aabbcc
+      
+      tower_admin_user: test
+      tower_admin_password: changeme
+
+After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured).
+
+## Usage
+
+TODO: See [Issue #4](https://github.com/geerlingguy/tower-operator/issues/4).
+
 ## Testing
 
 This Operator includes a [Molecule](https://molecule.readthedocs.io/en/stable/)-based test environment, which can be executed standalone in Docker (e.g. in CI or in a single Docker container anywhere), or inside any kind of Kubernetes cluster (e.g. Minikube).

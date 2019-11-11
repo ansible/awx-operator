@@ -6,12 +6,22 @@ metadata:
 spec:
   tower_hostname: example-tower.test
   tower_secret_key: aabbcc
+
   tower_admin_user: test
   tower_admin_password: changeme
-  tower_task_image: ansible/awx_task:9.0.1
-  tower_web_image: ansible/awx_web:9.0.1
+
+  # Use these for Ansible Tower.
+  tower_task_image: registry.access.redhat.com/ansible-tower-35/ansible-tower:3.5.3
+  tower_web_image: registry.access.redhat.com/ansible-tower-35/ansible-tower:3.5.3
+
+  # Use these for Ansible AWX.
+  # tower_task_image: ansible/awx_task:9.0.1
+  # tower_web_image: ansible/awx_web:9.0.1
+
   tower_memcached_image: memcached:alpine
+
   tower_rabbitmq_image: rabbitmq:3
+
   tower_postgres_pass: awxpass
   tower_postgres_image: postgres:9.6
   tower_postgres_storage_request: 8Gi
