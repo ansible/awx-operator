@@ -2,6 +2,7 @@
 - name: Ensure configured Tower resources exist in the cluster.
   k8s:
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
+  register: k8s_defs_result
   with_items:
     - tower_memcached.yaml.j2
     - tower_postgres.yaml.j2
@@ -9,3 +10,57 @@
     - tower_config.yaml.j2
     - tower.yaml.j2
     - tower_task.yaml.j2
+
+- name: Get the Tower web pod information.
+  # TODO: Change to k8s_info after Ansible 2.9.0 is available in Operator image.
+  k8s_facts:
+    kind: Pod
+    namespace: example-tower
+    label_selectors:
+      - app=tower
+  register: tower_pods
+
+- name: Set the tower pod name as a variable.
+  set_fact:
+    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] }}"
+
+- name: Verify tower_pod_name is populated.
+  assert:
+    that: tower_pod_name != ''
+    fail_msg: "Could not find the tower pod's name."
+
+- name: Migrate the database if the K8s resources were updated.
+  k8s_exec:
+    namespace: '{{ meta.namespace }}'
+    pod: '{{ tower_pod_name }}'
+    command: awx-manage migrate --noinput
+  when: k8s_defs_result is changed
+
+- name: Check if there are any Tower super users defined.
+  k8s_exec:
+    namespace: '{{ meta.namespace }}'
+    pod: '{{ tower_pod_name }}'
+    command: >
+      echo 'from django.contrib.auth.models import User;
+      nsu = User.objects.filter(is_superuser=True).count();
+      exit(0 if nsu > 0 else 1)'
+      | awx-manage shell
+  ignore_errors: yes
+  register: users_result
+  changed_when: users_result.rc > 0
+
+- name: Create Tower super user via Django if it doesn't exist.
+  k8s_exec:
+    namespace: '{{ meta.namespace }}'
+    pod: '{{ tower_pod_name }}'
+    command: >
+      echo "from django.contrib.auth.models import User;
+      User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')"
+      | awx-manage shell
+  when: users_result.rc > 0
+
+# - name: Create the default organization if configured.
+#   k8s_exec:
+#     namespace: TODO
+#     pod: TODO
+#     command: TODO

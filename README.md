@@ -25,6 +25,7 @@ So instead of having to maintain a separate playbook, inventory, and installatio
       tower_secret_key: aabbcc
       
       tower_admin_user: test
+      tower_admin_email: test@example.com
       tower_admin_password: changeme
 
 After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured).

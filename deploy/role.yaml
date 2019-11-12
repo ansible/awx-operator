@@ -46,8 +46,9 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - pods
+  - pods/exec
   verbs:
+  - create
   - get
 - apiGroups:
   - apps

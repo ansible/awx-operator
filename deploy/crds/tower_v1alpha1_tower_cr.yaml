@@ -8,6 +8,7 @@ spec:
   tower_secret_key: aabbcc
 
   tower_admin_user: test
+  tower_admin_email: test@example.com
   tower_admin_password: changeme
 
   # Use these for Ansible Tower.
