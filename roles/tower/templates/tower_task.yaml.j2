@@ -20,6 +20,8 @@ spec:
       containers:
       - image: '{{ tower_task_image }}'
         name: tower-task
+        command:
+          - /usr/bin/launch_awx_task.sh
         envFrom:
         - configMapRef:
             name: '{{ meta.name }}-tower-configmap'
