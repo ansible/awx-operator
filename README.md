@@ -1,8 +1,10 @@
-# Tower Operator
+# Ansible Tower/AWX Operator
 
 [![Build Status](https://travis-ci.com/geerlingguy/tower-operator.svg?branch=master)](https://travis-ci.com/geerlingguy/tower-operator)
 
 An [Ansible Tower](https://www.ansible.com/products/tower) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
+
+Also configurable to run the open source [AWX](https://github.com/ansible/awx) instead of Tower (helpful for certain use cases where a license requirement is not warranted, like CI environments).
 
 ## Purpose
 
