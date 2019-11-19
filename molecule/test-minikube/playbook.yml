@@ -34,7 +34,7 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     pull_policy: Never
     operator_image: tower.ansible.com/tower-operator:testing
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_cr.yaml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_cr_tower.yaml'])) | from_yaml }}"
 
   tasks:
     - block:
@@ -78,7 +78,7 @@
           namespace: '{{ custom_resource.metadata.namespace }}'
           definition: '{{ custom_resource }}'
 
-      - name: Wait 5m for reconciliation to run
+      - name: Wait 15m for reconciliation to run
         k8s_info:
           api_version: '{{ custom_resource.apiVersion }}'
           kind: '{{ custom_resource.kind }}'
@@ -88,7 +88,7 @@
         until:
         - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
         delay: 6
-        retries: 50
+        retries: 150
 
       rescue:
 

@@ -18,6 +18,7 @@ data:
     MEMCACHED_PORT='11211'
     RABBITMQ_HOST='{{ meta.name }}-rabbitmq.{{ meta.namespace }}.svc.cluster.local'
     RABBITMQ_PORT='5672'
+    AWX_SKIP_MIGRATIONS=true
 
   settings: |
     import os
