@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v0.10.0
+FROM quay.io/operator-framework/ansible-operator:v0.12.0
 
 # Install kubectl.
 COPY --from=lachlanevenson/k8s-kubectl:v1.16.2 /usr/local/bin/kubectl /usr/local/bin/kubectl

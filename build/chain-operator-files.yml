@@ -1,0 +1,39 @@
+---
+# To run: `ansible-playbook chain-operator-files.yml`
+- name: Chain operator files together for easy deployment.
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    operator_image: geerlingguy/tower-operator:0.1.0
+    pull_policy: Always
+    operator_file_path: "../deploy/tower-operator.yaml"
+    operator_template: "../deploy/operator.yaml"
+
+  tasks:
+    - name: Clear out current contents of tower-operator.yml
+      copy:
+        dest: "{{ operator_file_path }}"
+        content: ''
+        force: true
+
+    - name: Concatenate operator files into tower-operator.yml
+      blockinfile:
+        path: "{{ operator_file_path }}"
+        block: "{{ item }}"
+        marker: "---"
+        marker_begin: ""
+        marker_end: ""
+        insertafter: "EOF"
+      with_file:
+        - "../deploy/crds/tower_v1alpha1_tower_crd.yaml"
+        - "../deploy/role.yaml"
+        - "../deploy/role_binding.yaml"
+        - "../deploy/service_account.yaml"
+        - "../deploy/operator.yaml"
+
+    - name: Template the tower-operator.yaml file into tower-operator.yml
+      template:
+        src: "{{ operator_file_path }}"
+        dest: "{{ operator_file_path }}"

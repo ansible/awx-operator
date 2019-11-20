@@ -36,7 +36,9 @@ After a few minutes, your new Tower instance will be accessible at `http://tower
 
 TODO: See [Issue #4](https://github.com/geerlingguy/tower-operator/issues/4).
 
-## Testing
+## Development
+
+### Testing
 
 This Operator includes a [Molecule](https://molecule.readthedocs.io/en/stable/)-based test environment, which can be executed standalone in Docker (e.g. in CI or in a single Docker container anywhere), or inside any kind of Kubernetes cluster (e.g. Minikube).
 
@@ -48,13 +50,13 @@ Running `molecule test` sets up a clean environment, builds the operator, runs a
 
 If you want to actively develop the operator, use `molecule converge`, which does everything but tear down the environment at the end.
 
-### Testing in Docker (standalone)
+#### Testing in Docker (standalone)
 
     molecule test -s test-local
 
 This environment is meant for headless testing (e.g. in a CI environment, or when making smaller changes which don't need to be verified through a web interface). It is difficult to test things like Tower's web UI or to connect other applications on your local machine to the services running inside the cluster, since it is inside a Docker container with no static IP address.
 
-### Testing in Minikube
+#### Testing in Minikube
 
     minikube start --memory 6g --cpus 2
     minikube addons enable ingress
@@ -66,3 +68,44 @@ Once the operator is deployed, you can visit the Tower UI in your browser by fol
 
   1. Make sure you have an entry like `IP_ADDRESS  example-tower.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
   2. Visit `http://example-tower.test/` in your browser.
+
+### Release Process
+
+There are a few moving parts to this project:
+
+  1. The Docker image which powers Tower Operator.
+  2. The `tower-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
+
+Each of these must be appropriately built in preparation for a new tag:
+
+#### Build a new release of the Operator for Docker Hub
+
+Run the following command inside this directory:
+
+    operator-sdk build geerlingguy/tower-operator:0.1.0
+
+Then push the generated image to Docker Hub:
+
+    docker login -u geerlingguy
+    docker push geerlingguy/tower-operator:0.1.0
+
+#### Build a new version of the `tower-operator.yaml` file
+
+Update the tower-operator version in two places:
+
+  1. `deploy/tower-operator.yaml`: in the `ansible` and `operator` container definitions in the `tower-operator` Deployment.
+  2. `build/chain-operator-files.yml`: the `operator_image` variable.
+
+Once the versions are updated, run the playbook in the `build/` directory:
+
+    ansible-playbook chain-operator-files.yml
+
+After it is built, test it on a local cluster:
+
+    minikube start
+    kubectl apply -f deploy/tower-operator.yaml
+    kubectl apply -f deploy/crds/tower_v1alpha1_tower_cr_awx.yaml
+    <test everything>
+    minikube delete
+
+If everything works, commit the updated version, then tag a new repository release with the same tag as the Docker image pushed earlier.
