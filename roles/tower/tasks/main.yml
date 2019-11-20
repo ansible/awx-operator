@@ -11,7 +11,7 @@
     - tower.yaml.j2
     - tower_task.yaml.j2
 
-- name: Get the Tower web pod information.
+- name: Get the Tower pod information.
   # TODO: Change to k8s_info after Ansible 2.9.0 is available in Operator image.
   k8s_facts:
     kind: Pod
@@ -19,6 +19,9 @@
     label_selectors:
       - app=tower
   register: tower_pods
+  until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
+  delay: 5
+  retries: 60
 
 - name: Set the tower pod name as a variable.
   set_fact:
@@ -45,32 +48,21 @@
   shell: >-
     kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
     "awx-manage migrate --noinput"
+  register: migrate_result
   when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
 
-- name: Check if there are any Tower super users defined.
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
-    "echo 'from django.contrib.auth.models import User;
-    nsu = User.objects.filter(is_superuser=True).count();
-    exit(0 if nsu > 0 else 1)'
-    | awx-manage shell"
-  ignore_errors: true
-  changed_when: false
-  register: users_result
-  changed_when: users_result.rc > 0
+- include_tasks: initialize.yml
 
-- name: Create Tower super user via Django if it doesn't exist.
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
-    "echo \"from django.contrib.auth.models import User;
-    User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
-    | awx-manage shell"
-  when: users_result.rc > 0
+- name: Scale the tower_task deployment to 0 replicas after migration.
+  k8s:
+    definition: "{{ lookup('template', 'tower_task.yaml.j2') | from_yaml_all | list }}"
+  vars:
+    tower_task_replicas: "0"
+  when: migrate_result and migrate_result.changed
 
-- name: Create Tower super user via Django if it doesn't exist.
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
-    "awx-manage create_preload_data"
-  register: cdo
-  changed_when: "'added' in cdo.stdout"
-  when: tower_create_preload_data | bool
+- name: Scale the tower_task deployment back to 1 replica after migration.
+  k8s:
+    definition: "{{ lookup('template', 'tower_task.yaml.j2') | from_yaml_all | list }}"
+  vars:
+    tower_task_replicas: "1"
+  when: migrate_result and migrate_result.changed

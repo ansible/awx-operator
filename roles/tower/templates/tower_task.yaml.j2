@@ -8,7 +8,7 @@ metadata:
   labels:
     app: tower-task
 spec:
-  replicas: 1
+  replicas: {{ tower_task_replicas | int }}
   selector:
     matchLabels:
       app: tower-task

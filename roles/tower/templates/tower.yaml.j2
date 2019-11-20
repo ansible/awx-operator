@@ -9,7 +9,7 @@ data:
   secret_key: '{{ tower_secret_key | b64encode }}'
   admin_password: '{{ tower_admin_password | b64encode }}'
 
-# Tower Web Deployment.
+# Tower Deployment.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,7 +76,7 @@ spec:
               - key: nginx_conf
                 path: nginx.conf
 
-# Tower Web Service.
+# Tower Service.
 ---
 apiVersion: v1
 kind: Service
@@ -93,7 +93,7 @@ spec:
   selector:
     app: tower
 
-# Tower Web Ingress.
+# Tower Ingress.
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

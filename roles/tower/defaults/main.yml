@@ -16,6 +16,8 @@ tower_web_image: registry.access.redhat.com/ansible-tower-35/ansible-tower:3.5.3
 
 tower_create_preload_data: true
 
+tower_task_replicas: "1"
+
 tower_memcached_image: memcached:alpine
 
 tower_rabbitmq_image: rabbitmq:3
