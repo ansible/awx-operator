@@ -8,33 +8,61 @@ Also configurable to run the open source [AWX](https://github.com/ansible/awx) i
 
 ## Purpose
 
-There are already OpenShift/Kubernetes installers available for both AWX and Ansible Tower:
+There are already official OpenShift/Kubernetes installers available for both AWX and Ansible Tower:
 
   - [AWX on Kubernetes](https://github.com/ansible/awx/blob/devel/INSTALL.md#kubernetes)
   - [Ansible Tower on Kubernetes](https://docs.ansible.com/ansible-tower/latest/html/administration/openshift_configuration.html)
 
 This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via a Tower Custom Resource Definition (CRD).
 
-So instead of having to maintain a separate playbook, inventory, and installation configuration for each Tower instance, you can deploy the following Custom Resource (CR) to an existing Kubernetes or OpenShift cluster:
-
-    apiVersion: tower.ansible.com/v1alpha1
-    kind: Tower
-    metadata:
-      name: tower
-      namespace: ansible-tower
-    spec:
-      tower_hostname: tower.mycompany.com
-      tower_secret_key: aabbcc
-      
-      tower_admin_user: test
-      tower_admin_email: test@example.com
-      tower_admin_password: changeme
-
-After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured).
+Note that the operator is not supported by Red Hat, and is in alpha status. Long-term, it will hopefully become a supported installation method, and be listed on OperatorHub.io. But for now, use it at your own risk!
 
 ## Usage
 
-TODO: See [Issue #4](https://github.com/geerlingguy/tower-operator/issues/4).
+This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more Tower or AWX instances in any namespace.
+
+First you need to deploy Tower Operator into your cluster:
+
+    kubectl apply -f https://raw.githubusercontent.com/geerlingguy/tower-operator/master/deploy/tower-operator.yaml
+
+Then you can create instances of Tower, for example:
+
+  1. Make sure the namespace you're deploying into already exists (e.g. `kubectl create namespace ansible-tower`).
+  1. Create a file named `my-tower.yml` with the following contents:
+
+     ```
+     ---
+     apiVersion: tower.ansible.com/v1alpha1
+     kind: Tower
+     metadata:
+       name: tower
+       namespace: ansible-tower
+     spec:
+       tower_hostname: tower.mycompany.com
+       tower_secret_key: aabbcc
+       
+       tower_admin_user: test
+       tower_admin_email: test@example.com
+       tower_admin_password: changeme
+     ```
+
+  1. Use `kubectl` to create the mcrouter instance in your cluster:
+
+     ```
+     kubectl apply -f my-tower.yml
+     ```
+
+After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`, and supply a valid license to begin using Tower.
+
+### Deploy AWX instead of Tower
+
+If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead:
+
+    ---
+    spec:
+      ...
+      tower_task_image: ansible/awx_task:9.0.1
+      tower_web_image: ansible/awx_web:9.0.1
 
 ## Development
 
@@ -44,7 +72,7 @@ This Operator includes a [Molecule](https://molecule.readthedocs.io/en/stable/)-
 
 You need to make sure you have Molecule installed before running the following commands. You can install Molecule with:
 
-    pip install 'molecule[docker]
+    pip install 'molecule[docker]'
 
 Running `molecule test` sets up a clean environment, builds the operator, runs all configured tests on an example operator instance, then tears down the environment (at least in the case of Docker).
 
@@ -102,10 +130,15 @@ Once the versions are updated, run the playbook in the `build/` directory:
 
 After it is built, test it on a local cluster:
 
-    minikube start
+    minikube start --memory 6g --cpus 2
     kubectl apply -f deploy/tower-operator.yaml
+    kubectl create namespace example-tower
     kubectl apply -f deploy/crds/tower_v1alpha1_tower_cr_awx.yaml
     <test everything>
     minikube delete
 
 If everything works, commit the updated version, then tag a new repository release with the same tag as the Docker image pushed earlier.
+
+## Author
+
+This operator was built in 2019 by [Jeff Geerling](https://www.jeffgeerling.com), author of [Ansible for DevOps](https://www.ansiblefordevops.com) and [Ansible for Kubernetes](https://www.ansibleforkubernetes.com).
