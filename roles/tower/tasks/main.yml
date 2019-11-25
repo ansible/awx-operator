@@ -8,7 +8,7 @@
     - tower_postgres.yaml.j2
     - tower_rabbitmq.yaml.j2
     - tower_config.yaml.j2
-    - tower.yaml.j2
+    - tower_web.yaml.j2
     - tower_task.yaml.j2
 
 - name: Get the Tower pod information.

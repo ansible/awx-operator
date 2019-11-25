@@ -42,6 +42,10 @@ spec:
             mountPath: /etc/tower/settings.py
             subPath: settings.py
             readOnly: true
+        resources:
+          requests:
+            memory: '{{ tower_task_mem_request }}'
+            cpu: '{{ tower_task_cpu_request }}'
       volumes:
         - name: secret-key
           secret:

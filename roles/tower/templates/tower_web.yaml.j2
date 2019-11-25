@@ -14,7 +14,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ meta.name }}-tower'
+  name: '{{ meta.name }}-tower-web'
   namespace: '{{ meta.namespace }}'
   labels:
     app: tower
@@ -50,6 +50,10 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
+        resources:
+          requests:
+            memory: '{{ tower_web_mem_request }}'
+            cpu: '{{ tower_web_cpu_request }}'
       volumes:
         - name: secret-key
           secret:

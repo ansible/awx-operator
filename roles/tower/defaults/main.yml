@@ -18,6 +18,12 @@ tower_create_preload_data: true
 
 tower_task_replicas: "1"
 
+tower_task_mem_request: 1Gi
+tower_task_cpu_request: 500m
+
+tower_web_mem_request: 2Gi
+tower_web_cpu_request: 1000m
+
 tower_memcached_image: memcached:alpine
 
 tower_rabbitmq_image: rabbitmq:3

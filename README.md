@@ -86,7 +86,7 @@ This environment is meant for headless testing (e.g. in a CI environment, or whe
 
 #### Testing in Minikube
 
-    minikube start --memory 6g --cpus 2
+    minikube start --memory 6g --cpus 4
     minikube addons enable ingress
     molecule test -s test-minikube
 
@@ -130,7 +130,7 @@ Once the versions are updated, run the playbook in the `build/` directory:
 
 After it is built, test it on a local cluster:
 
-    minikube start --memory 6g --cpus 2
+    minikube start --memory 6g --cpus 4
     kubectl apply -f deploy/tower-operator.yaml
     kubectl create namespace example-tower
     kubectl apply -f deploy/crds/tower_v1alpha1_tower_cr_awx.yaml
