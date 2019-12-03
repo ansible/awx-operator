@@ -53,13 +53,12 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: postgres
-{% if tower_postgres_storage_class is defined %}
-        annotations:
-          volume.beta.kubernetes.io/storage-class: '{{ tower_postgres_storage_class }}'
-{% endif %}
       spec:
         accessModes:
           - ReadWriteOnce
+{% if tower_postgres_storage_class != '' %}
+        storageClassName: '{{ tower_postgres_storage_class }}'
+{% endif %}
         resources:
           requests:
             storage: '{{ tower_postgres_storage_request }}'

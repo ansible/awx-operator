@@ -29,3 +29,4 @@ spec:
   tower_postgres_pass: awxpass
   tower_postgres_image: postgres:9.6
   tower_postgres_storage_request: 8Gi
+  tower_postgres_storage_class: ''
