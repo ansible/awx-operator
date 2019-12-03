@@ -64,6 +64,15 @@ If you would like to deploy AWX (the open source upstream of Tower) into your cl
       tower_task_image: ansible/awx_task:9.0.1
       tower_web_image: ansible/awx_web:9.0.1
 
+### Persistent storage for postfix
+
+If you need to deploy your persistent storage for postfix to a specific storage class, you can override the default variables in the Tower `spec` with the variable `tower_postgres_storage_class` variable:
+
+    ---
+    spec:
+      ...
+      tower_postgres_storage_class: managed-nfs-storage
+
 ## Development
 
 ### Testing
