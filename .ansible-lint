@@ -1,0 +1,7 @@
+skip_list:
+  - '306'
+  - '602'
+  - '503'
+
+exclude_paths:
+  - deploy/

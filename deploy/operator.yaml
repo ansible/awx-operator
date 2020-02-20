@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,21 +17,21 @@ spec:
       containers:
         - name: ansible
           command:
-          - /usr/local/bin/ao-logs
-          - /tmp/ansible-operator/runner
-          - stdout
+            - /usr/local/bin/ao-logs
+            - /tmp/ansible-operator/runner
+            - stdout
           image: "{{ operator_image }}"
           imagePullPolicy: "{{ pull_policy|default('Always') }}"
           volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
-            readOnly: true
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
+              readOnly: true
         - name: operator
           image: "{{ operator_image }}"
           imagePullPolicy: "{{ pull_policy|default('Always') }}"
           volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
           env:
             # Watch all namespaces (cluster-scoped).
             - name: WATCH_NAMESPACE
@@ -41,8 +42,6 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: tower-operator
-            # - name: ANSIBLE_VERBOSITY
-            #   value: '3'
       volumes:
         - name: runner
           emptyDir: {}

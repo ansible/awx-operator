@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Jeff Geerling
   description: Tower role for Tower Operator for Kubernetes.
@@ -6,6 +7,14 @@ galaxy_info:
   license: MIT
 
   min_ansible_version: 2.8
+
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
 
   galaxy_tags:
     - tower

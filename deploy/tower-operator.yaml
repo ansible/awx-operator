@@ -1,107 +1,90 @@
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: towers.tower.ansible.com
-spec:
-  group: tower.ansible.com
-  names:
-    kind: Tower
-    listKind: TowerList
-    plural: towers
-    singular: tower
-  scope: Namespaced
-  subresources:
-    status: {}
-  version: v1alpha1
-  versions:
-  - name: v1alpha1
-    served: true
-    storage: true
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
   name: tower-operator
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  - services/finalizers
-  - endpoints
-  - persistentvolumeclaims
-  - events
-  - configmaps
-  - secrets
-  verbs:
-  - '*'
-- apiGroups:
-  - apps
-  - extensions
-  resources:
-  - deployments
-  - daemonsets
-  - replicasets
-  - statefulsets
-  - ingresses
-  verbs:
-  - '*'
-- apiGroups:
-  - monitoring.coreos.com
-  resources:
-  - servicemonitors
-  verbs:
-  - get
-  - create
-- apiGroups:
-  - apps
-  resourceNames:
-  - tower-operator
-  resources:
-  - deployments/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - pods/exec
-  verbs:
-  - create
-  - get
-- apiGroups:
-  - apps
-  resources:
-  - replicasets
-  verbs:
-  - get
-- apiGroups:
-  - tower.ansible.com
-  resources:
-  - '*'
-  verbs:
-  - '*'
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - services/finalizers
+      - endpoints
+      - persistentvolumeclaims
+      - events
+      - configmaps
+      - secrets
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+      - extensions
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+      - ingresses
+    verbs:
+      - '*'
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - apps
+    resourceNames:
+      - tower-operator
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+    verbs:
+      - create
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - replicasets
+    verbs:
+      - get
+  - apiGroups:
+      - tower.ansible.com
+    resources:
+      - '*'
+    verbs:
+      - '*'
+
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tower-operator
 subjects:
-- kind: ServiceAccount
-  name: tower-operator
-  namespace: default
+  - kind: ServiceAccount
+    name: tower-operator
+    namespace: default
 roleRef:
   kind: ClusterRole
   name: tower-operator
   apiGroup: rbac.authorization.k8s.io
+
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tower-operator
   namespace: default
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -121,21 +104,21 @@ spec:
       containers:
         - name: ansible
           command:
-          - /usr/local/bin/ao-logs
-          - /tmp/ansible-operator/runner
-          - stdout
+            - /usr/local/bin/ao-logs
+            - /tmp/ansible-operator/runner
+            - stdout
           image: "geerlingguy/tower-operator:0.2.3"
           imagePullPolicy: "Always"
           volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
-            readOnly: true
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
+              readOnly: true
         - name: operator
           image: "geerlingguy/tower-operator:0.2.3"
           imagePullPolicy: "Always"
           volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
+            - mountPath: /tmp/ansible-operator/runner
+              name: runner
           env:
             # Watch all namespaces (cluster-scoped).
             - name: WATCH_NAMESPACE
@@ -146,9 +129,27 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: tower-operator
-            # - name: ANSIBLE_VERBOSITY
-            #   value: '3'
       volumes:
         - name: runner
           emptyDir: {}
+
 ---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: towers.tower.ansible.com
+spec:
+  group: tower.ansible.com
+  names:
+    kind: Tower
+    listKind: TowerList
+    plural: towers
+    singular: tower
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1alpha1
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true

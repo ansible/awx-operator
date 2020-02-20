@@ -22,7 +22,7 @@
       blockinfile:
         path: "{{ operator_file_path }}"
         block: "{{ item }}"
-        marker: "---"
+        marker: ""
         marker_begin: ""
         marker_end: ""
         insertafter: "EOF"

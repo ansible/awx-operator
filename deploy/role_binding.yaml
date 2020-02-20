@@ -1,11 +1,12 @@
+---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tower-operator
 subjects:
-- kind: ServiceAccount
-  name: tower-operator
-  namespace: default
+  - kind: ServiceAccount
+    name: tower-operator
+    namespace: default
 roleRef:
   kind: ClusterRole
   name: tower-operator

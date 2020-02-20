@@ -8,21 +8,21 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
 
   tasks:
-  - name: Create Custom Resource Definition
-    k8s:
-      definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_crd.yaml'])) }}"
+    - name: Create Custom Resource Definition
+      k8s:
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_crd.yaml'])) }}"
 
-  - name: Ensure specified namespace is present
-    k8s:
-      api_version: v1
-      kind: Namespace
-      name: '{{ operator_namespace }}'
+    - name: Ensure specified namespace is present
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: '{{ operator_namespace }}'
 
-  - name: Create RBAC resources
-    k8s:
-      definition: "{{ lookup('template', '/'.join([deploy_dir, item])) }}"
-      namespace: '{{ operator_namespace }}'
-    with_items:
-      - role.yaml
-      - role_binding.yaml
-      - service_account.yaml
+    - name: Create RBAC resources
+      k8s:
+        definition: "{{ lookup('template', '/'.join([deploy_dir, item])) }}"
+        namespace: '{{ operator_namespace }}'
+      with_items:
+        - role.yaml
+        - role_binding.yaml
+        - service_account.yaml

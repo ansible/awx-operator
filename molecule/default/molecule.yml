@@ -3,28 +3,25 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
-  enabled: False
+lint: |
+  yamllint .
+  ansible-lint
 platforms:
-- name: kind-default
-  groups:
-  - k8s
-  image: bsycorp/kind:latest-1.14
-  privileged: True
-  override_command: no
-  exposed_ports:
-    - 8443/tcp
-    - 10080/tcp
-  published_ports:
-    - 0.0.0.0:${TEST_CLUSTER_PORT:-9443}:8443/tcp
-  pre_build_image: yes
+  - name: kind-default
+    groups:
+      - k8s
+    image: bsycorp/kind:latest-1.14
+    privileged: True
+    override_command: no
+    exposed_ports:
+      - 8443/tcp
+      - 10080/tcp
+    published_ports:
+      - 0.0.0.0:${TEST_CLUSTER_PORT:-9443}:8443/tcp
+    pre_build_image: yes
 provisioner:
   name: ansible
   log: True
-  lint:
-    name: ansible-lint
-    enabled: False
   inventory:
     group_vars:
       all:
@@ -34,9 +31,3 @@ provisioner:
     KUBECONFIG: /tmp/molecule/kind-default/kubeconfig
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
     KIND_PORT: '${TEST_CLUSTER_PORT:-9443}'
-scenario:
-  name: default
-verifier:
-  name: testinfra
-  lint:
-    name: flake8
