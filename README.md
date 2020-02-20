@@ -61,8 +61,8 @@ If you would like to deploy AWX (the open source upstream of Tower) into your cl
     ---
     spec:
       ...
-      tower_task_image: ansible/awx_task:9.0.1
-      tower_web_image: ansible/awx_web:9.0.1
+      tower_task_image: ansible/awx_task:9.2.0
+      tower_web_image: ansible/awx_web:9.2.0
 
 ### Persistent storage for Postgres
 
@@ -125,7 +125,7 @@ Run the following command inside this directory:
 
 Then push the generated image to Docker Hub:
 
-    docker push geerlingguy/tower-operator:0.2.1
+    docker push geerlingguy/tower-operator:0.2.3
 
 #### Build a new version of the `tower-operator.yaml` file
 

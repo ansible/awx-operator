@@ -7,12 +7,12 @@ tower_admin_email: test@example.com
 tower_admin_password: changeme
 
 # Use these image versions for Ansible Tower.
-tower_task_image: quay.io/ansible-tower/ansible-tower:3.6.2
-tower_web_image: quay.io/ansible-tower/ansible-tower:3.6.2
+tower_task_image: quay.io/ansible-tower/ansible-tower:3.6.3
+tower_web_image: quay.io/ansible-tower/ansible-tower:3.6.3
 
 # Use these image versions for Ansible AWX.
-# tower_task_image: ansible/awx_task:9.0.1
-# tower_web_image: ansible/awx_web:9.0.1
+# tower_task_image: ansible/awx_task:9.2.0
+# tower_web_image: ansible/awx_web:9.2.0
 
 tower_create_preload_data: true
 
