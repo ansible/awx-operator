@@ -33,6 +33,10 @@
         - "../deploy/service_account.yaml"
         - "../deploy/operator.yaml"
 
+    - name: Remove space at beginning of tower-operator.yml
+      shell: >
+        echo "$(tail -n +2 {{ operator_file_path }})" > {{ operator_file_path }}
+
     - name: Template the tower-operator.yaml file into tower-operator.yml
       template:
         src: "{{ operator_file_path }}"

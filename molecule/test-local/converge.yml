@@ -122,9 +122,11 @@
             definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
           register: log
 
-        - debug: var=log.stdout_lines
+        - name: print debug output
+          debug: var=log.stdout_lines
 
-        - fail:
+        - name: fail if converge didn't succeed
+          fail:
             msg: "Failed on action: converge"
 
 - import_playbook: '{{ playbook_dir }}/../default/asserts.yml'

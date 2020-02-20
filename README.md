@@ -121,11 +121,11 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build geerlingguy/tower-operator:0.2.3
+    operator-sdk build geerlingguy/tower-operator:0.2.4
 
 Then push the generated image to Docker Hub:
 
-    docker push geerlingguy/tower-operator:0.2.3
+    docker push geerlingguy/tower-operator:0.2.4
 
 #### Build a new version of the `tower-operator.yaml` file
 
