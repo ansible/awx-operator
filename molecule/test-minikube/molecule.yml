@@ -7,6 +7,7 @@ driver:
     managed: False
     ansible_connection_options: {}
 lint: |
+  set -e
   yamllint .
   ansible-lint
 platforms:
