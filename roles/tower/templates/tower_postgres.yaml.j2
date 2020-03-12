@@ -43,13 +43,15 @@ spec:
                 secretKeyRef:
                   name: '{{ meta.name }}-postgres-pass'
                   key: password
+            - name: PGDATA
+              value: '{{ tower_postgres_data_path }}'
           ports:
             - containerPort: 3306
               name: postgres
           volumeMounts:
             - name: postgres
-              mountPath: /var/lib/postgresql/data
-              subPath: data
+              mountPath: '{{ tower_postgres_data_path | dirname }}'
+              subPath: '{{ tower_postgres_data_path | dirname | basename }}'
   volumeClaimTemplates:
     - metadata:
         name: postgres
