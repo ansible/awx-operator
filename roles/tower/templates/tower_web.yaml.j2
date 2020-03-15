@@ -98,6 +98,7 @@ spec:
     app: tower
 
 # Tower Ingress.
+{% if tower_hostname != '' %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -113,3 +114,4 @@ spec:
         backend:
           serviceName: '{{ meta.name }}-service'
           servicePort: 80
+{% endif %}
