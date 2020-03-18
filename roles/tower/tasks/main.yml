@@ -12,8 +12,7 @@
     - tower_task.yaml.j2
 
 - name: Get the Tower pod information.
-  # TODO: Change to k8s_info after Ansible 2.9.0 is available in Operator image.
-  k8s_facts:
+  k8s_info:
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
