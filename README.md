@@ -121,11 +121,11 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build geerlingguy/tower-operator:0.2.4
+    operator-sdk build geerlingguy/tower-operator:0.2.5
 
 Then push the generated image to Docker Hub:
 
-    docker push geerlingguy/tower-operator:0.2.4
+    docker push geerlingguy/tower-operator:0.2.5
 
 #### Build a new version of the `tower-operator.yaml` file
 
@@ -141,6 +141,7 @@ Once the versions are updated, run the playbook in the `build/` directory:
 After it is built, test it on a local cluster:
 
     minikube start --memory 6g --cpus 4
+    minikube addons enable ingress
     kubectl apply -f deploy/tower-operator.yaml
     kubectl create namespace example-tower
     kubectl apply -f deploy/crds/tower_v1alpha1_tower_cr_awx.yaml

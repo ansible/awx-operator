@@ -6,7 +6,7 @@
   gather_facts: false
 
   vars:
-    operator_image: geerlingguy/tower-operator:0.2.3
+    operator_image: geerlingguy/tower-operator:0.2.5
     pull_policy: Always
     operator_file_path: "../deploy/tower-operator.yaml"
     operator_template: "../deploy/operator.yaml"

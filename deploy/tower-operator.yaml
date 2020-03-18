@@ -107,14 +107,14 @@ spec:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "geerlingguy/tower-operator:0.2.3"
+          image: "geerlingguy/tower-operator:0.2.5"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "geerlingguy/tower-operator:0.2.3"
+          image: "geerlingguy/tower-operator:0.2.5"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
