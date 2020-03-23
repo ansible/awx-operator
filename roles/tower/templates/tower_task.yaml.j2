@@ -20,8 +20,10 @@ spec:
       containers:
       - image: '{{ tower_task_image }}'
         name: tower-task
+{% if tower_multitenant == true %}
         securityContext:
           privileged: true
+{% endif %}
         command:
           - /usr/bin/launch_awx_task.sh
         envFrom:
