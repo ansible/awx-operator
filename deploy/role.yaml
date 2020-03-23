@@ -13,8 +13,6 @@ rules:
       - '*'
   - apiGroups:
       - ""
-  - apiGroups:
-      - ""
     resources:
       - pods
       - services
