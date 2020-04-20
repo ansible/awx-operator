@@ -20,7 +20,7 @@ spec:
       containers:
       - image: '{{ tower_task_image }}'
         name: tower-task
-{% if tower_multitenant == true %}
+{% if tower_task_privileged == true %}
         securityContext:
           privileged: true
 {% endif %}

@@ -64,6 +64,33 @@ If you would like to deploy AWX (the open source upstream of Tower) into your cl
       tower_task_image: ansible/awx_task:9.2.0
       tower_web_image: ansible/awx_web:9.2.0
 
+### Ingress Types
+
+Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your tower. To toggle between these two options, you can add the following to your Tower custom resource:
+
+    ---
+    spec:
+      ...
+      tower_ingress_type: Route
+
+By default, this is configured to use `Ingress`.
+
+### Privileged Tasks
+
+Depending on the type of tasks that you'll be running, you may find that you need the tower task pod to run as `privileged`. This can open yourself up to a variety of security concerns, so you should be aware (and verify that you have the privileges) to do this if necessary. In order to toggle this feature, you can add the following to your Tower custom resource:
+
+    ---
+    spec:
+      ...
+      tower_task_privileged: true
+
+If you are attempting to do this on an OpenShift cluster, you will need to grant the `tower` ServiceAccount the `privileged` SCC, which can be done with:
+
+    oc adm policy add-scc-to-user privileged -z tower
+
+Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
+
+
 ### Persistent storage for Postgres
 
 If you need to use a specific storage class for Postgres' storage, specify `tower_postgres_storage_class` in your Tower spec:

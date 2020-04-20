@@ -1,5 +1,5 @@
 ---
-tower_multitenant: false
+tower_task_privileged: false
 tower_ingress_type: ingress
 
 tower_hostname: example-tower.test
