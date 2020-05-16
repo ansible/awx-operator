@@ -6,6 +6,12 @@ metadata:
   name: tower-operator
 rules:
   - apiGroups:
+      - route.openshift.io
+    resources:
+      - routes
+    verbs:
+      - '*'
+  - apiGroups:
       - ""
     resources:
       - pods

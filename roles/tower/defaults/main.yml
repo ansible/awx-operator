@@ -1,4 +1,7 @@
 ---
+tower_task_privileged: false
+tower_ingress_type: ingress
+
 tower_hostname: example-tower.test
 tower_secret_key: aabbcc
 
@@ -32,3 +35,5 @@ tower_postgres_pass: awxpass
 tower_postgres_image: postgres:10
 tower_postgres_storage_request: 8Gi
 tower_postgres_storage_class: ''
+
+tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'

@@ -94,10 +94,12 @@ spec:
   - port: 80
     protocol: TCP
     targetPort: 8052
+    name: http
   selector:
     app: tower
 
 # Tower Ingress.
+{% if 'ingress' == tower_ingress_type %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -113,3 +115,24 @@ spec:
         backend:
           serviceName: '{{ meta.name }}-service'
           servicePort: 80
+{% endif %}
+
+{% if 'route' == tower_ingress_type %}
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: '{{ meta.name }}'
+  namespace: '{{ meta.namespace }}'
+spec:
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ meta.name }}-service
+    weight: 100
+  wildcardPolicy: None
+{% endif %}
