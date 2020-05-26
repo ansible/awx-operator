@@ -61,8 +61,8 @@ If you would like to deploy AWX (the open source upstream of Tower) into your cl
     ---
     spec:
       ...
-      tower_task_image: ansible/awx_task:9.2.0
-      tower_web_image: ansible/awx_web:9.2.0
+      tower_task_image: ansible/awx_task:11.2.0
+      tower_web_image: ansible/awx_web:11.2.0
 
 ### Ingress Types
 
@@ -124,7 +124,7 @@ This environment is meant for headless testing (e.g. in a CI environment, or whe
 
 #### Testing in Minikube
 
-    minikube start --memory 6g --cpus 4
+    minikube start --memory 8g --cpus 4
     minikube addons enable ingress
     molecule test -s test-minikube
 

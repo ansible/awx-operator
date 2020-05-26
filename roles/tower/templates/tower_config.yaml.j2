@@ -16,8 +16,8 @@ data:
     DATABASE_PASSWORD={{ tower_postgres_pass | quote }}
     MEMCACHED_HOST='{{ meta.name }}-memcached.{{ meta.namespace }}.svc.cluster.local'
     MEMCACHED_PORT='11211'
-    RABBITMQ_HOST='{{ meta.name }}-rabbitmq.{{ meta.namespace }}.svc.cluster.local'
-    RABBITMQ_PORT='5672'
+    REDIS_HOST='{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local'
+    REDIS_PORT='6379'
     AWX_SKIP_MIGRATIONS=true
 
   settings: |
@@ -110,20 +110,22 @@ data:
         },
     }
     
-    BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(
-        'guest',
-        'guest',
-        '{{ meta.name }}-rabbitmq.{{ meta.namespace }}.svc.cluster.local',
-        '5672',
-        'awx')
+    BROKER_URL = 'redis://{}:{}/'.format(
+        '{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local',
+        '6379',)
     
     CHANNEL_LAYERS = {
-        'default': {'BACKEND': 'asgi_amqp.AMQPChannelLayer',
-                    'ROUTING': 'awx.main.routing.channel_routing',
-                    'CONFIG': {'url': BROKER_URL}}
+        'default': {'BACKEND': 'awx.main.channels.RedisGroupBroadcastChannelLayer',
+                    'CONFIG': {'hosts': [("{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local", 6379)]}}
     }
     
     USE_X_FORWARDED_PORT = True
+
+  redis_conf: |
+    unixsocket /var/run/redis/redis.sock
+    unixsocketperm 777
+    port 0
+    bind 127.0.0.1
 
   nginx_conf: |
     worker_processes  1;

@@ -15,8 +15,8 @@ spec:
   tower_admin_email: test@example.com
   tower_admin_password: changeme
 
-  tower_task_image: quay.io/ansible-tower/ansible-tower:3.6.4
-  tower_web_image: quay.io/ansible-tower/ansible-tower:3.6.4
+  tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
+  tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
   tower_task_mem_request: 1Gi
   tower_task_cpu_request: 500m
@@ -28,7 +28,9 @@ spec:
 
   tower_memcached_image: memcached:alpine
 
-  tower_rabbitmq_image: rabbitmq:3
+  tower_redis_image: redis:latest
+  tower_redis_mem_request: 1Gi
+  tower_redis_cpu_request: 500m
 
   tower_postgres_pass: awxpass
   tower_postgres_image: postgres:10
