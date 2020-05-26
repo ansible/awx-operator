@@ -1,0 +1,41 @@
+# Redis Deployment.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ meta.name }}-redis'
+  namespace: '{{ meta.namespace }}'
+  labels:
+    app: tower-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tower-redis
+  template:
+    metadata:
+      labels:
+         app: tower-redis
+    spec:
+      containers:
+      - image: '{{ tower_redis_image }}'
+        name: redis
+        ports:
+        - containerPort: 6379
+
+# Redis Service.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ meta.name }}-redis'
+  namespace: '{{ meta.namespace }}'
+  labels:
+    app: tower-redis
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: tower-redis
