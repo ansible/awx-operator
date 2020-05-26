@@ -15,8 +15,8 @@ spec:
   tower_admin_email: test@example.com
   tower_admin_password: changeme
 
-  tower_task_image: quay.io/ansible-tower/ansible-tower:3.6.3
-  tower_web_image: quay.io/ansible-tower/ansible-tower:3.6.3
+  tower_task_image: quay.io/ansible-tower/ansible-tower:3.6.4
+  tower_web_image: quay.io/ansible-tower/ansible-tower:3.6.4
 
   tower_task_mem_request: 1Gi
   tower_task_cpu_request: 500m

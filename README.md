@@ -133,7 +133,7 @@ This environment is meant for headless testing (e.g. in a CI environment, or whe
 Once the operator is deployed, you can visit the Tower UI in your browser by following these steps:
 
   1. Make sure you have an entry like `IP_ADDRESS  example-tower.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
-  2. Visit `http://example-tower.test/` in your browser.
+  2. Visit `http://example-tower.test/` in your browser. (Default admin login is `test`/`changeme`.)
 
 ### Release Process
 
@@ -148,11 +148,11 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build geerlingguy/tower-operator:0.2.5
+    operator-sdk build geerlingguy/tower-operator:0.2.6
 
 Then push the generated image to Docker Hub:
 
-    docker push geerlingguy/tower-operator:0.2.5
+    docker push geerlingguy/tower-operator:0.2.6
 
 #### Build a new version of the `tower-operator.yaml` file
 
