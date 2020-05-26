@@ -20,29 +20,12 @@ spec:
       containers:
       - image: '{{ tower_redis_image }}'
         name: redis
-        args: ["/usr/local/etc/redis/redis.conf"]
         ports:
         - containerPort: 6379
-        volumeMounts:
-        - name: redis-config
-          mountPath: /usr/local/etc/redis/redis.conf
-          subPath: redis.conf
-          readOnly: true
-        - name: redis-socket
-          mountPath: "/var/run/redis"
         resources:
           requests:
             memory: "{{ tower_redis_mem_request }}"
             cpu: "{{ tower_redis_cpu_request }}"
-      volumes:
-      - name: redis-config
-        configMap:
-          name: "{{ meta.name }}-tower-configmap"
-          items:
-            - key: redis_conf
-              path: redis.conf
-      - name: redis-socket
-        emtpyDir: {}
 
 # Redis Service.
 ---
@@ -54,7 +37,6 @@ metadata:
   labels:
     app: tower-redis
 spec:
-  clusterIP: None
   ports:
   - port: 6379
     protocol: TCP
