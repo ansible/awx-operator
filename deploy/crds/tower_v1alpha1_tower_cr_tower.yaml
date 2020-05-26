@@ -29,8 +29,6 @@ spec:
   tower_memcached_image: memcached:alpine
 
   tower_redis_image: redis:latest
-  tower_redis_mem_request: 1Gi
-  tower_redis_cpu_request: 500m
 
   tower_postgres_pass: awxpass
   tower_postgres_image: postgres:10

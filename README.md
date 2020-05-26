@@ -54,6 +54,12 @@ Then you can create instances of Tower, for example:
 
 After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`, and supply a valid license to begin using Tower.
 
+### Red Hat Registry Authentication
+
+To deploy Ansible Tower, images are pulled from the Red Hat Registry. Your Kubernetes or OpenShift cluster will have to have [Authentication Enabled for the Red Hat Registry](https://access.redhat.com/documentation/en-us/openshift_container_platform/3.11/html/configuring_clusters/install-config-configuring-red-hat-registry) for this to work, otherwise the Tower image will not be pulled.
+
+If you deploy Ansible AWX, images are available from public registries, so no authentication is required.
+
 ### Deploy AWX instead of Tower
 
 If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead:

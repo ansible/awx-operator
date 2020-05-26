@@ -22,10 +22,6 @@ spec:
         name: redis
         ports:
         - containerPort: 6379
-        resources:
-          requests:
-            memory: "{{ tower_redis_mem_request }}"
-            cpu: "{{ tower_redis_cpu_request }}"
 
 # Redis Service.
 ---
