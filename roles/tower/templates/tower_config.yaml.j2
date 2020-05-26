@@ -112,11 +112,17 @@ data:
     
     BROKER_URL = 'redis://{}:{}/'.format(
         '{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local',
-        '6379',)
+        '6379')
     
     CHANNEL_LAYERS = {
-        'default': {'BACKEND': 'awx.main.channels.RedisGroupBroadcastChannelLayer',
-                    'CONFIG': {'hosts': [("{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local", 6379)]}}
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [BROKER_URL],
+                "capacity": 10000,
+                "group_expiry": 157784760, # 5 years
+            }
+        }
     }
     
     USE_X_FORWARDED_PORT = True
