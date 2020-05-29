@@ -29,6 +29,14 @@ spec:
          app: tower
     spec:
       containers:
+      - name: memcached
+        image: '{{ tower_memcached_image }}'
+        ports:
+        - containerPort: 11211
+      - image: '{{ tower_redis_image }}'
+        name: redis
+        ports:
+        - containerPort: 6379
       - image: '{{ tower_web_image }}'
         name: tower
         ports:
@@ -50,10 +58,64 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
+          - name: launch-awx-web
+            mountPath: /usr/bin/launch_awx.sh
+            subPath: launch_awx.sh
+            readOnly: true
+          - name: supervisor-web-config
+            mountPath: /supervisor.conf
+            subPath: supervisor.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
         resources:
           requests:
             memory: '{{ tower_web_mem_request }}'
             cpu: '{{ tower_web_cpu_request }}'
+      - image: '{{ tower_task_image }}'
+        name: tower-task
+{% if tower_task_privileged == true %}
+        securityContext:
+          privileged: true
+{% endif %}
+        command:
+          - /usr/bin/launch_awx_task.sh
+        envFrom:
+        - configMapRef:
+            name: '{{ meta.name }}-tower-configmap'
+        - secretRef:
+            name: '{{ meta.name }}-tower-secret'
+        volumeMounts:
+          - name: secret-key
+            mountPath: /etc/tower/SECRET_KEY
+            subPath: SECRET_KEY
+            readOnly: true
+          - name: environment
+            mountPath: /etc/tower/conf.d/environment.sh
+            subPath: environment.sh
+            readOnly: true
+          - name: settings
+            mountPath: /etc/tower/settings.py
+            subPath: settings.py
+            readOnly: true
+          - name: launch-awx-task
+            mountPath: /usr/bin/launch_awx_task.sh
+            subPath: launch_awx_task.sh
+            readOnly: true
+          - name: supervisor-task-config
+            mountPath: /supervisor_task.conf
+            subPath: supervisor_task.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
+        resources:
+          requests:
+            memory: '{{ tower_task_mem_request }}'
+            cpu: '{{ tower_task_cpu_request }}'
       volumes:
         - name: secret-key
           secret:
@@ -79,6 +141,36 @@ spec:
             items:
               - key: nginx_conf
                 path: nginx.conf
+        - name: launch-awx-web
+          configMap:
+            name: '{{meta.name }}-launch-awx'
+            items:
+              - key: launch-awx-web
+                path: launch_awx.sh
+            defaultMode: 0755
+        - name: supervisor-web-config
+          configMap:
+            name: '{{ meta.name }}-supervisor-config'
+            items:
+              - key: supervisor-web-config
+                path: supervisor.conf
+        - name: launch-awx-task
+          configMap:
+            name: '{{ meta.name }}-launch-awx'
+            items:
+              - key: launch-awx-task
+                path: 'launch_awx_task.sh'
+            defaultMode: 0755
+        - name: supervisor-task-config
+          configMap:
+            name: '{{ meta.name }}-supervisor-config'
+            items:
+              - key: supervisor-task-config
+                path: 'supervisor_task.conf'
+        - name: {{ meta.name }}-redis-socket
+          emptyDir: {}
+        - name: {{ meta.name }}-memcached-socket
+          emptyDir: {}
 
 # Tower Service.
 ---
