@@ -34,7 +34,7 @@
 
 - name: Check if database is populated (auth_user table exists).
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c tower-task {{ tower_pod_name }} -- bash -c
     "echo 'from django.db import connection;
     tbl = \"auth_user\" in connection.introspection.table_names();
     exit(0 if tbl else 1)'
@@ -46,7 +46,7 @@
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c tower-task {{ tower_pod_name }} -- bash -c
     "awx-manage migrate --noinput"
   register: migrate_result
   when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
