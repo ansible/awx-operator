@@ -31,38 +31,54 @@ spec:
       containers:
       - name: memcached
         image: '{{ tower_memcached_image }}'
+        command:
+          - 'memcached'
+          - '-s'
+          - '/var/run/memcached/memcached.sock'
+          - '-a'
+          - '0666'
         ports:
-        - containerPort: 11211
+        - containerPort: 1121
+        volumeMounts:
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
       - image: '{{ tower_redis_image }}'
         name: redis
         ports:
         - containerPort: 6379
+        volumeMounts:
+          - name: {{ meta.name }}-redis-config
+            mountPath: "/usr/local/etc/redis/redis.conf"
+            subPath: redis.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
       - image: '{{ tower_web_image }}'
         name: tower
         ports:
         - containerPort: 8052
         volumeMounts:
-          - name: secret-key
+          - name: {{ meta.name }}-secret-key
             mountPath: /etc/tower/SECRET_KEY
             subPath: SECRET_KEY
             readOnly: true
-          - name: environment
+          - name: {{ meta.name }}-environment
             mountPath: /etc/tower/conf.d/environment.sh
             subPath: environment.sh
             readOnly: true
-          - name: settings
+          - name: {{ meta.name }}-settings
             mountPath: /etc/tower/settings.py
             subPath: settings.py
             readOnly: true
-          - name: nginx-conf
+          - name: {{ meta.name }}-nginx-conf
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
-          - name: launch-awx-web
+          - name: {{ meta.name }}-launch-awx-web
             mountPath: /usr/bin/launch_awx.sh
             subPath: launch_awx.sh
             readOnly: true
-          - name: supervisor-web-config
+          - name: {{ meta.name }}-supervisor-web-config
             mountPath: /supervisor.conf
             subPath: supervisor.conf
             readOnly: true
@@ -88,23 +104,23 @@ spec:
         - secretRef:
             name: '{{ meta.name }}-tower-secret'
         volumeMounts:
-          - name: secret-key
+          - name: {{ meta.name }}-secret-key
             mountPath: /etc/tower/SECRET_KEY
             subPath: SECRET_KEY
             readOnly: true
-          - name: environment
+          - name: {{ meta.name }}-environment
             mountPath: /etc/tower/conf.d/environment.sh
             subPath: environment.sh
             readOnly: true
-          - name: settings
+          - name: {{ meta.name }}-settings
             mountPath: /etc/tower/settings.py
             subPath: settings.py
             readOnly: true
-          - name: launch-awx-task
+          - name: {{ meta.name }}-launch-awx-task
             mountPath: /usr/bin/launch_awx_task.sh
             subPath: launch_awx_task.sh
             readOnly: true
-          - name: supervisor-task-config
+          - name: {{ meta.name }}-supervisor-task-config
             mountPath: /supervisor_task.conf
             subPath: supervisor_task.conf
             readOnly: true
@@ -117,51 +133,57 @@ spec:
             memory: '{{ tower_task_mem_request }}'
             cpu: '{{ tower_task_cpu_request }}'
       volumes:
-        - name: secret-key
+        - name: {{ meta.name }}-secret-key
           secret:
             secretName: '{{ meta.name }}-tower-secret'
             items:
               - key: secret_key
                 path: SECRET_KEY
-        - name: environment
+        - name: {{ meta.name }}-environment
           configMap:
             name: '{{ meta.name }}-tower-configmap'
             items:
               - key: environment
                 path: environment.sh
-        - name: settings
+        - name: {{ meta.name }}-settings
           configMap:
             name: '{{ meta.name }}-tower-configmap'
             items:
               - key: settings
                 path: settings.py
-        - name: nginx-conf
+        - name: {{ meta.name }}-nginx-conf
           configMap:
             name: '{{ meta.name }}-tower-configmap'
             items:
               - key: nginx_conf
                 path: nginx.conf
-        - name: launch-awx-web
+        - name: {{ meta.name }}-redis-config
+          configMap:
+            name: {{ meta.name }}-tower-configmap
+            items:
+              - key: redis_conf
+                path: redis.conf
+        - name: {{ meta.name }}-launch-awx-web
           configMap:
             name: '{{meta.name }}-launch-awx'
             items:
               - key: launch-awx-web
                 path: launch_awx.sh
             defaultMode: 0755
-        - name: supervisor-web-config
+        - name: {{ meta.name }}-supervisor-web-config
           configMap:
             name: '{{ meta.name }}-supervisor-config'
             items:
               - key: supervisor-web-config
                 path: supervisor.conf
-        - name: launch-awx-task
+        - name: {{ meta.name }}-launch-awx-task
           configMap:
             name: '{{ meta.name }}-launch-awx'
             items:
               - key: launch-awx-task
                 path: 'launch_awx_task.sh'
             defaultMode: 0755
-        - name: supervisor-task-config
+        - name: {{ meta.name }}-supervisor-task-config
           configMap:
             name: '{{ meta.name }}-supervisor-config'
             items:

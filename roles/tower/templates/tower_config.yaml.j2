@@ -228,3 +228,8 @@ data:
             }
         }
     }
+  redis_conf: |
+    unixsocket /var/run/redis/redis.sock
+    unixsocketperm 777
+    port 0
+    bind 127.0.0.1
