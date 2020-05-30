@@ -19,7 +19,7 @@ tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 tower_create_preload_data: true
 
-tower_task_replicas: "1"
+tower_replicas: "1"
 
 tower_task_mem_request: 1Gi
 tower_task_cpu_request: 500m
@@ -38,4 +38,4 @@ tower_postgres_storage_class: ''
 
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
-uwsgi_bash: "bash -c"
+uwsgi_bash: "scl enable rh-postgresql10"

@@ -100,32 +100,9 @@ data:
     if os.getenv("DATABASE_SSLMODE", False):
         DATABASES['default']['OPTIONS'] = {'sslmode': os.getenv("DATABASE_SSLMODE")}
     
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-            'LOCATION': '{}:{}'.format("{{ meta.name }}-memcached.{{ meta.namespace }}.svc.cluster.local", "11211")
-        },
-        'ephemeral': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        },
-    }
-    
-    BROKER_URL = 'redis://{}:{}/'.format(
-        '{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local',
-        '6379')
-    
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [BROKER_URL],
-                "capacity": 10000,
-                "group_expiry": 157784760, # 5 years
-            }
-        }
-    }
-    
     USE_X_FORWARDED_PORT = True
+    BROADCAST_WEBSOCKET_PORT = 8052
+    BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
   nginx_conf: |
     worker_processes  1;

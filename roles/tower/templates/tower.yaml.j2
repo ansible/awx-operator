@@ -14,12 +14,12 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ meta.name }}-tower-web'
+  name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
   labels:
     app: tower
 spec:
-  replicas: 1
+  replicas: {{ tower_replicas }}
   selector:
     matchLabels:
       app: tower
@@ -44,17 +44,18 @@ spec:
             mountPath: "/var/run/memcached"
       - image: '{{ tower_redis_image }}'
         name: redis
+        args: ["redis-server", "/etc/redis.conf"]
         ports:
         - containerPort: 6379
         volumeMounts:
           - name: {{ meta.name }}-redis-config
-            mountPath: "/usr/local/etc/redis/redis.conf"
+            mountPath: "/etc/redis.conf"
             subPath: redis.conf
             readOnly: true
           - name: {{ meta.name }}-redis-socket
             mountPath: "/var/run/redis"
       - image: '{{ tower_web_image }}'
-        name: tower
+        name: '{{ meta.name }}-web'
         ports:
         - containerPort: 8052
         volumeMounts:
@@ -91,7 +92,7 @@ spec:
             memory: '{{ tower_web_mem_request }}'
             cpu: '{{ tower_web_cpu_request }}'
       - image: '{{ tower_task_image }}'
-        name: tower-task
+        name: '{{ meta.name }}-task'
 {% if tower_task_privileged == true %}
         securityContext:
           privileged: true
