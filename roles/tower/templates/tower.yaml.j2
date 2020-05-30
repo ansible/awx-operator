@@ -3,11 +3,12 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: '{{ meta.name }}-tower-secret'
+  name: '{{ meta.name }}-secrets'
   namespace: '{{ meta.namespace }}'
 data:
   secret_key: '{{ tower_secret_key | b64encode }}'
-  admin_password: '{{ tower_admin_password | b64encode }}'
+  credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
+  environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
 
 # Tower Deployment.
 ---
@@ -59,13 +60,12 @@ spec:
         ports:
         - containerPort: 8052
         volumeMounts:
+          - name: "{{ meta.name }}-application-credentials"
+            mountPath: "/etc/tower/conf.d/"
+            readOnly: true
           - name: {{ meta.name }}-secret-key
             mountPath: /etc/tower/SECRET_KEY
             subPath: SECRET_KEY
-            readOnly: true
-          - name: {{ meta.name }}-environment
-            mountPath: /etc/tower/conf.d/environment.sh
-            subPath: environment.sh
             readOnly: true
           - name: {{ meta.name }}-settings
             mountPath: /etc/tower/settings.py
@@ -99,19 +99,13 @@ spec:
 {% endif %}
         command:
           - /usr/bin/launch_awx_task.sh
-        envFrom:
-        - configMapRef:
-            name: '{{ meta.name }}-tower-configmap'
-        - secretRef:
-            name: '{{ meta.name }}-tower-secret'
         volumeMounts:
+          - name: "{{ meta.name }}-application-credentials"
+            mountPath: "/etc/tower/conf.d/"
+            readOnly: true
           - name: {{ meta.name }}-secret-key
             mountPath: /etc/tower/SECRET_KEY
             subPath: SECRET_KEY
-            readOnly: true
-          - name: {{ meta.name }}-environment
-            mountPath: /etc/tower/conf.d/environment.sh
-            subPath: environment.sh
             readOnly: true
           - name: {{ meta.name }}-settings
             mountPath: /etc/tower/settings.py
@@ -121,6 +115,10 @@ spec:
             mountPath: /usr/bin/launch_awx_task.sh
             subPath: launch_awx_task.sh
             readOnly: true
+          - name: {{ meta.name }}-supervisor-web-config
+            mountPath: "/supervisor.conf"
+            subPath: supervisor.conf
+            readOnly: true
           - name: {{ meta.name }}-supervisor-task-config
             mountPath: /supervisor_task.conf
             subPath: supervisor_task.conf
@@ -129,23 +127,38 @@ spec:
             mountPath: "/var/run/redis"
           - name: {{ meta.name }}-memcached-socket
             mountPath: "/var/run/memcached"
+        env:
+          - name: SUPERVISOR_WEB_CONFIG_PATH
+            value: "/supervisor.conf"
+          - name: AWX_SKIP_MIGRATIONS
+            value: "1"
+          - name: MY_POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         resources:
           requests:
             memory: '{{ tower_task_mem_request }}'
             cpu: '{{ tower_task_cpu_request }}'
       volumes:
+        - name: "{{ meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ meta.name }}-secrets"
+            items:
+              - key: credentials_py
+                path: 'credentials.py'
+              - key: environment_sh
+                path: 'environment.sh'
         - name: {{ meta.name }}-secret-key
           secret:
-            secretName: '{{ meta.name }}-tower-secret'
+            secretName: '{{ meta.name }}-secrets'
             items:
               - key: secret_key
                 path: SECRET_KEY
-        - name: {{ meta.name }}-environment
-          configMap:
-            name: '{{ meta.name }}-tower-configmap'
-            items:
-              - key: environment
-                path: environment.sh
         - name: {{ meta.name }}-settings
           configMap:
             name: '{{ meta.name }}-tower-configmap'

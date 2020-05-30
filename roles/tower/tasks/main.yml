@@ -1,6 +1,7 @@
 ---
 - name: Ensure configured Tower resources exist in the cluster.
   k8s:
+    apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
   register: k8s_defs_result
   with_items:
