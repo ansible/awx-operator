@@ -87,6 +87,12 @@ spec:
             mountPath: "/var/run/redis"
           - name: {{ meta.name }}-memcached-socket
             mountPath: "/var/run/memcached"
+          - name: supervisor-socket
+            mountPath: "/var/run/supervisor"
+          - name: rsyslog-socket
+            mountPath: "/var/run/awx-rsyslog"
+          - name: rsyslog-dir
+            mountPath: "/var/lib/awx/rsyslog"
         resources:
           requests:
             memory: '{{ tower_web_mem_request }}'
@@ -127,6 +133,12 @@ spec:
             mountPath: "/var/run/redis"
           - name: {{ meta.name }}-memcached-socket
             mountPath: "/var/run/memcached"
+          - name: supervisor-socket
+            mountPath: "/var/run/supervisor"
+          - name: rsyslog-socket
+            mountPath: "/var/run/awx-rsyslog"
+          - name: rsyslog-dir
+            mountPath: "/var/lib/awx/rsyslog"
         env:
           - name: SUPERVISOR_WEB_CONFIG_PATH
             value: "/supervisor.conf"
@@ -206,6 +218,12 @@ spec:
         - name: {{ meta.name }}-redis-socket
           emptyDir: {}
         - name: {{ meta.name }}-memcached-socket
+          emptyDir: {}
+        - name: supervisor-socket
+          emptyDir: {}
+        - name: rsyslog-socket
+          emptyDir: {}
+        - name: rsyslog-dir
           emptyDir: {}
 
 # Tower Service.
