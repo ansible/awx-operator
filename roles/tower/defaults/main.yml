@@ -9,6 +9,8 @@ tower_admin_user: test
 tower_admin_email: test@example.com
 tower_admin_password: changeme
 
+tower_broadcast_websocket_secret: changeme
+
 # Use these image versions for Ansible Tower.
 tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0

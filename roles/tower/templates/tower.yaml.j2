@@ -265,7 +265,7 @@ spec:
 
 {% if 'route' == tower_ingress_type %}
 ---
-apiVersion: v1
+apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: '{{ meta.name }}'
