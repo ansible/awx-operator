@@ -5,6 +5,7 @@ metadata:
   name: example-tower
   namespace: example-tower
 spec:
+  deployment_type: awx
   tower_ingress_type: ingress
   tower_task_privileged: false
 
