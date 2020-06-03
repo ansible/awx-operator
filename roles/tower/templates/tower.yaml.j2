@@ -245,7 +245,7 @@ spec:
     app: tower
 
 # Tower Ingress.
-{% if 'ingress' == tower_ingress_type %}
+{% if 'ingress' == tower_ingress_type|lower %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -263,7 +263,7 @@ spec:
           servicePort: 80
 {% endif %}
 
-{% if 'route' == tower_ingress_type %}
+{% if 'route' == tower_ingress_type|lower %}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
