@@ -1,5 +1,6 @@
 ---
-- include_vars: "{{ deployment_type }}.yml"
+- name: Include deployment type vars
+  include_vars: "{{ deployment_type }}.yml"
 
 - name: Ensure configured Tower resources exist in the cluster.
   k8s:
