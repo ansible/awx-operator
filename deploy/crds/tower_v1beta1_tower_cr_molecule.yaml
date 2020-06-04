@@ -1,5 +1,5 @@
 ---
-apiVersion: tower.ansible.com/v1alpha1
+apiVersion: tower.ansible.com/v1beta1
 kind: Tower
 metadata:
   name: example-tower
@@ -20,11 +20,11 @@ spec:
   tower_task_image: ansible/awx_task:11.2.0
   tower_web_image: ansible/awx_web:11.2.0
 
-  tower_task_mem_request: 1Gi
+  tower_task_mem_request: 128M
   tower_task_cpu_request: 500m
 
-  tower_web_mem_request: 2Gi
-  tower_web_cpu_request: 1000m
+  tower_web_mem_request: 128M
+  tower_web_cpu_request: 500m
 
   tower_create_preload_data: true
 

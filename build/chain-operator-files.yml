@@ -27,7 +27,7 @@
         marker_end: ""
         insertafter: "EOF"
       with_file:
-        - "../deploy/crds/tower_v1alpha1_tower_crd.yaml"
+        - "../deploy/crds/tower_v1beta1_tower_crd.yaml"
         - "../deploy/role.yaml"
         - "../deploy/role_binding.yaml"
         - "../deploy/service_account.yaml"

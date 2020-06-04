@@ -1,5 +1,5 @@
 ---
-apiVersion: tower.ansible.com/v1alpha1
+apiVersion: tower.ansible.com/v1beta1
 kind: Tower
 metadata:
   name: example-tower
