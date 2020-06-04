@@ -54,17 +54,3 @@
   when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
 
 - include_tasks: initialize.yml
-
-- name: Scale the tower deployment to 0 replicas after migration.
-  k8s:
-    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
-  vars:
-    tower_replicas: "0"
-  when: migrate_result and migrate_result.changed
-
-- name: Scale the tower deployment back to 1 replica after migration.
-  k8s:
-    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
-  vars:
-    tower_replicas: "1"
-  when: migrate_result and migrate_result.changed

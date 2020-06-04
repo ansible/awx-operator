@@ -26,7 +26,7 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     pull_policy: Never
     operator_image: tower.ansible.com/tower-operator:testing
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_cr_awx.yaml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1alpha1_tower_cr_molecule.yaml'])) | from_yaml }}"
 
   tasks:
 
