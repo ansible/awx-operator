@@ -159,3 +159,16 @@ spec:
     - name: v1beta1
       served: true
       storage: true
+  validation:
+    openAPIV3Schema:
+      description: Schema validation for the Tower CRD
+      type: object
+      properties:
+        spec:
+          type: object
+          properties:
+            deployment_type:
+              type: string
+              pattern: "^(tower|awx)(-)?.*$"
+          required:
+            - deployment_type

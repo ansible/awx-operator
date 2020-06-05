@@ -6,7 +6,7 @@
   gather_facts: false
 
   vars:
-    operator_image: geerlingguy/tower-operator:0.4.0
+    operator_image: ansible/tower-operator:0.4.0
     pull_policy: Always
     operator_file_path: "../deploy/tower-operator.yaml"
     operator_template: "../deploy/operator.yaml"

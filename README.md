@@ -62,11 +62,12 @@ If you deploy Ansible AWX, images are available from public registries, so no au
 
 ### Deploy AWX instead of Tower
 
-If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead:
+If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead, and set the `deployment_type` to ``awx`:
 
     ---
     spec:
       ...
+      deployment_type: awx
       tower_task_image: ansible/awx_task:11.2.0
       tower_web_image: ansible/awx_web:11.2.0
 
