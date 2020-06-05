@@ -1,15 +1,18 @@
 ---
+- name: Include deployment type vars
+  include_vars: "{{ deployment_type }}.yml"
+
 - name: Ensure configured Tower resources exist in the cluster.
   k8s:
+    apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
   register: k8s_defs_result
   with_items:
-    - tower_memcached.yaml.j2
     - tower_postgres.yaml.j2
     - tower_config.yaml.j2
-    - tower_redis.yaml.j2
-    - tower_web.yaml.j2
-    - tower_task.yaml.j2
+    - launch_awx.yaml.j2
+    - supervisor.yaml.j2
+    - tower.yaml.j2
 
 - name: Get the Tower pod information.
   k8s_info:
@@ -33,7 +36,7 @@
 
 - name: Check if database is populated (auth_user table exists).
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "echo 'from django.db import connection;
     tbl = \"auth_user\" in connection.introspection.table_names();
     exit(0 if tbl else 1)'
@@ -45,23 +48,23 @@
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "awx-manage migrate --noinput"
   register: migrate_result
   when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
 
 - include_tasks: initialize.yml
 
-- name: Scale the tower_task deployment to 0 replicas after migration.
+- name: Scale the tower deployment to 0 replicas after migration.
   k8s:
-    definition: "{{ lookup('template', 'tower_task.yaml.j2') | from_yaml_all | list }}"
+    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
   vars:
-    tower_task_replicas: "0"
+    tower_replicas: "0"
   when: migrate_result and migrate_result.changed
 
-- name: Scale the tower_task deployment back to 1 replica after migration.
+- name: Scale the tower deployment back to 1 replica after migration.
   k8s:
-    definition: "{{ lookup('template', 'tower_task.yaml.j2') | from_yaml_all | list }}"
+    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
   vars:
-    tower_task_replicas: "1"
+    tower_replicas: "1"
   when: migrate_result and migrate_result.changed

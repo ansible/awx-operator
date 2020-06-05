@@ -1,0 +1,284 @@
+# Tower Secret.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: '{{ meta.name }}-secrets'
+  namespace: '{{ meta.namespace }}'
+data:
+  secret_key: '{{ tower_secret_key | b64encode }}'
+  credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
+  environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
+
+# Tower Deployment.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ meta.name }}'
+  namespace: '{{ meta.namespace }}'
+  labels:
+    app: tower
+spec:
+  replicas: {{ tower_replicas }}
+  selector:
+    matchLabels:
+      app: tower
+  template:
+    metadata:
+      labels:
+         app: tower
+    spec:
+      containers:
+      - name: memcached
+        image: '{{ tower_memcached_image }}'
+        command:
+          - 'memcached'
+          - '-s'
+          - '/var/run/memcached/memcached.sock'
+          - '-a'
+          - '0666'
+        ports:
+        - containerPort: 1121
+        volumeMounts:
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
+      - image: '{{ tower_redis_image }}'
+        name: redis
+        args: ["redis-server", "/etc/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - name: {{ meta.name }}-redis-config
+            mountPath: "/etc/redis.conf"
+            subPath: redis.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
+      - image: '{{ tower_web_image }}'
+        name: '{{ meta.name }}-web'
+        ports:
+        - containerPort: 8052
+        volumeMounts:
+          - name: "{{ meta.name }}-application-credentials"
+            mountPath: "/etc/tower/conf.d/"
+            readOnly: true
+          - name: {{ meta.name }}-secret-key
+            mountPath: /etc/tower/SECRET_KEY
+            subPath: SECRET_KEY
+            readOnly: true
+          - name: {{ meta.name }}-settings
+            mountPath: /etc/tower/settings.py
+            subPath: settings.py
+            readOnly: true
+          - name: {{ meta.name }}-nginx-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+          - name: {{ meta.name }}-launch-awx-web
+            mountPath: /usr/bin/launch_awx.sh
+            subPath: launch_awx.sh
+            readOnly: true
+          - name: {{ meta.name }}-supervisor-web-config
+            mountPath: /supervisor.conf
+            subPath: supervisor.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
+          - name: supervisor-socket
+            mountPath: "/var/run/supervisor"
+          - name: rsyslog-socket
+            mountPath: "/var/run/awx-rsyslog"
+          - name: rsyslog-dir
+            mountPath: "/var/lib/awx/rsyslog"
+        resources:
+          requests:
+            memory: '{{ tower_web_mem_request }}'
+            cpu: '{{ tower_web_cpu_request }}'
+      - image: '{{ tower_task_image }}'
+        name: '{{ meta.name }}-task'
+{% if tower_task_privileged == true %}
+        securityContext:
+          privileged: true
+{% endif %}
+        command:
+          - /usr/bin/launch_awx_task.sh
+        volumeMounts:
+          - name: "{{ meta.name }}-application-credentials"
+            mountPath: "/etc/tower/conf.d/"
+            readOnly: true
+          - name: {{ meta.name }}-secret-key
+            mountPath: /etc/tower/SECRET_KEY
+            subPath: SECRET_KEY
+            readOnly: true
+          - name: {{ meta.name }}-settings
+            mountPath: /etc/tower/settings.py
+            subPath: settings.py
+            readOnly: true
+          - name: {{ meta.name }}-launch-awx-task
+            mountPath: /usr/bin/launch_awx_task.sh
+            subPath: launch_awx_task.sh
+            readOnly: true
+          - name: {{ meta.name }}-supervisor-web-config
+            mountPath: "/supervisor.conf"
+            subPath: supervisor.conf
+            readOnly: true
+          - name: {{ meta.name }}-supervisor-task-config
+            mountPath: /supervisor_task.conf
+            subPath: supervisor_task.conf
+            readOnly: true
+          - name: {{ meta.name }}-redis-socket
+            mountPath: "/var/run/redis"
+          - name: {{ meta.name }}-memcached-socket
+            mountPath: "/var/run/memcached"
+          - name: supervisor-socket
+            mountPath: "/var/run/supervisor"
+          - name: rsyslog-socket
+            mountPath: "/var/run/awx-rsyslog"
+          - name: rsyslog-dir
+            mountPath: "/var/lib/awx/rsyslog"
+        env:
+          - name: SUPERVISOR_WEB_CONFIG_PATH
+            value: "/supervisor.conf"
+          - name: AWX_SKIP_MIGRATIONS
+            value: "1"
+          - name: MY_POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        resources:
+          requests:
+            memory: '{{ tower_task_mem_request }}'
+            cpu: '{{ tower_task_cpu_request }}'
+      volumes:
+        - name: "{{ meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ meta.name }}-secrets"
+            items:
+              - key: credentials_py
+                path: 'credentials.py'
+              - key: environment_sh
+                path: 'environment.sh'
+        - name: {{ meta.name }}-secret-key
+          secret:
+            secretName: '{{ meta.name }}-secrets'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: {{ meta.name }}-settings
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: settings
+                path: settings.py
+        - name: {{ meta.name }}-nginx-conf
+          configMap:
+            name: '{{ meta.name }}-tower-configmap'
+            items:
+              - key: nginx_conf
+                path: nginx.conf
+        - name: {{ meta.name }}-redis-config
+          configMap:
+            name: {{ meta.name }}-tower-configmap
+            items:
+              - key: redis_conf
+                path: redis.conf
+        - name: {{ meta.name }}-launch-awx-web
+          configMap:
+            name: '{{meta.name }}-launch-awx'
+            items:
+              - key: launch-awx-web
+                path: launch_awx.sh
+            defaultMode: 0755
+        - name: {{ meta.name }}-supervisor-web-config
+          configMap:
+            name: '{{ meta.name }}-supervisor-config'
+            items:
+              - key: supervisor-web-config
+                path: supervisor.conf
+        - name: {{ meta.name }}-launch-awx-task
+          configMap:
+            name: '{{ meta.name }}-launch-awx'
+            items:
+              - key: launch-awx-task
+                path: 'launch_awx_task.sh'
+            defaultMode: 0755
+        - name: {{ meta.name }}-supervisor-task-config
+          configMap:
+            name: '{{ meta.name }}-supervisor-config'
+            items:
+              - key: supervisor-task-config
+                path: 'supervisor_task.conf'
+        - name: {{ meta.name }}-redis-socket
+          emptyDir: {}
+        - name: {{ meta.name }}-memcached-socket
+          emptyDir: {}
+        - name: supervisor-socket
+          emptyDir: {}
+        - name: rsyslog-socket
+          emptyDir: {}
+        - name: rsyslog-dir
+          emptyDir: {}
+
+# Tower Service.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ meta.name }}-service'
+  namespace: '{{ meta.namespace }}'
+  labels:
+    app: tower
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8052
+    name: http
+  selector:
+    app: tower
+
+# Tower Ingress.
+{% if 'ingress' == tower_ingress_type|lower %}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: '{{ meta.name }}-ingress'
+  namespace: '{{ meta.namespace }}'
+spec:
+  rules:
+  - host: '{{ tower_hostname }}'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: '{{ meta.name }}-service'
+          servicePort: 80
+{% endif %}
+
+{% if 'route' == tower_ingress_type|lower %}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: '{{ meta.name }}'
+  namespace: '{{ meta.namespace }}'
+spec:
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ meta.name }}-service
+    weight: 100
+  wildcardPolicy: None
+{% endif %}

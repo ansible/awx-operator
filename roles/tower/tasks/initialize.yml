@@ -1,7 +1,7 @@
 ---
 - name: Check if there are any Tower super users defined.
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "echo 'from django.contrib.auth.models import User;
     nsu = User.objects.filter(is_superuser=True).count();
     exit(0 if nsu > 0 else 1)'
@@ -12,7 +12,7 @@
 
 - name: Create Tower super user via Django if it doesn't exist.
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "echo \"from django.contrib.auth.models import User;
     User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
     | awx-manage shell"
@@ -21,7 +21,7 @@
 
 - name: Create preload data if necessary.  # noqa 305
   shell: >-
-    kubectl exec -n {{ meta.namespace }} {{ tower_pod_name }} -- bash -c
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "awx-manage create_preload_data"
   register: cdo
   changed_when: "'added' in cdo.stdout"

@@ -113,14 +113,14 @@ spec:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "geerlingguy/tower-operator:0.3.0"
+          image: "ansible/tower-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "geerlingguy/tower-operator:0.3.0"
+          image: "ansible/tower-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -154,8 +154,8 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  version: v1alpha1
+  version: v1beta1
   versions:
-    - name: v1alpha1
+    - name: v1beta1
       served: true
       storage: true

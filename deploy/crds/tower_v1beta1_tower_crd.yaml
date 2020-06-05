@@ -1,0 +1,33 @@
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: towers.tower.ansible.com
+spec:
+  group: tower.ansible.com
+  names:
+    kind: Tower
+    listKind: TowerList
+    plural: towers
+    singular: tower
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1beta1
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+  validation:
+    openAPIV3Schema:
+      description: Schema validation for the Tower CRD
+      type: object
+      properties:
+        spec:
+          type: object
+          properties:
+            deployment_type:
+              type: string
+              pattern: "^(tower|awx)(-)?.*$"
+          required:
+            - deployment_type

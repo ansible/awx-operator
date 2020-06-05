@@ -1,0 +1,38 @@
+---
+apiVersion: tower.ansible.com/v1beta1
+kind: Tower
+metadata:
+  name: example-tower
+  namespace: example-tower
+spec:
+  deployment_type: awx
+  tower_ingress_type: ingress
+  tower_task_privileged: false
+
+  tower_hostname: example-tower.test
+  tower_secret_key: aabbcc
+  tower_broadcast_websocket_secret: changeme
+
+  tower_admin_user: test
+  tower_admin_email: test@example.com
+  tower_admin_password: changeme
+
+  tower_task_image: ansible/awx_task:11.2.0
+  tower_web_image: ansible/awx_web:11.2.0
+
+  tower_task_mem_request: 128M
+  tower_task_cpu_request: 500m
+
+  tower_web_mem_request: 128M
+  tower_web_cpu_request: 500m
+
+  tower_create_preload_data: true
+
+  tower_memcached_image: memcached:alpine
+
+  tower_redis_image: redis:latest
+
+  tower_postgres_pass: awxpass
+  tower_postgres_image: postgres:10
+  tower_postgres_storage_request: 8Gi
+  tower_postgres_storage_class: ''

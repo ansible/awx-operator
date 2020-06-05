@@ -1,0 +1,2 @@
+---
+uwsgi_bash: "scl enable rh-postgresql10"

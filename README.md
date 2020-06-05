@@ -32,7 +32,7 @@ Then you can create instances of Tower, for example:
 
      ```
      ---
-     apiVersion: tower.ansible.com/v1alpha1
+     apiVersion: tower.ansible.com/v1beta1
      kind: Tower
      metadata:
        name: tower
@@ -177,7 +177,7 @@ After it is built, test it on a local cluster:
     minikube addons enable ingress
     kubectl apply -f deploy/tower-operator.yaml
     kubectl create namespace example-tower
-    kubectl apply -f deploy/crds/tower_v1alpha1_tower_cr_awx.yaml
+    kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
     <test everything>
     minikube delete
 

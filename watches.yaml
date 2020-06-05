@@ -1,5 +1,5 @@
 ---
-- version: v1alpha1
+- version: v1beta1
   group: tower.ansible.com
   kind: Tower
   playbook: /opt/ansible/main.yml
