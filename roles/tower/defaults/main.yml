@@ -1,6 +1,6 @@
 ---
 tower_task_privileged: false
-tower_ingress_type: ingress
+tower_ingress_type: none
 
 tower_hostname: example-tower.test
 tower_secret_key: aabbcc
