@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  author: Jeff Geerling
+  author: Ansible
   description: Tower role for Tower Operator for Kubernetes.
-  company: Midwestern Mac, LLC
+  company: Red Hat, Inc.
 
   license: MIT
 

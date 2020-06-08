@@ -1,7 +1,5 @@
 # Ansible Tower/AWX Operator
 
-[![Build Status](https://travis-ci.com/geerlingguy/tower-operator.svg?branch=master)](https://travis-ci.com/geerlingguy/tower-operator)
-
 An [Ansible Tower](https://www.ansible.com/products/tower) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
 Also configurable to run the open source [AWX](https://github.com/ansible/awx) instead of Tower (helpful for certain use cases where a license requirement is not warranted, like CI environments).
@@ -15,7 +13,7 @@ There are already official OpenShift/Kubernetes installers available for both AW
 
 This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via a Tower Custom Resource Definition (CRD).
 
-Note that the operator is not supported by Red Hat, and is in alpha status. Long-term, it will hopefully become a supported installation method, and be listed on OperatorHub.io. But for now, use it at your own risk!
+Note that the operator is not supported by Red Hat, and is in alpha status. Long-term, this operator will become the supported method of installing on Kubernetes and Openshift, and will be listed on OperatorHub.io. For now, use it at your own risk!
 
 ## Usage
 
@@ -23,7 +21,7 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 First you need to deploy Tower Operator into your cluster:
 
-    kubectl apply -f https://raw.githubusercontent.com/geerlingguy/tower-operator/master/deploy/tower-operator.yaml
+    kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/master/deploy/tower-operator.yaml
 
 Then you can create instances of Tower, for example:
 
@@ -155,11 +153,11 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build geerlingguy/tower-operator:0.4.0
+    operator-sdk build ansible/tower-operator:0.4.0
 
 Then push the generated image to Docker Hub:
 
-    docker push geerlingguy/tower-operator:0.4.0
+    docker push ansible/tower-operator:0.4.0
 
 #### Build a new version of the `tower-operator.yaml` file
 
@@ -186,4 +184,4 @@ If everything works, commit the updated version, then tag a new repository relea
 
 ## Author
 
-This operator was built in 2019 by [Jeff Geerling](https://www.jeffgeerling.com), author of [Ansible for DevOps](https://www.ansiblefordevops.com) and [Ansible for Kubernetes](https://www.ansibleforkubernetes.com).
+This operator was originally built in 2019 by [Jeff Geerling](https://www.jeffgeerling.com) and is now maintained by the Ansible Team
