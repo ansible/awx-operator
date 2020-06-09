@@ -78,7 +78,14 @@ Depending on the cluster that you're running on, you may wish to use an `Ingress
       ...
       tower_ingress_type: Route
 
-By default, this is configured to use `Ingress`.
+OR
+
+    ---
+    spec:
+      ...
+      tower_ingress_type: Ingress
+
+By default, no ingress/route is deployed as the default is set to `none`.
 
 ### Privileged Tasks
 

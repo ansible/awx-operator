@@ -6,7 +6,7 @@ metadata:
   namespace: example-tower
 spec:
   deployment_type: awx
-  tower_ingress_type: ingress
+  tower_ingress_type: none
   tower_task_privileged: false
 
   tower_hostname: example-tower.test
