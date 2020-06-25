@@ -36,9 +36,8 @@ Then you can create instances of Tower, for example:
        name: tower
        namespace: ansible-tower
      spec:
-       tower_hostname: tower.mycompany.com
+       deployment_type: tower
        tower_secret_key: aabbcc
-       
        tower_admin_user: test
        tower_admin_email: test@example.com
        tower_admin_password: changeme
@@ -84,6 +83,7 @@ OR
     spec:
       ...
       tower_ingress_type: Ingress
+      tower_hostname: tower.mycompany.com
 
 By default, no ingress/route is deployed as the default is set to `none`.
 
