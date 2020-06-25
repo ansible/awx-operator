@@ -21,7 +21,7 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 First you need to deploy Tower Operator into your cluster:
 
-    kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/master/deploy/tower-operator.yaml
+    kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/devel/deploy/tower-operator.yaml
 
 Then you can create instances of Tower, for example:
 
