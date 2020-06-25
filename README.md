@@ -41,6 +41,7 @@ Then you can create instances of Tower, for example:
        tower_admin_user: test
        tower_admin_email: test@example.com
        tower_admin_password: changeme
+       tower_broadcast_websocket_secret: changeme
      ```
 
   1. Use `kubectl` to create the mcrouter instance in your cluster:
