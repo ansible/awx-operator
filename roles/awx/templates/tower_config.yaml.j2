@@ -1,12 +1,12 @@
-# Tower Web ConfigMap.
+# AWX Web ConfigMap.
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: '{{ meta.name }}-tower-configmap'
+  name: '{{ meta.name }}-awx-configmap'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: tower
+    app: awx
 data:
   environment: |
     DATABASE_USER=awx

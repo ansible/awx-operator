@@ -1,6 +1,6 @@
 ---
-apiVersion: tower.ansible.com/v1beta1
-kind: Tower
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
 metadata:
   name: example-tower
   namespace: example-tower

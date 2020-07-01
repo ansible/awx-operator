@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Ansible
-  description: Tower role for Tower Operator for Kubernetes.
+  description: AWX role for AWX Operator for Kubernetes.
   company: Red Hat, Inc.
 
   license: MIT

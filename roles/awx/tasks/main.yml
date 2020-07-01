@@ -2,7 +2,7 @@
 - name: Include deployment type vars
   include_vars: "{{ deployment_type }}.yml"
 
-- name: Ensure configured Tower resources exist in the cluster.
+- name: Ensure configured AWX resources exist in the cluster.
   k8s:
     apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
@@ -14,18 +14,18 @@
     - supervisor.yaml.j2
     - tower.yaml.j2
 
-- name: Get the Tower pod information.
+- name: Get the AWX pod information.
   k8s_info:
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - app=tower
+      - app=awx
   register: tower_pods
   until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
 
-- name: Set the tower pod name as a variable.
+- name: Set the awx pod name as a variable.
   set_fact:
     tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] }}"
 
@@ -55,14 +55,14 @@
 
 - include_tasks: initialize.yml
 
-- name: Scale the tower deployment to 0 replicas after migration.
+- name: Scale the awx deployment to 0 replicas after migration.
   k8s:
     definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
   vars:
     tower_replicas: "0"
   when: migrate_result and migrate_result.changed
 
-- name: Scale the tower deployment back to 1 replica after migration.
+- name: Scale the awx deployment back to 1 replica after migration.
   k8s:
     definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
   vars:

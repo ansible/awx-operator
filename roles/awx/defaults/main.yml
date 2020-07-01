@@ -2,7 +2,7 @@
 tower_task_privileged: false
 tower_ingress_type: none
 
-tower_hostname: example-tower.test
+tower_hostname: example-awx.test
 tower_secret_key: aabbcc
 
 tower_admin_user: test
@@ -12,12 +12,12 @@ tower_admin_password: changeme
 tower_broadcast_websocket_secret: changeme
 
 # Use these image versions for Ansible Tower.
-tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
-tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
+#tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
+#tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 # Use these image versions for Ansible AWX.
-# tower_task_image: ansible/awx_task:11.2.0
-# tower_web_image: ansible/awx_web:11.2.0
+tower_task_image: ansible/awx:13.0.0
+tower_web_image: ansible/awx:13.0.0
 
 tower_create_preload_data: true
 

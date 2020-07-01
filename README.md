@@ -1,8 +1,8 @@
 # Ansible Tower/AWX Operator
 
-An [Ansible Tower](https://www.ansible.com/products/tower) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
+An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
-Also configurable to run the open source [AWX](https://github.com/ansible/awx) instead of Tower (helpful for certain use cases where a license requirement is not warranted, like CI environments).
+Also configurable to be able to run [Tower](https://ansible.com/products/tower)
 
 ## Purpose
 
@@ -11,7 +11,7 @@ There are already official OpenShift/Kubernetes installers available for both AW
   - [AWX on Kubernetes](https://github.com/ansible/awx/blob/devel/INSTALL.md#kubernetes)
   - [Ansible Tower on Kubernetes](https://docs.ansible.com/ansible-tower/latest/html/administration/openshift_configuration.html)
 
-This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via a Tower Custom Resource Definition (CRD).
+This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via an AWX Custom Resource Definition (CRD).
 
 Note that the operator is not supported by Red Hat, and is in alpha status. Long-term, this operator will become the supported method of installing on Kubernetes and Openshift, and will be listed on OperatorHub.io. For now, use it at your own risk!
 
@@ -19,24 +19,24 @@ Note that the operator is not supported by Red Hat, and is in alpha status. Long
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more Tower or AWX instances in any namespace.
 
-First you need to deploy Tower Operator into your cluster:
+First you need to deploy AWX Operator into your cluster:
 
-    kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/devel/deploy/tower-operator.yaml
+    kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
 
-Then you can create instances of Tower, for example:
+Then you can create instances of AWX, for example:
 
-  1. Make sure the namespace you're deploying into already exists (e.g. `kubectl create namespace ansible-tower`).
-  1. Create a file named `my-tower.yml` with the following contents:
+  1. Make sure the namespace you're deploying into already exists (e.g. `kubectl create namespace ansible-awx`).
+  1. Create a file named `my-awx.yml` with the following contents:
 
      ```
      ---
-     apiVersion: tower.ansible.com/v1beta1
-     kind: Tower
+     apiVersion: awx.ansible.com/v1beta1
+     kind: AWX
      metadata:
-       name: tower
-       namespace: ansible-tower
+       name: awx
+       namespace: ansible-awx
      spec:
-       deployment_type: tower
+       deployment_type: awx
        tower_secret_key: aabbcc
        tower_admin_user: test
        tower_admin_email: test@example.com
@@ -47,31 +47,30 @@ Then you can create instances of Tower, for example:
   1. Use `kubectl` to create the mcrouter instance in your cluster:
 
      ```
-     kubectl apply -f my-tower.yml
+     kubectl apply -f my-awx.yml
      ```
 
-After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`, and supply a valid license to begin using Tower.
+After a few minutes, your new AWX instance will be accessible at `http://awx.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`.
 
-### Red Hat Registry Authentication
+### Deploy Tower instead of AWX
+
+If you would like to deploy Tower into your cluster instead of AWX, override the default variables in the AWX `spec` for the `tower_task_image` and `tower_web_image`, so the Tower container images are used instead, and set the `deployment_type` to ``awx`:
+
+    ---
+    spec:
+      ...
+      deployment_type: tower
+      tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
+      tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 To deploy Ansible Tower, images are pulled from the Red Hat Registry. Your Kubernetes or OpenShift cluster will have to have [Authentication Enabled for the Red Hat Registry](https://access.redhat.com/documentation/en-us/openshift_container_platform/3.11/html/configuring_clusters/install-config-configuring-red-hat-registry) for this to work, otherwise the Tower image will not be pulled.
 
 If you deploy Ansible AWX, images are available from public registries, so no authentication is required.
 
-### Deploy AWX instead of Tower
-
-If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead, and set the `deployment_type` to ``awx`:
-
-    ---
-    spec:
-      ...
-      deployment_type: awx
-      tower_task_image: ansible/awx_task:11.2.0
-      tower_web_image: ansible/awx_web:11.2.0
 
 ### Ingress Types
 
-Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your tower. To toggle between these two options, you can add the following to your Tower custom resource:
+Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your awx. To toggle between these two options, you can add the following to your Tower custom resource:
 
     ---
     spec:
@@ -84,7 +83,7 @@ OR
     spec:
       ...
       tower_ingress_type: Ingress
-      tower_hostname: tower.mycompany.com
+      tower_hostname: awx.mycompany.com
 
 By default, no ingress/route is deployed as the default is set to `none`.
 
@@ -97,9 +96,9 @@ Depending on the type of tasks that you'll be running, you may find that you nee
       ...
       tower_task_privileged: true
 
-If you are attempting to do this on an OpenShift cluster, you will need to grant the `tower` ServiceAccount the `privileged` SCC, which can be done with:
+If you are attempting to do this on an OpenShift cluster, you will need to grant the `awx` ServiceAccount the `privileged` SCC, which can be done with:
 
-    oc adm policy add-scc-to-user privileged -z tower
+    oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
@@ -152,8 +151,8 @@ Once the operator is deployed, you can visit the Tower UI in your browser by fol
 
 There are a few moving parts to this project:
 
-  1. The Docker image which powers Tower Operator.
-  2. The `tower-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
+  1. The Docker image which powers AWX Operator.
+  2. The `awx-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
 
 Each of these must be appropriately built in preparation for a new tag:
 
@@ -161,17 +160,17 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build ansible/tower-operator:0.4.0
+    operator-sdk build ansible/awx-operator:0.4.0
 
 Then push the generated image to Docker Hub:
 
-    docker push ansible/tower-operator:0.4.0
+    docker push ansible/awx-operator:0.4.0
 
-#### Build a new version of the `tower-operator.yaml` file
+#### Build a new version of the `awx-operator.yaml` file
 
-Update the tower-operator version in two places:
+Update the awx-operator version in two places:
 
-  1. `deploy/tower-operator.yaml`: in the `ansible` and `operator` container definitions in the `tower-operator` Deployment.
+  1. `deploy/awx-operator.yaml`: in the `ansible` and `operator` container definitions in the `awx-operator` Deployment.
   2. `build/chain-operator-files.yml`: the `operator_image` variable.
 
 Once the versions are updated, run the playbook in the `build/` directory:
@@ -182,8 +181,8 @@ After it is built, test it on a local cluster:
 
     minikube start --memory 6g --cpus 4
     minikube addons enable ingress
-    kubectl apply -f deploy/tower-operator.yaml
-    kubectl create namespace example-tower
+    kubectl apply -f deploy/awx-operator.yaml
+    kubectl create namespace example-awx
     kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
     <test everything>
     minikube delete

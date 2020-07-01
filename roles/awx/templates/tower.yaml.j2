@@ -1,4 +1,4 @@
-# Tower Secret.
+# AWX Secret.
 ---
 apiVersion: v1
 kind: Secret
@@ -10,7 +10,7 @@ data:
   credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
   environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
 
-# Tower Deployment.
+# AWX Deployment.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,16 +18,16 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: tower
+    app: awx
 spec:
   replicas: {{ tower_replicas }}
   selector:
     matchLabels:
-      app: tower
+      app: awx
   template:
     metadata:
       labels:
-         app: tower
+         app: awx
     spec:
       containers:
       - name: memcached
@@ -173,19 +173,19 @@ spec:
                 path: SECRET_KEY
         - name: {{ meta.name }}-settings
           configMap:
-            name: '{{ meta.name }}-tower-configmap'
+            name: '{{ meta.name }}-awx-configmap'
             items:
               - key: settings
                 path: settings.py
         - name: {{ meta.name }}-nginx-conf
           configMap:
-            name: '{{ meta.name }}-tower-configmap'
+            name: '{{ meta.name }}-awx-configmap'
             items:
               - key: nginx_conf
                 path: nginx.conf
         - name: {{ meta.name }}-redis-config
           configMap:
-            name: {{ meta.name }}-tower-configmap
+            name: {{ meta.name }}-awx-configmap
             items:
               - key: redis_conf
                 path: redis.conf
@@ -226,7 +226,7 @@ spec:
         - name: rsyslog-dir
           emptyDir: {}
 
-# Tower Service.
+# AWX Service.
 ---
 apiVersion: v1
 kind: Service
@@ -234,7 +234,7 @@ metadata:
   name: '{{ meta.name }}-service'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: tower
+    app: awx
 spec:
   ports:
   - port: 80
@@ -242,9 +242,9 @@ spec:
     targetPort: 8052
     name: http
   selector:
-    app: tower
+    app: awx
 
-# Tower Ingress.
+# AWX Ingress.
 {% if 'ingress' == tower_ingress_type|lower %}
 ---
 apiVersion: extensions/v1beta1

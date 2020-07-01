@@ -2,14 +2,14 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: towers.tower.ansible.com
+  name: awxs.awx.ansible.com
 spec:
-  group: tower.ansible.com
+  group: awx.ansible.com
   names:
-    kind: Tower
-    listKind: TowerList
-    plural: towers
-    singular: tower
+    kind: AWX
+    listKind: AWXList
+    plural: awxs
+    singular: awx
   scope: Namespaced
   subresources:
     status: {}
@@ -20,7 +20,7 @@ spec:
       storage: true
   validation:
     openAPIV3Schema:
-      description: Schema validation for the Tower CRD
+      description: Schema validation for the AWX CRD
       type: object
       properties:
         spec:
