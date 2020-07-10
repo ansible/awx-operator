@@ -11,6 +11,8 @@ data:
     [supervisord]
     nodaemon = True
     umask = 022
+    logfile = /dev/stdout
+    logfile_maxbytes = 0
 
     [program:nginx]
     command = nginx -g "daemon off;"
@@ -96,6 +98,8 @@ data:
     [supervisord]
     nodaemon = True
     umask = 022
+    logfile = /dev/stdout
+    logfile_maxbytes = 0
 
     [program:dispatcher]
     command = awx-manage run_dispatcher
