@@ -3,10 +3,15 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: '{{ meta.name }}-postgres-pass'
+  name: '{{ meta.name }}-postgres-configuration'
   namespace: '{{ meta.namespace }}'
-data:
-  password: '{{ tower_postgres_pass | b64encode }}'
+stringData:
+  password: '{{ lookup('password', 'p' + meta.name + 'pg length=32 chars=ascii_letters,digits') }}'
+  username: 'awx'
+  database: 'awx'
+  port: '5432'
+  host: {{ meta.name }}-postgres
+
 
 # Postgres StatefulSet.
 ---
@@ -35,18 +40,24 @@ spec:
           name: postgres
           env:
             - name: POSTGRES_DB
-              value: awx
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: database
             - name: POSTGRES_USER
-              value: awx
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-pass'
+                  name: '{{ meta.name }}-postgres-configuration'
                   key: password
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
           ports:
-            - containerPort: 3306
+            - containerPort: 5432
               name: postgres
           volumeMounts:
             - name: postgres

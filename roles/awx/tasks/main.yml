@@ -2,13 +2,34 @@
 - name: Include deployment type vars
   include_vars: "{{ deployment_type }}.yml"
 
+- name: Create Database if External Database not selected
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
+  register: k8s_postgres_result
+  when: not external_database | default(False) | bool
+
+- name: Read Database Configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-postgres-configuration'
+  register: postgres_configuration
+
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ postgres_configuration['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ postgres_configuration['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ postgres_configuration['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode }}"
+
 - name: Ensure configured AWX resources exist in the cluster.
   k8s:
     apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
   register: k8s_defs_result
   with_items:
-    - tower_postgres.yaml.j2
     - tower_config.yaml.j2
     - launch_awx.yaml.j2
     - supervisor.yaml.j2
@@ -54,17 +75,3 @@
   when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
 
 - include_tasks: initialize.yml
-
-- name: Scale the awx deployment to 0 replicas after migration.
-  k8s:
-    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
-  vars:
-    tower_replicas: "0"
-  when: migrate_result and migrate_result.changed
-
-- name: Scale the awx deployment back to 1 replica after migration.
-  k8s:
-    definition: "{{ lookup('template', 'tower.yaml.j2') | from_yaml_all | list }}"
-  vars:
-    tower_replicas: "1"
-  when: migrate_result and migrate_result.changed

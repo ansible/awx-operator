@@ -1,5 +1,5 @@
-DATABASE_USER=awx
-DATABASE_NAME=awx
-DATABASE_HOST={{ meta.name }}-postgres
-DATABASE_PORT={{ tower_postgres_port }}
-DATABASE_PASSWORD={{ tower_postgres_pass }}
+DATABASE_USER={{ awx_postgres_user }}
+DATABASE_NAME={{ awx_postgres_database }}
+DATABASE_HOST={{ awx_postgres_host }}
+DATABASE_PORT={{ awx_postgres_port }}
+DATABASE_PASSWORD={{ awx_postgres_pass }}
