@@ -26,3 +26,6 @@ galaxy_info:
     - deployment
 
 dependencies: []
+
+collections:
+  - community.kubernetes
