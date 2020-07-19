@@ -49,7 +49,7 @@
   register: database_check
   when: k8s_defs_result is not changed
 
-- name: Migrate the database if the K8s resources were updated. # noqa 305
+- name: Migrate the database if the K8s resources were updated.  # noqa 305
   k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"

@@ -25,7 +25,7 @@
     when: users_result.rc > 0
     no_log: true
 
-- name: Create preload data if necessary. # noqa 305
+- name: Create preload data if necessary.  # noqa 305
   k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
