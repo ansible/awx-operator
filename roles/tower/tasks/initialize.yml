@@ -8,7 +8,7 @@
       bash -c "echo 'from django.contrib.auth.models import User;
       nsu = User.objects.filter(is_superuser=True).count();
       exit(0 if nsu > 0 else 1)'
-      | awk-manage shell"
+      | awx-manage shell"
   ignore_errors: true
   register: users_result
   changed_when: users_result.rc > 0
