@@ -26,7 +26,7 @@ First you need to deploy AWX Operator into your cluster:
 Then you can create instances of AWX, for example:
 
   1. Make sure the namespace you're deploying into already exists (e.g. `kubectl create namespace ansible-awx`).
-  1. Create a file named `my-awx.yml` with the following contents:
+  2. Create a file named `my-awx.yml` with the following contents:
 
      ```
      ---
@@ -37,35 +37,19 @@ Then you can create instances of AWX, for example:
        namespace: ansible-awx
      spec:
        deployment_type: awx
-       tower_secret_key: aabbcc
        tower_admin_user: test
        tower_admin_email: test@example.com
        tower_admin_password: changeme
        tower_broadcast_websocket_secret: changeme
      ```
 
-  1. Use `kubectl` to create the mcrouter instance in your cluster:
+  3. Use `kubectl` to create the mcrouter instance in your cluster:
 
      ```
      kubectl apply -f my-awx.yml
      ```
 
 After a few minutes, your new AWX instance will be accessible at `http://awx.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`.
-
-### Deploy Tower instead of AWX
-
-If you would like to deploy Tower into your cluster instead of AWX, override the default variables in the AWX `spec` for the `tower_task_image` and `tower_web_image`, so the Tower container images are used instead, and set the `deployment_type` to ``awx`:
-
-    ---
-    spec:
-      ...
-      deployment_type: tower
-      tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
-      tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
-
-To deploy Ansible Tower, images are pulled from the Red Hat Registry. Your Kubernetes or OpenShift cluster will have to have [Authentication Enabled for the Red Hat Registry](https://access.redhat.com/documentation/en-us/openshift_container_platform/3.11/html/configuring_clusters/install-config-configuring-red-hat-registry) for this to work, otherwise the Tower image will not be pulled.
-
-If you deploy Ansible AWX, images are available from public registries, so no authentication is required.
 
 
 ### Ingress Types

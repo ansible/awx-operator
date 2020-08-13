@@ -10,7 +10,6 @@ spec:
   tower_task_privileged: false
 
   tower_hostname: example-awx.test
-  tower_secret_key: aabbcc
   tower_broadcast_websocket_secret: changeme
 
   tower_admin_user: test

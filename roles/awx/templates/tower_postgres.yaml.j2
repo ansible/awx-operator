@@ -1,18 +1,3 @@
-# Postgres Secret.
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: '{{ meta.name }}-postgres-configuration'
-  namespace: '{{ meta.namespace }}'
-stringData:
-  password: '{{ lookup('password', 'p' + meta.name + 'pg length=32 chars=ascii_letters,digits') }}'
-  username: 'awx'
-  database: 'awx'
-  port: '5432'
-  host: {{ meta.name }}-postgres
-
-
 # Postgres StatefulSet.
 ---
 apiVersion: v1

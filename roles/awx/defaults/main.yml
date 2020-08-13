@@ -3,7 +3,6 @@ tower_task_privileged: false
 tower_ingress_type: none
 
 tower_hostname: example-awx.test
-tower_secret_key: aabbcc
 
 tower_admin_user: test
 tower_admin_email: test@example.com

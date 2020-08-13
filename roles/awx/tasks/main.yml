@@ -2,6 +2,27 @@
 - name: Include deployment type vars
   include_vars: "{{ deployment_type }}.yml"
 
+- name: Check for existing secret key
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-secret-key'
+  register: secret_key_resources
+
+- name: Check for existing postgres configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{meta.name }}-postgres-configuration'
+  register: postgres_config_resources
+
+- name: Create Database configuration if it doesn't already exist
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
+  register: k8s_postgres_config_result
+  when: postgres_config_resources['resources'] | length < 1 and not external_database | default(False) | bool
+
 - name: Create Database if External Database not selected
   k8s:
     apply: yes
@@ -24,6 +45,14 @@
     awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode }}"
 
+- name: Deploy Tower Secret Key if needed
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_secret.yaml.j2') }}"
+  register: k8s_tower_secret_result
+  when: secret_key_resources['resources'] | length < 1
+  
+
 - name: Ensure configured AWX resources exist in the cluster.
   k8s:
     apply: yes
@@ -33,7 +62,12 @@
     - tower_config.yaml.j2
     - launch_awx.yaml.j2
     - supervisor.yaml.j2
-    - tower.yaml.j2
+
+- name: Apply Tower Deployment Configuration
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower.yaml.j2') }}"
+  register: tower_deployment_result
 
 - name: Get the AWX pod information.
   k8s_info:
