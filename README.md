@@ -21,34 +21,36 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 First you need to deploy Tower Operator into your cluster:
 
-    kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/devel/deploy/tower-operator.yaml
+```bash
+kubectl apply -f https://raw.githubusercontent.com/ansible/tower-operator/devel/deploy/tower-operator.yaml
+```
 
 Then you can create instances of Tower, for example:
 
   1. Make sure the namespace you're deploying into already exists (e.g. `kubectl create namespace ansible-tower`).
   1. Create a file named `my-tower.yml` with the following contents:
 
-     ```
-     ---
-     apiVersion: tower.ansible.com/v1beta1
-     kind: Tower
-     metadata:
-       name: tower
-       namespace: ansible-tower
-     spec:
-       deployment_type: tower
-       tower_secret_key: aabbcc
-       tower_admin_user: test
-       tower_admin_email: test@example.com
-       tower_admin_password: changeme
-       tower_broadcast_websocket_secret: changeme
-     ```
+```yaml
+---
+apiVersion: tower.ansible.com/v1beta1
+kind: Tower
+metadata:
+  name: tower
+  namespace: ansible-tower
+spec:
+  deployment_type: tower
+  tower_secret_key: aabbcc
+  tower_admin_user: test
+  tower_admin_email: test@example.com
+  tower_admin_password: changeme
+  tower_broadcast_websocket_secret: changeme
+```
 
   1. Use `kubectl` to create the mcrouter instance in your cluster:
 
-     ```
-     kubectl apply -f my-tower.yml
-     ```
+```bash
+kubectl apply -f my-tower.yml
+```
 
 After a few minutes, your new Tower instance will be accessible at `http://tower.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`, and supply a valid license to begin using Tower.
 
@@ -60,31 +62,37 @@ If you deploy Ansible AWX, images are available from public registries, so no au
 
 ### Deploy AWX instead of Tower
 
-If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead, and set the `deployment_type` to ``awx`:
+If you would like to deploy AWX (the open source upstream of Tower) into your cluster instead of Tower, override the default variables in the Tower `spec` for the `tower_task_image` and `tower_web_image`, so the AWX container images are used instead, and set the `deployment_type` to `awx`:
 
-    ---
-    spec:
-      ...
-      deployment_type: awx
-      tower_task_image: ansible/awx_task:11.2.0
-      tower_web_image: ansible/awx_web:11.2.0
+```yaml
+---
+spec:
+  ...
+  deployment_type: awx
+  tower_task_image: ansible/awx_task:11.2.0
+  tower_web_image: ansible/awx_web:11.2.0
+```
 
 ### Ingress Types
 
 Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your tower. To toggle between these two options, you can add the following to your Tower custom resource:
 
-    ---
-    spec:
-      ...
-      tower_ingress_type: Route
+```yaml
+---
+spec:
+  ...
+  tower_ingress_type: Route
+```
 
 OR
 
-    ---
-    spec:
-      ...
-      tower_ingress_type: Ingress
-      tower_hostname: tower.mycompany.com
+```yaml
+---
+spec:
+  ...
+  tower_ingress_type: Ingress
+  tower_hostname: tower.mycompany.com
+```
 
 By default, no ingress/route is deployed as the default is set to `none`.
 
@@ -92,14 +100,18 @@ By default, no ingress/route is deployed as the default is set to `none`.
 
 Depending on the type of tasks that you'll be running, you may find that you need the tower task pod to run as `privileged`. This can open yourself up to a variety of security concerns, so you should be aware (and verify that you have the privileges) to do this if necessary. In order to toggle this feature, you can add the following to your Tower custom resource:
 
-    ---
-    spec:
-      ...
-      tower_task_privileged: true
+```yaml
+---
+spec:
+  ...
+  tower_task_privileged: true
+```
 
 If you are attempting to do this on an OpenShift cluster, you will need to grant the `tower` ServiceAccount the `privileged` SCC, which can be done with:
 
-    oc adm policy add-scc-to-user privileged -z tower
+```bash
+oc adm policy add-scc-to-user privileged -z tower
+```
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
@@ -108,10 +120,12 @@ Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to
 
 If you need to use a specific storage class for Postgres' storage, specify `tower_postgres_storage_class` in your Tower spec:
 
-    ---
-    spec:
-      ...
-      tower_postgres_storage_class: fast-ssd
+```yaml
+---
+spec:
+  ...
+  tower_postgres_storage_class: fast-ssd
+```
 
 If it's not specified, Postgres will store it's data on a volume using the default storage class for your cluster.
 
@@ -123,7 +137,9 @@ This Operator includes a [Molecule](https://molecule.readthedocs.io/en/stable/)-
 
 You need to make sure you have Molecule installed before running the following commands. You can install Molecule with:
 
-    pip install 'molecule[docker]'
+```bash
+pip install 'molecule[docker]'
+```
 
 Running `molecule test` sets up a clean environment, builds the operator, runs all configured tests on an example operator instance, then tears down the environment (at least in the case of Docker).
 
@@ -131,29 +147,33 @@ If you want to actively develop the operator, use `molecule converge`, which doe
 
 #### Testing in Docker (standalone)
 
-    molecule test -s test-local
+```bash
+molecule test -s test-local
+```
 
 This environment is meant for headless testing (e.g. in a CI environment, or when making smaller changes which don't need to be verified through a web interface). It is difficult to test things like Tower's web UI or to connect other applications on your local machine to the services running inside the cluster, since it is inside a Docker container with no static IP address.
 
 #### Testing in Minikube
 
-    minikube start --memory 8g --cpus 4
-    minikube addons enable ingress
-    molecule test -s test-minikube
+```bash
+minikube start --memory 8g --cpus 4
+minikube addons enable ingress
+molecule test -s test-minikube
+```
 
 [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a more full-featured test environment running inside a full VM on your computer, with an assigned IP address. This makes it easier to test things like NodePort services and Ingress from outside the Kubernetes cluster (e.g. in a browser on your computer).
 
 Once the operator is deployed, you can visit the Tower UI in your browser by following these steps:
 
   1. Make sure you have an entry like `IP_ADDRESS  example-tower.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
-  2. Visit `http://example-tower.test/` in your browser. (Default admin login is `test`/`changeme`.)
+  1. Visit `http://example-tower.test/` in your browser. (Default admin login is `test`/`changeme`.)
 
 ### Release Process
 
 There are a few moving parts to this project:
 
   1. The Docker image which powers Tower Operator.
-  2. The `tower-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
+  1. The `tower-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
 
 Each of these must be appropriately built in preparation for a new tag:
 
@@ -161,32 +181,40 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build ansible/tower-operator:0.4.0
+```bash
+operator-sdk build ansible/tower-operator:0.4.0
+```
 
 Then push the generated image to Docker Hub:
 
-    docker push ansible/tower-operator:0.4.0
+```bash
+docker push ansible/tower-operator:0.4.0
+```
 
 #### Build a new version of the `tower-operator.yaml` file
 
 Update the tower-operator version in two places:
 
   1. `deploy/tower-operator.yaml`: in the `ansible` and `operator` container definitions in the `tower-operator` Deployment.
-  2. `build/chain-operator-files.yml`: the `operator_image` variable.
+  1. `build/chain-operator-files.yml`: the `operator_image` variable.
 
 Once the versions are updated, run the playbook in the `build/` directory:
 
-    ansible-playbook chain-operator-files.yml
+```bash
+ansible-playbook chain-operator-files.yml
+```
 
 After it is built, test it on a local cluster:
 
-    minikube start --memory 6g --cpus 4
-    minikube addons enable ingress
-    kubectl apply -f deploy/tower-operator.yaml
-    kubectl create namespace example-tower
-    kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
-    <test everything>
-    minikube delete
+```bash
+minikube start --memory 6g --cpus 4
+minikube addons enable ingress
+kubectl apply -f deploy/tower-operator.yaml
+kubectl create namespace example-tower
+kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
+# <test everything>
+minikube delete
+```
 
 If everything works, commit the updated version, then tag a new repository release with the same tag as the Docker image pushed earlier.
 
