@@ -13,7 +13,7 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{meta.name }}-postgres-configuration'
+    name: '{{ meta.name }}-postgres-configuration'
   register: postgres_config_resources
 
 - name: Create Database configuration if it doesn't already exist
@@ -51,7 +51,6 @@
     definition: "{{ lookup('template', 'tower_secret.yaml.j2') }}"
   register: k8s_tower_secret_result
   when: secret_key_resources['resources'] | length < 1
-  
 
 - name: Ensure configured AWX resources exist in the cluster.
   k8s:

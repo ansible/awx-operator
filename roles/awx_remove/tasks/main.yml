@@ -1,5 +1,4 @@
-
-
+---
 - name: Check for existing secret key
   k8s_info:
     kind: Secret
@@ -11,7 +10,7 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{meta.name }}-postgres-configuration'
+    name: '{{ meta.name }}-postgres-configuration'
   register: postgres_config_resources
 
 - name: Remove ownerReferences from PG configuration if it exists

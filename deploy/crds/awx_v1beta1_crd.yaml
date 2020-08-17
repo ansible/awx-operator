@@ -38,7 +38,7 @@ spec:
 
                 The secret should have the name: <custom resource name>-postgres-configuration and
                 should look like:
-                
+
                 apiVersion: v1
                 kind: Secret
                 metadata:
