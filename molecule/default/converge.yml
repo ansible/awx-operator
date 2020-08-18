@@ -5,6 +5,6 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
   roles:
-    - tower
+    - awx
 
 - import_playbook: '{{ playbook_dir }}/asserts.yml'

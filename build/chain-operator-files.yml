@@ -6,19 +6,19 @@
   gather_facts: false
 
   vars:
-    operator_image: ansible/tower-operator:0.4.0
+    operator_image: ansible/awx-operator:0.4.0
     pull_policy: Always
-    operator_file_path: "../deploy/tower-operator.yaml"
+    operator_file_path: "../deploy/awx-operator.yaml"
     operator_template: "../deploy/operator.yaml"
 
   tasks:
-    - name: Clear out current contents of tower-operator.yml
+    - name: Clear out current contents of awx-operator.yml
       copy:
         dest: "{{ operator_file_path }}"
         content: ''
         force: true
 
-    - name: Concatenate operator files into tower-operator.yml
+    - name: Concatenate operator files into awx-operator.yml
       blockinfile:
         path: "{{ operator_file_path }}"
         block: "{{ item }}"
@@ -33,12 +33,12 @@
         - "../deploy/service_account.yaml"
         - "../deploy/operator.yaml"
 
-    - name: Remove space at beginning of tower-operator.yml
+    - name: Remove space at beginning of awx-operator.yml
       shell: >
         echo "$(tail -n +2 {{ operator_file_path }})" > {{ operator_file_path }}
       changed_when: true
 
-    - name: Template the tower-operator.yaml file into tower-operator.yml
+    - name: Template the awx-operator.yaml file into awx-operator.yml
       template:
         src: "{{ operator_file_path }}"
         dest: "{{ operator_file_path }}"

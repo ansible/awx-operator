@@ -2,18 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tower-operator
+  name: awx-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: tower-operator
+      name: awx-operator
   template:
     metadata:
       labels:
-        name: tower-operator
+        name: awx-operator
     spec:
-      serviceAccountName: tower-operator
+      serviceAccountName: awx-operator
       containers:
         - name: ansible
           command:
@@ -41,7 +41,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: tower-operator
+              value: awx-operator
       volumes:
         - name: runner
           emptyDir: {}

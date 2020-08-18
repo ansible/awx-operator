@@ -1,13 +1,3 @@
-# Postgres Secret.
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: '{{ meta.name }}-postgres-pass'
-  namespace: '{{ meta.namespace }}'
-data:
-  password: '{{ tower_postgres_pass | b64encode }}'
-
 # Postgres StatefulSet.
 ---
 apiVersion: v1
@@ -16,11 +6,11 @@ metadata:
   name: '{{ meta.name }}-postgres'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: tower-postgres
+    app: awx-postgres
 spec:
   selector:
     matchLabels:
-      app: tower-postgres
+      app: awx-postgres
   serviceName: '{{ meta.name }}'
   replicas: 1
   updateStrategy:
@@ -28,25 +18,31 @@ spec:
   template:
     metadata:
       labels:
-        app: tower-postgres
+        app: awx-postgres
     spec:
       containers:
         - image: '{{ tower_postgres_image }}'
           name: postgres
           env:
             - name: POSTGRES_DB
-              value: awx
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: database
             - name: POSTGRES_USER
-              value: awx
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-pass'
+                  name: '{{ meta.name }}-postgres-configuration'
                   key: password
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
           ports:
-            - containerPort: 3306
+            - containerPort: 5432
               name: postgres
           volumeMounts:
             - name: postgres
@@ -73,11 +69,11 @@ metadata:
   name: '{{ meta.name }}-postgres'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: tower-postgres
+    app: awx-postgres
 spec:
   ports:
     - port: 5432
   clusterIP: None
   selector:
-    app: tower-postgres
+    app: awx-postgres
 

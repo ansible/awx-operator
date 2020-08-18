@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: tower-operator
+  name: awx-operator
 rules:
   - apiGroups:
       - route.openshift.io
@@ -45,7 +45,7 @@ rules:
   - apiGroups:
       - apps
     resourceNames:
-      - tower-operator
+      - awx-operator
     resources:
       - deployments/finalizers
     verbs:
@@ -64,7 +64,7 @@ rules:
     verbs:
       - get
   - apiGroups:
-      - tower.ansible.com
+      - awx.ansible.com
     resources:
       - '*'
     verbs:

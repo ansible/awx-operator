@@ -7,7 +7,7 @@
   connection: local
 
   vars:
-    image_name: tower.ansible.com/tower-operator:testing
+    image_name: awx.ansible.com/awx-operator:testing
 
   tasks:
     # Use raw Docker commands inside Minikube to avoid extra Python dependencies.
@@ -33,9 +33,9 @@
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     pull_policy: Never
-    operator_image: tower.ansible.com/tower-operator:testing
+    operator_image: awx.ansible.com/awx-operator:testing
     # Change this to _awx to test AWX, _tower to test Tower.
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/tower_v1beta1_tower_cr_awx.yaml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_molecule.yaml'])) | from_yaml }}"
 
   tasks:
     - block:
@@ -66,14 +66,14 @@
             namespace: '{{ operator_namespace }}'
             definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
 
-        - name: Ensure the Tower custom_resource namespace exists
+        - name: Ensure the AWX custom_resource namespace exists
           k8s:
             state: present
             name: '{{ custom_resource.metadata.namespace }}'
             kind: Namespace
             api_version: v1
 
-        - name: Create the Tower Custom Resource
+        - name: Create the AWX Custom Resource
           k8s:
             state: present
             namespace: '{{ custom_resource.metadata.namespace }}'
@@ -106,7 +106,7 @@
               resource_name=custom_resource.metadata.name
             )}}'
 
-        - name: debug tower deployment
+        - name: debug awx deployment
           ignore_errors: yes
           failed_when: false
           debug:
@@ -116,7 +116,7 @@
               kind="Deployment",
               api_version="apps/v1",
               namespace=custom_resource.metadata.namespace,
-              label_selector="app=tower"
+              label_selector="app=awx"
             )}}'
 
         - name: get operator logs
