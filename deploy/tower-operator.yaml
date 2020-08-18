@@ -113,14 +113,14 @@ spec:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "ansible/tower-operator:0.4.0"
+          image: "ansible/awx-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "ansible/tower-operator:0.4.0"
+          image: "ansible/awx-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
