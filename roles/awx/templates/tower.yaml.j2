@@ -37,16 +37,12 @@ spec:
           - '/var/run/memcached/memcached.sock'
           - '-a'
           - '0666'
-        ports:
-        - containerPort: 1121
         volumeMounts:
           - name: {{ meta.name }}-memcached-socket
             mountPath: "/var/run/memcached"
       - image: '{{ tower_redis_image }}'
         name: redis
         args: ["redis-server", "/etc/redis.conf"]
-        ports:
-        - containerPort: 6379
         volumeMounts:
           - name: {{ meta.name }}-redis-config
             mountPath: "/etc/redis.conf"

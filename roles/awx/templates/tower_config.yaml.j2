@@ -14,10 +14,6 @@ data:
     DATABASE_HOST='{{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local'
     DATABASE_PORT='5432'
     DATABASE_PASSWORD={{ tower_postgres_pass | quote }}
-    MEMCACHED_HOST='{{ meta.name }}-memcached.{{ meta.namespace }}.svc.cluster.local'
-    MEMCACHED_PORT='11211'
-    REDIS_HOST='{{ meta.name }}-redis.{{ meta.namespace }}.svc.cluster.local'
-    REDIS_PORT='6379'
     AWX_SKIP_MIGRATIONS=true
 
   settings: |
