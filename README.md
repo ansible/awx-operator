@@ -86,6 +86,30 @@ If you are attempting to do this on an OpenShift cluster, you will need to grant
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+### Connecting to an external Postgres Service
+
+When the Operator installs the AWX services and generates a Postgres deployment it will lay down a config file to enable AWX to connect to that service. To use an external database you just need to create a `Secret` that the AWX deployment will use instead and then set a property in the CR:
+
+    ---
+    spec:
+      ...
+      external_database: true
+
+The secret should have the name: *crname*-postgres-configuration and
+should look like:
+
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: <crname>-postgres-configuration
+      namespace: <target namespace>
+    stringData:
+      address: <external ip or url resolvable by the cluster>
+      port: <external port, this usually defaults to 5432>
+      database: <desired database name>
+      username: <username to connect as>
+      password: <password to connect with>
+    type: Opaque
 
 ### Persistent storage for Postgres
 
