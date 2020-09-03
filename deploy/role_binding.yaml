@@ -2,12 +2,12 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: tower-operator
+  name: awx-operator
 subjects:
   - kind: ServiceAccount
-    name: tower-operator
+    name: awx-operator
     namespace: default
 roleRef:
   kind: ClusterRole
-  name: tower-operator
+  name: awx-operator
   apiGroup: rbac.authorization.k8s.io

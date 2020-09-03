@@ -225,6 +225,7 @@ kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
 minikube delete
 ```
 
+
 If everything works, commit the updated version, then tag a new repository release with the same tag as the Docker image pushed earlier.
 
 ## Author

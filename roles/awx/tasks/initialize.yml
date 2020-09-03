@@ -1,5 +1,5 @@
 ---
-- name: Check if there are any Tower super users defined.
+- name: Check if there are any AWX super users defined.
   shell: >-
     kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "echo 'from django.contrib.auth.models import User;
@@ -10,7 +10,7 @@
   register: users_result
   changed_when: users_result.rc > 0
 
-- name: Create Tower super user via Django if it doesn't exist.
+- name: Create AWX super user via Django if it doesn't exist.
   shell: >-
     kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
     "echo \"from django.contrib.auth.models import User;

@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: tower-operator
+  name: awx-operator
 rules:
   - apiGroups:
       - route.openshift.io
@@ -45,7 +45,7 @@ rules:
   - apiGroups:
       - apps
     resourceNames:
-      - tower-operator
+      - awx-operator
     resources:
       - deployments/finalizers
     verbs:
@@ -64,7 +64,7 @@ rules:
     verbs:
       - get
   - apiGroups:
-      - tower.ansible.com
+      - awx.ansible.com
     resources:
       - '*'
     verbs:
@@ -74,53 +74,54 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: tower-operator
+  name: awx-operator
 subjects:
   - kind: ServiceAccount
-    name: tower-operator
+    name: awx-operator
     namespace: default
 roleRef:
   kind: ClusterRole
-  name: tower-operator
+  name: awx-operator
   apiGroup: rbac.authorization.k8s.io
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: tower-operator
+  name: awx-operator
   namespace: default
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tower-operator
+  name: awx-operator
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: tower-operator
+      name: awx-operator
   template:
     metadata:
       labels:
-        name: tower-operator
+        name: awx-operator
     spec:
-      serviceAccountName: tower-operator
+      serviceAccountName: awx-operator
       containers:
         - name: ansible
           command:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "ansible/tower-operator:0.4.0"
+          image: "ansible/awx-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "ansible/tower-operator:0.4.0"
+          image: "ansible/awx-operator:0.4.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -134,7 +135,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: tower-operator
+              value: awx-operator
       volumes:
         - name: runner
           emptyDir: {}
@@ -143,14 +144,14 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: towers.tower.ansible.com
+  name: awxs.awx.ansible.com
 spec:
-  group: tower.ansible.com
+  group: awx.ansible.com
   names:
-    kind: Tower
-    listKind: TowerList
-    plural: towers
-    singular: tower
+    kind: AWX
+    listKind: AWXList
+    plural: awxs
+    singular: awx
   scope: Namespaced
   subresources:
     status: {}
@@ -161,7 +162,7 @@ spec:
       storage: true
   validation:
     openAPIV3Schema:
-      description: Schema validation for the Tower CRD
+      description: Schema validation for the AWX CRD
       type: object
       properties:
         spec:
@@ -170,5 +171,27 @@ spec:
             deployment_type:
               type: string
               pattern: "^(tower|awx)(-)?.*$"
+            external_database:
+              type: bool
+              description: |
+                If true you must supply a secret containing the location and credentials for
+                connecting to the external database by a user who has permission to create
+                and apply a schema.
+
+                The secret should have the name: <custom resource name>-postgres-configuration and
+                should look like:
+
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: <crname>-postgres-configuration
+                  namespace: <target namespace>
+                stringData:
+                  address: <external ip or url resolvable by the cluster>
+                  port: <external port, this usually defaults to 5432>
+                  database: <desired database name>
+                  username: <username to connect as>
+                  password: <password to connect with>
+                type: Opaque
           required:
             - deployment_type

@@ -1,0 +1,110 @@
+---
+- name: Include deployment type vars
+  include_vars: "{{ deployment_type }}.yml"
+
+- name: Check for existing secret key
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-secret-key'
+  register: secret_key_resources
+
+- name: Check for existing postgres configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-postgres-configuration'
+  register: postgres_config_resources
+
+- name: Create Database configuration if it doesn't already exist
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
+  register: k8s_postgres_config_result
+  when: postgres_config_resources['resources'] | length < 1 and not external_database | default(False) | bool
+
+- name: Create Database if External Database not selected
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
+  register: k8s_postgres_result
+  when: not external_database | default(False) | bool
+
+- name: Read Database Configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-postgres-configuration'
+  register: postgres_configuration
+
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ postgres_configuration['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ postgres_configuration['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ postgres_configuration['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode }}"
+
+- name: Deploy Tower Secret Key if needed
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_secret.yaml.j2') }}"
+  register: k8s_tower_secret_result
+  when: secret_key_resources['resources'] | length < 1
+
+- name: Ensure configured AWX resources exist in the cluster.
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', item) | from_yaml_all | list }}"
+  register: k8s_defs_result
+  with_items:
+    - tower_config.yaml.j2
+    - launch_awx.yaml.j2
+    - supervisor.yaml.j2
+
+- name: Apply Tower Deployment Configuration
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower.yaml.j2') }}"
+  register: tower_deployment_result
+
+- name: Get the AWX pod information.
+  k8s_info:
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - app=awx
+  register: tower_pods
+  until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
+  delay: 5
+  retries: 60
+
+- name: Set the awx pod name as a variable.
+  set_fact:
+    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] }}"
+
+- name: Verify tower_pod_name is populated.
+  assert:
+    that: tower_pod_name != ''
+    fail_msg: "Could not find the tower pod's name."
+
+- name: Check if database is populated (auth_user table exists).
+  shell: >-
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
+    "echo 'from django.db import connection;
+    tbl = \"auth_user\" in connection.introspection.table_names();
+    exit(0 if tbl else 1)'
+    | awx-manage shell"
+  ignore_errors: true
+  changed_when: false
+  register: database_check
+  when: k8s_defs_result is not changed
+
+- name: Migrate the database if the K8s resources were updated.  # noqa 305
+  shell: >-
+    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
+    "awx-manage migrate --noinput"
+  register: migrate_result
+  when: (k8s_defs_result is changed) or (database_check is defined and database_check.rc != 0)
+
+- include_tasks: initialize.yml

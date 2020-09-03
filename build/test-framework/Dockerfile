@@ -3,7 +3,7 @@ FROM ${BASEIMAGE}
 USER 0
 
 RUN yum install -y python-devel gcc libffi-devel
-RUN pip install molecule==2.20.1
+RUN pip install molecule==3.0.6 jmespath
 
 ARG NAMESPACEDMAN
 ADD $NAMESPACEDMAN /namespaced.yaml
