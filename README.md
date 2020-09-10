@@ -104,7 +104,7 @@ should look like:
       name: <crname>-postgres-configuration
       namespace: <target namespace>
     stringData:
-      address: <external ip or url resolvable by the cluster>
+      host: <external ip or url resolvable by the cluster>
       port: <external port, this usually defaults to 5432>
       database: <desired database name>
       username: <username to connect as>
