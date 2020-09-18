@@ -18,6 +18,10 @@ spec:
         app: '{{ deployment_type }}'
     spec:
       serviceAccountName: '{{ meta.name }}'
+{% if tower_image_pull_secret %}
+      imagePullSecrets:
+        - name: {{ tower_image_pull_secret }}
+{% endif %}
       containers:
         - image: '{{ tower_redis_image }}'
           name: redis
