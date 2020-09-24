@@ -1,13 +1,13 @@
 # AWX Secret Configurations
 ---
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: '{{ meta.name }}-secrets'
-    namespace: '{{ meta.namespace }}'
-  data:
-    credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
-    environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: '{{ meta.name }}-secrets'
+  namespace: '{{ meta.namespace }}'
+data:
+  credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
+  environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
 
 # AWX Deployment.
 ---
@@ -26,131 +26,156 @@ spec:
   template:
     metadata:
       labels:
-         app: awx
+        app: awx
     spec:
       containers:
-      - name: memcached
-        image: '{{ tower_memcached_image }}'
-        command:
-          - 'memcached'
-          - '-s'
-          - '/var/run/memcached/memcached.sock'
-          - '-a'
-          - '0666'
-        volumeMounts:
-          - name: {{ meta.name }}-memcached-socket
-            mountPath: "/var/run/memcached"
-      - image: '{{ tower_redis_image }}'
-        name: redis
-        args: ["redis-server", "/etc/redis.conf"]
-        volumeMounts:
-          - name: {{ meta.name }}-redis-config
-            mountPath: "/etc/redis.conf"
-            subPath: redis.conf
-            readOnly: true
-          - name: {{ meta.name }}-redis-socket
-            mountPath: "/var/run/redis"
-      - image: '{{ tower_web_image }}'
-        name: '{{ meta.name }}-web'
-        ports:
-        - containerPort: 8052
-        volumeMounts:
-          - name: "{{ meta.name }}-application-credentials"
-            mountPath: "/etc/tower/conf.d/"
-            readOnly: true
-          - name: {{ meta.name }}-secret-key
-            mountPath: /etc/tower/SECRET_KEY
-            subPath: SECRET_KEY
-            readOnly: true
-          - name: {{ meta.name }}-settings
-            mountPath: /etc/tower/settings.py
-            subPath: settings.py
-            readOnly: true
-          - name: {{ meta.name }}-nginx-conf
-            mountPath: /etc/nginx/nginx.conf
-            subPath: nginx.conf
-            readOnly: true
-          - name: {{ meta.name }}-launch-awx-web
-            mountPath: /usr/bin/launch_awx.sh
-            subPath: launch_awx.sh
-            readOnly: true
-          - name: {{ meta.name }}-supervisor-web-config
-            mountPath: /supervisor.conf
-            subPath: supervisor.conf
-            readOnly: true
-          - name: {{ meta.name }}-redis-socket
-            mountPath: "/var/run/redis"
-          - name: {{ meta.name }}-memcached-socket
-            mountPath: "/var/run/memcached"
-          - name: supervisor-socket
-            mountPath: "/var/run/supervisor"
-          - name: rsyslog-socket
-            mountPath: "/var/run/awx-rsyslog"
-          - name: rsyslog-dir
-            mountPath: "/var/lib/awx/rsyslog"
-        resources:
-          requests:
-            memory: '{{ tower_web_mem_request }}'
-            cpu: '{{ tower_web_cpu_request }}'
-      - image: '{{ tower_task_image }}'
-        name: '{{ meta.name }}-task'
-{% if tower_task_privileged == true %}
-        securityContext:
-          privileged: true
+        - name: memcached
+          image: '{{ tower_memcached_image }}'
+          command:
+            - 'memcached'
+            - '-s'
+            - '/var/run/memcached/memcached.sock'
+            - '-a'
+            - '0666'
+          volumeMounts:
+            - name: {{ meta.name }}-memcached-socket
+              mountPath: "/var/run/memcached"
+        - image: '{{ tower_redis_image }}'
+          name: redis
+          args: ["redis-server", "/etc/redis.conf"]
+          volumeMounts:
+            - name: {{ meta.name }}-redis-config
+              mountPath: "/etc/redis.conf"
+              subPath: redis.conf
+              readOnly: true
+            - name: {{ meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+        - image: '{{ tower_web_image }}'
+          name: '{{ meta.name }}-web'
+{% if tower_web_command %}
+          command: {{ tower_web_command }}
 {% endif %}
-        command:
-          - /usr/bin/launch_awx_task.sh
-        volumeMounts:
-          - name: "{{ meta.name }}-application-credentials"
-            mountPath: "/etc/tower/conf.d/"
-            readOnly: true
-          - name: {{ meta.name }}-secret-key
-            mountPath: /etc/tower/SECRET_KEY
-            subPath: SECRET_KEY
-            readOnly: true
-          - name: {{ meta.name }}-settings
-            mountPath: /etc/tower/settings.py
-            subPath: settings.py
-            readOnly: true
-          - name: {{ meta.name }}-launch-awx-task
-            mountPath: /usr/bin/launch_awx_task.sh
-            subPath: launch_awx_task.sh
-            readOnly: true
-          - name: {{ meta.name }}-supervisor-web-config
-            mountPath: "/supervisor.conf"
-            subPath: supervisor.conf
-            readOnly: true
-          - name: {{ meta.name }}-supervisor-task-config
-            mountPath: /supervisor_task.conf
-            subPath: supervisor_task.conf
-            readOnly: true
-          - name: {{ meta.name }}-redis-socket
-            mountPath: "/var/run/redis"
-          - name: {{ meta.name }}-memcached-socket
-            mountPath: "/var/run/memcached"
-          - name: supervisor-socket
-            mountPath: "/var/run/supervisor"
-          - name: rsyslog-socket
-            mountPath: "/var/run/awx-rsyslog"
-          - name: rsyslog-dir
-            mountPath: "/var/lib/awx/rsyslog"
-        env:
-          - name: SUPERVISOR_WEB_CONFIG_PATH
-            value: "/supervisor.conf"
-          - name: AWX_SKIP_MIGRATIONS
-            value: "1"
-          - name: MY_POD_UID
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.uid
-          - name: MY_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-        resources:
-          requests:
-            memory: '{{ tower_task_mem_request }}'
-            cpu: '{{ tower_task_cpu_request }}'
+{% if tower_web_args %}
+          args: {{ tower_web_args }}
+{% endif %}
+          imagePullPolicy: '{{ tower_image_pull_policy }}'
+          ports:
+            - containerPort: 8052
+          volumeMounts:
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/"
+              readOnly: true
+            - name: {{ meta.name }}-secret-key
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            - name: {{ meta.name }}-nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: {{ meta.name }}-launch-awx-web
+              mountPath: /usr/bin/launch_awx.sh
+              subPath: launch_awx.sh
+              readOnly: true
+            - name: {{ meta.name }}-supervisor-web-config
+              mountPath: /supervisor.conf
+              subPath: supervisor.conf
+              readOnly: true
+            - name: {{ meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: {{ meta.name }}-memcached-socket
+              mountPath: "/var/run/memcached"
+            - name: supervisor-socket
+              mountPath: "/var/run/supervisor"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+            - name: rsyslog-dir
+              mountPath: "/var/lib/awx/rsyslog"
+{% if tower_web_extra_volume_mounts -%}
+            {{ tower_web_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% endif %}
+{% if tower_task_extra_env %}
+          env:
+            {{ tower_web_extra_env | indent(width=12, indentfirst=True) }}
+{% endif %}
+          resources:
+            requests:
+              memory: '{{ tower_web_mem_request }}'
+              cpu: '{{ tower_web_cpu_request }}'
+        - image: '{{ tower_task_image }}'
+          name: '{{ meta.name }}-task'
+          imagePullPolicy: '{{ tower_image_pull_policy }}'
+{% if tower_task_privileged == true %}
+          securityContext:
+            privileged: true
+{% endif %}
+{% if tower_task_command %}
+          command: {{ tower_task_command }}
+{% endif %}
+{% if tower_task_args %}
+          args: {{ tower_task_args }}
+{% endif %}
+          volumeMounts:
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/"
+              readOnly: true
+            - name: {{ meta.name }}-secret-key
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            - name: {{ meta.name }}-launch-awx-task
+              mountPath: /usr/bin/launch_awx_task.sh
+              subPath: launch_awx_task.sh
+              readOnly: true
+            - name: {{ meta.name }}-supervisor-web-config
+              mountPath: "/supervisor.conf"
+              subPath: supervisor.conf
+              readOnly: true
+            - name: {{ meta.name }}-supervisor-task-config
+              mountPath: /supervisor_task.conf
+              subPath: supervisor_task.conf
+              readOnly: true
+            - name: {{ meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: {{ meta.name }}-memcached-socket
+              mountPath: "/var/run/memcached"
+            - name: supervisor-socket
+              mountPath: "/var/run/supervisor"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+            - name: rsyslog-dir
+              mountPath: "/var/lib/awx/rsyslog"
+{% if tower_task_extra_volume_mounts -%}
+            {{ tower_task_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% endif %}
+          env:
+            - name: SUPERVISOR_WEB_CONFIG_PATH
+              value: "/supervisor.conf"
+            - name: AWX_SKIP_MIGRATIONS
+              value: "1"
+            - name: MY_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+{% if tower_task_extra_env -%}
+            {{ tower_task_extra_env | indent(width=12, indentfirst=True) }}
+{% endif %}
+          resources:
+            requests:
+              memory: '{{ tower_task_mem_request }}'
+              cpu: '{{ tower_task_cpu_request }}'
       volumes:
         - name: "{{ meta.name }}-application-credentials"
           secret:
@@ -220,6 +245,9 @@ spec:
           emptyDir: {}
         - name: rsyslog-dir
           emptyDir: {}
+{% if tower_extra_volumes -%}
+        {{ tower_extra_volumes | indent(width=8, indentfirst=True) }}
+{% endif %}
 
 # AWX Service.
 ---
@@ -232,12 +260,15 @@ metadata:
     app: awx
 spec:
   ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 8052
-    name: http
+    - port: 80
+      protocol: TCP
+      targetPort: 8052
+      name: http
   selector:
     app: awx
+{% if tower_ingress_type != "none" %}
+  type: NodePort
+{% endif %}
 
 # AWX Ingress.
 {% if 'ingress' == tower_ingress_type|lower %}
@@ -247,15 +278,25 @@ kind: Ingress
 metadata:
   name: '{{ meta.name }}-ingress'
   namespace: '{{ meta.namespace }}'
+{% if tower_ingress_annotations %}
+  annotations:
+    {{ tower_ingress_annotations | indent(width=4) }}
+{% endif %}
 spec:
   rules:
-  - host: '{{ tower_hostname }}'
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: '{{ meta.name }}-service'
-          servicePort: 80
+    - host: '{{ tower_hostname }}'
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: '{{ meta.name }}-service'
+              servicePort: 80
+{% if tower_ingress_tls_secret %}
+  tls:
+    - hosts:
+        - {{ tower_hostname }}
+      secretName: {{ tower_ingress_tls_secret }}
+{% endif %}
 {% endif %}
 
 {% if 'route' == tower_ingress_type|lower %}

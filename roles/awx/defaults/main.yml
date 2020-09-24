@@ -1,6 +1,8 @@
 ---
 tower_task_privileged: false
 tower_ingress_type: none
+tower_ingress_annotations: ''
+tower_ingress_tls_secret: ''
 
 tower_hostname: example-awx.test
 
@@ -10,23 +12,38 @@ tower_admin_password: changeme
 
 tower_broadcast_websocket_secret: changeme
 
+tower_extra_volumes: ''
+
 # Use these image versions for Ansible Tower.
 # tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 # tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 # Use these image versions for Ansible AWX.
-tower_task_image: ansible/awx:14.0.0
-tower_web_image: ansible/awx:14.0.0
+tower_task_image: ansible/awx:14.1.0
+tower_web_image: ansible/awx:14.1.0
+
+tower_image_pull_policy: IfNotPresent
 
 tower_create_preload_data: true
 
 tower_replicas: "1"
+
+tower_task_args:
+  - /usr/bin/launch_awx_task.sh
+tower_task_command: []
+tower_web_args: []
+tower_web_command: []
 
 tower_task_mem_request: 1Gi
 tower_task_cpu_request: 500m
 
 tower_web_mem_request: 2Gi
 tower_web_cpu_request: 1000m
+
+tower_task_extra_env: ''
+tower_task_extra_volume_mounts: ''
+tower_web_extra_env: ''
+tower_web_extra_volume_mounts: ''
 
 tower_memcached_image: memcached:alpine
 
