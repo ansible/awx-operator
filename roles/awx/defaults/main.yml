@@ -2,6 +2,17 @@
 tower_task_privileged: false
 tower_ingress_type: none
 
+# Add annotations to the ingress. Specify as literal block. E.g.:
+# tower_ingress_annotations: |
+#   kubernetes.io/ingress.class: nginx
+#   nginx.ingress.kubernetes.io/proxy-connect-timeout: 60s
+tower_ingress_annotations: ''
+# TLS secret for the ingress. The secret either has to exist before hand with
+# the corresponding cert and key or just be an indicator for where an automated
+# process like cert-manager (enabled via annotations) will store the TLS
+# certificate and key.
+tower_ingress_tls_secret: ''
+
 tower_hostname: example-awx.test
 
 tower_admin_user: test
@@ -10,23 +21,55 @@ tower_admin_password: changeme
 
 tower_broadcast_websocket_secret: changeme
 
+# Add extra volumes to the AWX pod. Specify as literal block. E.g.:
+# tower_extra_volumes: |
+#   - name: my-volume
+#     emptyDir: {}
+tower_extra_volumes: ''
+
 # Use these image versions for Ansible Tower.
 # tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 # tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 # Use these image versions for Ansible AWX.
-tower_task_image: ansible/awx:14.0.0
-tower_web_image: ansible/awx:14.0.0
+tower_task_image: ansible/awx:14.1.0
+tower_web_image: ansible/awx:14.1.0
+
+tower_image_pull_policy: IfNotPresent
 
 tower_create_preload_data: true
 
 tower_replicas: "1"
+
+tower_task_args:
+  - /usr/bin/launch_awx_task.sh
+tower_task_command: []
+tower_web_args: []
+tower_web_command: []
 
 tower_task_mem_request: 1Gi
 tower_task_cpu_request: 500m
 
 tower_web_mem_request: 2Gi
 tower_web_cpu_request: 1000m
+
+# Add extra environment variables to the AWX task/web containers. Specify as
+# literal block. E.g.:
+# tower_task_extra_env: |
+#   - name: FOO
+#     value: bar
+#   - name: BAZ
+#     value: bing
+tower_task_extra_env: ''
+tower_web_extra_env: ''
+
+# Mount extra volumes on the AWX task/web containers. Specify as literal block.
+# E.g.:
+# tower_task_extra_volume_mounts: ''
+#   - name: my-volume
+#     mountPath: /some/path
+tower_task_extra_volume_mounts: ''
+tower_web_extra_volume_mounts: ''
 
 tower_memcached_image: memcached:alpine
 

@@ -30,7 +30,7 @@ spec:
               type: string
               pattern: "^(tower|awx)(-)?.*$"
             external_database:
-              type: bool
+              type: boolean
               description: |
                 If true you must supply a secret containing the location and credentials for
                 connecting to the external database by a user who has permission to create
