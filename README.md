@@ -43,7 +43,7 @@ Then you can create instances of AWX, for example:
        tower_broadcast_websocket_secret: changeme
      ```
 
-  3. Use `kubectl` to create the mcrouter instance in your cluster:
+  3. Use `kubectl` to create the awx instance in your cluster:
 
      ```
      kubectl apply -f my-awx.yml
