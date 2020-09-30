@@ -32,9 +32,9 @@ tower_extra_volumes: ''
 # tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
 
 # Use these image versions for Ansible AWX.
-tower_task_image: ansible/awx:14.1.0
-tower_web_image: ansible/awx:14.1.0
 
+tower_task_image: ansible/awx:15.0.0
+tower_web_image: ansible/awx:15.0.0
 tower_image_pull_policy: IfNotPresent
 
 tower_create_preload_data: true
