@@ -16,8 +16,8 @@ spec:
   tower_admin_email: test@example.com
   tower_admin_password: changeme
 
-  tower_task_image: ansible/awx:14.1.0
-  tower_web_image: ansible/awx:14.1.0
+  tower_task_image: ansible/awx:15.0.0
+  tower_web_image: ansible/awx:15.0.0
 
   tower_task_mem_request: 1Gi
   tower_task_cpu_request: 500m

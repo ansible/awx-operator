@@ -114,14 +114,14 @@ spec:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "ansible/awx-operator:0.4.0"
+          image: "ansible/awx-operator:0.5.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "ansible/awx-operator:0.4.0"
+          image: "ansible/awx-operator:0.5.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -172,7 +172,7 @@ spec:
               type: string
               pattern: "^(tower|awx)(-)?.*$"
             external_database:
-              type: bool
+              type: boolean
               description: |
                 If true you must supply a secret containing the location and credentials for
                 connecting to the external database by a user who has permission to create
