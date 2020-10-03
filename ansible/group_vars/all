@@ -1,0 +1,5 @@
+operator_image: ansible/awx-operator
+operator_version: 0.5.0
+pull_policy: Always
+operator_file_path: "../deploy/awx-operator.yaml"
+operator_template: "../deploy/operator.yaml"
