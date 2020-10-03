@@ -89,14 +89,12 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: awx-operator
-  namespace: default
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: awx-operator
-  namespace: default
 spec:
   replicas: 1
   selector:
