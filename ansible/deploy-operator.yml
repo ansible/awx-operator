@@ -1,0 +1,29 @@
+---
+- name: Reconstruct awx-operator.yaml
+  include: chain-operator-files.yml
+
+- name: Deploy Operator
+  hosts: localhost
+  vars:
+    k8s_namespace: "default"
+    obliterate: no
+
+  collections:
+    - community.kubernetes
+
+  tasks:
+    - name: Obliterate Operator
+      k8s:
+        state: absent
+        namespace: "{{ k8s_namespace }}"
+        src: "../deploy/awx-operator.yaml"
+        wait: yes
+      when: obliterate | bool
+
+    - name: Deploy Operator
+      k8s:
+        state: present
+        namespace: "{{ k8s_namespace }}"
+        apply: yes
+        wait: yes
+        src: "../deploy/awx-operator.yaml"
