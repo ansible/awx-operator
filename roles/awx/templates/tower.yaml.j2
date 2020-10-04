@@ -29,17 +29,6 @@ spec:
         app: awx
     spec:
       containers:
-        - name: memcached
-          image: '{{ tower_memcached_image }}'
-          command:
-            - 'memcached'
-            - '-s'
-            - '/var/run/memcached/memcached.sock'
-            - '-a'
-            - '0666'
-          volumeMounts:
-            - name: {{ meta.name }}-memcached-socket
-              mountPath: "/var/run/memcached"
         - image: '{{ tower_redis_image }}'
           name: redis
           args: ["redis-server", "/etc/redis.conf"]
@@ -87,8 +76,6 @@ spec:
               readOnly: true
             - name: {{ meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: {{ meta.name }}-memcached-socket
-              mountPath: "/var/run/memcached"
             - name: supervisor-socket
               mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
@@ -145,8 +132,6 @@ spec:
               readOnly: true
             - name: {{ meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: {{ meta.name }}-memcached-socket
-              mountPath: "/var/run/memcached"
             - name: supervisor-socket
               mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
@@ -236,8 +221,6 @@ spec:
               - key: supervisor-task-config
                 path: 'supervisor_task.conf'
         - name: {{ meta.name }}-redis-socket
-          emptyDir: {}
-        - name: {{ meta.name }}-memcached-socket
           emptyDir: {}
         - name: supervisor-socket
           emptyDir: {}
