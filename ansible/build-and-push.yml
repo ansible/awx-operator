@@ -1,0 +1,17 @@
+---
+- name: Build and Deploy the AWX Operator
+  hosts: localhost
+
+  collections:
+    - community.general
+
+  tasks:
+    - name: Build and (optionally) push operator image
+      docker_image:
+        name: "{{ operator_image }}:{{ operator_version }}"
+        pull: no
+        push: "{{ push_image | bool }}"
+        build:
+          dockerfile: "build/Dockerfile"
+          path: "../"
+        force: yes

@@ -32,10 +32,13 @@
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
+    templates_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/templates"
     pull_policy: Never
     operator_image: awx.ansible.com/awx-operator:testing
     # Change this to _awx to test AWX, _tower to test Tower.
     custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_molecule.yaml'])) | from_yaml }}"
+  vars_files:
+    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/group_vars/all"
 
   tasks:
     - block:
@@ -43,7 +46,7 @@
           k8s:
             state: absent
             namespace: '{{ operator_namespace }}'
-            definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
+            definition: "{{ lookup('template', '/'.join([templates_dir, 'operator.yml.j2'])) }}"
           register: delete_deployment
           when: build_cmd.changed
 
@@ -54,7 +57,7 @@
             namespace: '{{ operator_namespace }}'
             name: '{{ definition.metadata.name }}'
           vars:
-            definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
+            definition: "{{ lookup('template', '/'.join([templates_dir, 'operator.yml.j2'])) | from_yaml }}"
           register: deployment
           until: not deployment.resources
           delay: 3
@@ -64,7 +67,7 @@
         - name: Create the Operator Deployment
           k8s:
             namespace: '{{ operator_namespace }}'
-            definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) }}"
+            definition: "{{ lookup('template', '/'.join([templates_dir, 'operator.yml.j2'])) }}"
 
         - name: Ensure the AWX custom_resource namespace exists
           k8s:
@@ -126,7 +129,7 @@
           environment:
             KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
           vars:
-            definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
+            definition: "{{ lookup('template', '/'.join([templates_dir, 'operator.yml.j2'])) | from_yaml }}"
           register: log
 
         - name: print debug output

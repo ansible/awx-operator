@@ -176,14 +176,13 @@ Then push the generated image to Docker Hub:
 
 #### Build a new version of the `awx-operator.yaml` file
 
-Update the awx-operator version in two places:
+Update the awx-operator version:
 
-  1. `deploy/awx-operator.yaml`: in the `ansible` and `operator` container definitions in the `awx-operator` Deployment.
-  2. `build/chain-operator-files.yml`: the `operator_image` variable.
+  - `ansible/group_vars/all`
 
-Once the versions are updated, run the playbook in the `build/` directory:
+Once the version has been updated, run from the root of the repo:
 
-    ansible-playbook chain-operator-files.yml
+    ansible-playbook ansible/chain-operator-files.yml
 
 After it is built, test it on a local cluster:
 

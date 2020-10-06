@@ -1,0 +1,17 @@
+---
+# To run: `ansible-playbook chain-operator-files.yml`
+- name: Chain operator files together for easy deployment.
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Template CRD
+      template:
+        src: crd.yml.j2
+        dest: "{{ playbook_dir }}/../deploy/crds/awx_v1beta1_crd.yaml"
+
+    - name: Template awx-operator.yaml
+      template:
+        src: awx-operator.yaml.j2
+        dest: ../deploy/awx-operator.yaml

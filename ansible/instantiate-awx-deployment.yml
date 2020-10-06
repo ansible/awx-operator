@@ -1,0 +1,26 @@
+---
+- name: Deploy an instance of AWX using the awx-operator
+  hosts: localhost
+
+  collections:
+    - community.kubernetes
+
+  tasks:
+    - name: Deploy AWX
+      k8s:
+        state: "{{ state | default('present') }}"
+        namespace: awx
+        apply: yes
+        wait: yes
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: awx
+          spec:
+            deployment_type: awx
+            tower_admin_user: test
+            tower_admin_email: test@example.com
+            tower_admin_password: changeme
+            tower_broadcast_websocket_secret: changeme
+            tower_ingress_type: Route

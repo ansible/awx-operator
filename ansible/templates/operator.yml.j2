@@ -20,14 +20,14 @@ spec:
             - /usr/local/bin/ao-logs
             - /tmp/ansible-operator/runner
             - stdout
-          image: "{{ operator_image }}"
+          image: "{{ operator_image }}:{{ operator_version }}"
           imagePullPolicy: "{{ pull_policy|default('Always') }}"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
               readOnly: true
         - name: operator
-          image: "{{ operator_image }}"
+          image: "{{ operator_image }}:{{ operator_version }}"
           imagePullPolicy: "{{ pull_policy|default('Always') }}"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
