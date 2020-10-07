@@ -71,8 +71,6 @@ tower_web_extra_env: ''
 tower_task_extra_volume_mounts: ''
 tower_web_extra_volume_mounts: ''
 
-tower_memcached_image: memcached:alpine
-
 tower_redis_image: redis:latest
 
 tower_postgres_pass: awxpass
