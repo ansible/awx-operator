@@ -1,28 +1,37 @@
 ---
-- name: Check if there are any AWX super users defined.
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
-    "echo 'from django.contrib.auth.models import User;
-    nsu = User.objects.filter(is_superuser=True).count();
-    exit(0 if nsu > 0 else 1)'
-    | awx-manage shell"
+- name: Check if there are any super users defined.
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ meta.name }}-task"
+    command: >-
+      bash -c "echo 'from django.contrib.auth.models import User;
+      nsu = User.objects.filter(is_superuser=True).count();
+      exit(0 if nsu > 0 else 1)'
+      | awx-manage shell"
   ignore_errors: true
   register: users_result
-  changed_when: users_result.rc > 0
+  changed_when: users_result.return_code > 0
 
-- name: Create AWX super user via Django if it doesn't exist.
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
-    "echo \"from django.contrib.auth.models import User;
-    User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
-    | awx-manage shell"
-  when: users_result.rc > 0
+- name: Create super user via Django if it doesn't exist.
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ meta.name }}-task"
+    command: >-
+      bash -c "echo \"from django.contrib.auth.models import User;
+      User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
+      | awx-manage shell"
+  when: users_result.return_code > 0
   no_log: true
 
 - name: Create preload data if necessary.  # noqa 305
-  shell: >-
-    kubectl exec -n {{ meta.namespace }} -c {{ meta.name }}-task {{ tower_pod_name }} -- bash -c
-    "awx-manage create_preload_data"
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ meta.name }}-task"
+    command: >-
+      bash -c "awx-manage create_preload_data"
   register: cdo
   changed_when: "'added' in cdo.stdout"
   when: tower_create_preload_data | bool
