@@ -1,6 +1,6 @@
 ---
 - name: Check if there are any super users defined.
-  k8s_exec:
+  community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
@@ -14,7 +14,7 @@
   changed_when: users_result.return_code > 0
 
 - name: Create super user via Django if it doesn't exist.
-  k8s_exec:
+  community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
@@ -26,7 +26,7 @@
   no_log: true
 
 - name: Create preload data if necessary.  # noqa 305
-  k8s_exec:
+  community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
