@@ -39,11 +39,11 @@
 
 - name: Store Database Configuration
   set_fact:
-    awx_postgres_user: "{{ postgres_configuration['resources'][0]['data']['username'] | b64decode }}"
-    awx_postgres_pass: "{{ postgres_configuration['resources'][0]['data']['password'] | b64decode }}"
-    awx_postgres_database: "{{ postgres_configuration['resources'][0]['data']['database'] | b64decode }}"
-    awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode }}"
-    awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode }}"
+    awx_postgres_user: "{{ postgres_configuration['resources'][0]['data']['username'] | b64decode | trim }}"
+    awx_postgres_pass: "{{ postgres_configuration['resources'][0]['data']['password'] | b64decode | trim }}"
+    awx_postgres_database: "{{ postgres_configuration['resources'][0]['data']['database'] | b64decode | trim }}"
+    awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode | trim }}"
+    awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode | trim }}"
 
 - name: Deploy Tower Secret Key if needed
   k8s:
