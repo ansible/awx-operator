@@ -190,7 +190,7 @@ After it is built, test it on a local cluster:
     minikube addons enable ingress
     kubectl apply -f deploy/awx-operator.yaml
     kubectl create namespace example-awx
-    kubectl apply -f deploy/crds/tower_v1beta1_tower_cr_awx.yaml
+    kubectl apply -f deploy/crds/awx_v1beta1_cr.yaml
     <test everything>
     minikube delete
 
