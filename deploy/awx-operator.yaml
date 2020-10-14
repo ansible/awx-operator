@@ -103,7 +103,6 @@ spec:
   selector:
     matchLabels:
       name: awx-operator
-      namespace: default
   template:
     metadata:
       labels:
