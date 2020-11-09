@@ -52,6 +52,16 @@ Then you can create instances of AWX, for example:
 After a few minutes, your new AWX instance will be accessible at `http://awx.mycompany.com/` (assuming your cluster has an Ingress controller configured). Log in using the `tower_admin_` credentials configured in the `spec`.
 
 
+### Deploying a specific version of AWX
+
+You can pass AWX Task and Web Container images to control which version of AWX is to be deployed. To achieve this, please add following to variables under spec within your cr(Custom Resource) file:
+
+```yaml
+  tower_task_image: ansible/awx:15.0.0 # replace this with desired image
+  tower_web_image: ansible/awx:15.0.0 # replace this with desired image
+```
+You may also override any default variables from `roles/awx/defaults/main.yml` using the same process, i.e. by adding those variables within your CR spec.
+
 ### Ingress Types
 
 Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your awx. To toggle between these two options, you can add the following to your Tower custom resource:
@@ -154,6 +164,11 @@ Once the operator is deployed, you can visit the Tower UI in your browser by fol
 
   1. Make sure you have an entry like `IP_ADDRESS  example-tower.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
   2. Visit `http://example-tower.test/` in your browser. (Default admin login is `test`/`changeme`.)
+
+Alternatively, you can also update the service `awx-service` in your namespace to use the type `NodePort` and use following command to get the URL to access your AWX instance:
+```sh
+minikube service <serviceName> -n <namespaceName> --url
+```
 
 ### Release Process
 
