@@ -1,4 +1,4 @@
-# Ansible Tower/AWX Operator
+# AWX Operator
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
