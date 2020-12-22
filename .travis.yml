@@ -12,7 +12,7 @@ env:
   - DOCKER_API_VERSION=1.38
 
 install:
-  - pip3 install docker molecule==3.0.6 yamllint ansible-lint openshift jmespath
+  - pip3 install docker molecule molecule-docker yamllint ansible-lint openshift jmespath
   - ansible-galaxy collection install community.kubernetes
 
 script:
