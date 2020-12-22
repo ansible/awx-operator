@@ -2,22 +2,15 @@
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
-Also configurable to be able to run [Tower](https://ansible.com/products/tower)
-
 ## Purpose
 
-There are already official OpenShift/Kubernetes installers available for both AWX and Ansible Tower:
+This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
 
-  - [AWX on Kubernetes](https://github.com/ansible/awx/blob/devel/INSTALL.md#kubernetes)
-  - [Ansible Tower on Kubernetes](https://docs.ansible.com/ansible-tower/latest/html/administration/openshift_configuration.html)
-
-This operator is meant to provide a more Kubernetes-native installation method for Ansible Tower or AWX via an AWX Custom Resource Definition (CRD).
-
-Note that the operator is not supported by Red Hat, and is in alpha status. Long-term, this operator will become the supported method of installing on Kubernetes and Openshift, and will be listed on OperatorHub.io. For now, use it at your own risk!
+Note that the operator is not supported by Red Hat, and is in alpha status. For now, use it at your own risk!
 
 ## Usage
 
-This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more Tower or AWX instances in any namespace.
+This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
 First you need to deploy AWX Operator into your cluster:
 
@@ -54,7 +47,7 @@ After a few minutes, your new AWX instance will be accessible at `http://awx.myc
 
 ### Deploying a specific version of AWX
 
-You can pass AWX Task and Web Container images to control which version of AWX is to be deployed. To achieve this, please add following to variables under spec within your cr(Custom Resource) file:
+You can pass AWX Task and Web Container images to control which version of AWX is to be deployed. To achieve this, please add following to variables under spec within your CR (Custom Resource) file:
 
 ```yaml
   tower_task_image: ansible/awx:15.0.0 # replace this with desired image
@@ -64,7 +57,7 @@ You may also override any default variables from `roles/awx/defaults/main.yml` u
 
 ### Ingress Types
 
-Depending on the cluster that you're running on, you may wish to use an `Ingress` to access your tower or you may wish to use a `Route` to access your awx. To toggle between these two options, you can add the following to your Tower custom resource:
+Depending on the cluster that you're running on, you may wish to use an `Ingress` to access AWX, or you may wish to use a `Route` to access your AWX. To toggle between these two options, you can add the following to your AWX CR:
 
     ---
     spec:
@@ -83,7 +76,7 @@ By default, no ingress/route is deployed as the default is set to `none`.
 
 ### Privileged Tasks
 
-Depending on the type of tasks that you'll be running, you may find that you need the tower task pod to run as `privileged`. This can open yourself up to a variety of security concerns, so you should be aware (and verify that you have the privileges) to do this if necessary. In order to toggle this feature, you can add the following to your Tower custom resource:
+Depending on the type of tasks that you'll be running, you may find that you need the task pod to run as `privileged`. This can open yourself up to a variety of security concerns, so you should be aware (and verify that you have the privileges) to do this if necessary. In order to toggle this feature, you can add the following to your custom resource:
 
     ---
     spec:
@@ -123,7 +116,7 @@ should look like:
 
 ### Persistent storage for Postgres
 
-If you need to use a specific storage class for Postgres' storage, specify `tower_postgres_storage_class` in your Tower spec:
+If you need to use a specific storage class for Postgres' storage, specify `tower_postgres_storage_class` in your AWX spec:
 
     ---
     spec:
@@ -150,7 +143,7 @@ If you want to actively develop the operator, use `molecule converge`, which doe
 
     molecule test -s test-local
 
-This environment is meant for headless testing (e.g. in a CI environment, or when making smaller changes which don't need to be verified through a web interface). It is difficult to test things like Tower's web UI or to connect other applications on your local machine to the services running inside the cluster, since it is inside a Docker container with no static IP address.
+This environment is meant for headless testing (e.g. in a CI environment, or when making smaller changes which don't need to be verified through a web interface). It is difficult to test things like AWX's web UI or to connect other applications on your local machine to the services running inside the cluster, since it is inside a Docker container with no static IP address.
 
 #### Testing in Minikube
 
@@ -160,10 +153,10 @@ This environment is meant for headless testing (e.g. in a CI environment, or whe
 
 [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is a more full-featured test environment running inside a full VM on your computer, with an assigned IP address. This makes it easier to test things like NodePort services and Ingress from outside the Kubernetes cluster (e.g. in a browser on your computer).
 
-Once the operator is deployed, you can visit the Tower UI in your browser by following these steps:
+Once the operator is deployed, you can visit the AWX UI in your browser by following these steps:
 
-  1. Make sure you have an entry like `IP_ADDRESS  example-tower.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
-  2. Visit `http://example-tower.test/` in your browser. (Default admin login is `test`/`changeme`.)
+  1. Make sure you have an entry like `IP_ADDRESS  example-awx.test` in your `/etc/hosts` file. (Get the IP address with `minikube ip`.)
+  2. Visit `http://example-awx.test/` in your browser. (Default admin login is `test`/`changeme`.)
 
 Alternatively, you can also update the service `awx-service` in your namespace to use the type `NodePort` and use following command to get the URL to access your AWX instance:
 ```sh
