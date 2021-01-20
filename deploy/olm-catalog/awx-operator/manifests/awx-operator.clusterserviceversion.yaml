@@ -1,0 +1,225 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "awx.ansible.com/v1beta1",
+          "kind": "AWX",
+          "metadata": {
+            "name": "example-awx",
+            "namespace": "example-awx"
+          },
+          "spec": {
+            "deployment_type": "awx",
+            "tower_admin_email": "test@example.com",
+            "tower_admin_password": "changeme",
+            "tower_admin_user": "test",
+            "tower_broadcast_websocket_secret": "changeme",
+            "tower_create_preload_data": true,
+            "tower_hostname": "example-awx.test",
+            "tower_ingress_type": "none",
+            "tower_memcached_image": "memcached:alpine",
+            "tower_postgres_storage_class": "",
+            "tower_postgres_storage_request": "8Gi",
+            "tower_redis_image": "redis:latest",
+            "tower_task_cpu_request": "500m",
+            "tower_task_image": "ansible/awx:15.0.0",
+            "tower_task_mem_request": "1Gi",
+            "tower_task_privileged": false,
+            "tower_web_cpu_request": "1000m",
+            "tower_web_image": "ansible/awx:15.0.0",
+            "tower_web_mem_request": "2Gi"
+          }
+        },
+        {
+          "apiVersion": "awx.ansible.com/v1beta1",
+          "kind": "AWX",
+          "metadata": {
+            "name": "example-awx",
+            "namespace": "example-awx"
+          },
+          "spec": {
+            "deployment_type": "awx",
+            "tower_admin_email": "test@example.com",
+            "tower_admin_password": "changeme",
+            "tower_admin_user": "test",
+            "tower_broadcast_websocket_secret": "changeme",
+            "tower_create_preload_data": true,
+            "tower_hostname": "example-awx.test",
+            "tower_ingress_type": "ingress",
+            "tower_memcached_image": "memcached:alpine",
+            "tower_postgres_image": "postgres:10",
+            "tower_postgres_pass": "awxpass",
+            "tower_postgres_storage_class": "",
+            "tower_postgres_storage_request": "8Gi",
+            "tower_redis_image": "redis:latest",
+            "tower_task_cpu_request": "500m",
+            "tower_task_image": "ansible/awx:15.0.0",
+            "tower_task_mem_request": "128M",
+            "tower_task_privileged": false,
+            "tower_web_cpu_request": "500m",
+            "tower_web_image": "ansible/awx:15.0.0",
+            "tower_web_mem_request": "128M"
+          }
+        }
+      ]
+    capabilities: Basic Install
+    operators.operatorframework.io/builder: operator-sdk-v0.19.4
+    operators.operatorframework.io/project_layout: ansible
+  name: awx-operator.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+      - kind: AWX
+        name: awxs.awx.ansible.com
+        version: v1beta1
+  description: AWX operator
+  displayName: AWX
+  icon:
+    - base64data: ""
+      mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+        - rules:
+            - apiGroups:
+                - route.openshift.io
+              resources:
+                - routes
+              verbs:
+                - '*'
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+                - services
+                - services/finalizers
+                - endpoints
+                - persistentvolumeclaims
+                - events
+                - configmaps
+                - secrets
+              verbs:
+                - '*'
+            - apiGroups:
+                - apps
+                - extensions
+              resources:
+                - deployments
+                - daemonsets
+                - replicasets
+                - statefulsets
+                - ingresses
+              verbs:
+                - '*'
+            - apiGroups:
+                - monitoring.coreos.com
+              resources:
+                - servicemonitors
+              verbs:
+                - get
+                - create
+            - apiGroups:
+                - apps
+              resourceNames:
+                - awx-operator
+              resources:
+                - deployments/finalizers
+              verbs:
+                - update
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - create
+                - get
+            - apiGroups:
+                - apps
+              resources:
+                - replicasets
+              verbs:
+                - get
+            - apiGroups:
+                - awx.ansible.com
+              resources:
+                - '*'
+              verbs:
+                - '*'
+          serviceAccountName: awx-operator
+      deployments:
+        - name: awx-operator
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                name: awx-operator
+            strategy: {}
+            template:
+              metadata:
+                labels:
+                  name: awx-operator
+              spec:
+                containers:
+                  - command:
+                      - /usr/local/bin/ao-logs
+                      - /tmp/ansible-operator/runner
+                      - stdout
+                    image: ansible/awx-operator:0.5.0
+                    imagePullPolicy: Always
+                    name: ansible
+                    resources: {}
+                    volumeMounts:
+                      - mountPath: /tmp/ansible-operator/runner
+                        name: runner
+                        readOnly: true
+                  - env:
+                      - name: WATCH_NAMESPACE
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.annotations['olm.targetNamespaces']
+                      - name: POD_NAME
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.name
+                      - name: OPERATOR_NAME
+                        value: awx-operator
+                    image: ansible/awx-operator:0.5.0
+                    imagePullPolicy: Always
+                    name: operator
+                    resources: {}
+                    volumeMounts:
+                      - mountPath: /tmp/ansible-operator/runner
+                        name: runner
+                serviceAccountName: awx-operator
+                volumes:
+                  - emptyDir: {}
+                    name: runner
+    strategy: deployment
+  installModes:
+    - supported: true
+      type: OwnNamespace
+    - supported: true
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces
+  keywords:
+    - awx
+  links:
+    - name: Awx Operator
+      url: https://github.com/ansible/awx-operator
+  maintainers:
+    - email: yguenane@redhat.com
+      name: Yanis Guenane
+  maturity: alpha
+  provider:
+    name: AWX Community
+    url: https://github.com/ansible/awx-operator
+  version: 0.0.1
