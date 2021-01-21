@@ -59,8 +59,6 @@
   register: k8s_defs_result
   with_items:
     - tower_config.yaml.j2
-    - launch_awx.yaml.j2
-    - supervisor.yaml.j2
 
 - name: Apply Tower Deployment Configuration
   k8s:
