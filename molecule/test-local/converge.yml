@@ -26,11 +26,9 @@
     deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
     templates_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/templates"
     pull_policy: Never
-    operator_image: awx.ansible.com/awx-operator:testing
+    operator_image: awx.ansible.com/awx-operator
+    operator_version: testing
     custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_molecule.yaml'])) | from_yaml }}"
-  vars_files:
-    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/group_vars/all"
-
   tasks:
 
     - block:

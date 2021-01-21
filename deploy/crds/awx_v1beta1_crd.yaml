@@ -26,9 +26,6 @@ spec:
         spec:
           type: object
           properties:
-            deployment_type:
-              type: string
-              pattern: "^(tower|awx)(-)?.*$"
             external_database:
               type: boolean
               description: |
@@ -51,5 +48,3 @@ spec:
                   username: <username to connect as>
                   password: <password to connect with>
                 type: Opaque
-          required:
-            - deployment_type

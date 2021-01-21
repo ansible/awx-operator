@@ -1,7 +1,4 @@
 ---
-- name: Include deployment type vars
-  include_vars: "{{ deployment_type }}.yml"
-
 - name: Check for existing secret key
   k8s_info:
     kind: Secret
