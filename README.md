@@ -184,9 +184,7 @@ Then push the generated image to Docker Hub:
 
 #### Build a new version of the `awx-operator.yaml` file
 
-Update the awx-operator version:
-
-  - `ansible/group_vars/all`
+Update the awx-operator version in the `VERSION` file at the root of this project.
 
 Once the version has been updated, run from the root of the repo:
 
