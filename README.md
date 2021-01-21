@@ -29,7 +29,6 @@ Then you can create instances of AWX, for example:
        name: awx
        namespace: ansible-awx
      spec:
-       deployment_type: awx
        tower_admin_user: test
        tower_admin_email: test@example.com
        tower_admin_password: changeme

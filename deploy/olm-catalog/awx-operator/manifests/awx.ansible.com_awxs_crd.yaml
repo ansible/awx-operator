@@ -20,9 +20,6 @@ spec:
       properties:
         spec:
           properties:
-            deployment_type:
-              pattern: ^(tower|awx)(-)?.*$
-              type: string
             external_database:
               description: |
                 If true you must supply a secret containing the location and credentials for
@@ -45,8 +42,6 @@ spec:
                   password: <password to connect with>
                 type: Opaque
               type: boolean
-          required:
-            - deployment_type
           type: object
       type: object
   version: v1beta1
