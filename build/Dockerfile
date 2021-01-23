@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v0.17.0
+FROM quay.io/operator-framework/ansible-operator:v0.19.4
 
 # Install Ansible requirements.
 COPY requirements.yml ${HOME}/requirements.yml
