@@ -25,11 +25,10 @@ metadata:
             "tower_postgres_storage_request": "8Gi",
             "tower_redis_image": "redis:latest",
             "tower_task_cpu_request": "500m",
-            "tower_task_image": "ansible/awx:15.0.0",
+            "tower_image": "ansible/awx:15.0.0",
             "tower_task_mem_request": "1Gi",
             "tower_task_privileged": false,
-            "tower_web_cpu_request": "1000m",
-            "tower_web_image": "ansible/awx:15.0.0",
+            "tower_web_cpu_request": "1000m"
             "tower_web_mem_request": "2Gi"
           }
         },
@@ -55,11 +54,10 @@ metadata:
             "tower_postgres_storage_request": "8Gi",
             "tower_redis_image": "redis:latest",
             "tower_task_cpu_request": "500m",
-            "tower_task_image": "ansible/awx:15.0.0",
+            "tower_image": "ansible/awx:15.0.0",
             "tower_task_mem_request": "128M",
             "tower_task_privileged": false,
             "tower_web_cpu_request": "500m",
-            "tower_web_image": "ansible/awx:15.0.0",
             "tower_web_mem_request": "128M"
           }
         }

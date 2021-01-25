@@ -46,11 +46,10 @@ After a few minutes, your new AWX instance will be accessible at `http://awx.myc
 
 ### Deploying a specific version of AWX
 
-You can pass AWX Task and Web Container images to control which version of AWX is to be deployed. To achieve this, please add following to variables under spec within your CR (Custom Resource) file:
+To achieve this, please add the following variable under spec within your CR (Custom Resource) file:
 
 ```yaml
-  tower_task_image: ansible/awx:15.0.0 # replace this with desired image
-  tower_web_image: ansible/awx:15.0.0 # replace this with desired image
+  tower_image: ansible/awx:15.0.0 # replace this with desired image
 ```
 You may also override any default variables from `roles/awx/defaults/main.yml` using the same process, i.e. by adding those variables within your CR spec.
 
