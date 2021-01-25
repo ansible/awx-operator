@@ -27,14 +27,9 @@ tower_broadcast_websocket_secret: changeme
 #     emptyDir: {}
 tower_extra_volumes: ''
 
-# Use these image versions for Ansible Tower.
-# tower_task_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
-# tower_web_image: registry.redhat.io/ansible-tower-37/ansible-tower-rhel7:3.7.0
-
 # Use these image versions for Ansible AWX.
 
-tower_task_image: ansible/awx:15.0.0
-tower_web_image: ansible/awx:15.0.0
+tower_image: ansible/awx:15.0.0
 tower_image_pull_policy: IfNotPresent
 
 tower_create_preload_data: true
@@ -83,3 +78,5 @@ tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 tower_postgres_port: 5432
 
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
+
+development_mode: false
