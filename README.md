@@ -174,11 +174,11 @@ Each of these must be appropriately built in preparation for a new tag:
 
 Run the following command inside this directory:
 
-    operator-sdk build ansible/awx-operator:0.5.0
+    operator-sdk build quay.io/ansible/awx-operator:$VERSION
 
 Then push the generated image to Docker Hub:
 
-    docker push ansible/awx-operator:0.5.0
+    docker push quay.io/ansible/awx-operator:$VERSION
 
 #### Build a new version of the `awx-operator.yaml` file
 
