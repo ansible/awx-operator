@@ -166,7 +166,7 @@ spec:
                       - /usr/local/bin/ao-logs
                       - /tmp/ansible-operator/runner
                       - stdout
-                    image: ansible/awx-operator:0.5.0
+                    image: ansible/awx-operator:0.6.0
                     imagePullPolicy: Always
                     name: ansible
                     resources: {}
@@ -185,7 +185,7 @@ spec:
                             fieldPath: metadata.name
                       - name: OPERATOR_NAME
                         value: awx-operator
-                    image: ansible/awx-operator:0.5.0
+                    image: ansible/awx-operator:0.6.0
                     imagePullPolicy: Always
                     name: operator
                     resources: {}
