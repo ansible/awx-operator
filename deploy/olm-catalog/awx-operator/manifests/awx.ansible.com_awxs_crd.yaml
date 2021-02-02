@@ -20,7 +20,60 @@ spec:
       properties:
         spec:
           properties:
+            tower_hostname:
+              description: The hostname of the instance
+              type: string
+            tower_admin_email:
+              description: The admin user email
+              type: string
+            tower_admin_password_secret:
+              description: Secret where the admin password can be found
+              type: string
+            tower_postgres_configuration_secret:
+              description: Secret where the database configuration can be found
+              type: string
+            tower_secret_key_secret:
+              description: Secret where the secret key can be found
+              type: string
+            tower_ingress_type:
+              description: The ingress type to use to reach the deployed instance
+              type: string
+              enum:
+                - none
+                - Ingress
+                - Route
+            tower_image_pull_policy:
+              description: The image pull policy
+              type: string
+              enum:
+                - Always
+                - Never
+                - IfNotPresent
+            tower_replicas:
+              description: Number of instance replicas
+              type: integer
+              format: int32
+            tower_garbage_collect_secrets:
+              description: Whether or not to remove secrets upon instance removal
+              type: boolean
+            tower_create_preload_data:
+              description: Whether or not to preload data upon Tower instance creation
+              type: boolean
           type: object
+        status:
+          properties:
+            towerURL:
+              description: URL to access the deployed instance
+              type: string
+            towerAdminUser:
+              description: Admin user of the deployed instance
+              type: string
+            towerAdminPasswordSecret:
+              description: Admin password of the deployed instance
+              type: string
+            towerVersion:
+              description: Version of the deployed instance
+              type: string
       type: object
   version: v1beta1
   versions:

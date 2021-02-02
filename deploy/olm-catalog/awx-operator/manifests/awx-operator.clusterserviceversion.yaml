@@ -74,6 +74,81 @@ spec:
       - kind: AWX
         name: awxs.awx.ansible.com
         version: v1beta1
+        description: A AWX Instance
+        specDescriptors:
+          - displayName: Hostname
+            path: tower_hostname
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:text
+          - displayName: Admin email address
+            path: tower_admin_email
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:text
+          - displayName: Admin password secret
+            path: tower_admin_password_secret
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:io.kubernetes:Secret
+          - displayName: Database configuration secret
+            path: tower_postgres_configuration_secret
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:io.kubernetes:Secret
+          - displayName: Secret key secret
+            path: tower_secret_key_secret
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:io.kubernetes:Secret
+          - displayName: Ingress Type
+            path: tower_ingress_type
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:select:none
+              - urn:alm:descriptor:com.tectonic.ui:select:Ingress
+              - urn:alm:descriptor:com.tectonic.ui:select:Route
+          - displayName: Image Pull Policy
+            path: tower_image_pull_policy
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
+          - displayName: Replicas
+            path: tower_replicas
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:number
+          - displayName: Remove used secrets on instance removal ?
+            path: tower_garbage_collect_secrets
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:boolean
+          - displayName: Preload instance with data upon creation ?
+            path: tower_create_preload_data
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:boolean
+        statusDescriptors:
+          - displayName: URL
+            description: Route to access the instance deployed
+            path: towerURL
+            x-descriptors:
+              - urn:alm:descriptor:org.w3:link
+          - displayName: Admin User
+            description: Admin user for the instance deployed
+            path: towerAdminUser
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:label
+          - displayName: Admin Password
+            description: Admin password for the instance deployed
+            path: towerAdminPasswordSecret
+            x-descriptors:
+              - urn:alm:descriptor:io.kubernetes:Secret
+          - displayName: Version
+            description: Version of the instance deployed
+            path: towerVersion
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:label
   description: AWX operator
   displayName: AWX
   icon:
