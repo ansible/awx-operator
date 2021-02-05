@@ -75,6 +75,10 @@ tower_postgres_storage_request: 8Gi
 tower_postgres_storage_class: ''
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
+# Secret to lookup that provide the PostgreSQL configuration
+#
+tower_postgres_configuration_secret: ''
+
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
 development_mode: false
