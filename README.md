@@ -2,6 +2,26 @@
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
+# Table of Contents
+
+<!--ts-->
+* [Purpose](#purpose)
+* [Usage](#usage)
+  * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+  * [Ingress Types](#ingress-types)
+  * [Privilged Tasks](#privileged-tasks)
+  * [Connecting to an external Postgres Service](#connecting-to-an-external-postgres-service)
+  * [Persistent storage for Postgres](#persistent-storge-for-postgres)
+* [Development](#development)
+  * [Testing](#testing)
+    * [Testing in Docker](#testing-in-docker)
+    * [Testing in Minikube](#testing-in-minikube)
+* [Release Process](#release-process)
+  * [Build a new release](#build-a-new-release)
+  * [Build a new version of the operator yaml file](#build-a-new-version-of-the-operator-yaml-file)
+* [Author](#author)
+<!--te-->
+
 ## Purpose
 
 This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
@@ -137,7 +157,7 @@ Running `molecule test` sets up a clean environment, builds the operator, runs a
 
 If you want to actively develop the operator, use `molecule converge`, which does everything but tear down the environment at the end.
 
-#### Testing in Docker (standalone)
+#### Testing in Docker
 
     molecule test -s test-local
 
@@ -161,7 +181,7 @@ Alternatively, you can also update the service `awx-service` in your namespace t
 minikube service <serviceName> -n <namespaceName> --url
 ```
 
-### Release Process
+## Release Process
 
 There are a few moving parts to this project:
 
@@ -170,7 +190,7 @@ There are a few moving parts to this project:
 
 Each of these must be appropriately built in preparation for a new tag:
 
-#### Build a new release of the Operator for Docker Hub
+### Build a new release
 
 Run the following command inside this directory:
 
@@ -180,7 +200,7 @@ Then push the generated image to Docker Hub:
 
     docker push quay.io/ansible/awx-operator:$VERSION
 
-#### Build a new version of the `awx-operator.yaml` file
+### Build a new version of the operator yaml file
 
 Update the awx-operator version:
 
