@@ -42,7 +42,7 @@ spec:
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
           ports:
-            - containerPort: 5432
+            - containerPort: '{{ awx_postgres_port }}'
               name: postgres
           volumeMounts:
             - name: postgres
@@ -72,8 +72,7 @@ metadata:
     app: awx-postgres
 spec:
   ports:
-    - port: 5432
+    - port: '{{ awx_postgres_port }}'
   clusterIP: None
   selector:
     app: awx-postgres
-

@@ -10,8 +10,9 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
   * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
   * [Ingress Types](#ingress-types)
   * [Privilged Tasks](#privileged-tasks)
-  * [Connecting to an external Postgres Service](#connecting-to-an-external-postgres-service)
-  * [Persistent storage for Postgres](#persistent-storge-for-postgres)
+  * [Database Setup](#database-setup)
+    * [External Database](#external-database)
+    * [Internal Database](#internal-database)
 * [Development](#development)
   * [Testing](#testing)
     * [Testing in Docker](#testing-in-docker)
@@ -107,41 +108,111 @@ If you are attempting to do this on an OpenShift cluster, you will need to grant
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
-### Connecting to an external Postgres Service
+### Database Setup
 
-When the Operator installs the AWX services and generates a Postgres deployment it will lay down a config file to enable AWX to connect to that service. To use an external database you just need to create a `Secret` that the AWX deployment will use instead and then set a property in the CR:
+The AWX Operator supports two different scenarios with regard to database setup.
 
-    ---
-    spec:
-      ...
-      external_database: true
+One can either let the Operator manages a PostgreSQL deployment within the same namespace the AWX deployment will take place. Or, one can connect to an already - externally managed - PostgreSQL instance. The decision is made based on the boolean value of the `external_database` ansible variable.
 
-The secret should have the name: *crname*-postgres-configuration and
-should look like:
+#### External Database
 
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: <crname>-postgres-configuration
-      namespace: <target namespace>
-    stringData:
-      host: <external ip or url resolvable by the cluster>
-      port: <external port, this usually defaults to 5432>
-      database: <desired database name>
-      username: <username to connect as>
-      password: <password to connect with>
-    type: Opaque
+In the scenario when one wants to rely on an external PostgreSQL instance, one needs to provide the necessary information to the operator.
 
-### Persistent storage for Postgres
+There are three ways one can specify those information. Those way are listed in order of priority in which they are treated.
 
-If you need to use a specific storage class for Postgres' storage, specify `tower_postgres_storage_class` in your AWX spec:
+* Providing a specifically crafted secret
 
-    ---
-    spec:
-      ...
-      tower_postgres_storage_class: fast-ssd
+One can create a specially formated secret within the namespace the AWX instance will be deployed into. This secret needs then to be specified as `tower_postgres_configuration_secret` variable in the spec requirements.
 
-If it's not specified, Postgres will store it's data on a volume using the default storage class for your cluster.
+```yaml
+spec:
+  external_database: true
+  tower_postgres_configuration_secret: my-awx-external-db-secret
+```
+
+The secret format is the following:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: <name-of-the-secret>
+  namespace: <namespace>
+stringData:
+  password: <password>
+  username: <username>
+  database: <database>
+  port: <port>
+  host: <host>
+```
+
+* Providing variables (not recommended)
+
+If one does not wish to use secret, one can specify the following variables in the spec requirements.
+
+| Variable                | Descritpion                       | Default Value |
+| ----------------------- | --------------------------------- | ------------- |
+| tower_postgres_user     | Username to connect to PostgreSQL |               |
+| tower_postgres_pass     | Password to connect to PostgreSQL |               |
+| tower_postgres_database | Database name to connect to       |               |
+| tower_postgres_host     | Host to connect to PostgreSQL     |               |
+| tower_postgres_port     | Port to connect to PostgreSQL     | 5432          |
+
+The following is an example of an AWX spec section that relie on those variables.
+
+```yaml
+spec:
+  external_database: true
+  tower_postgres_user: awx
+  tower_postgres_pass: awx
+  tower_postgres_database: awx
+  tower_postgres_host: mydb.external.com
+  tower_postgres_port: 5432
+```
+
+* Relying on '{{ meta.name }}-postgres-configuration' secret
+
+If one wishes not to specify anything and have her data automatically picked up by the operator. One should create a secret named '{{ meta.name }}-postgres-configuration' within the namespace the AWX instance will be deployed in. The secret should look like:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: <awx-instance-name>-postgres-configuration
+  namespace: <namespace>
+stringData:
+  password: <password>
+  username: <username>
+  database: <database>
+  port: <port>
+  host: <host>
+```
+
+#### Internal Database
+
+If one wants the AWX Operator to manage a PostgreSQL instance along side the AWX instance (this is the default behavior), one can customize the following
+
+| Variable                       | Description                                                       | Default Value                   |
+| ------------------------------ | ----------------------------------------------------------------- | ------------------------------- |
+| tower_postgres_user            | Username to create on PostgreSQL                                  | awx                             |
+| tower_postgres_pass            | Password to associate to the user                                 | awx                             |
+| tower_postgres_database        | Database to create on PostgreSQL                                  | awx                             |
+| tower_postgres_port            | Port to connect to PostgreSQL                                     | 5432                            |
+| tower_postgres_image           | PostgreSQL container to use                                       | postgres:12                     |
+| tower_postgres_storage_request | Size of the Persistent Volume desired to be bound to PostgreSQL   | 8Gi                             |
+| tower_postgres_storage_class   | Storage class for the Persistent Volume to be bound to PostgreSQL |                                 |
+| tower_postgres_data_path       | PostgreSQL mountpoint data path                                   | /var/lib/postgresql/data/pgdata |
+
+For example, if one needs to use a specific storage class for PostgreSQL' storage and expect an heavy use of the instance, one could specify the following
+
+```yaml
+---
+spec:
+  tower_postgres_storage_class: fast-ssd
+  tower_postgres_storage_request: 100Gi
+```
 
 ## Development
 

@@ -68,15 +68,42 @@ tower_web_extra_volume_mounts: ''
 
 tower_redis_image: redis:latest
 
-tower_postgres_pass: awxpass
-tower_postgres_image: postgres:12
-tower_postgres_storage_request: 8Gi
-tower_postgres_storage_class: ''
-
-tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
-
-tower_postgres_port: 5432
-
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
 development_mode: false
+
+
+# -- Database configuration
+#
+
+# Boolean to specify whether one wants the Operator to manage the database
+# deployment or want to rely on an externally managed database
+external_database: false
+
+# Container to deploy if user decides the operator should handle database
+# deployment
+tower_postgres_image: postgres:12
+
+# Persistent Volume Claim specification to customize for database data
+tower_postgres_storage_request: 8Gi
+tower_postgres_storage_class: ''
+
+# Mountpoint for database data
+tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
+
+# Custom name of the secret one wants the Operator to look into for connection
+# details. If not specified, the Operator will used the
+# tower_postgres_(user|database,...) variabes, if neither those are specified
+# the operator will look for <awx-instance-name>-postgres-configuration secret
+tower_postgres_configuration_secret: ''
+
+# In an external_database=true scenario, those are the variables used to
+# connect to the database - Not recommended. A secret should be used.
+#
+# In an external_database=false scenario, those are the variables used to
+# configure the database
+tower_postgres_user: awx
+tower_postgres_pass: ''
+tower_postgres_database: awx
+tower_postgres_host: ''
+tower_postgres_port: 5432

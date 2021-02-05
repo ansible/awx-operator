@@ -6,48 +6,15 @@
     name: '{{ meta.name }}-secret-key'
   register: secret_key_resources
 
-- name: Check for existing postgres configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-postgres-configuration'
-  register: postgres_config_resources
-
-- name: Create Database configuration if it doesn't already exist
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
-  register: k8s_postgres_config_result
-  when: postgres_config_resources['resources'] | length < 1 and not external_database | default(False) | bool
-
-- name: Create Database if External Database not selected
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
-  register: k8s_postgres_result
-  when: not external_database | default(False) | bool
-
-- name: Read Database Configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-postgres-configuration'
-  register: postgres_configuration
-
-- name: Store Database Configuration
-  set_fact:
-    awx_postgres_user: "{{ postgres_configuration['resources'][0]['data']['username'] | b64decode }}"
-    awx_postgres_pass: "{{ postgres_configuration['resources'][0]['data']['password'] | b64decode }}"
-    awx_postgres_database: "{{ postgres_configuration['resources'][0]['data']['database'] | b64decode }}"
-    awx_postgres_port: "{{ postgres_configuration['resources'][0]['data']['port'] | b64decode }}"
-    awx_postgres_host: "{{ postgres_configuration['resources'][0]['data']['host'] | b64decode }}"
-
 - name: Deploy Tower Secret Key if needed
   k8s:
     apply: yes
     definition: "{{ lookup('template', 'tower_secret.yaml.j2') }}"
   register: k8s_tower_secret_result
-  when: secret_key_resources['resources'] | length < 1
+  when: not secret_key_resources['resources'] | length
+
+- name: Database Configuration
+  include_tasks: database_configuration.yml
 
 - name: Ensure configured AWX resources exist in the cluster.
   k8s:
