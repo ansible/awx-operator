@@ -15,7 +15,7 @@ tower_ingress_tls_secret: ''
 
 tower_hostname: example-awx.test
 
-tower_admin_user: test
+tower_admin_user: admin
 tower_admin_email: test@example.com
 tower_admin_password: changeme
 
