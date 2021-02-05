@@ -49,7 +49,7 @@
   register: k8s_tower_secret_result
   when: secret_key_resources['resources'] | length < 1
 
-- name: Ensure configured AWX resources exist in the cluster.
+- name: Ensure configured instance resources exist in the cluster.
   k8s:
     apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
@@ -57,28 +57,28 @@
   with_items:
     - tower_config.yaml.j2
 
-- name: Apply Tower Deployment Configuration
+- name: Apply Resource Deployment Configuration
   k8s:
     apply: yes
     definition: "{{ lookup('template', 'tower.yaml.j2') }}"
   register: tower_deployment_result
 
-- name: Get the AWX pod information.
+- name: Get the resource pod information.
   k8s_info:
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - app=awx
+      - "app={{ deployment_type }}"
   register: tower_pods
   until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
 
-- name: Set the awx pod name as a variable.
+- name: Set the resource pod name as a variable.
   set_fact:
     tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] }}"
 
-- name: Verify tower_pod_name is populated.
+- name: Verify the resource pod name is populated.
   assert:
     that: tower_pod_name != ''
     fail_msg: "Could not find the tower pod's name."

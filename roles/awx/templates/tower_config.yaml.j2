@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: '{{ meta.name }}-awx-configmap'
+  name: '{{ meta.name }}-{{ deployment_type }}-configmap'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: awx
+    app: '{{ deployment_type }}'
 data:
   environment: |
     DATABASE_USER=awx

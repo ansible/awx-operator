@@ -17,16 +17,16 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: awx
+    app: '{{ deployment_type }}'
 spec:
   replicas: {{ tower_replicas }}
   selector:
     matchLabels:
-      app: awx
+      app: '{{ deployment_type }}'
   template:
     metadata:
       labels:
-        app: awx
+        app: '{{ deployment_type }}'
     spec:
       containers:
         - image: '{{ tower_redis_image }}'
@@ -176,19 +176,19 @@ spec:
                 path: SECRET_KEY
         - name: {{ meta.name }}-settings
           configMap:
-            name: '{{ meta.name }}-awx-configmap'
+            name: '{{ meta.name }}-{{ deployment_type }}-configmap'
             items:
               - key: settings
                 path: settings.py
         - name: {{ meta.name }}-nginx-conf
           configMap:
-            name: '{{ meta.name }}-awx-configmap'
+            name: '{{ meta.name }}-{{ deployment_type }}-configmap'
             items:
               - key: nginx_conf
                 path: nginx.conf
         - name: {{ meta.name }}-redis-config
           configMap:
-            name: {{ meta.name }}-awx-configmap
+            name: {{ meta.name }}-{{ deployment_type }}-configmap
             items:
               - key: redis_conf
                 path: redis.conf
@@ -217,7 +217,7 @@ metadata:
   name: '{{ meta.name }}-service'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: awx
+    app: '{{ deployment_type }}'
 spec:
   ports:
     - port: 80
@@ -225,7 +225,7 @@ spec:
       targetPort: 8052
       name: http
   selector:
-    app: awx
+    app: '{{ deployment_type }}'
 {% if tower_ingress_type != "none" %}
   type: NodePort
 {% endif %}
