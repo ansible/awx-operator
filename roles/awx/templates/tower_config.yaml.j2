@@ -13,7 +13,7 @@ data:
     DATABASE_NAME=awx
     DATABASE_HOST='{{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local'
     DATABASE_PORT='5432'
-    DATABASE_PASSWORD={{ tower_postgres_pass | quote }}
+    DATABASE_PASSWORD={{ awx_postgres_pass | quote }}
     AWX_SKIP_MIGRATIONS=true
 
   settings: |
@@ -90,7 +90,7 @@ data:
             'ENGINE': 'awx.main.db.profiled_pg',
             'NAME': 'awx',
             'USER': 'awx',
-            'PASSWORD': '{{ tower_postgres_pass | quote }}',
+            'PASSWORD': '{{ awx_postgres_pass | quote }}',
             'HOST': '{{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local',
             'PORT': '5432',
         }

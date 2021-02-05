@@ -68,14 +68,10 @@ tower_web_extra_volume_mounts: ''
 
 tower_redis_image: redis:latest
 
-tower_postgres_pass: awxpass
 tower_postgres_image: postgres:12
 tower_postgres_storage_request: 8Gi
 tower_postgres_storage_class: ''
-
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
-
-tower_postgres_port: 5432
 
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
