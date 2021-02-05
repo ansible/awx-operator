@@ -1,4 +1,6 @@
 ---
+deployment_type: awx
+
 tower_task_privileged: false
 tower_ingress_type: none
 
@@ -13,7 +15,7 @@ tower_ingress_annotations: ''
 # certificate and key.
 tower_ingress_tls_secret: ''
 
-tower_hostname: example-awx.test
+tower_hostname: '{{ deployment_type }}.example.com'
 
 tower_admin_user: admin
 tower_admin_email: test@example.com
