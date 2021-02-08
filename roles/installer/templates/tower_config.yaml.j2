@@ -9,11 +9,6 @@ metadata:
     app: '{{ deployment_type }}'
 data:
   environment: |
-    DATABASE_USER=awx
-    DATABASE_NAME=awx
-    DATABASE_HOST='{{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local'
-    DATABASE_PORT='5432'
-    DATABASE_PASSWORD={{ awx_postgres_pass | quote }}
     AWX_SKIP_MIGRATIONS=true
 
   settings: |
@@ -83,22 +78,7 @@ data:
     LOGGING['handlers']['rbac_migrations'] = {'class': 'logging.NullHandler'}
     LOGGING['handlers']['system_tracking_migrations'] = {'class': 'logging.NullHandler'}
     LOGGING['handlers']['management_playbooks'] = {'class': 'logging.NullHandler'}
-    
-    DATABASES = {
-        'default': {
-            'ATOMIC_REQUESTS': True,
-            'ENGINE': 'awx.main.db.profiled_pg',
-            'NAME': 'awx',
-            'USER': 'awx',
-            'PASSWORD': '{{ awx_postgres_pass | quote }}',
-            'HOST': '{{ meta.name }}-postgres.{{ meta.namespace }}.svc.cluster.local',
-            'PORT': '5432',
-        }
-    }
-    
-    if os.getenv("DATABASE_SSLMODE", False):
-        DATABASES['default']['OPTIONS'] = {'sslmode': os.getenv("DATABASE_SSLMODE")}
-    
+
     USE_X_FORWARDED_PORT = True
     BROADCAST_WEBSOCKET_PORT = 8052
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
