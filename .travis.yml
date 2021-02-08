@@ -13,7 +13,7 @@ env:
 
 install:
   - pip3 install docker molecule molecule-docker yamllint ansible-lint openshift jmespath
-  - ansible-galaxy collection install community.kubernetes
+  - ansible-galaxy collection install community.kubernetes operator_sdk.util
 
 script:
   - molecule test -s test-local

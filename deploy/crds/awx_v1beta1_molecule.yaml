@@ -12,7 +12,6 @@ spec:
   tower_broadcast_websocket_secret: changeme
 
   tower_admin_email: test@example.com
-  tower_admin_password: changeme
 
   tower_image: ansible/awx:15.0.0
 
