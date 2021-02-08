@@ -1,17 +1,6 @@
 ---
-- name: Check for existing secret key
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-secret-key'
-  register: secret_key_resources
-
-- name: Deploy Tower Secret Key if needed
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', 'tower_secret.yaml.j2') }}"
-  register: k8s_tower_secret_result
-  when: secret_key_resources['resources'] | length < 1
+- name: Include secret key configuration tasks
+  include_tasks: secret_key_configuration.yml
 
 - name: Include database configuration tasks
   include_tasks: database_configuration.yml

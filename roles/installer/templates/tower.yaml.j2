@@ -54,7 +54,7 @@ spec:
             - name: "{{ meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/"
               readOnly: true
-            - name: {{ meta.name }}-secret-key
+            - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY
               subPath: SECRET_KEY
               readOnly: true
@@ -112,7 +112,7 @@ spec:
             - name: "{{ meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/"
               readOnly: true
-            - name: {{ meta.name }}-secret-key
+            - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY
               subPath: SECRET_KEY
               readOnly: true
@@ -168,9 +168,9 @@ spec:
                 path: 'credentials.py'
               - key: environment_sh
                 path: 'environment.sh'
-        - name: {{ meta.name }}-secret-key
+        - name: "{{ secret_key_secret_name }}"
           secret:
-            secretName: '{{ meta.name }}-secret-key'
+            secretName: '{{ secret_key_secret_name }}'
             items:
               - key: secret_key
                 path: SECRET_KEY

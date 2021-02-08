@@ -23,6 +23,10 @@ tower_admin_password: changeme
 
 tower_broadcast_websocket_secret: changeme
 
+# Secret to lookup that provide the secret key
+#
+tower_secret_key_secret: ''
+
 # Add extra volumes to the AWX pod. Specify as literal block. E.g.:
 # tower_extra_volumes: |
 #   - name: my-volume
