@@ -2,4 +2,4 @@
 - hosts: localhost
   gather_facts: no
   roles:
-    - awx
+    - installer
