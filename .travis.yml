@@ -12,7 +12,7 @@ env:
   - DOCKER_API_VERSION=1.38
 
 install:
-  - pip3 install docker molecule molecule-docker yamllint ansible-lint openshift jmespath
+  - pip3 install docker molecule molecule-docker yamllint ansible-lint openshift jmespath ansible
   - ansible-galaxy collection install community.kubernetes operator_sdk.util
 
 script:
