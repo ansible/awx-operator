@@ -19,7 +19,10 @@ tower_hostname: '{{ deployment_type }}.example.com'
 
 tower_admin_user: admin
 tower_admin_email: test@example.com
-tower_admin_password: changeme
+
+# Secret to lookup that provide the admin password
+#
+tower_admin_password_secret: ''
 
 tower_broadcast_websocket_secret: changeme
 
