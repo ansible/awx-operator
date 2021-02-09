@@ -1,36 +1,24 @@
 ---
-- name: Check for existing secret key
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-secret-key'
-  register: secret_key_resources
+- block:
+    - name: Define secrets name
+      set_fact:
+        _admin_password: '{{ tower_admin_password_secret | length | ternary(tower_admin_password_secret, meta.name + "-admin-password") }}'
+        _secret_key: '{{ tower_secret_key_secret | length | ternary(tower_secret_key_secret, meta.name + "-secret-key") }}'
+        # yamllint disable-line rule:line-length
+        _postgres_configuration: '{{ tower_postgres_configuration_secret | length | ternary(tower_postgres_configuration_secret, meta.name + "-postgres-configuration") }}'  # noqa 204
 
-- name: Check for existing postgres configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-postgres-configuration'
-  register: postgres_config_resources
+    - name: Remove ownerReferences reference
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: '{{ item }}'
+            namespace: '{{ meta.namespace }}'
+            ownerReferences: null
+      loop:
+        - '{{ _admin_password }}'
+        - '{{ _secret_key }}'
+        - '{{ _postgres_configuration }}'
 
-- name: Remove ownerReferences from PG configuration if it exists
-  k8s:
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: '{{ meta.name }}-postgres-configuration'
-        namespace: '{{ meta.namespace }}'
-        ownerReferences: null
-  when: postgres_config_resources['resources'] | length > 0
-
-- name: Remove ownerReferences from Tower Secret if it exists
-  k8s:
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: '{{ meta.name }}-secret-key'
-        namespace: '{{ meta.namespace }}'
-        ownerReferences: null
-  when: secret_key_resources['resources'] | length > 0
+  when: not tower_garbage_collect_secrets | bool

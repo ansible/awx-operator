@@ -1,0 +1,17 @@
+---
+# Whether secrets should be garbage collected
+# on teardown
+#
+tower_garbage_collect_secrets: false
+
+# Secret to lookup that provide the admin password
+#
+tower_admin_password_secret: ''
+
+# Secret to lookup that provide the secret key
+#
+tower_secret_key_secret: ''
+
+# Secret to lookup that provide the PostgreSQL configuration
+#
+tower_postgres_configuration_secret: ''
