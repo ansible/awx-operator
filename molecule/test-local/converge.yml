@@ -97,8 +97,8 @@
               kind=custom_resource.kind,
               api_version=custom_resource.apiVersion,
               namespace=custom_resource.metadata.namespace,
-              resource_name=custom_resource.metadata.name
-            )}}'
+              resource_name=custom_resource.metadata.name)
+            }}'
 
         - name: debug awx deployment
           ignore_errors: yes
@@ -110,8 +110,8 @@
               kind="Deployment",
               api_version="apps/v1",
               namespace=custom_resource.metadata.namespace,
-              label_selector="app=awx"
-            )}}'
+              label_selector="app=awx")
+            }}'
 
         - name: get operator logs
           ignore_errors: yes
