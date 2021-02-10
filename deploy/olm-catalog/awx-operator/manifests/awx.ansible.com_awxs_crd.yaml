@@ -49,6 +49,12 @@ spec:
                 - Always
                 - Never
                 - IfNotPresent
+            tower_task_resource_requirements:
+              description: Resource requirements for the task container
+              type: object
+            tower_web_resource_requirements:
+              description: Resource requirements for the web container
+              type: object
             tower_replicas:
               description: Number of instance replicas
               type: integer

@@ -51,11 +51,15 @@ tower_task_command: []
 tower_web_args: []
 tower_web_command: []
 
-tower_task_mem_request: 1Gi
-tower_task_cpu_request: 500m
+tower_task_resource_requirements:
+  requests:
+    cpu: 500m
+    memory: 1Gi
 
-tower_web_mem_request: 2Gi
-tower_web_cpu_request: 1000m
+tower_web_resource_requirements:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
 
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
@@ -78,7 +82,9 @@ tower_web_extra_volume_mounts: ''
 tower_redis_image: redis:latest
 
 tower_postgres_image: postgres:12
-tower_postgres_storage_request: 8Gi
+tower_postgres_resource_requirements:
+  requests:
+    storage: 8Gi
 tower_postgres_storage_class: ''
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 

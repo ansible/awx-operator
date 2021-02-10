@@ -113,6 +113,16 @@ spec:
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
               - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
+          - displayName: Web container resource requirements
+            path: tower_web_resource_requirements
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+          - displayName: Task container resource requirements
+            path: tower_task_resource_requirements
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
           - displayName: Replicas
             path: tower_replicas
             x-descriptors:
