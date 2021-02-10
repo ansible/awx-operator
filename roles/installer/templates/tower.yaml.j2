@@ -50,10 +50,18 @@ spec:
           imagePullPolicy: '{{ tower_image_pull_policy }}'
           ports:
             - containerPort: 8052
+{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+            - containerPort: 8053
+{% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/"
               readOnly: true
+{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+            - name: "{{ meta.name }}-nginx-certs"
+              mountPath: "/etc/nginx/pki"
+              readOnly: true
+{% endif %}
             - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY
               subPath: SECRET_KEY
@@ -160,6 +168,16 @@ spec:
               memory: '{{ tower_task_mem_request }}'
               cpu: '{{ tower_task_cpu_request }}'
       volumes:
+{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+        - name: "{{ meta.name }}-nginx-certs"
+          secret:
+            secretName: "{{ tower_route_tls_secret }}"
+            items:
+              - key: tls.key
+                path: 'web.key'
+              - key: tls.crt
+                path: 'web.crt'
+{% endif %}
         - name: "{{ meta.name }}-application-credentials"
           secret:
             secretName: "{{ meta.name }}-secrets"
@@ -224,6 +242,12 @@ spec:
       protocol: TCP
       targetPort: 8052
       name: http
+{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+    - port: 443
+      protocol: TCP
+      targetPort: 8053
+      name: https
+{% endif %}
   selector:
     app: '{{ deployment_type }}'
 {% if tower_ingress_type != "none" %}
@@ -271,7 +295,7 @@ spec:
   host: {{ tower_route_host }}
 {% endif %}
   port:
-    targetPort: http
+    targetPort: '{{ (tower_route_tls_termination_mechanism | lower == "passthrough") | ternary("https", "http") }}'
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: {{ tower_route_tls_termination_mechanism | lower }}
