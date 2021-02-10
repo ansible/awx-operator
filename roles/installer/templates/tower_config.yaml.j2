@@ -119,9 +119,27 @@ data:
             server 127.0.0.1:8051;
         }
     
+
+        {% if tower_route_tls_termination_mechanism | lower == 'passthrough' %}
         server {
             listen 8052 default_server;
-    
+            server_name _;
+
+            # Redirect all HTTP links to the matching HTTPS page
+            return 301 https://$host$request_uri;
+        }
+        {% endif %}
+
+        server {
+        {% if tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+            listen 8053 ssl;
+
+            ssl_certificate /etc/nginx/pki/web.crt;
+            ssl_certificate_key /etc/nginx/pki/web.key;
+        {% else %}
+            listen 8052 default_server;
+        {% endif %}
+
             # If you have a domain name, this is where to add it
             server_name _;
             keepalive_timeout 65;
