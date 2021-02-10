@@ -185,7 +185,9 @@ spec:
                   enum:
                     - none
                     - Ingress
+                    - ingress
                     - Route
+                    - route
                 tower_route_host:
                   description: The DNS to use to points to the instance
                   type: string
@@ -195,7 +197,9 @@ spec:
                   default: Edge
                   enum:
                     - Edge
+                    - edge
                     - Passthrough
+                    - passthrough
                 tower_route_tls_secret:
                   description: Secret where the TLS related credentials are stored
                   type: string
@@ -205,8 +209,11 @@ spec:
                   default: IfNotPresent
                   enum:
                     - Always
+                    - always
                     - Never
+                    - never
                     - IfNotPresent
+                    - ifnotpresent
                 tower_task_resource_requirements:
                   description: Resource requirements for the task container
                   type: object
