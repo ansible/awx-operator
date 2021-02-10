@@ -267,11 +267,24 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
 spec:
+{% if tower_route_host != '' %}
+  host: {{ tower_route_host }}
+{% endif %}
   port:
     targetPort: http
   tls:
     insecureEdgeTerminationPolicy: Redirect
-    termination: edge
+    termination: {{ tower_route_tls_termination_mechanism | lower }}
+{% if tower_route_tls_termination_mechanism | lower == 'edge' and tower_route_tls_secret != '' %}
+    key: |-
+{{ tower_route_tls_key | indent(width=6, indentfirst=True) }}
+    certificate: |-
+{{ tower_route_tls_crt | indent(width=6, indentfirst=True) }}
+{% if tower_route_ca_crt is defined %}
+    caCertificate: |-
+{{ tower_route_ca_crt | indent(width=6, indentfirst=True) }}
+{% endif %}
+{% endif %}
   to:
     kind: Service
     name: {{ meta.name }}-service
