@@ -52,6 +52,7 @@ spec:
                 tower_route_tls_termination_mechanism:
                   description: The secure TLS termination mechanism to use
                   type: string
+                  default: Edge
                   enum:
                     - Edge
                     - Passthrough
@@ -61,6 +62,7 @@ spec:
                 tower_image_pull_policy:
                   description: The image pull policy
                   type: string
+                  default: IfNotPresent
                   enum:
                     - Always
                     - Never
@@ -74,12 +76,15 @@ spec:
                 tower_replicas:
                   description: Number of instance replicas
                   type: integer
+                  default: 1
                   format: int32
                 tower_garbage_collect_secrets:
                   description: Whether or not to remove secrets upon instance removal
+                  default: false
                   type: boolean
                 tower_create_preload_data:
                   description: Whether or not to preload data upon Tower instance creation
+                  default: true
                   type: boolean
               type: object
             status:

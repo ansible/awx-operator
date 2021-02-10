@@ -20,8 +20,99 @@ spec:
       schema:
         openAPIV3Schema:
           description: Schema validation for the AWX CRD
-          type: object
           properties:
             spec:
-              type: object
               properties:
+                tower_hostname:
+                  description: The hostname of the instance
+                  type: string
+                tower_admin_email:
+                  description: The admin user email
+                  type: string
+                tower_admin_password_secret:
+                  description: Secret where the admin password can be found
+                  type: string
+                tower_postgres_configuration_secret:
+                  description: Secret where the database configuration can be found
+                  type: string
+                tower_secret_key_secret:
+                  description: Secret where the secret key can be found
+                  type: string
+                tower_ingress_type:
+                  description: The ingress type to use to reach the deployed instance
+                  type: string
+                  enum:
+                    - none
+                    - Ingress
+                    - Route
+                tower_route_host:
+                  description: The DNS to use to points to the instance
+                  type: string
+                tower_route_tls_termination_mechanism:
+                  description: The secure TLS termination mechanism to use
+                  type: string
+                  default: Edge
+                  enum:
+                    - Edge
+                    - Passthrough
+                tower_route_tls_secret:
+                  description: Secret where the TLS related credentials are stored
+                  type: string
+                tower_image_pull_policy:
+                  description: The image pull policy
+                  type: string
+                  default: IfNotPresent
+                  enum:
+                    - Always
+                    - Never
+                    - IfNotPresent
+                tower_task_resource_requirements:
+                  description: Resource requirements for the task container
+                  type: object
+                tower_web_resource_requirements:
+                  description: Resource requirements for the web container
+                  type: object
+                tower_replicas:
+                  description: Number of instance replicas
+                  type: integer
+                  default: 1
+                  format: int32
+                tower_garbage_collect_secrets:
+                  description: Whether or not to remove secrets upon instance removal
+                  default: false
+                  type: boolean
+                tower_create_preload_data:
+                  description: Whether or not to preload data upon Tower instance creation
+                  default: true
+                  type: boolean
+              type: object
+            status:
+              properties:
+                towerURL:
+                  description: URL to access the deployed instance
+                  type: string
+                towerAdminUser:
+                  description: Admin user of the deployed instance
+                  type: string
+                towerAdminPasswordSecret:
+                  description: Admin password of the deployed instance
+                  type: string
+                towerVersion:
+                  description: Version of the deployed instance
+                  type: string
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is instantiated
+                  items:
+                    properties:
+                      status:
+                        type: string
+                      type:
+                        type: string
+                      reason:
+                        type: string
+                      lastTransitionTime:
+                        type: string
+                    type: object
+                  type: array
+              type: object
+          type: object
