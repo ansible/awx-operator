@@ -99,10 +99,7 @@ spec:
 {% if tower_task_extra_env %}
             {{ tower_web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
-          resources:
-            requests:
-              memory: '{{ tower_web_mem_request }}'
-              cpu: '{{ tower_web_cpu_request }}'
+          resources: {{ tower_web_resource_requirements }}
         - image: '{{ tower_image }}'
           name: '{{ meta.name }}-task'
           imagePullPolicy: '{{ tower_image_pull_policy }}'
@@ -163,10 +160,7 @@ spec:
 {% if tower_task_extra_env -%}
             {{ tower_task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
-          resources:
-            requests:
-              memory: '{{ tower_task_mem_request }}'
-              cpu: '{{ tower_task_cpu_request }}'
+          resources: {{ tower_task_resource_requirements }}
       volumes:
 {% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ meta.name }}-nginx-certs"

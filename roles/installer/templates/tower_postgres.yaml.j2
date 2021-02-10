@@ -57,9 +57,7 @@ spec:
 {% if tower_postgres_storage_class != '' %}
         storageClassName: '{{ tower_postgres_storage_class }}'
 {% endif %}
-        resources:
-          requests:
-            storage: '{{ tower_postgres_storage_request }}'
+        resources: {{ tower_postgres_resource_requirements }}
 
 # Postgres Service.
 ---

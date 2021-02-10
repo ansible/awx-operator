@@ -15,11 +15,15 @@ spec:
 
   tower_image: ansible/awx:15.0.0
 
-  tower_task_mem_request: 128M
-  tower_task_cpu_request: 500m
+  tower_web_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 128M
 
-  tower_web_mem_request: 128M
-  tower_web_cpu_request: 500m
+  tower_task_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 128M
 
   tower_create_preload_data: true
 
@@ -29,5 +33,4 @@ spec:
 
   tower_postgres_pass: awxpass
   tower_postgres_image: postgres:12
-  tower_postgres_storage_request: 8Gi
   tower_postgres_storage_class: ''
