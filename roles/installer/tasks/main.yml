@@ -8,6 +8,12 @@
 - name: Include database configuration tasks
   include_tasks: database_configuration.yml
 
+- name: Load Route TLS certificate
+  include_tasks: load_route_tls_secret.yml
+  when:
+    - tower_ingress_type | lower == 'route'
+    - tower_route_tls_secret != ''
+
 - name: Ensure configured instance resources exist in the cluster.
   k8s:
     apply: yes

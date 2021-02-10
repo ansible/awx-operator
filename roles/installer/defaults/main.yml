@@ -15,6 +15,21 @@ tower_ingress_annotations: ''
 # certificate and key.
 tower_ingress_tls_secret: ''
 
+# The TLS termination mechanism to use to access
+# the services. Supported mechanism are: edge, passthrough
+#
+tower_route_tls_termination_mechanism: edge
+
+# Secret to lookup that provide the TLS specific
+# credentials to deploy
+#
+tower_route_tls_secret: ''
+
+# Host to create the root with.
+# If not specific will default to <instance-name>-<namespace>-<routerCanonicalHostname>
+#
+tower_route_host: ''
+
 tower_hostname: '{{ deployment_type }}.example.com'
 
 tower_admin_user: admin

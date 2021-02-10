@@ -108,6 +108,25 @@ spec:
               - urn:alm:descriptor:com.tectonic.ui:select:none
               - urn:alm:descriptor:com.tectonic.ui:select:Ingress
               - urn:alm:descriptor:com.tectonic.ui:select:Route
+          - displayName: Route DNS host
+            path: tower_route_host
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:label
+              - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Route
+          - displayName: Route TLS termination mechanism
+            path: tower_route_tls_termination_mechanism
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:select:Edge
+              - urn:alm:descriptor:com.tectonic.ui:select:Passthrough
+              - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Route
+          - displayName: Route TLS credential secret
+            path: tower_route_tls_secret
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:io.kubernetes:Secret
+              - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Route
           - displayName: Image Pull Policy
             path: tower_image_pull_policy
             x-descriptors:
@@ -162,6 +181,7 @@ spec:
                 - route.openshift.io
               resources:
                 - routes
+                - routes/custom-host
               verbs:
                 - '*'
             - apiGroups:

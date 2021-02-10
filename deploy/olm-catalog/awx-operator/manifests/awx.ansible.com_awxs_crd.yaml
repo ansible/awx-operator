@@ -42,6 +42,18 @@ spec:
                 - none
                 - Ingress
                 - Route
+            tower_route_host:
+              description: The DNS to use to points to the instance
+              type: string
+            tower_route_tls_termination_mechanism:
+              description: The secure TLS termination mechanism to use
+              type: string
+              enum:
+                - Edge
+                - Passthrough
+            tower_route_tls_secret:
+              description: Secret where the TLS related credentials are stored
+              type: string
             tower_image_pull_policy:
               description: The image pull policy
               type: string
