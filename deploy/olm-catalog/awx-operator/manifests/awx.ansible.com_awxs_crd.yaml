@@ -76,9 +76,47 @@ spec:
                     - ifnotpresent
                 tower_task_resource_requirements:
                   description: Resource requirements for the task container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
                   type: object
                 tower_web_resource_requirements:
                   description: Resource requirements for the web container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
                   type: object
                 tower_replicas:
                   description: Number of instance replicas

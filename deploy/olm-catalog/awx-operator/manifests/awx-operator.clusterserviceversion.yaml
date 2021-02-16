@@ -151,12 +151,12 @@ spec:
             path: tower_garbage_collect_secrets
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
-              - urn:alm:descriptor:com.tectonic.ui:boolean
+              - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
           - displayName: Preload instance with data upon creation ?
             path: tower_create_preload_data
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
-              - urn:alm:descriptor:com.tectonic.ui:boolean
+              - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         statusDescriptors:
           - displayName: URL
             description: Route to access the instance deployed
