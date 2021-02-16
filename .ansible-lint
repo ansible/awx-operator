@@ -5,3 +5,4 @@ skip_list:
 
 exclude_paths:
   - deploy/
+  - .cache/
