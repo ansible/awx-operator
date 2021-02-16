@@ -116,7 +116,7 @@
         - name: get operator logs
           ignore_errors: yes
           failed_when: false
-          command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ operator_namespace }} -c operator
+          command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ operator_namespace }}
           environment:
             KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
           vars:
