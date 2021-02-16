@@ -11,7 +11,7 @@ platforms:
   - name: kind-test-local
     groups:
       - k8s
-    image: bsycorp/kind:latest-1.15
+    image: bsycorp/kind:v1.17.9
     privileged: True
     override_command: no
     exposed_ports:
