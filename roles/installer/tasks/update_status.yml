@@ -1,7 +1,7 @@
 ---
 - name: Update admin password status
   operator_sdk.util.k8s_status:
-    api_version: awx.ansible.com/v1beta1
+    api_version: '{{ api_version }}'
     kind: "{{ deployment_type | upper }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
@@ -10,7 +10,7 @@
 
 - name: Update admin user status
   operator_sdk.util.k8s_status:
-    api_version: awx.ansible.com/v1beta1
+    api_version: '{{ api_version }}'
     kind: "{{ deployment_type | upper }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
@@ -29,12 +29,12 @@
 
 - name: Update version status
   operator_sdk.util.k8s_status:
-    api_version: awx.ansible.com/v1beta1
+    api_version: '{{ api_version }}'
     kind: "{{ deployment_type | upper }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerVersion: "{{ instance_version.stdout }}"
+      towerVersion: "{{ instance_version.stdout | trim }}"
 
 - block:
     - name: Retrieve route URL
@@ -46,7 +46,7 @@
 
     - name: Update URL status
       operator_sdk.util.k8s_status:
-        api_version: awx.ansible.com/v1beta1
+        api_version: '{{ api_version }}'
         kind: "{{ deployment_type | upper }}"
         name: "{{ meta.name }}"
         namespace: "{{ meta.namespace }}"
