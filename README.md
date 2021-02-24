@@ -155,10 +155,10 @@ The following variables are customizable to specify the TLS termination procedur
 
 #### External PostgreSQL Service
 
-In order for the AWX instance to rely on an external database, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and either specified a `tower_postgres_configuration_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-postgres-configuration`.
+In order for the AWX instance to rely on an external database, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and either specified as `tower_postgres_configuration_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-postgres-configuration`.
 
 
-The secret that is expected to be passed should be formatted as follow:
+The secret should be formatted as follows:
 
 ```yaml
 ---
