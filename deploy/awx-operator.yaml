@@ -164,6 +164,18 @@ spec:
           properties:
             spec:
               properties:
+                deployment_type:
+                  description: Name of the deployment type
+                  type: string
+                api_version:
+                  description: API version identified
+                  type: string
+                tower_task_privileged:
+                  description: If a privileged security context should be enabled
+                  type: boolean
+                tower_admin_user:
+                  description: Username to use for the admin account
+                  type: string
                 tower_hostname:
                   description: The hostname of the instance
                   type: string
@@ -179,6 +191,12 @@ spec:
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
+                tower_broadcast_websocket_secret:
+                  description: Secret where the broadcast websocket secret can be found
+                  type: string
+                tower_extra_volumes:
+                  description: Specify extra volumes to add to the application pod
+                  type: string
                 tower_ingress_type:
                   description: The ingress type to use to reach the deployed instance
                   type: string
@@ -188,6 +206,12 @@ spec:
                     - ingress
                     - Route
                     - route
+                tower_ingress_annotations:
+                  description: Annotations to add to the ingress
+                  type: string
+                tower_ingress_tls_secret:
+                  description: Secret where the ingress TLS secret can be found
+                  type: string
                 tower_route_host:
                   description: The DNS to use to points to the instance
                   type: string
@@ -202,6 +226,9 @@ spec:
                     - passthrough
                 tower_route_tls_secret:
                   description: Secret where the TLS related credentials are stored
+                  type: string
+                tower_image:
+                  description: Registry path to the application container to use
                   type: string
                 tower_image_pull_policy:
                   description: The image pull policy
@@ -270,6 +297,70 @@ spec:
                 tower_create_preload_data:
                   description: Whether or not to preload data upon Tower instance creation
                   default: true
+                  type: boolean
+                tower_task_args:
+                  type: array
+                  items:
+                    type: string
+                tower_task_command:
+                  type: array
+                  items:
+                    type: string
+                tower_web_args:
+                  type: array
+                  items:
+                    type: string
+                tower_web_command:
+                  type: array
+                  items:
+                    type: string
+                tower_task_extra_env:
+                  type: string
+                tower_web_extra_env:
+                  type: string
+                tower_task_extra_volume_mounts:
+                  type: string
+                tower_web_extra_volume_mounts:
+                  type: string
+                tower_redis_image:
+                  description: Registry path to the redis container to use
+                  type: string
+                tower_postgres_image:
+                  description: Registry path to the PostgreSQL container to use
+                  type: string
+                tower_postgres_resource_requirements:
+                  description: Resource requirements for the PostgreSQL container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                tower_postgres_storage_class:
+                  description: Storage class to use for the PostgreSQL PVC
+                  type: string
+                tower_postgres_data_path:
+                  description: Path where the PostgreSQL data are located
+                  type: string
+                ca_trust_bundle:
+                  description: Path where the trusted CA bundle is available
+                  type: string
+                development_mode:
+                  description: If the deployment should be done in development mode
                   type: boolean
               type: object
             status:
