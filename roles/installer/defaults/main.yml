@@ -1,6 +1,5 @@
 ---
 deployment_type: awx
-api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
 tower_task_privileged: false
 tower_ingress_type: none
