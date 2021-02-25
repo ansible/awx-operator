@@ -374,6 +374,9 @@ spec:
                 towerVersion:
                   description: Version of the deployed instance
                   type: string
+                towerImage:
+                  description: URL of the image used for the deployed instance
+                  type: string
                 conditions:
                   description: The resulting conditions when a Service Telemetry is instantiated
                   items:

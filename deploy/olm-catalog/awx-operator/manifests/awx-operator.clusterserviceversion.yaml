@@ -81,6 +81,11 @@ spec:
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
               - urn:alm:descriptor:com.tectonic.ui:text
+          - displayName: Admin account username
+            path: tower_admin_user
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:text
           - displayName: Admin email address
             path: tower_admin_email
             x-descriptors:
@@ -108,11 +113,23 @@ spec:
               - urn:alm:descriptor:com.tectonic.ui:select:none
               - urn:alm:descriptor:com.tectonic.ui:select:Ingress
               - urn:alm:descriptor:com.tectonic.ui:select:Route
+          - displayName: Tower Ingress Annotations
+            path: tower_ingress_annotations
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:text
+              - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Ingress
+          - displayName: Tower Ingress TLS Secret
+            path: tower_ingress_tls_secret
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:io.kubernetes:Secret
+              - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Ingress
           - displayName: Route DNS host
             path: tower_route_host
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
-              - urn:alm:descriptor:com.tectonic.ui:label
+              - urn:alm:descriptor:com.tectonic.ui:text
               - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Route
           - displayName: Route TLS termination mechanism
             path: tower_route_tls_termination_mechanism
@@ -142,6 +159,11 @@ spec:
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
               - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+          - displayName: PostgreSQL container resource requirements (when using a managed instance)
+            path: tower_postgres_resource_requirements
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
           - displayName: Replicas
             path: tower_replicas
             x-descriptors:
@@ -157,6 +179,26 @@ spec:
             x-descriptors:
               - urn:alm:descriptor:com.tectonic.ui:advanced
               - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+          - displayName: Deployment Type
+            path: deployment_type
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:hidden
+          - displayName: Tower Image
+            path: tower_image
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:hidden
+          - displayName: Tower Postgres Storage Class
+            path: tower_postgres_storage_class
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:hidden
+          - displayName: Certificate Authorirty Trust Bundle
+            path: ca_trust_bundle
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:advanced
+              - urn:alm:descriptor:com.tectonic.ui:hidden
         statusDescriptors:
           - displayName: URL
             description: Route to access the instance deployed
@@ -167,7 +209,7 @@ spec:
             description: Admin user for the instance deployed
             path: towerAdminUser
             x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:label
+              - urn:alm:descriptor:com.tectonic.ui:text
           - displayName: Admin Password
             description: Admin password for the instance deployed
             path: towerAdminPasswordSecret
@@ -177,7 +219,12 @@ spec:
             description: Version of the instance deployed
             path: towerVersion
             x-descriptors:
-              - urn:alm:descriptor:com.tectonic.ui:label
+              - urn:alm:descriptor:com.tectonic.ui:text
+          - displayName: Image
+            description: Image of the instance deployed
+            path: towerImage
+            x-descriptors:
+              - urn:alm:descriptor:com.tectonic.ui:text
   description: AWX operator
   displayName: AWX
   icon:

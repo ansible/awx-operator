@@ -24,6 +24,13 @@ spec:
           properties:
             spec:
               properties:
+                deployment_type:
+                  description: Name of the deployment type
+                  type: string
+                tower_admin_user:
+                  description: Username to use for the admin account
+                  type: string
+                  default: admin
                 tower_hostname:
                   description: The hostname of the instance
                   type: string
@@ -48,6 +55,12 @@ spec:
                     - ingress
                     - Route
                     - route
+                tower_ingress_annotations:
+                  description: Annotations to add to the ingress
+                  type: string
+                tower_ingress_tls_secret:
+                  description: Secret where the ingress TLS secret can be found
+                  type: string
                 tower_route_host:
                   description: The DNS to use to points to the instance
                   type: string
@@ -62,6 +75,9 @@ spec:
                     - passthrough
                 tower_route_tls_secret:
                   description: Secret where the TLS related credentials are stored
+                  type: string
+                tower_image:
+                  description: Registry path to the application container to use
                   type: string
                 tower_image_pull_policy:
                   description: The image pull policy
@@ -131,6 +147,34 @@ spec:
                   description: Whether or not to preload data upon Tower instance creation
                   default: true
                   type: boolean
+                tower_postgres_resource_requirements:
+                  description: Resource requirements for the PostgreSQL container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                tower_postgres_storage_class:
+                  description: Storage class to use for the PostgreSQL PVC
+                  type: string
+                ca_trust_bundle:
+                  description: Path where the trusted CA bundle is available
+                  type: string
               type: object
             status:
               properties:
@@ -145,6 +189,9 @@ spec:
                   type: string
                 towerVersion:
                   description: Version of the deployed instance
+                  type: string
+                towerImage:
+                  description: URL of the image used for the deployed instance
                   type: string
                 conditions:
                   description: The resulting conditions when a Service Telemetry is instantiated

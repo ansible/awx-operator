@@ -41,6 +41,15 @@
     status:
       towerVersion: "{{ instance_version.stdout | trim }}"
 
+- name: Update image status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerImage: "{{ tower_image }}"
+
 - block:
     - name: Retrieve route URL
       community.kubernetes.k8s_info:
