@@ -89,7 +89,7 @@
             name: '{{ custom_resource.metadata.name }}'
           register: cr
           until:
-            - "'Successful' in (cr | json_query('resources[].status.conditions[].reason'))"
+            - "'Successful' in (cr | json_query('resources[].status.conditions[].reason') | default(''))"
           delay: 6
           retries: 150
 
