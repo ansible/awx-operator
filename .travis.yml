@@ -16,4 +16,4 @@ install:
   - ansible-galaxy collection install community.kubernetes operator_sdk.util
 
 script:
-  - molecule test -s test-local
+  - MOLECULE_VERBOSITY=3 molecule test -s test-local
