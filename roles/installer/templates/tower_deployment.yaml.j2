@@ -1,14 +1,3 @@
-# AWX Secret Configurations
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: '{{ meta.name }}-secrets'
-  namespace: '{{ meta.namespace }}'
-data:
-  credentials_py: "{{ lookup('template', 'credentials.py.j2') | b64encode }}"
-  environment_sh: "{{ lookup('template', 'environment.sh.j2') | b64encode }}"
-
 # AWX Deployment.
 ---
 apiVersion: apps/v1
@@ -174,7 +163,7 @@ spec:
 {% endif %}
         - name: "{{ meta.name }}-application-credentials"
           secret:
-            secretName: "{{ meta.name }}-secrets"
+            secretName: "{{ meta.name }}-app-credentials"
             items:
               - key: credentials_py
                 path: 'credentials.py'
@@ -219,93 +208,4 @@ spec:
 {% endif %}
 {% if tower_extra_volumes -%}
         {{ tower_extra_volumes | indent(width=8, indentfirst=True) }}
-{% endif %}
-
-# AWX Service.
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: '{{ meta.name }}-service'
-  namespace: '{{ meta.namespace }}'
-  labels:
-    app: '{{ deployment_type }}'
-spec:
-  ports:
-    - port: 80
-      protocol: TCP
-      targetPort: 8052
-      name: http
-{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
-    - port: 443
-      protocol: TCP
-      targetPort: 8053
-      name: https
-{% endif %}
-  selector:
-    app: '{{ deployment_type }}'
-{% if tower_ingress_type != "none" %}
-  type: NodePort
-{% endif %}
-
-# AWX Ingress.
-{% if 'ingress' == tower_ingress_type|lower %}
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: '{{ meta.name }}-ingress'
-  namespace: '{{ meta.namespace }}'
-{% if tower_ingress_annotations %}
-  annotations:
-    {{ tower_ingress_annotations | indent(width=4) }}
-{% endif %}
-spec:
-  rules:
-    - host: '{{ tower_hostname }}'
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: '{{ meta.name }}-service'
-              servicePort: 80
-{% if tower_ingress_tls_secret %}
-  tls:
-    - hosts:
-        - {{ tower_hostname }}
-      secretName: {{ tower_ingress_tls_secret }}
-{% endif %}
-{% endif %}
-
-{% if 'route' == tower_ingress_type|lower %}
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: '{{ meta.name }}'
-  namespace: '{{ meta.namespace }}'
-spec:
-{% if tower_route_host != '' %}
-  host: {{ tower_route_host }}
-{% endif %}
-  port:
-    targetPort: '{{ (tower_route_tls_termination_mechanism | lower == "passthrough") | ternary("https", "http") }}'
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: {{ tower_route_tls_termination_mechanism | lower }}
-{% if tower_route_tls_termination_mechanism | lower == 'edge' and tower_route_tls_secret != '' %}
-    key: |-
-{{ tower_route_tls_key | indent(width=6, indentfirst=True) }}
-    certificate: |-
-{{ tower_route_tls_crt | indent(width=6, indentfirst=True) }}
-{% if tower_route_ca_crt is defined %}
-    caCertificate: |-
-{{ tower_route_ca_crt | indent(width=6, indentfirst=True) }}
-{% endif %}
-{% endif %}
-  to:
-    kind: Service
-    name: {{ meta.name }}-service
-    weight: 100
-  wildcardPolicy: None
 {% endif %}
