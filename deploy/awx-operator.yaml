@@ -167,9 +167,6 @@ spec:
                 deployment_type:
                   description: Name of the deployment type
                   type: string
-                api_version:
-                  description: API version identified
-                  type: string
                 tower_task_privileged:
                   description: If a privileged security context should be enabled
                   type: boolean
@@ -376,6 +373,9 @@ spec:
                   type: string
                 towerVersion:
                   description: Version of the deployed instance
+                  type: string
+                towerImage:
+                  description: URL of the image used for the deployed instance
                   type: string
                 conditions:
                   description: The resulting conditions when a Service Telemetry is instantiated
