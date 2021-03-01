@@ -22,11 +22,16 @@
   with_items:
     - tower_config.yaml.j2
 
-- name: Apply Resource Deployment Configuration
+- name: Apply Resources
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'tower.yaml.j2') }}"
+    definition: "{{ lookup('template', item + '.yaml.j2') }}"
   register: tower_deployment_result
+  loop:
+    - 'tower_app_credentials'
+    - 'tower_deployment'
+    - 'tower_service'
+    - 'tower_ingress'
 
 - name: Get the resource pod information.
   k8s_info:
