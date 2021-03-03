@@ -3,6 +3,7 @@ extends: default
 
 ignore: |
   .cache/
+  deploy/olm-catalog
 
 rules:
   truthy: disable
