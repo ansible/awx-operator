@@ -14,15 +14,19 @@ rules:
       - '*'
   - apiGroups:
       - ""
+      - "rbac.authorization.k8s.io"
     resources:
       - pods
       - services
       - services/finalizers
+      - serviceaccounts
       - endpoints
       - persistentvolumeclaims
       - events
       - configmaps
       - secrets
+      - roles
+      - rolebindings
     verbs:
       - '*'
   - apiGroups:

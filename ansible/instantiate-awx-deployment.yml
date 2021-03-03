@@ -20,7 +20,6 @@
           spec:
             tower_admin_user: test
             tower_admin_email: test@example.com
-            tower_broadcast_websocket_secret: changeme
             tower_ingress_type: "{{ tower_ingress_type | default(omit) }}"  # Either Route or Ingress
             tower_image: "{{ tower_image | default(omit) }}"
             development_mode: "{{ development_mode | default(omit) }}"

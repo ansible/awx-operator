@@ -17,6 +17,7 @@ spec:
       labels:
         app: '{{ deployment_type }}'
     spec:
+      serviceAccountName: '{{ meta.name }}'
       containers:
         - image: '{{ tower_redis_image }}'
           name: redis
@@ -28,6 +29,8 @@ spec:
               readOnly: true
             - name: {{ meta.name }}-redis-socket
               mountPath: "/var/run/redis"
+            - name: "{{ meta.name }}-redis-data"
+              mountPath: "/data"
         - image: '{{ tower_image }}'
           name: '{{ meta.name }}-web'
 {% if tower_web_command %}
@@ -78,9 +81,11 @@ spec:
 {% if tower_web_extra_volume_mounts -%}
             {{ tower_web_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
-{% if (development_mode | bool) or (tower_task_extra_env | bool) %}
           env:
-{% endif %}
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
@@ -122,6 +127,10 @@ spec:
               mountPath: "/var/run/awx-rsyslog"
             - name: rsyslog-dir
               mountPath: "/var/lib/awx/rsyslog"
+            - name: receptor-socket
+              mountPath: "/var/run/receptor"
+            - name: "{{ meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -142,6 +151,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
@@ -150,6 +163,26 @@ spec:
             {{ tower_task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ tower_task_resource_requirements }}
+        - image: '{{ default_ee }}'
+          name: '{{ meta.name }}-ee'
+          imagePullPolicy: '{{ tower_image_pull_policy }}'
+          args: ['receptor', '--config', '/etc/receptor.conf']
+          volumeMounts:
+            - name: "{{ meta.name }}-receptor-config"
+              mountPath: "/etc/receptor.conf"
+              subPath: receptor.conf
+              readOnly: true
+            - name: receptor-socket
+              mountPath: "/var/run/receptor"
+            - name: "{{ meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% if development_mode | bool %}
+          env:
+            - name: SDB_NOTIFY_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+{% endif %}
       volumes:
 {% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ meta.name }}-nginx-certs"
@@ -195,11 +228,23 @@ spec:
                 path: redis.conf
         - name: {{ meta.name }}-redis-socket
           emptyDir: {}
+        - name: {{ meta.name }}-redis-data
+          emptyDir: {}
         - name: supervisor-socket
           emptyDir: {}
         - name: rsyslog-socket
           emptyDir: {}
+        - name: receptor-socket
+          emptyDir: {}
         - name: rsyslog-dir
+          emptyDir: {}
+        - name: {{ meta.name }}-receptor-config
+          configMap:
+            name: {{ meta.name }}-awx-configmap
+            items:
+              - key: receptor_conf
+                path: receptor.conf
+        - name: "{{ meta.name }}-projects"
           emptyDir: {}
 {% if development_mode | bool %}
         - name: awx-devel
