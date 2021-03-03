@@ -240,7 +240,7 @@ spec:
           emptyDir: {}
         - name: {{ meta.name }}-receptor-config
           configMap:
-            name: {{ meta.name }}-awx-configmap
+            name: '{{ meta.name }}-{{ deployment_type }}-configmap'
             items:
               - key: receptor_conf
                 path: receptor.conf
