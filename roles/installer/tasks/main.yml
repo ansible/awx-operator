@@ -5,6 +5,9 @@
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
 
+- name: Include broadcast websocket configuration tasks
+  include_tasks: broadcast_websocket_configuration.yml
+
 - name: Include database configuration tasks
   include_tasks: database_configuration.yml
 
