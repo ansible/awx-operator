@@ -103,6 +103,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Broadcast Websocket Secret
+        path: tower_broadcast_websocket_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       - displayName: Ingress Type
         path: tower_ingress_type
         x-descriptors:

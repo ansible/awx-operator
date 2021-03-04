@@ -9,8 +9,6 @@ spec:
   tower_ingress_type: ingress
   tower_task_privileged: false
 
-  tower_broadcast_websocket_secret: changeme
-
   tower_admin_email: test@example.com
 
   tower_image: quay.io/ansible/awx:execution-environments

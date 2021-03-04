@@ -39,7 +39,9 @@ tower_admin_email: test@example.com
 #
 tower_admin_password_secret: ''
 
-tower_broadcast_websocket_secret: changeme
+# Secret to lookup that provide the broadcast websocket key
+#
+tower_broadcast_websocket_secret: ''
 
 # Secret to lookup that provide the secret key
 #
