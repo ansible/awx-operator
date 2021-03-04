@@ -1,51 +1,44 @@
 ---
 
-# - name: Use kubectl or oc
-#   set_fact:
-#     kubectl_or_oc: "{{ openshift_oc_bin if openshift_oc_bin is defined else 'kubectl' }}"
-
-# TODO: Either make everything below a block or included tasks
-- name: Get Postgres container name
-  shell: |
-    oc -n {{ tower_namespace }} get pods -o jsonpath={.items[*].metadata.name} --selector app=tower-postgres
+- name: Get the postgres pod information
+  k8s_info:
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - "app={{ deployment_type }}-postgres"
   register: postgres_pod
+  until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+  delay: 5
+  retries: 60
 
-- name: oc exec command #TODO: Make this work with Kubectl too
+- name: Set the resource pod name as a variable.
   set_fact:
-    container_exec: oc -n chadams-restore exec -i {{ postgres_pod.stdout }} -- bash -c
+    postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
-# - name: Set psql command
-#   set_fact: 
-#     psql_conn: 'psql -h {{ tower_old_postgres_host }} -U {{ tower_old_postgres_user }} -d {{ tower_old_postgres_database }} -p {{ tower_old_postgres_port }}'
 
 - name: Set pg_dump command
   set_fact: 
     pgdump: |
-      pg_dump -h {{ tower_old_postgres_host }} \
-      -U {{ tower_old_postgres_user }} \
-      -d {{ tower_old_postgres_database }} \
+      pg_dump -h {{ tower_old_postgres_host }}
+      -U {{ tower_old_postgres_user }}
+      -d {{ tower_old_postgres_database }}
       -p {{ tower_old_postgres_port }}
 
 - name: Set pg_restore command
   set_fact: 
     psql_restore: |
-      psql \
-      -U {{ awx_postgres_user }} \
-      -d {{ awx_postgres_database }} \
+      psql -U {{ awx_postgres_user }} 
+      -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
 
-- pause:
-
-- name: Set backup & restore command
-  set_fact:
-    psql_backup_restore: |
-      PGPASSWORD={{ tower_old_postgres_password }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
-
-    # no_log: true #TODO uncomment
-
-- name: Migrate data from old postgresql if defined
-  shell: |
-    {{ container_exec }} '{{ psql_backup_restore }}'
-  # environment:
-  #   PGPASSWORD: "{{ tower_old_postgres_password }}"
+- name: Stream backup from pg_dump to the new postgresql container
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    command: >-
+      {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+  environment:
+    PGPASSWORD: "{{ tower_old_postgres_password }}"
+  ignore_errors: true
   register: data_migration
+  # changed_when: success_condition?
