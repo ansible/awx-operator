@@ -53,8 +53,9 @@ tower_extra_volumes: ''
 
 # Use these image versions for Ansible AWX.
 
-tower_image: ansible/awx:15.0.0
+tower_image: quay.io/ansible/awx:execution-environments
 tower_image_pull_policy: IfNotPresent
+default_ee: quay.io/ansible/awx-ee
 
 tower_create_preload_data: true
 

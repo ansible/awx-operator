@@ -14,7 +14,7 @@ spec:
   tower_admin_user: test
   tower_admin_email: test@example.com
 
-  tower_image: ansible/awx:15.0.0
+  tower_image: quay.io/ansible/awx:execution-environments
 
   tower_create_preload_data: true
 

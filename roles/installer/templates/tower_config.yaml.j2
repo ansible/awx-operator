@@ -23,7 +23,9 @@ data:
     STATIC_ROOT = '/var/lib/awx/public/static'
     PROJECTS_ROOT = '/var/lib/awx/projects'
     JOBOUTPUT_ROOT = '/var/lib/awx/job_status'
-    
+
+    IS_K8S = True
+
     SECRET_KEY = get_secret()
     
     ALLOWED_HOSTS = ['*']
@@ -59,6 +61,7 @@ data:
         '()': 'logging.StreamHandler',
         'level': 'DEBUG',
         'formatter': 'simple',
+        'filters': ['guid'],
     }
     
     LOGGING['loggers']['django.request']['handlers'] = ['console']
@@ -208,3 +211,32 @@ data:
     unixsocketperm 777
     port 0
     bind 127.0.0.1
+  receptor_conf: |
+    ---
+    - log-level: debug
+
+    - control-service:
+        service: control
+        filename: /var/run/receptor/receptor.sock
+
+    - local-only:
+
+    - work-command:
+        worktype: local
+        command: ansible-runner
+        params: worker
+        allowruntimeparams: true
+
+    - work-kubernetes:
+        worktype: kubernetes-runtime-auth
+        authmethod: runtime
+        allowruntimeauth: true
+        allowruntimepod: true
+        allowruntimeparams: true
+
+    - work-kubernetes:
+        worktype: kubernetes-incluster-auth
+        authmethod: incluster
+        allowruntimeauth: true
+        allowruntimepod: true
+        allowruntimeparams: true

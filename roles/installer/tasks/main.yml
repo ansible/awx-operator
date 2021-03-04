@@ -29,6 +29,7 @@
   register: tower_deployment_result
   loop:
     - 'tower_app_credentials'
+    - 'tower_service_account'
     - 'tower_deployment'
     - 'tower_service'
     - 'tower_ingress'
