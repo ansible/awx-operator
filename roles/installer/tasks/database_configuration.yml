@@ -30,7 +30,6 @@
         namespace: '{{ meta.namespace }}'
         name: '{{ meta.name }}-postgres-configuration'
       register: _generated_pg_config_resources
-
   when: not _pg_config['resources'] | default([]) | length
 
 - name: Set PostgreSQL Configuration
@@ -51,3 +50,8 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+  # no_log: true #TODO uncomment
+
+- name: Migrate data from old Openshift instance
+  import_tasks: migrate_data.yml
+  when: tower_old_postgres_host is defined
