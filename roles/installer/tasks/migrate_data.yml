@@ -1,5 +1,13 @@
 ---
 
+- name: Store Database Configuration
+  set_fact:
+    tower_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
+    tower_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
+    tower_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
+    tower_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
+    tower_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
+
 - name: Get the postgres pod information
   k8s_info:
     kind: Pod
@@ -15,10 +23,9 @@
   set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
-
 - name: Set pg_dump command
   set_fact: 
-    pgdump: |
+    pgdump: >-
       pg_dump -h {{ tower_old_postgres_host }}
       -U {{ tower_old_postgres_user }}
       -d {{ tower_old_postgres_database }}
@@ -26,7 +33,7 @@
 
 - name: Set pg_restore command
   set_fact: 
-    psql_restore: |
+    psql_restore: >-
       psql -U {{ awx_postgres_user }} 
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
@@ -36,9 +43,7 @@
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: >-
-      {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
-  environment:
-    PGPASSWORD: "{{ tower_old_postgres_password }}"
+      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}"
   ignore_errors: true
   register: data_migration
   # changed_when: success_condition?
