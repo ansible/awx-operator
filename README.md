@@ -211,12 +211,13 @@ spec:
 
 #### Deploying a specific version of AWX
 
-There are two variables that are customizable for awx the image management.
+There are a few variables that are customizable for awx the image management.
 
 | Name                    | Description                | Default            |
 | ----------------------- | -------------------------- | ------------------ |
 | tower_image             | Path of the image to pull  | ansible/awx:15.0.0 |
 | tower_image_pull_policy | The pull policy to adopt   | IfNotPresent       |
+| tower_image_pull_secret | The pull secret to use     | ''                 |
 
 Example of customization could be:
 
@@ -226,6 +227,7 @@ spec:
   ...
   tower_image: myorg/my-custom-awx
   tower_image_pull_policy: Always
+  tower_image_pull_secret: pull_secret_name
 ```
 
 #### Privileged Tasks
