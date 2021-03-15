@@ -1,0 +1,3 @@
+---
+postgres_initdb_args: '--auth-host=scram-sha-256'
+postgres_host_auth_method: 'scram-sha-256'

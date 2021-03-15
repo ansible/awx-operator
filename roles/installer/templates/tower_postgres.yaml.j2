@@ -41,6 +41,10 @@ spec:
                   key: password
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
+            - name: POSTGRES_INITDB_ARGS
+              value: '{{ postgres_initdb_args }}'
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: '{{ postgres_host_auth_method }}'
           ports:
             - containerPort: 5432
               name: postgres
