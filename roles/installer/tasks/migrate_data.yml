@@ -24,6 +24,14 @@
   set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
+- name: Scale deployment down when current replicas match
+  community.kubernetes.k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    replicas: 0
+
 - name: Set pg_dump command
   set_fact:
     pgdump: >-
@@ -32,15 +40,13 @@
       -U {{ tower_old_postgres_user }}
       -d {{ tower_old_postgres_database }}
       -p {{ tower_old_postgres_port }}
-  no_log: true
 
 - name: Set pg_restore command
   set_fact:
     psql_restore: >-
       psql -U {{ awx_postgres_user }}
-      -d {{ awx_postgres_database }}
+      -d template1
       -p {{ awx_postgres_port }}
-  no_log: true
 
 - name: Stream backup from pg_dump to the new postgresql container
   community.kubernetes.k8s_exec:

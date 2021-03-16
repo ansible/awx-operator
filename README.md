@@ -181,7 +181,7 @@ type: Opaque
 
 #### Migrating data from an old AWX instance
 
-To migrate data from the postgresql pod of an AWX deployment in Openshift for Kubernetes, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and either specified as `tower_old_postgres_configuration_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-old-postgres-configuration`.
+To migrate data from an older AWX installation, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and specified as `tower_old_postgres_configuration_secret` at the CR spec level.
 
 
 The secret should be formatted as follows:
