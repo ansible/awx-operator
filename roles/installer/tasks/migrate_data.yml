@@ -53,8 +53,7 @@
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: >-
-      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}"
+      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }} && echo 'Finished'"
   no_log: true
-  ignore_errors: true
   register: data_migration
-  # changed_when: success_condition?
+  changed_when: false

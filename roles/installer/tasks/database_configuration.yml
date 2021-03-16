@@ -65,10 +65,8 @@
     name: '{{ tower_old_postgres_configuration_secret }}'
   register: old_pg_config
   when: tower_old_postgres_configuration_secret | length
-  ignore_errors: true
   no_log: true
 
 - name: Migrate data from old Openshift instance
   import_tasks: migrate_data.yml
   when: old_pg_config['resources'][0]['data']['host'] is defined
-  ignore_errors: true
