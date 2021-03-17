@@ -1,0 +1,12 @@
+---
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  name: "{{ tower_backup_pvc | default('tower_backup') }}_{{ now }}"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "5Gi"
+  volumeName: "tower_backup_{{ now }}"

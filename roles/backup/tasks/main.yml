@@ -1,0 +1,150 @@
+---
+# - name: Check for old PostgreSQL configuration secret
+#   k8s_info:
+#     kind: Secret
+#     namespace: '{{ meta.namespace }}'
+#     name: '{{ tower_postgres_configuration_secret }}'
+#   register: old_pg_config
+# 
+# - name: Migrate data from old Openshift instance
+#   import_tasks: migrate_data.yml
+#   when:  old_pg_config['resources'][0]['data']['host'] is defined
+#   ignore_errors: true
+
+
+
+# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+# Break up database_configuration.yml and just import those tasks here
+
+- name: Check for specified PostgreSQL configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ tower_postgres_configuration_secret }}'
+  register: _custom_pg_config_resources
+  when: tower_postgres_configuration_secret | length
+
+- name: Check for default PostgreSQL configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-postgres-configuration'
+  register: _default_pg_config_resources
+
+- name: Set PostgreSQL configuration
+  set_fact:
+    _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
+
+- block:
+    - name: Create Database configuration
+      k8s:
+        apply: true
+        definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
+
+    - name: Read Database Configuration
+      k8s_info:
+        kind: Secret
+        namespace: '{{ meta.namespace }}'
+        name: '{{ meta.name }}-postgres-configuration'
+      register: _generated_pg_config_resources
+  when: not _pg_config['resources'] | default([]) | length
+
+- name: Set PostgreSQL Configuration
+  set_fact:
+    pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
+
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+
+# /////////////////
+
+- name: Get the postgres pod information
+  k8s_info:
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - "app={{ deployment_type }}-postgres"
+  register: postgres_pod
+  until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+  delay: 5
+  retries: 60
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+
+- name: Determine the timestamp for the backup once for all nodes
+  set_fact:
+    now: '{{ lookup("pipe", "date +%F-%T") }}'
+
+
+
+### define a volumeClaimTemplate in the management-pod.yml.j2
+
+- name: Delete any existing management pod
+  shell: |
+    {{ kubectl_or_oc }} -n {{ kubernetes_namespace }} \
+      delete pod ansible-tower-management --grace-period=0 --ignore-not-found
+
+- name: Template management pod
+  set_fact:
+    management_pod: "{{ lookup('template', 'management-pod.yml.j2') }}"
+
+- name: Create management pod
+  shell: |
+    echo {{ management_pod | quote }} | {{ kubectl_or_oc }} apply -f -
+
+- name: Wait for management pod to start
+  shell: |
+    {{ kubectl_or_oc }} -n {{ kubernetes_namespace }} \
+      get pod ansible-tower-management -o jsonpath="{.status.phase}"
+  register: result
+  until: result.stdout == "Running"
+  retries: 60
+  delay: 10
+
+
+
+
+
+
+
+
+
+- name: Check for existing PVC
+
+- name: Create PVC for backup
+
+- name: Create PVC to backup to if no PVC exists
+  k8s:
+    apply: true
+    definition: "{{ lookup('template', 'backup_pvc.yaml.j2') }}"
+  # when: # pvc doesn't exist already
+  #   - pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
+# tower_backup_pvc: ''
+# tower_backup_size: ''
+
+
+- name: Set pg_dump command
+  set_fact: 
+    pgdump: >-
+      pg_dump --clean --create
+      -h {{ tower_postgres_host }}
+      -U {{ tower_postgres_user }}
+      -d {{ tower_postgres_database }}
+      -p {{ tower_postgres_port }}
+
+
+- name: Stream backup from pg_dump to the new postgresql container
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    command: >-
+      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} > {{ playbook_dir }}/tower-openshift-backup-{{ now }}/tower.db"
+  ignore_errors: true
+  register: data_migration
