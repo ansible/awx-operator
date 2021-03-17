@@ -133,7 +133,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Loadbalancer
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:LoadBalancer
       - displayName: Tower LoadBalancer Protocol
         path: tower_loadbalancer_protocol
         x-descriptors:
