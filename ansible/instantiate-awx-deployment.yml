@@ -20,7 +20,7 @@
           spec:
             tower_admin_user: test
             tower_admin_email: test@example.com
-            tower_ingress_type: "{{ tower_ingress_type | default(omit) }}"  # Either Route, Ingress or Loadbalancer
+            tower_ingress_type: "{{ tower_ingress_type | default(omit) }}"  # Either Route, Ingress or LoadBalancer
             tower_image: "{{ tower_image | default(omit) }}"
             development_mode: "{{ development_mode | default(omit) }}"
             tower_image_pull_policy: "{{ tower_image_pull_policy | default(omit) }}"
