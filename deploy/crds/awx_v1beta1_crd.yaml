@@ -62,7 +62,7 @@ spec:
                     - ingress
                     - Route
                     - route
-                    - Loadbalancer
+                    - LoadBalancer
                     - loadbalancer
                 tower_ingress_annotations:
                   description: Annotations to add to the ingress
