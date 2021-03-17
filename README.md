@@ -135,7 +135,7 @@ spec:
 ---
 spec:
   ...
-  tower_ingress_type: Loadbalancer
+  tower_ingress_type: LoadBalancer
   tower_ingress_protocal: http
 ```
 
