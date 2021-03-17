@@ -108,7 +108,7 @@ stringData:
 
 By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, if `tower_ingress_type` is not specified as part of the Custom Resource specification, it will default to `none` and nothing ingress-wise will be created.
 
-The AWX operator provides support for two kind of `Ingress` to access AWX: `Ingress` and `Route`, To toggle between these two options, you can add the following to your AWX CR:
+The AWX operator provides support for three kinds of `Ingress` to access AWX: `Ingress`, `Route` and `LoadBalancer`, To toggle between these options, you can add the following to your AWX CR:
 
   * Route
 
@@ -127,6 +127,16 @@ spec:
   ...
   tower_ingress_type: Ingress
   tower_hostname: awx.mycompany.com
+```
+
+  * LoadBalancer
+
+```yaml
+---
+spec:
+  ...
+  tower_ingress_type: Loadbalancer
+  tower_ingress_protocal: http
 ```
 
 #### TLS Termination
@@ -149,6 +159,16 @@ The following variables are customizable to specify the TLS termination procedur
 | -------------------------- | ---------------------------------------- | ------------- |
 | tower_ingress_annotations  | Ingress annotations                      | Empty string  |
 | tower_ingress_tls_secret   | Secret that contains the TLS information | Empty string  |
+
+  * LoadBalancer
+
+The following variables are customizable to specify the TLS termination procedure when `LoadBalancer` is picked as an Ingress
+
+| Name                           | Description                              | Default       |
+| ------------------------------ | ---------------------------------------- | ------------- |
+| tower_loadbalancer_annotations | LoadBalancer annotations                 | Empty string  |
+| tower_loadbalancer_protocol    | Protocol to use for Loadbalancer ingress | http          |
+| tower_loadbalancer_port        | Port used for Loadbalancer ingress       | 80            |
 
 
 ### Database Configuration

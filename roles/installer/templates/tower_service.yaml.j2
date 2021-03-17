@@ -6,20 +6,34 @@ metadata:
   namespace: '{{ meta.namespace }}'
   labels:
     app: '{{ deployment_type }}'
+{% if tower_ingress_type | lower == 'loadbalancer' %}
+  annotations:
+    {{ tower_loadbalancer_annotations | indent(width=4) }}
+{% endif %}
 spec:
   ports:
+{% if tower_ingress_type | lower != 'loadbalancer' and tower_loadbalancer_protocol | lower != 'https' %}
     - port: 80
       protocol: TCP
       targetPort: 8052
       name: http
+{% endif %}
 {% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
     - port: 443
       protocol: TCP
       targetPort: 8053
       name: https
 {% endif %}
+{% if tower_ingress_type | lower == 'loadbalancer' and tower_loadbalancer_protocol | lower == 'https' %}
+    - port: 443
+      protocol: TCP
+      targetPort: 8052
+      name: https
+{% endif %}
   selector:
     app: '{{ deployment_type }}'
-{% if tower_ingress_type != "none" %}
+{% if tower_ingress_type == "loadbalancer" %}
+  type: LoadBalancer
+{% elif tower_ingress_type != "none" %}
   type: NodePort
 {% endif %}

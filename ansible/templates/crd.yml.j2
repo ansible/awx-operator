@@ -62,12 +62,28 @@ spec:
                     - ingress
                     - Route
                     - route
+                    - Loadbalancer
+                    - loadbalancer
                 tower_ingress_annotations:
                   description: Annotations to add to the ingress
                   type: string
                 tower_ingress_tls_secret:
                   description: Secret where the ingress TLS secret can be found
                   type: string
+                tower_loadbalancer_annotations:
+                  description: Annotations to add to the loadbalancer
+                  type: string
+                tower_loadbalancer_protocol:
+                  description: Protocol to use for the loadbalancer
+                  type: string
+                  default: http
+                  enum:
+                    - http
+                    - https
+                tower_loadbalancer_port:
+                  description: Port to use for the loadbalancer
+                  type: int32
+                  default: 80
                 tower_route_host:
                   description: The DNS to use to points to the instance
                   type: string

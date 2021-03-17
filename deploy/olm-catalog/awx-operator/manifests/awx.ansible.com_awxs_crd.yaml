@@ -82,7 +82,23 @@ spec:
                 - ingress
                 - Route
                 - route
+                - Loadbalancer
+                - loadbalancer
                 type: string
+              tower_loadbalancer_annotations:
+                description: Annotations to add to the loadbalancer
+                type: string
+              tower_loadbalancer_protocol:
+                description: Protocol to use for the loadbalancer
+                type: string
+                default: http
+                enum:
+                  - http
+                  - https
+              tower_loadbalancer_port:
+                description: Port to use for the loadbalancer
+                type: number
+                default: 80
               tower_postgres_configuration_secret:
                 description: Secret where the database configuration can be found
                 type: string
