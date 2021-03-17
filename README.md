@@ -136,7 +136,7 @@ spec:
 spec:
   ...
   tower_ingress_type: LoadBalancer
-  tower_ingress_protocal: http
+  tower_ingress_protocol: http
 ```
 
 #### TLS Termination
