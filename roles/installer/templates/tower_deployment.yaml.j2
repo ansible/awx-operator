@@ -94,7 +94,7 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if tower_task_extra_env %}
+{% if tower_web_extra_env -%}
             {{ tower_web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ tower_web_resource_requirements }}
