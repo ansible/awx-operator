@@ -80,5 +80,5 @@
 
 - include_tasks: initialize.yml
 
-# - name: Update status variables
-#   include_tasks: update_status.yml
+- name: Update status variables
+  include_tasks: update_status.yml
