@@ -1,6 +1,9 @@
 ---
 deployment_type: awx
 
+database_name: "{{ deployment_type }}"
+database_username: "{{ deployment_type }}"
+
 tower_task_privileged: false
 tower_ingress_type: none
 
