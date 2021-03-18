@@ -7,7 +7,6 @@
     tower_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
     tower_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
     tower_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
-  no_log: true
 
 - name: Get the postgres pod information
   k8s_info:
