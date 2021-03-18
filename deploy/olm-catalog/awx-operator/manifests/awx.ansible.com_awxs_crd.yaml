@@ -82,7 +82,7 @@ spec:
                 - ingress
                 - Route
                 - route
-                - Loadbalancer
+                - LoadBalancer
                 - loadbalancer
                 type: string
               tower_loadbalancer_annotations:
