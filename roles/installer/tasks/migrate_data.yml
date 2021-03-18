@@ -24,13 +24,22 @@
   set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
-- name: Scale deployment down when current replicas match
-  community.kubernetes.k8s_scale:
+- name: Check for presence of Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: tower_deployment
+
+- name: Scale down Deployment for migration
+  k8s_scale:
     api_version: v1
     kind: Deployment
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     replicas: 0
+  when: tower_deployment['resources'] | length
 
 - name: Set pg_dump command
   set_fact:
@@ -53,7 +62,10 @@
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: >-
-      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }} && echo 'Finished'"
-  no_log: true
+      bash -c "set -o pipefail; PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }} && echo 'Successful'"
   register: data_migration
-  changed_when: false
+  failed_when: "'Successful' not in data_migration.stdout"
+
+- name: Set flag signifying that this instance has been migrated
+  set_fact:
+    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"

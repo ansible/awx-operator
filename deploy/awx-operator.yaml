@@ -58,6 +58,12 @@ rules:
     verbs:
       - update
   - apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+    verbs:
+      - patch
+  - apiGroups:
       - ""
     resources:
       - pods/exec
@@ -116,7 +122,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/ansible/awx-operator:0.6.0"
+          image: "quay.io/shanemcd/awx-operator:latest"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -377,6 +383,9 @@ spec:
                   type: string
                 towerAdminPasswordSecret:
                   description: Admin password of the deployed instance
+                  type: string
+                towerMigratedFromSecret:
+                  description: The secret used for migrating an old Tower.
                   type: string
                 towerVersion:
                   description: Version of the deployed instance

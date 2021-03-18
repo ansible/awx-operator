@@ -47,6 +47,10 @@ tower_broadcast_websocket_secret: ''
 #
 tower_secret_key_secret: ''
 
+# Secret to lookup that provides old database credentials (for migration)
+
+tower_old_postgres_configuration_secret: ''
+
 # Add extra volumes to the AWX pod. Specify as literal block. E.g.:
 # tower_extra_volumes: |
 #   - name: my-volume

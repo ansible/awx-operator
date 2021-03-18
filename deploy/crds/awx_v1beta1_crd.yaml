@@ -233,6 +233,9 @@ spec:
                 towerAdminPasswordSecret:
                   description: Admin password of the deployed instance
                   type: string
+                towerMigratedFromSecret:
+                  description: The secret used for migrating an old Tower.
+                  type: string
                 towerVersion:
                   description: Version of the deployed instance
                   type: string

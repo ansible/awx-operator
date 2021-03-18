@@ -68,3 +68,13 @@
           towerURL: "https://{{ route_url['resources'][0]['status']['ingress'][0]['host'] }}"
 
   when: tower_ingress_type | lower == 'route'
+
+- name: Update towerMigratedFromSecret status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerMigratedFromSecret: "{{ tower_migrated_from_secret }}"
+  when: tower_migrated_from_secret is defined
