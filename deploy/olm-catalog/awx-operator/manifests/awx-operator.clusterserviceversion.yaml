@@ -115,7 +115,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:select:none
         - urn:alm:descriptor:com.tectonic.ui:select:Ingress
         - urn:alm:descriptor:com.tectonic.ui:select:Route
-        - urn:alm:descriptor:com.tectonic.ui:select:LoadB alancer
+        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
       - displayName: Tower Ingress Annotations
         path: tower_ingress_annotations
         x-descriptors:
