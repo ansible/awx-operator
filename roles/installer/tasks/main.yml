@@ -21,7 +21,6 @@
   k8s:
     apply: yes
     definition: "{{ lookup('template', item) | from_yaml_all | list }}"
-  register: k8s_defs_result
   with_items:
     - tower_config.yaml.j2
 
@@ -57,30 +56,27 @@
     that: tower_pod_name != ''
     fail_msg: "Could not find the tower pod's name."
 
-- name: Check if database is populated (auth_user table exists).
-  community.kubernetes.k8s_exec:
+- name: Check for pending migrations
+  k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
     command: >-
-      bash -c "echo 'from django.db import connection;
-      tbl = \"auth_user\" in connection.introspection.table_names();
-      exit(0 if tbl else 1)'
-      | awx-manage shell"
-  ignore_errors: true
+      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
   changed_when: false
   register: database_check
-  when: k8s_defs_result is not changed
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
     command: >-
       bash -c "awx-manage migrate --noinput"
   register: migrate_result
-  when: (k8s_defs_result is changed) or (database_check is defined and database_check.return_code != 0)
+  when:
+    - database_check is defined
+    - (database_check.stdout|trim) != '0'
 
 - include_tasks: initialize.yml
 

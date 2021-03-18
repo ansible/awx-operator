@@ -23,7 +23,6 @@
       User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
       | awx-manage shell"
   when: users_result.return_code > 0
-  no_log: true
 
 - name: Create preload data if necessary.  # noqa 305
   community.kubernetes.k8s_exec:

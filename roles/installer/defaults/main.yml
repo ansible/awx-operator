@@ -1,6 +1,9 @@
 ---
 deployment_type: awx
 
+database_name: "{{ deployment_type }}"
+database_username: "{{ deployment_type }}"
+
 tower_task_privileged: false
 tower_ingress_type: none
 
@@ -46,6 +49,10 @@ tower_broadcast_websocket_secret: ''
 # Secret to lookup that provide the secret key
 #
 tower_secret_key_secret: ''
+
+# Secret to lookup that provides old database credentials (for migration)
+
+tower_old_postgres_configuration_secret: ''
 
 # Add extra volumes to the AWX pod. Specify as literal block. E.g.:
 # tower_extra_volumes: |
