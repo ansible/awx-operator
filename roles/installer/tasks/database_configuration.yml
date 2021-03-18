@@ -27,7 +27,8 @@
     database_name: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
     database_username: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
   when:
-    - old_pg_config['resources'][0]['data']['database'] is defined
+    - old_pg_config['resources'] is defined
+    - old_pg_config['resources'] | length
 
 - name: Set PostgreSQL configuration
   set_fact:
@@ -77,5 +78,6 @@
 - name: Migrate data from old Openshift instance
   import_tasks: migrate_data.yml
   when:
-    - old_pg_config['resources'][0]['data']['host'] is defined
+    - old_pg_config['resources'] is defined
+    - old_pg_config['resources'] | length
     - this_awx['resources'][0]['status']['towerMigratedFromSecret'] is not defined
