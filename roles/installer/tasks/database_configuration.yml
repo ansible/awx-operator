@@ -69,8 +69,8 @@
 
 - name: Look up details for this deployment
   k8s_info:
-    api_version: 'v1beta1' # TODO: How to parameterize this?
-    kind: "AWX" # TODO: How to parameterize this?
+    api_version: 'v1beta1'  # TODO: How to parameterize this?
+    kind: "AWX"  #  TODO: How to parameterize this?
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
   register: this_awx

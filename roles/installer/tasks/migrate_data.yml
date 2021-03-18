@@ -60,8 +60,12 @@
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
-    command: >-
-      bash -c "set -o pipefail; PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }} && echo 'Successful'"
+    command: |
+      bash -c """
+      set -e -o pipefail
+      PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      echo 'Successful'
+      """
   register: data_migration
   failed_when: "'Successful' not in data_migration.stdout"
 
