@@ -181,28 +181,7 @@ type: Opaque
 
 #### Migrating data from an old AWX instance
 
-To migrate data from an older AWX installation, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and specified as `tower_old_postgres_configuration_secret` at the CR spec level.
-
-
-The secret should be formatted as follows:
-
-```yaml
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: <resourcename>-old-postgres-configuration
-  namespace: <target namespace>
-stringData:
-  host: <external ip or url resolvable by the cluster>
-  port: <external port, this usually defaults to 5432>
-  database: <desired database name>
-  username: <username to connect as>
-  password: <password to connect with>
-type: Opaque
-```
-
-> For `host`, a URL resolvable by the cluster could look something like `postgresql.<namespace>.svc.cluster.local`, where `<namespace>` is filled in with the namespace of the AWX deployment you are migrating data from.  
+For instructions on how to migrate from an older version of AWX, see [migration.md](./docs/migration.md).
 
 #### Managed PostgreSQL Service
 
