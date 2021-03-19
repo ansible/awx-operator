@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ deployment_type }}-db-management
+  namespace: {{ meta.namespace }}
+spec:
+  containers:
+  - name: {{ deployment_type }}-db-management
+    image: "{{ tower_postgres_image }}"
+    imagePullPolicy: Always
+    command: ["sleep", "infinity"]
+    volumeMounts:
+    - name: "{{ deployment_type }}-backup"
+      mountPath: /backups
+  volumes:
+    - name: "{{ deployment_type }}-backup"
+      persistentVolumeClaim:
+        claimName: "{{ backup_pvc }}"
+  restartPolicy: Never

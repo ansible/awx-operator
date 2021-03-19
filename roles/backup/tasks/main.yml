@@ -1,20 +1,4 @@
 ---
-# - name: Check for old PostgreSQL configuration secret
-#   k8s_info:
-#     kind: Secret
-#     namespace: '{{ meta.namespace }}'
-#     name: '{{ tower_postgres_configuration_secret }}'
-#   register: old_pg_config
-# 
-# - name: Migrate data from old Openshift instance
-#   import_tasks: migrate_data.yml
-#   when:  old_pg_config['resources'][0]['data']['host'] is defined
-#   ignore_errors: true
-
-
-
-# \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-# Break up database_configuration.yml and just import those tasks here
 
 - name: Check for specified PostgreSQL configuration
   k8s_info:
@@ -33,25 +17,7 @@
 
 - name: Set PostgreSQL configuration
   set_fact:
-    _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
-
-- block:
-    - name: Create Database configuration
-      k8s:
-        apply: true
-        definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
-
-    - name: Read Database Configuration
-      k8s_info:
-        kind: Secret
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}-postgres-configuration'
-      register: _generated_pg_config_resources
-  when: not _pg_config['resources'] | default([]) | length
-
-- name: Set PostgreSQL Configuration
-  set_fact:
-    pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
+    pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
 
 - name: Store Database Configuration
   set_fact:
@@ -60,8 +26,6 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-
-# /////////////////
 
 - name: Get the postgres pod information
   k8s_info:
@@ -83,68 +47,115 @@
     now: '{{ lookup("pipe", "date +%F-%T") }}'
 
 
+# Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
+- name: Check provided PVC exists
+  k8s_info:
+    name: "{{ tower_backup_pvc }}"
+    kind: PersistentVolumeClaim
+    namespace: "{{ meta.namespace }}"
+  register: provided_pvc
+  when:
+    - tower_backup_pvc != '' or tower_backup_pvc is defined
 
-### define a volumeClaimTemplate in the management-pod.yml.j2
+# or should we automatically create a PVC for them with this name if it doesn't exist?
+- name: Fail early if pvc is defined but does not exist
+  fail:
+    msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
+  when: provided_pvc.resources | length == 0
+
+# If tower_backup_pvc is defined, use in management-pod.yml.j2
+- name: Set default pvc name # to get around nested jinja2 vars
+  set_fact:
+    _default_backup_pvc: "{{ deployment_type }}-backup-pvc"
+
+- name: Set PVC to use for backup
+  set_fact:
+    backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true)}}"
+
+# TODO: handle re-using existing pv and pvc, or make new onces with auto-generated name?
+- block:
+  - name: Create PV for backup
+    community.kubernetes.k8s:
+      name: "{{ deployment_type }}-backup-pv"
+      kind: PersistentVolume
+      namespace: "{{ meta.namespace }}"
+      template: "backup_pv.yml.j2"
+
+  - name: Create PVC for backup
+    community.kubernetes.k8s:
+      name: "{{ deployment_type }}-backup-pvc"
+      kind: PersistentVolumeClaim
+      namespace: "{{ meta.namespace }}"
+      template: "backup_pvc.yml.j2"
+  when:
+    - tower_backup_pvc == '' or tower_backup_pvc is not defined
 
 - name: Delete any existing management pod
-  shell: |
-    {{ kubectl_or_oc }} -n {{ kubernetes_namespace }} \
-      delete pod ansible-tower-management --grace-period=0 --ignore-not-found
+  community.kubernetes.k8s:
+    name: "{{ deployment_type }}-db-management"
+    kind: Deployment
+    namespace: "{{ meta.namespace }}"
+    state: absent
+    force: true
 
-- name: Template management pod
+- name: Create management pod from templated deployment config
+  community.kubernetes.k8s:
+    name: "{{ deployment_type }}-db-management"
+    kind: Deployment
+    namespace: "{{ meta.namespace }}"
+    state: present
+    template: "management-pod.yml.j2"
+    wait: true
+
+- name: Set backup directory name
   set_fact:
-    management_pod: "{{ lookup('template', 'management-pod.yml.j2') }}"
+    _backup_dir: "/backups/tower-openshift-backup-{{ now }}"
 
-- name: Create management pod
-  shell: |
-    echo {{ management_pod | quote }} | {{ kubectl_or_oc }} apply -f -
+- name: Create directory for backup
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ deployment_type }}-db-management"
+    command: >-
+      mkdir -p {{ _backup_dir }}
 
-- name: Wait for management pod to start
-  shell: |
-    {{ kubectl_or_oc }} -n {{ kubernetes_namespace }} \
-      get pod ansible-tower-management -o jsonpath="{.status.phase}"
-  register: result
-  until: result.stdout == "Running"
-  retries: 60
-  delay: 10
+- name: Precreate file for database dump
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ deployment_type }}-db-management"
+    command: >-
+      touch {{ _backup_dir }}/tower.db
 
-
-
-
-
-
-
-
-
-- name: Check for existing PVC
-
-- name: Create PVC for backup
-
-- name: Create PVC to backup to if no PVC exists
-  k8s:
-    apply: true
-    definition: "{{ lookup('template', 'backup_pvc.yaml.j2') }}"
-  # when: # pvc doesn't exist already
-  #   - pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
-# tower_backup_pvc: ''
-# tower_backup_size: ''
-
+- name: Set permissions on file for database dump
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ deployment_type }}-db-management"
+    command: >-
+      chmod 0600 {{ _backup_dir }}/tower.db
+      chown postgres:postgres {{ _backup_dir }}/tower.db
 
 - name: Set pg_dump command
   set_fact: 
     pgdump: >-
       pg_dump --clean --create
-      -h {{ tower_postgres_host }}
-      -U {{ tower_postgres_user }}
-      -d {{ tower_postgres_database }}
-      -p {{ tower_postgres_port }}
+      -h {{ awx_postgres_host }}
+      -U {{ awx_postgres_user }}
+      -d {{ awx_postgres_database }}
+      -p {{ awx_postgres_port }}
 
-
-- name: Stream backup from pg_dump to the new postgresql container
+- name: Write pg_dump to backup on PVC
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
-    pod: "{{ postgres_pod_name }}"
+    pod: "{{ deployment_type }}-db-management"
     command: >-
-      bash -c "PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} > {{ playbook_dir }}/tower-openshift-backup-{{ now }}/tower.db"
-  ignore_errors: true
+      bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
   register: data_migration
+
+# Backup secret key and other secrets - look at trad tower backup pattern
+
+- name: Delete any existing management pod
+  community.kubernetes.k8s:
+    name: "{{ deployment_type }}-db-management"
+    kind: Deployment
+    namespace: "{{ meta.namespace }}"
+    state: absent
+    force: true

@@ -1,0 +1,18 @@
+---
+deployment_type: awx
+
+# Secret to lookup that provide the secret key
+#
+tower_secret_key_secret: ''
+
+tower_postgres_storage_class: ''
+tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
+
+# Secret to lookup that provide the PostgreSQL configuration
+#
+tower_postgres_configuration_secret: ''
+tower_old_postgres_configuration_secret: ''
+
+tower_postgres_image: postgres:12
+tower_backup_pvc: ''
+tower_backup_size: ''
