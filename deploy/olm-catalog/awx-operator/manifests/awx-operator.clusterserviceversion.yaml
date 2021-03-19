@@ -71,6 +71,7 @@ spec:
     owned:
     - description: A AWX Instance
       kind: AWX
+      displayName: AWX
       name: awxs.awx.ansible.com
       specDescriptors:
       - displayName: Hostname
