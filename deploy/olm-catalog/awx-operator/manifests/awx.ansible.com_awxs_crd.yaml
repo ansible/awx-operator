@@ -37,6 +37,7 @@ spec:
               tower_admin_user:
                 description: Username to use for the admin account
                 type: string
+                default: admin
               tower_broadcast_websocket_secret:
                 description: Secret where the broadcast websocket secret can be found
                 type: string
@@ -177,6 +178,7 @@ spec:
               tower_task_privileged:
                 description: If a privileged security context should be enabled
                 type: boolean
+                default: false
               tower_task_resource_requirements:
                 description: Resource requirements for the task container
                 properties:
