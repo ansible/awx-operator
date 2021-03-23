@@ -236,7 +236,7 @@ spec:
                     - https
                 tower_loadbalancer_port:
                   description: Port to use for the loadbalancer
-                  type: number
+                  type: integer
                   default: 80
                 tower_route_host:
                   description: The DNS to use to points to the instance
