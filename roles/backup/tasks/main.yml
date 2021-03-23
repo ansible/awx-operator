@@ -142,6 +142,7 @@
   register: data_migration
 
 # TODO: Backup secret key and other secrets - look at trad tower backup pattern
+# TODO: Compare final backup tar with one from a trad tower
 
 - name: Delete any existing management pod
   community.kubernetes.k8s:
