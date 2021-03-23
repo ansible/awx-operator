@@ -122,7 +122,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/ansible/awx-operator:0.6.0"
+          image: "quay.io/ansible/awx-operator:0.7.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -236,7 +236,7 @@ spec:
                     - https
                 tower_loadbalancer_port:
                   description: Port to use for the loadbalancer
-                  type: number
+                  type: integer
                   default: 80
                 tower_route_host:
                   description: The DNS to use to points to the instance
