@@ -18,6 +18,9 @@ tower_ingress_annotations: ''
 # certificate and key.
 tower_ingress_tls_secret: ''
 
+tower_loadbalancer_protocol: 'http'
+tower_loadbalancer_port: '80'
+
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
 #

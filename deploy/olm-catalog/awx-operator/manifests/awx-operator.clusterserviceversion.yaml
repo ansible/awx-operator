@@ -120,6 +120,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:select:none
         - urn:alm:descriptor:com.tectonic.ui:select:Ingress
         - urn:alm:descriptor:com.tectonic.ui:select:Route
+        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
       - displayName: Tower Ingress Annotations
         path: tower_ingress_annotations
         x-descriptors:
@@ -132,6 +133,25 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:Ingress
+      - displayName: Tower LoadBalancer Annotations
+        path: tower_loadbalancer_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:LoadBalancer
+      - displayName: Tower LoadBalancer Protocol
+        path: tower_loadbalancer_protocol
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:http
+        - urn:alm:descriptor:com.tectonic.ui:select:https
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:LoadBalancer
+      - displayName: Tower LoadBalancer Port
+        path: tower_loadbalancer_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_ingress_type:LoadBalancer
       - displayName: Route DNS host
         path: tower_route_host
         x-descriptors:
