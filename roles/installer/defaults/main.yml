@@ -1,6 +1,9 @@
 ---
 deployment_type: awx
 
+database_name: "{{ deployment_type }}"
+database_username: "{{ deployment_type }}"
+
 tower_task_privileged: false
 tower_ingress_type: none
 
@@ -50,6 +53,10 @@ tower_broadcast_websocket_secret: ''
 #
 tower_secret_key_secret: ''
 
+# Secret to lookup that provides old database credentials (for migration)
+
+tower_old_postgres_configuration_secret: ''
+
 # Add extra volumes to the AWX pod. Specify as literal block. E.g.:
 # tower_extra_volumes: |
 #   - name: my-volume
@@ -58,8 +65,9 @@ tower_extra_volumes: ''
 
 # Use these image versions for Ansible AWX.
 
-tower_image: quay.io/ansible/awx:execution-environments
+tower_image: quay.io/ansible/awx:18.0.0
 tower_image_pull_policy: IfNotPresent
+tower_image_pull_secret: ''
 default_ee: quay.io/ansible/awx-ee
 
 tower_create_preload_data: true

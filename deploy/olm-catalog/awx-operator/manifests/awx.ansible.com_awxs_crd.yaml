@@ -102,6 +102,9 @@ spec:
               tower_postgres_configuration_secret:
                 description: Secret where the database configuration can be found
                 type: string
+              tower_old_postgres_configuration_secret:
+                description: Secret where the old database configuration can be found for data migration
+                type: string
               tower_postgres_data_path:
                 description: Path where the PostgreSQL data are located
                 type: string

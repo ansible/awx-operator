@@ -1,0 +1,74 @@
+---
+
+- name: Store Database Configuration
+  set_fact:
+    tower_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
+    tower_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
+    tower_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
+    tower_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
+    tower_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
+
+- name: Get the postgres pod information
+  k8s_info:
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - "app={{ deployment_type }}-postgres"
+  register: postgres_pod
+  until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+  delay: 5
+  retries: 60
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+
+- name: Check for presence of Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: tower_deployment
+
+- name: Scale down Deployment for migration
+  k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    replicas: 0
+  when: tower_deployment['resources'] | length
+
+- name: Set pg_dump command
+  set_fact:
+    pgdump: >-
+      pg_dump --clean --create
+      -h {{ tower_old_postgres_host }}
+      -U {{ tower_old_postgres_user }}
+      -d {{ tower_old_postgres_database }}
+      -p {{ tower_old_postgres_port }}
+
+- name: Set pg_restore command
+  set_fact:
+    psql_restore: >-
+      psql -U {{ awx_postgres_user }}
+      -d template1
+      -p {{ awx_postgres_port }}
+
+- name: Stream backup from pg_dump to the new postgresql container
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    command: |
+      bash -c """
+      set -e -o pipefail
+      PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      echo 'Successful'
+      """
+  register: data_migration
+  failed_when: "'Successful' not in data_migration.stdout"
+
+- name: Set flag signifying that this instance has been migrated
+  set_fact:
+    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"

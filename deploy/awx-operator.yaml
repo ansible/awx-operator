@@ -58,6 +58,12 @@ rules:
     verbs:
       - update
   - apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+    verbs:
+      - patch
+  - apiGroups:
       - ""
     resources:
       - pods/exec
@@ -116,7 +122,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/ansible/awx-operator:0.6.0"
+          image: "quay.io/ansible/awx-operator:0.7.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -189,6 +195,9 @@ spec:
                 tower_postgres_configuration_secret:
                   description: Secret where the database configuration can be found
                   type: string
+                tower_old_postgres_configuration_secret:
+                  description: Secret where the old database configuration can be found for data migration
+                  type: string
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
@@ -227,7 +236,7 @@ spec:
                     - https
                 tower_loadbalancer_port:
                   description: Port to use for the loadbalancer
-                  type: number
+                  type: integer
                   default: 80
                 tower_route_host:
                   description: The DNS to use to points to the instance
@@ -390,6 +399,9 @@ spec:
                   type: string
                 towerAdminPasswordSecret:
                   description: Admin password of the deployed instance
+                  type: string
+                towerMigratedFromSecret:
+                  description: The secret used for migrating an old Tower.
                   type: string
                 towerVersion:
                   description: Version of the deployed instance
