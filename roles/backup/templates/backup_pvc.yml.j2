@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ deployment_type }}-backup-pvc"
+  name: {{ deployment_type }}-backup-claim
+  namespace: {{ meta.namespace}}
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: standard
   resources:
     requests:
-      storage: "{{ tower_backup_size | default('5Gi', true) }}"
-  volumeName: "{{ deployment_type }}-backup-pv"
+      storage: {{ tower_backup_size | default('5Gi', true) }}

@@ -1,5 +1,5 @@
 ---
-deployment_type: awx
+deployment_type: "{{ meta.name | default('awx', true)}}"
 
 # Secret to lookup that provide the secret key
 #

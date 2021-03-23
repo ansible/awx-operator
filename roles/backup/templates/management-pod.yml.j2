@@ -11,10 +11,12 @@ spec:
     imagePullPolicy: Always
     command: ["sleep", "infinity"]
     volumeMounts:
-    - name: "{{ deployment_type }}-backup"
+    - name: {{ deployment_type }}-backup
       mountPath: /backups
+      readOnly: false
   volumes:
-    - name: "{{ deployment_type }}-backup"
+    - name: {{ deployment_type }}-backup
       persistentVolumeClaim:
-        claimName: "{{ backup_pvc }}"
+        claimName: {{ backup_pvc }}
+        readOnly: false
   restartPolicy: Never

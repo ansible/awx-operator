@@ -46,6 +46,14 @@
   set_fact:
     now: '{{ lookup("pipe", "date +%F-%T") }}'
 
+- name: Delete any existing management pod
+  community.kubernetes.k8s:
+    name: "{{ deployment_type }}-db-management"
+    kind: Pod
+    namespace: "{{ meta.namespace }}"
+    state: absent
+    force: true
+    wait: true
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
@@ -57,46 +65,30 @@
   when:
     - tower_backup_pvc != '' or tower_backup_pvc is defined
 
-# or should we automatically create a PVC for them with this name if it doesn't exist?
 - name: Fail early if pvc is defined but does not exist
   fail:
     msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
   when: provided_pvc.resources | length == 0
 
 # If tower_backup_pvc is defined, use in management-pod.yml.j2
-- name: Set default pvc name # to get around nested jinja2 vars
+- name: Set default pvc name
   set_fact:
-    _default_backup_pvc: "{{ deployment_type }}-backup-pvc"
+    _default_backup_pvc: "{{ deployment_type }}-backup-claim"
 
 - name: Set PVC to use for backup
   set_fact:
     backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true)}}"
 
-# TODO: handle re-using existing pv and pvc, or make new onces with auto-generated name?
-- block:
-  - name: Create PV for backup
-    community.kubernetes.k8s:
-      name: "{{ deployment_type }}-backup-pv"
-      kind: PersistentVolume
-      namespace: "{{ meta.namespace }}"
-      template: "backup_pv.yml.j2"
+# TODO: re-use the old pvc if already created (unless pvc is provided)
+# TODO: allow users to configure their own storage class for dynamically creating a pvc?
 
-  - name: Create PVC for backup
-    community.kubernetes.k8s:
-      name: "{{ deployment_type }}-backup-pvc"
-      kind: PersistentVolumeClaim
-      namespace: "{{ meta.namespace }}"
-      template: "backup_pvc.yml.j2"
+- name: Create PVC for backup
+  community.kubernetes.k8s:
+    kind: PersistentVolumeClaim
+    namespace: "{{ meta.namespace }}"
+    template: "backup_pvc.yml.j2"
   when:
     - tower_backup_pvc == '' or tower_backup_pvc is not defined
-
-- name: Delete any existing management pod
-  community.kubernetes.k8s:
-    name: "{{ deployment_type }}-db-management"
-    kind: Deployment
-    namespace: "{{ meta.namespace }}"
-    state: absent
-    force: true
 
 - name: Create management pod from templated deployment config
   community.kubernetes.k8s:
@@ -131,10 +123,9 @@
     pod: "{{ deployment_type }}-db-management"
     command: >-
       chmod 0600 {{ _backup_dir }}/tower.db
-      chown postgres:postgres {{ _backup_dir }}/tower.db
 
 - name: Set pg_dump command
-  set_fact: 
+  set_fact:
     pgdump: >-
       pg_dump --clean --create
       -h {{ awx_postgres_host }}
@@ -150,12 +141,12 @@
       bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
   register: data_migration
 
-# Backup secret key and other secrets - look at trad tower backup pattern
+# TODO: Backup secret key and other secrets - look at trad tower backup pattern
 
 - name: Delete any existing management pod
   community.kubernetes.k8s:
     name: "{{ deployment_type }}-db-management"
-    kind: Deployment
+    kind: Pod
     namespace: "{{ meta.namespace }}"
     state: absent
     force: true
