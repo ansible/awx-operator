@@ -7,8 +7,13 @@
     name: finalizer.awx.ansible.com
     role: finalizer
 
+# - version: v1beta1
+#   group: awx.ansible.com
+#   kind: Backup
+#   role: /opt/ansible/roles/backup
+#   reconcilePeriod: 360m
+
 - version: v1beta1
   group: awx.ansible.com
-  kind: AWXBackup
-  role: /opt/ansible/roles/backup
-  reconcilePeriod: 360m
+  kind: Backup
+  role: backup

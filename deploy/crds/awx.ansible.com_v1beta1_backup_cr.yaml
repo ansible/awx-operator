@@ -1,0 +1,10 @@
+apiVersion: awx.ansible.com/v1beta1
+kind: Backup
+metadata:
+  name: example-awx
+  namespace: example-awx
+spec:
+  tower_backup_pvc: ''
+  tower_backup_size: ''
+  tower_postgres_storage_class: ''
+  tower_postgres_configuration_secret: ''
