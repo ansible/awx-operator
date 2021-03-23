@@ -11,7 +11,7 @@ spec:
 
   tower_admin_email: test@example.com
 
-  tower_image: quay.io/ansible/awx:execution-environments
+  tower_image: quay.io/ansible/awx:18.0.0
 
   tower_web_resource_requirements:
     requests:
