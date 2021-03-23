@@ -7,7 +7,9 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+{% if tower_postgres_storage_class != '' %}
   storageClassName: {{ tower_postgres_storage_class }}
+{% endif %}
   resources:
     requests:
       storage: {{ tower_backup_size | default('5Gi', true) }}

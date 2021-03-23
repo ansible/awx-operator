@@ -36,6 +36,7 @@ Finally, use `kubectl` to create the awx instance in your cluster:
 #> kubectl apply -f backup-awx.yml
 ```
 
+The resulting pvc will contain a backup tar that can be used to restore to a new deployment. Future backups will also be stored in separate tars on the same pvc.
 
 
 Role Variables
@@ -46,6 +47,8 @@ A custom, pre-created pvc can be used by setting the following variables.
 ```
 tower_backup_pvc: 'awx-backup-volume-claim'
 ```
+
+> If no pvc or storage class is provided, the cluster's default storage class will be used to create the pvc.
 
 This role will automatically create a pvc using a Storage Class if provided:
 
