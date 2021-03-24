@@ -14,13 +14,25 @@
     name: '{{ meta.name }}-postgres-configuration'
   register: _default_pg_config_resources
 
-- name: Check for old PostgreSQL configuration secret
+- name: Check for specified old PostgreSQL configuration secret
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
     name: '{{ tower_old_postgres_configuration_secret }}'
-  register: old_pg_config
+  register: _custom_old_pg_config_resources
   when: tower_old_postgres_configuration_secret | length
+
+- name: Check for default old PostgreSQL configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}-old-postgres-configuration'
+  register: _default_old_pg_config_resources
+
+- name: Set old PostgreSQL configuration
+  set_fact:
+    # yamllint disable-line rule:line-length
+    old_pg_config: '{{ _custom_old_pg_config_resources["resources"] | default([]) | length | ternary(_custom_old_pg_config_resources, _default_old_pg_config_resources) }}'  # noqa 204
 
 - name: Set proper database name when migrating from old deployment
   set_fact:
