@@ -6,5 +6,5 @@ metadata:
 spec:
   tower_backup_pvc: ''
   tower_backup_size: ''
-  tower_postgres_storage_class: ''
+  tower_backup_storage_class: ''
   tower_postgres_configuration_secret: ''

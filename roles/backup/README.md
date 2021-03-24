@@ -30,7 +30,7 @@ metadata:
   namespace: my-namespace
 ```
 
-Finally, use `kubectl` to create the awx instance in your cluster:
+Finally, use `kubectl` to create the backup object in your cluster:
 
 ```bash
 #> kubectl apply -f backup-awx.yml
@@ -53,7 +53,7 @@ tower_backup_pvc: 'awx-backup-volume-claim'
 This role will automatically create a pvc using a Storage Class if provided:
 
 ```
-tower_postgres_storage_class: 'standard'
+tower_backup_storage_class: 'standard'
 tower_backup_size: '20Gi'
 ```
 

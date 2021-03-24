@@ -7,8 +7,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-{% if tower_postgres_storage_class != '' %}
-  storageClassName: {{ tower_postgres_storage_class }}
+{% if tower_backup_storage_class != '' %}
+  storageClassName: {{ tower_backup_storage_class }}
 {% endif %}
   resources:
     requests:

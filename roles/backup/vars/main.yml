@@ -7,7 +7,7 @@ tower_backup_pvc: ''
 tower_backup_size: ''
 
 # Specify storage class to determine how to dynamically create PVC's with
-tower_postgres_storage_class: ''
+tower_backup_storage_class: ''
 
 # Secret to lookup that provide the PostgreSQL configuration
 tower_postgres_configuration_secret: ''
