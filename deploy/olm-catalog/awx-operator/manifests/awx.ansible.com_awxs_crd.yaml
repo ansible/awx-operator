@@ -136,6 +136,9 @@ spec:
               tower_postgres_storage_class:
                 description: Storage class to use for the PostgreSQL PVC
                 type: string
+              tower_ee_image:
+                description: Registry path to the Execution Environment container to use
+                type: string
               tower_redis_image:
                 description: Registry path to the redis container to use
                 type: string
