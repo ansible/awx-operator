@@ -214,7 +214,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Should Tower Task container deployed with prileged level ?
+      - displayName: Should Tower Task container deployed with privileged level ?
         path: tower_task_privileged
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
