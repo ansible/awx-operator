@@ -167,7 +167,7 @@ spec:
             {{ tower_task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ tower_task_resource_requirements }}
-        - image: '{{ default_ee }}'
+        - image: '{{ tower_ee_image }}'
           name: '{{ meta.name }}-ee'
           imagePullPolicy: '{{ tower_image_pull_policy }}'
           args: ['receptor', '--config', '/etc/receptor.conf']
