@@ -30,6 +30,8 @@ metadata:
   namespace: my-namespace
 ```
 
+> The metadata.name you provide, is the name of the AWX deployment you intend to backup from (in case you have multiple in the same namespace).
+
 Finally, use `kubectl` to create the backup object in your cluster:
 
 ```bash

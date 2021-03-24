@@ -1,5 +1,15 @@
 ---
 
+- include_tasks: init.yml
+
+- include_tasks: postgres.yml
+
+- include_tasks: projects.yml
+
+- include_tasks: conf.yml
+
+- include_tasks: download.yml
+
 - name: Check for specified PostgreSQL configuration
   k8s_info:
     kind: Secret
@@ -32,7 +42,7 @@
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app={{ deployment_type }}-postgres"
+      - "app={{ meta.name }}-postgres"
   register: postgres_pod
   until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
@@ -48,7 +58,7 @@
 
 - name: Delete any existing management pod
   community.kubernetes.k8s:
-    name: "{{ deployment_type }}-db-management"
+    name: "{{ meta.name }}-db-management"
     kind: Pod
     namespace: "{{ meta.namespace }}"
     state: absent
@@ -73,7 +83,7 @@
 # If tower_backup_pvc is defined, use in management-pod.yml.j2
 - name: Set default pvc name
   set_fact:
-    _default_backup_pvc: "{{ deployment_type }}-backup-claim"
+    _default_backup_pvc: "{{ meta.name }}-backup-claim"
 
 - name: Set PVC to use for backup
   set_fact:
@@ -92,7 +102,7 @@
 
 - name: Create management pod from templated deployment config
   community.kubernetes.k8s:
-    name: "{{ deployment_type }}-db-management"
+    name: "{{ meta.name }}-db-management"
     kind: Deployment
     namespace: "{{ meta.namespace }}"
     state: present
@@ -106,21 +116,21 @@
 - name: Create directory for backup
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
-    pod: "{{ deployment_type }}-db-management"
+    pod: "{{ meta.name }}-db-management"
     command: >-
       mkdir -p {{ _backup_dir }}
 
 - name: Precreate file for database dump
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
-    pod: "{{ deployment_type }}-db-management"
+    pod: "{{ meta.name }}-db-management"
     command: >-
       touch {{ _backup_dir }}/tower.db
 
 - name: Set permissions on file for database dump
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
-    pod: "{{ deployment_type }}-db-management"
+    pod: "{{ meta.name }}-db-management"
     command: >-
       chmod 0600 {{ _backup_dir }}/tower.db
 
@@ -136,7 +146,7 @@
 - name: Write pg_dump to backup on PVC
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
-    pod: "{{ deployment_type }}-db-management"
+    pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
   register: data_migration
@@ -146,7 +156,7 @@
 
 - name: Delete any existing management pod
   community.kubernetes.k8s:
-    name: "{{ deployment_type }}-db-management"
+    name: "{{ meta.name }}-db-management"
     kind: Pod
     namespace: "{{ meta.namespace }}"
     state: absent
