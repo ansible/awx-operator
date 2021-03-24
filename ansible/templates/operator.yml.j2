@@ -37,8 +37,8 @@ spec:
             httpGet:
               path: /healthz
               port: 6789
-            initialDelaySeconds: 5
-            periodSeconds: 3
+            initialDelaySeconds: 15
+            periodSeconds: 20
       volumes:
         - name: runner
           emptyDir: {}
