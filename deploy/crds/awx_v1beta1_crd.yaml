@@ -199,9 +199,6 @@ spec:
                   type: string
                 tower_web_extra_volume_mounts:
                   type: string
-                tower_ee_image:
-                  description: Registry path to the Execution Environment container to use
-                  type: string
                 tower_redis_image:
                   description: Registry path to the redis container to use
                   type: string
