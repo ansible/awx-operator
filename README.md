@@ -62,6 +62,8 @@ metadata:
   name: awx
 ```
 
+> The metadata.name you provide, will be the name of the resulting AWX deployment.  If you deploy more than one to the same namespace, be sure to use unique names.  
+
 Finally, use `kubectl` to create the awx instance in your cluster:
 
 ```bash
