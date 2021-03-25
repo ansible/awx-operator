@@ -1,3 +1,8 @@
 ---
 deployment_type: "awx"
 tower_postgres_image: postgres:12
+
+# Secret Names
+tower_secret_key_secret: "{{ meta.name }}-secret-key"
+tower_admin_password_secret: "{{ meta.name }}-admin-password"
+# tower_postgres_configuration_secret: "{{ meta.name }}-postgres-configuration"

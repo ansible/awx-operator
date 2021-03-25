@@ -1,0 +1,91 @@
+---
+  - name: Check for specified PostgreSQL configuration
+    k8s_info:
+      kind: Secret
+      namespace: '{{ meta.namespace }}'
+      name: '{{ tower_postgres_configuration_secret }}'
+    register: _custom_pg_config_resources
+    when: tower_postgres_configuration_secret | length
+
+  - name: Check for default PostgreSQL configuration
+    k8s_info:
+      kind: Secret
+      namespace: '{{ meta.namespace }}'
+      name: '{{ meta.name }}-postgres-configuration'
+    register: _default_pg_config_resources
+
+  - name: Set PostgreSQL configuration
+    set_fact:
+      pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
+
+  - name: Store Database Configuration
+    set_fact:
+      awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+      awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+      awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+      awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+      awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+
+  - name: Get the postgres pod information
+    k8s_info:
+      kind: Pod
+      namespace: '{{ meta.namespace }}'
+      label_selectors:
+        - "app={{ meta.name }}-{{ deployment_type }}-postgres"
+    register: postgres_pod
+    until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+    delay: 5
+    retries: 60
+
+  - name: Set the resource pod name as a variable.
+    set_fact:
+      postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+
+  - name: Determine the timestamp for the backup once for all nodes
+    set_fact:
+      now: '{{ lookup("pipe", "date +%F-%T") }}'
+
+  - name: Set backup directory name
+    set_fact:
+      _backup_dir: "/backups/tower-openshift-backup-{{ now }}"
+
+  - name: Create directory for backup
+    community.kubernetes.k8s_exec:
+      namespace: "{{ meta.namespace }}"
+      pod: "{{ meta.name }}-db-management"
+      command: >-
+        mkdir -p {{ _backup_dir }}
+
+  - name: Precreate file for database dump
+    community.kubernetes.k8s_exec:
+      namespace: "{{ meta.namespace }}"
+      pod: "{{ meta.name }}-db-management"
+      command: >-
+        touch {{ _backup_dir }}/tower.db
+
+  - name: Set permissions on file for database dump
+    community.kubernetes.k8s_exec:
+      namespace: "{{ meta.namespace }}"
+      pod: "{{ meta.name }}-db-management"
+      command: >-
+        chmod 0600 {{ _backup_dir }}/tower.db
+
+  - name: Set pg_dump command
+    set_fact:
+      pgdump: >-
+        pg_dump --clean --create
+        -h {{ awx_postgres_host }}
+        -U {{ awx_postgres_user }}
+        -d {{ awx_postgres_database }}
+        -p {{ awx_postgres_port }}
+
+  - name: Write pg_dump to backup on PVC
+    community.kubernetes.k8s_exec:
+      namespace: "{{ meta.namespace }}"
+      pod: "{{ meta.name }}-db-management"
+      command: >-
+        bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
+    register: data_migration
+
+  # TODO: Backup secret key and other secrets - look at trad tower backup pattern
+  # TODO: Compare final backup tar with one from a trad tower

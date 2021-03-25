@@ -1,0 +1,54 @@
+---
+
+- name: Delete any existing management pod
+  community.kubernetes.k8s:
+    name: "{{ meta.name }}-db-management"
+    kind: Pod
+    namespace: "{{ meta.namespace }}"
+    state: absent
+    force: true
+    wait: true
+
+# Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
+- name: Check provided PVC exists
+  k8s_info:
+    name: "{{ tower_backup_pvc }}"
+    kind: PersistentVolumeClaim
+    namespace: "{{ meta.namespace }}"
+  register: provided_pvc
+  when:
+    - tower_backup_pvc != '' or tower_backup_pvc is defined
+
+- name: Fail early if pvc is defined but does not exist
+  fail:
+    msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
+  when: provided_pvc.resources | length == 0
+
+# If tower_backup_pvc is defined, use in management-pod.yml.j2
+- name: Set default pvc name
+  set_fact:
+    _default_backup_pvc: "{{ meta.name }}-backup-claim"
+
+- name: Set PVC to use for backup
+  set_fact:
+    backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true)}}"
+
+# TODO: re-use the old pvc if already created (unless pvc is provided)
+# TODO: allow users to configure their own storage class for dynamically creating a pvc?
+
+- name: Create PVC for backup
+  community.kubernetes.k8s:
+    kind: PersistentVolumeClaim
+    namespace: "{{ meta.namespace }}"
+    template: "backup_pvc.yml.j2"
+  when:
+    - tower_backup_pvc == '' or tower_backup_pvc is not defined
+
+- name: Create management pod from templated deployment config
+  community.kubernetes.k8s:
+    name: "{{ meta.name }}-db-management"
+    kind: Deployment
+    namespace: "{{ meta.namespace }}"
+    state: present
+    template: "management-pod.yml.j2"
+    wait: true
