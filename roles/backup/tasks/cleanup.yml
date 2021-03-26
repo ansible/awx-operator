@@ -1,5 +1,12 @@
 ---
 
+# After copying secret files to the PVC, delete the local tmp copies
+- name: Clean up _secrets directory
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/_secrets"
+    state: absent
+
+
 - name: Delete any existing management pod
   community.kubernetes.k8s:
     name: "{{ meta.name }}-db-management"

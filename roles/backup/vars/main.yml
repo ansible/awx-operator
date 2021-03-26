@@ -9,5 +9,8 @@ tower_backup_size: ''
 # Specify storage class to determine how to dynamically create PVC's with
 tower_backup_storage_class: ''
 
-# Secret to lookup that provide the PostgreSQL configuration
-tower_postgres_configuration_secret: ''
+# Secret Names
+tower_secret_key_secret: "{{ meta.name }}-secret-key"
+tower_admin_password_secret: "{{ meta.name }}-admin-password"
+tower_broadcast_websocket_secret: "{{ meta.name }}-broadcast-websocket"
+tower_postgres_configuration_secret: "{{ meta.name }}-postgres-configuration"
