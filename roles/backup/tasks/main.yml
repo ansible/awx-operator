@@ -1,15 +1,26 @@
 ---
 
-- include_tasks: init.yml
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: 'v1beta1'  # TODO: How to parameterize this?
+    kind: "AWX"  #  TODO: How to parameterize this?
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: this_awx
 
-- include_tasks: postgres.yml
+- block:
+  - include_tasks: init.yml
 
-- include_tasks: secrets.yml
+  - include_tasks: postgres.yml
 
-# TODO: Add task to change the status on the backup CR when this runs successfully
-- name: Set flag signifying this backup was successful
-  set_fact:
-    tower_backup_complete: "{{ _backup_dir }}"
+  - include_tasks: secrets.yml
 
+  # TODO: Add task to change the status on the backup CR when this runs successfully
+  - name: Set flag signifying this backup was successful
+    set_fact:
+      tower_backup_complete: "{{ _backup_dir }}"
 
-- include_tasks: cleanup.yml
+  - include_tasks: cleanup.yml
+
+  when:
+    - this_awx['resources'][0]['status']['towerMigratedFromSecret'] is not defined

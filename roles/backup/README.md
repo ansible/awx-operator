@@ -24,9 +24,9 @@ Then create a file named `backup-awx.yml` with the following contents:
 ```yaml
 ---
 apiVersion: awx.ansible.com/v1beta1
-kind: Backup
+kind: AWXBackup
 metadata:
-  name: awx
+  name: awxbackup
   namespace: my-namespace
 ```
 
