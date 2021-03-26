@@ -25,10 +25,15 @@ spec:
       name: https
 {% endif %}
 {% if tower_ingress_type | lower == 'loadbalancer' and tower_loadbalancer_protocol | lower == 'https' %}
-    - port: 443
+    - port: {{ tower_loadbalancer_port }}
       protocol: TCP
       targetPort: 8052
       name: https
+{% elif tower_ingress_type | lower == 'loadbalancer' and tower_loadbalancer_protocol | lower != 'https' %}
+    - port: {{ tower_loadbalancer_port }}
+      protocol: TCP
+      targetPort: 8052
+      name: http
 {% endif %}
   selector:
     app: '{{ deployment_type }}'

@@ -175,6 +175,9 @@ The following variables are customizable to specify the TLS termination procedur
 | tower_loadbalancer_protocol    | Protocol to use for Loadbalancer ingress | http          |
 | tower_loadbalancer_port        | Port used for Loadbalancer ingress       | 80            |
 
+When setting up a Load Balancer for HTTPS you will be required to set the `tower_loadbalancer_port` to move the port away from `80`.
+
+The HTTPS Load Balancer also uses SSL termination at the Load Balancer level and will offload traffic to AWX over HTTP.
 
 ### Database Configuration
 
