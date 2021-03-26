@@ -143,8 +143,8 @@ spec:
             httpGet:
               path: /healthz
               port: 6789
-            initialDelaySeconds: 5
-            periodSeconds: 3
+            initialDelaySeconds: 15
+            periodSeconds: 20
       volumes:
         - name: runner
           emptyDir: {}
@@ -180,9 +180,11 @@ spec:
                 tower_task_privileged:
                   description: If a privileged security context should be enabled
                   type: boolean
+                  default: false
                 tower_admin_user:
                   description: Username to use for the admin account
                   type: string
+                  default: admin
                 tower_hostname:
                   description: The hostname of the instance
                   type: string
@@ -347,9 +349,6 @@ spec:
                 tower_task_extra_volume_mounts:
                   type: string
                 tower_web_extra_volume_mounts:
-                  type: string
-                tower_ee_image:
-                  description: Registry path to the Execution Environment container to use
                   type: string
                 tower_redis_image:
                   description: Registry path to the redis container to use

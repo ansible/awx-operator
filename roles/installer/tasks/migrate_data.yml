@@ -13,7 +13,7 @@
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app={{ deployment_type }}-postgres"
+      - "app={{ meta.name }}-{{ deployment_type }}-postgres"
   register: postgres_pod
   until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
