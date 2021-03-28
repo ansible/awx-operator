@@ -400,9 +400,9 @@ After it is built, test it on a local cluster:
 ```sh
 #> minikube start --memory 6g --cpus 4
 #> minikube addons enable ingress
-#> kubectl apply -f deploy/awx-operator.yaml
+#> ansible-playbook ansible/deploy-operator.yml
 #> kubectl create namespace example-awx
-#> kubectl apply -f deploy/crds/awx_v1beta1_cr.yaml
+#> ansible-playbook ansible/instantiate-awx-deployment.yml -e tower_namespace=example-awx
 #> <test everything>
 #> minikube delete
 ```
