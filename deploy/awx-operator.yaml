@@ -258,6 +258,9 @@ spec:
                 tower_image:
                   description: Registry path to the application container to use
                   type: string
+                tower_ee_image:
+                  description: Registry path to the Execution Environment container to use
+                  type: string
                 tower_image_pull_policy:
                   description: The image pull policy
                   type: string
