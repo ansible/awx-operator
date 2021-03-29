@@ -13,7 +13,7 @@ spec:
 
   tower_image: quay.io/ansible/awx:18.0.0
 
-  tower_ee_image: quay.io/ansible/awx-ee:0.1.0
+  tower_ee_image: quay.io/ansible/awx-ee:0.1.1
 
   tower_web_resource_requirements:
     requests:
