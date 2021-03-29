@@ -24,6 +24,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
+         * [LDAP Certificate Authority](#ldap-certificate-authority)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -312,6 +313,30 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
+```
+
+#### LDAP Certificate Authority
+
+If the variable `ldap_cacert_secret` is provided, the operator will look for a the data field `ldap-ca.crt` in the specified secret.
+
+| Name                             | Description                             | Default |
+| -------------------------------- | --------------------------------------- | --------|
+| ldap_cacert_secret               | LDAP Certificate Authority secret name  |  ''     |
+
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  ldap_cacert_secret: <resourcename>-ldap-ca-cert
+```
+
+To create the secret, you can use the command below:
+
+```sh
+# kubectl create secret generic <resourcename>-ldap-ca-cert --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
 ```
 
 ## Development

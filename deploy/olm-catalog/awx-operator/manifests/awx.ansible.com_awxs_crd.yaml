@@ -22,6 +22,9 @@ spec:
               ca_trust_bundle:
                 description: Path where the trusted CA bundle is available
                 type: string
+              ldap_cacert_secret:
+                 description: Secret where can be found the LDAP trusted Certificate Authority Bundle
+                 type: string
               deployment_type:
                 description: Name of the deployment type
                 type: string

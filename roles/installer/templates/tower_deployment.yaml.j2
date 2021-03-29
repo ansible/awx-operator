@@ -58,6 +58,12 @@ spec:
               mountPath: "/etc/nginx/pki"
               readOnly: true
 {% endif %}
+{% if ldap_cacert_secret %}
+            - name: "{{ meta.name }}-ldap-cacert"
+              mountPath: /etc/openldap/certs/ldap-ca.crt
+              subPath: ldap-ca.crt
+              readOnly: true
+{% endif %}
             - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY
               subPath: SECRET_KEY
@@ -198,6 +204,14 @@ spec:
               - key: tls.crt
                 path: 'web.crt'
 {% endif %}
+{% if ldap_cacert_secret %}
+        - name: "{{ meta.name }}-ldap-cacert"
+          secret:
+            secretName: "{{ ldap_cacert_secret }}"
+            items:
+              - key: ldap-ca.crt
+                path: 'ldap-ca.crt'
+{% endif %}
         - name: "{{ meta.name }}-application-credentials"
           secret:
             secretName: "{{ meta.name }}-app-credentials"
@@ -206,6 +220,8 @@ spec:
                 path: 'credentials.py'
               - key: environment_sh
                 path: 'environment.sh'
+              - key: ldap_py
+                path: 'ldap.py'
         - name: "{{ secret_key_secret_name }}"
           secret:
             secretName: '{{ secret_key_secret_name }}'
