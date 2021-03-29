@@ -9,7 +9,7 @@
     - name: Deploy AWX
       k8s:
         state: "{{ state | default('present') }}"
-        namespace: "{{ namespace | default('default') }}"
+        namespace: "{{ tower_namespace | default('default') }}"
         apply: yes
         wait: yes
         definition:
@@ -22,5 +22,5 @@
             tower_admin_email: test@example.com
             tower_ingress_type: "{{ tower_ingress_type | default(omit) }}"  # Either Route, Ingress or LoadBalancer
             tower_image: "{{ tower_image | default(omit) }}"
-            development_mode: "{{ development_mode | default(omit) }}"
+            development_mode: "{{ (development_mode|bool) | default(omit) }}"
             tower_image_pull_policy: "{{ tower_image_pull_policy | default(omit) }}"
