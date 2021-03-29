@@ -1,16 +1,4 @@
 ---
 
-# Specify a pre-created PVC (name) to backup to
-tower_backup_pvc: ''
-
-# Size of backup PVC if created dynamically
-tower_backup_size: ''
-
-# Specify storage class to determine how to dynamically create PVC's with
-tower_backup_storage_class: ''
-
-# Secret Names
-tower_secret_key_secret: "{{ meta.name }}-secret-key"
-tower_admin_password_secret: "{{ meta.name }}-admin-password"
-tower_broadcast_websocket_secret: "{{ meta.name }}-broadcast-websocket"
-tower_postgres_configuration_secret: "{{ meta.name }}-postgres-configuration"
+deployment_type: "awx"
+tower_postgres_image: postgres:12
