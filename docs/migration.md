@@ -21,7 +21,7 @@ type: Opaque
 
 **Note**: `<resourcename>` must match the `name` of the AWX object you are creating. In our example below, it is `awx`.
 
-### Old Databse Credentials
+### Old Database Credentials
 
 The secret should be formatted as follows:
 
