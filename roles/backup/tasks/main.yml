@@ -1,26 +1,37 @@
 ---
 
+- name: Set apiVersion and kind variables
+  set_fact:
+    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
+    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
+
 - name: Look up details for this deployment
   k8s_info:
-    api_version: 'v1beta1'  # TODO: How to parameterize this?
-    kind: "AWX"  #  TODO: How to parameterize this?
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
-  register: this_awx
+  register: this_backup
 
 - block:
-  - include_tasks: init.yml
+    - include_tasks: init.yml
 
-  - include_tasks: postgres.yml
+    - include_tasks: postgres.yml
 
-  - include_tasks: secrets.yml
+    - include_tasks: secrets.yml
 
-  # TODO: Add task to change the status on the backup CR when this runs successfully
-  - name: Set flag signifying this backup was successful
-    set_fact:
-      tower_backup_complete: "{{ _backup_dir }}"
+    - include_tasks: awx-cro.yml
 
-  - include_tasks: cleanup.yml
+    - name: Set flag signifying this backup was successful
+      set_fact:
+        tower_backup_complete: "{{ _backup_dir }}"
+
+    - include_tasks: cleanup.yml
 
   when:
-    - this_awx['resources'][0]['status']['towerMigratedFromSecret'] is not defined
+    - this_backup['resources'][0]['status']['towerBackupComplete'] is not defined
+
+- name: Update status variables
+  include_tasks: update_status.yml
+
+# TODO: backup tower settings or make sure that users only specify settigns/config changes via AWX object.  See ticket

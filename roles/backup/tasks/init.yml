@@ -19,6 +19,11 @@
   when:
     - tower_backup_pvc != '' or tower_backup_pvc is defined
 
+- name: Update status
+  set_fact:
+    error_msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
+  notify: "Update awxbackup status"
+
 - name: Fail early if pvc is defined but does not exist
   fail:
     msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
@@ -29,12 +34,10 @@
   set_fact:
     _default_backup_pvc: "{{ meta.name }}-backup-claim"
 
+# by default, it will re-use the old pvc if already created (unless pvc is provided)
 - name: Set PVC to use for backup
   set_fact:
-    backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true)}}"
-
-# TODO: re-use the old pvc if already created (unless pvc is provided)
-# TODO: allow users to configure their own storage class for dynamically creating a pvc?
+    backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true) }}"
 
 - name: Create PVC for backup
   community.kubernetes.k8s:

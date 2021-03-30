@@ -1,3 +1,4 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -11,12 +12,21 @@ spec:
     singular: awxbackup
   scope: Namespaced
   versions:
-  - name: v1beta1
-    schema:
-      openAPIV3Schema:
-        type: object
-        x-kubernetes-preserve-unknown-fields: true
-    served: true
-    storage: true
-    subresources:
-      status: {}
+    - name: v1beta1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          x-kubernetes-preserve-unknown-fields: true
+          description: Schema validation for the AWXBackup CRD
+          # TODO: Figure out how to require the tower_name field
+          properties:
+            spec:
+              type: object
+              properties:
+                tower_name:
+                  description: Name of the deployment to be backed up
+                  type: string

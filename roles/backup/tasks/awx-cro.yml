@@ -1,0 +1,38 @@
+---
+
+- name: Get AWX custom resource object
+  k8s_info:
+    version: v1beta1
+    kind: AWX
+    namespace: '{{ meta.namespace }}'
+    name: '{{ tower_name }}'
+  register: _awx_cro
+
+- name: Set AWX object
+  set_fact:
+    _awx: "{{ _awx_cro['resources'][0] }}"
+
+- name: Set apiVersion
+  set_fact:
+    awx_api_version: "{{ _awx['apiVersion'] }}"
+
+- name: Set user specified spec
+  set_fact:
+    awx_spec: "{{ _awx['spec'] }}"
+
+- name: Template AWX object definition
+  template:
+    src: awx_object.yml.j2
+    dest: "_secrets/awx_object.yml"
+    mode: '0600'
+
+- name: Set AWX object template file as var
+  set_fact:
+    awx_object_template: "{{ lookup('file', '_secrets/awx_object.yml') }}"
+
+- name: Write awx object to pvc
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ meta.name }}-db-management"
+    command: >-
+      bash -c "echo '{{ awx_object_template }}' > {{ _backup_dir }}/awx_object.yml"

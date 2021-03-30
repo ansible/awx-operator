@@ -28,9 +28,12 @@ kind: AWXBackup
 metadata:
   name: awxbackup
   namespace: my-namespace
+spec:
+  tower_name: mytower
 ```
 
-> The metadata.name you provide, is the name of the AWX deployment you intend to backup from (in case you have multiple in the same namespace).
+Note that the `tower_name` above is the name of the AWX deployment you intend to backup from.  
+
 
 Finally, use `kubectl` to create the backup object in your cluster:
 

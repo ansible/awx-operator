@@ -1,0 +1,16 @@
+---
+- name: Set apiVersion and kind variables
+  set_fact:
+    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
+    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
+
+# The backup directory in this status can be referenced when restoring
+- name: Update Tower Backup status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerBackupComplete: "{{ _backup_dir }}"
+  when: tower_backup_complete is defined

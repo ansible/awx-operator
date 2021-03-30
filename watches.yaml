@@ -9,6 +9,6 @@
 
 - version: v1beta1
   group: awx.ansible.com
-  kind: Backup
+  kind: AWXBackup
   role: backup
   reconcilePeriod: 360m

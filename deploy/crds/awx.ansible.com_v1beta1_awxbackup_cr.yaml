@@ -1,9 +1,11 @@
+---
 apiVersion: awx.ansible.com/v1beta1
 kind: AWXBackup
 metadata:
   name: example-awxbackup
   namespace: example-awx
 spec:
+  tower_name: ''
   tower_backup_pvc: ''
   tower_backup_size: ''
   tower_backup_storage_class: ''
