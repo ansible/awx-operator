@@ -38,6 +38,22 @@ tower_route_host: ''
 
 tower_hostname: '{{ deployment_type }}.example.com'
 
+# Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
+# to be scheduled on that node. Specify as literal block. E.g.:
+# tower_node_selector: |
+#   disktype: ssd
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+tower_node_selector: ''
+
+# Add node tolerations for the AWX pods. Specify as literal block. E.g.:
+# tower_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWX"
+#     effect: "NoSchedule"
+tower_tolerations: ''
+
 tower_admin_user: admin
 tower_admin_email: test@example.com
 

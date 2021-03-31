@@ -255,6 +255,12 @@ spec:
                 tower_route_tls_secret:
                   description: Secret where the TLS related credentials are stored
                   type: string
+                tower_node_selector:
+                  description: nodeSelector for the AWX pods
+                  type: string
+                tower_tolerations:
+                  description: node tolerations for the AWX pods
+                  type: string
                 tower_image:
                   description: Registry path to the application container to use
                   type: string
