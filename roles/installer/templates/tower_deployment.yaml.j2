@@ -58,7 +58,7 @@ spec:
               mountPath: "/etc/nginx/pki"
               readOnly: true
 {% endif %}
-{% if ldap_cacert_secret %}
+{% if ldap_cacert_ca_crt %}
             - name: "{{ meta.name }}-ldap-cacert"
               mountPath: /etc/openldap/certs/ldap-ca.crt
               subPath: ldap-ca.crt
@@ -204,7 +204,7 @@ spec:
               - key: tls.crt
                 path: 'web.crt'
 {% endif %}
-{% if ldap_cacert_secret %}
+{% if ldap_cacert_ca_crt %}
         - name: "{{ meta.name }}-ldap-cacert"
           secret:
             secretName: "{{ ldap_cacert_secret }}"
