@@ -11,4 +11,3 @@
   group: awx.ansible.com
   kind: AWXBackup
   role: backup
-  reconcilePeriod: 360m

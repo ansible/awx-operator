@@ -17,17 +17,23 @@
     namespace: "{{ meta.namespace }}"
   register: provided_pvc
   when:
-    - tower_backup_pvc != '' or tower_backup_pvc is defined
+    - tower_backup_pvc != ''
 
-- name: Update status
-  set_fact:
-    error_msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
-  notify: "Update awxbackup status"
+- name: Surface error to user
+  block:
+    - name: Set error message
+      set_fact:
+        error_msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
 
-- name: Fail early if pvc is defined but does not exist
-  fail:
-    msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
-  when: provided_pvc.resources | length == 0
+    - name: Handle error
+      import_tasks: error_handling.yml
+
+    - name: Fail early if pvc is defined but does not exist
+      fail:
+        msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
+  when:
+    - tower_backup_pvc != ''
+    - provided_pvc.resources | length == 0
 
 # If tower_backup_pvc is defined, use in management-pod.yml.j2
 - name: Set default pvc name

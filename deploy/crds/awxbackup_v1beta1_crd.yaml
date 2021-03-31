@@ -22,7 +22,6 @@ spec:
           type: object
           x-kubernetes-preserve-unknown-fields: true
           description: Schema validation for the AWXBackup CRD
-          # TODO: Figure out how to require the tower_name field
           properties:
             spec:
               type: object
@@ -30,3 +29,26 @@ spec:
                 tower_name:
                   description: Name of the deployment to be backed up
                   type: string
+                tower_backup_pvc:
+                  description: Name of the PVC to be used for storing the backup
+                  type: string
+                tower_backup_size:
+                  description: Size of PVC
+                  type: string
+                tower_backup_storage_class:
+                  description: Storage class to use when creating PVC for backup
+                  type: string
+                tower_secret_key_secret:
+                  description: Custom secret_key secret name
+                  type: string
+                tower_admin_password_secret:
+                  description: Custom admin_password secret name
+                  type: string
+                tower_broadcast_websocket_secret:
+                  description: Custom broadcast_websocket secret name
+                  type: string
+                tower_postgres_configuration_secret:
+                  description: Custom postgres_configuration secret name
+                  type: string
+              oneOf:
+                - required: ["tower_name"]
