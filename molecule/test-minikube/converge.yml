@@ -118,7 +118,7 @@
               kind="Deployment",
               api_version="apps/v1",
               namespace=custom_resource.metadata.namespace,
-              label_selector="app=awx")
+              label_selector="app.kubernetes.io/name=example-awx")
             }}'
 
         - name: get operator logs

@@ -6,7 +6,10 @@ metadata:
   name: '{{ meta.name }}-{{ deployment_type }}-configmap'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: '{{ deployment_type }}'
+    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/component: awx
 data:
   environment: |
     AWX_SKIP_MIGRATIONS=true

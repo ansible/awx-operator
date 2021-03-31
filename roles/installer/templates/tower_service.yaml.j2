@@ -5,7 +5,10 @@ metadata:
   name: '{{ meta.name }}-service'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: '{{ deployment_type }}'
+    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/component: awx
 {% if tower_ingress_type | lower == 'loadbalancer' %}
   annotations:
     {{ tower_loadbalancer_annotations | indent(width=4) }}
@@ -36,7 +39,9 @@ spec:
       name: http
 {% endif %}
   selector:
-    app: '{{ deployment_type }}'
+    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/component: awx
 {% if tower_ingress_type | lower == "loadbalancer" %}
   type: LoadBalancer
 {% elif tower_ingress_type != "none" %}

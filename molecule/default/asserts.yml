@@ -12,7 +12,10 @@
         kind: Pod
         namespace: example-awx
         label_selectors:
-          - app=awx
+          - "app.kubernetes.io/name=example-awx"
+          - "app.kubernetes.io/part-of=example-awx"
+          - "app.kubernetes.io/managed-by=awx-operator"
+          - "app.kubernetes.io/component=awx"
       register: tower_pods
 
     - name: Verify there is one AWX pod
