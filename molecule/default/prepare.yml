@@ -17,7 +17,7 @@
 
     - name: Create AWXBackup Custom Resource Definition
       k8s:
-        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx.ansible.com_awxbackups_crd.yaml'])) }}"
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awxbackup_v1beta1_crd.yaml'])) }}"
 
     - name: Ensure specified namespace is present
       k8s:

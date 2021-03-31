@@ -6,10 +6,16 @@
   gather_facts: false
 
   tasks:
-    - name: Template CRD
+    - name: Template AWX CRD
       template:
         src: crd.yml.j2
         dest: "{{ playbook_dir }}/../deploy/crds/awx_v1beta1_crd.yaml"
+        mode: '0644'
+
+    - name: Template AWXBackup CRD
+      template:
+        src: awxbackup_crd.yml.j2
+        dest: "{{ playbook_dir }}/../deploy/crds/awxbackup_v1beta1_crd.yaml"
         mode: '0644'
 
     - name: Template awx-operator.yaml
