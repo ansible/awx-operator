@@ -11,9 +11,13 @@
     - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/group_vars/all"
 
   tasks:
-    - name: Create Custom Resource Definition
+    - name: Create AWX Custom Resource Definition
       k8s:
         definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_crd.yaml'])) }}"
+
+    - name: Create AWXBackup Custom Resource Definition
+      k8s:
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx.ansible.com_awxbackups_crd.yaml'])) }}"
 
     - name: Ensure specified namespace is present
       k8s:
