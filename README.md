@@ -89,6 +89,9 @@ There are three variables that are customizable for the admin user account creat
 | tower_admin_email           | Email of the admin user                      | test@example.com |
 | tower_admin_password_secret | Secret that contains the admin user password | Empty string     |
 
+
+> :warning: **tower_admin_password_secret must be a Kubernetes secret and not your text clear password**.
+
 If `tower_admin_password_secret` is not provided, the operator will look for a secret named `<resourcename>-admin-password` for the admin password. If it is not present, the operator will generate a password and create a Secret from it named `<resourcename>-admin-password`.
 
 To retrieve the admin password, run `kubectl get secret <resourcename>-admin-password -o jsonpath="{.data.password}" | base64 --decode`
