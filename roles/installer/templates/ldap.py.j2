@@ -1,0 +1,6 @@
+AUTH_LDAP_GLOBAL_OPTIONS = {
+{% if ldap_cacert_ca_crt %}
+    ldap.OPT_X_TLS_REQUIRE_CERT: True,
+    ldap.OPT_X_TLS_CACERTFILE: "/etc/openldap/certs/ldap-ca.crt"
+{% endif %}
+}

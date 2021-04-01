@@ -123,4 +123,8 @@ tower_postgres_configuration_secret: ''
 
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
+# Secret to lookup that provides the LDAP CACert trusted bundle
+#
+ldap_cacert_secret: ''
+
 development_mode: false

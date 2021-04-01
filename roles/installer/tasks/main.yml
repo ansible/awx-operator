@@ -2,6 +2,11 @@
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 
+- name: Load LDAP CAcert certificate
+  include_tasks: load_ldap_cacert_secret.yml
+  when:
+    - ldap_cacert_secret != ''
+
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
 
