@@ -1,0 +1,82 @@
+Role Name
+=========
+
+The purpose of this role is to restore your AWX deployment from an existing PVC backup. The backup should include:
+  - backup of the postgresql database
+  - secrets, included the secret_key.  
+  - AWX custom resource object with deployment specific settings
+
+
+Requirements
+------------
+
+This role assumes you are authenticated with an Openshift or Kubernetes cluster which:
+  - The awx-operator has been deployed to
+  - AWX is deployed to via the operator
+
+
+Usage
+----------------
+
+Then create a file named `restore-awx.yml` with the following contents:
+
+```yaml
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWXRestore
+metadata:
+  name: awxrestore
+  namespace: my-namespace
+spec:
+  tower_name: mytower
+  tower_backup_pvc: myoldtower-awxbackup-adfx7ciow
+  tower_backup_dir: tower-openshift-backup-2021-04-01-15:49:17
+```
+
+Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.  
+
+
+Finally, use `kubectl` to create the restore object in your cluster:
+
+```bash
+#> kubectl apply -f restore-awx.yml
+```
+
+This will create a new deployment and restore your backup to it.  
+
+
+Role Variables
+--------------
+
+A custom, pre-created pvc can be used by setting the following variables.  
+
+```
+tower_backup_pvc: 'awx-backup-volume-claim'
+```
+
+
+If a custom postgres configuration secret was used when deploying AWX, it must be set:
+
+```
+tower_postgres_configuration_secret: 'awx-postgres-configuration'
+```
+
+
+Testing
+----------------
+
+You can test this role directly by creating and running the following playbook with the appropriate variables:
+
+```
+---
+- name: Backup Tower
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - backup
+```
+
+License
+-------
+
+MIT

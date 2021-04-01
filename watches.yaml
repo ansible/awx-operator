@@ -11,3 +11,8 @@
   group: awx.ansible.com
   kind: AWXBackup
   role: backup
+
+- version: v1beta1
+  group: awx.ansible.com
+  kind: AWXRestore
+  role: restore

@@ -1,0 +1,39 @@
+---
+
+- name: Set apiVersion and kind variables
+  set_fact:
+    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
+    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
+
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: this_restore
+
+- block:
+    - include_tasks: preflight.yml
+
+    - include_tasks: init_awx.yml
+
+    - include_tasks: init.yml
+
+    # - include_tasks: postgres.yml
+    #
+    # - include_tasks: secrets.yml
+
+    - name: Set flag signifying this backup was successful
+      set_fact:
+        tower_backup_complete: True
+
+    - include_tasks: cleanup.yml
+
+  when:
+    - this_restore['resources'][0]['status']['towerRestoreComplete'] is not defined
+
+- name: Update status variables
+  include_tasks: update_status.yml
+
+# TODO: backup tower settings or make sure that users only specify settigns/config changes via AWX object.  See ticket

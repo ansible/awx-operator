@@ -1,0 +1,12 @@
+---
+- name: Deploy AWX
+  k8s:
+    state: "{{ state | default('present') }}"
+    namespace: "{{ tower_namespace | default('default') }}"
+    apply: yes
+    wait: yes
+    template: "{{ tower_backup_dir }}/awx_object.yml"
+
+# TODO: Add logic to allow users to provide override values here,
+#       or to specify spec values that were not in the backed up AWX object.
+#       This may involve changing how we back up the spec section of the AWX object

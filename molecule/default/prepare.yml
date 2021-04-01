@@ -19,6 +19,10 @@
       k8s:
         definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awxbackup_v1beta1_crd.yaml'])) }}"
 
+    - name: Create AWXBackup Custom Resource Definition
+      k8s:
+        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awxrestore_v1beta1_crd.yaml'])) }}"
+
     - name: Ensure specified namespace is present
       k8s:
         api_version: v1

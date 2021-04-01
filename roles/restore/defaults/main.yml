@@ -1,0 +1,17 @@
+---
+# Required: specify name of tower deployment to restore to
+tower_name: ''
+
+# Required: specify a pre-created PVC (name) to restore from
+tower_backup_pvc: ''
+
+# Required: backup name, found on the awxbackup object
+tower_backup_dir: ''
+
+# TODO: Should we add a unique id at the end of the secret when backing up, then use it here?
+# or will that make future backups more complicated because the user will have to specify the names of all the secrets?
+# Names of any secrets you want to use instead of the ones in the backup
+tower_secret_key_secret: "{{ tower_name }}-secret-key"
+tower_admin_password_secret: "{{ tower_name }}-admin-password"
+tower_broadcast_websocket_secret: "{{ tower_name }}-broadcast-websocket"
+tower_postgres_configuration_secret: "{{ tower_name }}-postgres-configuration"

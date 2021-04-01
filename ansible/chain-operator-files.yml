@@ -18,6 +18,12 @@
         dest: "{{ playbook_dir }}/../deploy/crds/awxbackup_v1beta1_crd.yaml"
         mode: '0644'
 
+    - name: Template AWXRestore CRD
+      template:
+        src: awxrestore_crd.yml.j2
+        dest: "{{ playbook_dir }}/../deploy/crds/awxrestore_v1beta1_crd.yaml"
+        mode: '0644'
+
     - name: Template awx-operator.yaml
       template:
         src: awx-operator.yaml.j2
