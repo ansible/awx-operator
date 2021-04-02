@@ -1,11 +1,17 @@
 ---
 
+- name: Create namespace for deployment
+  k8s:
+    name: "{{ meta.namespace }}"
+    kind: Namespace
+    state: present
+
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
   k8s_info:
     name: "{{ tower_backup_pvc }}"
     kind: PersistentVolumeClaim
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
   register: provided_pvc
   when:
     - tower_backup_pvc != ''

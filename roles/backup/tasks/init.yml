@@ -4,7 +4,7 @@
   community.kubernetes.k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     state: absent
     force: true
     wait: true
@@ -14,7 +14,7 @@
   k8s_info:
     name: "{{ tower_backup_pvc }}"
     kind: PersistentVolumeClaim
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
   register: provided_pvc
   when:
     - tower_backup_pvc != ''
@@ -48,16 +48,14 @@
 - name: Create PVC for backup
   community.kubernetes.k8s:
     kind: PersistentVolumeClaim
-    namespace: "{{ meta.namespace }}"
     template: "backup_pvc.yml.j2"
   when:
     - tower_backup_pvc == '' or tower_backup_pvc is not defined
 
 - name: Create management pod from templated deployment config
   community.kubernetes.k8s:
-    name: "{{ meta.name }}-db-management"
+    name: "{{ tower_backup_pvc_namespace }}-db-management"
     kind: Deployment
-    namespace: "{{ meta.namespace }}"
     state: present
     template: "management-pod.yml.j2"
     wait: true

@@ -4,6 +4,7 @@ tower_name: ''
 
 # Specify a pre-created PVC (name) to backup to
 tower_backup_pvc: ''
+tower_backup_pvc_namespace: 'default'
 
 # Size of backup PVC if created dynamically
 tower_backup_size: ''

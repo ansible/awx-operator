@@ -4,7 +4,7 @@
   community.kubernetes.k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     state: absent
     force: true
     wait: true
@@ -14,7 +14,7 @@
   k8s_info:
     name: "{{ tower_backup_pvc }}"
     kind: PersistentVolumeClaim
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
   register: provided_pvc
   when:
     - tower_backup_pvc != ''
@@ -49,7 +49,6 @@
   community.kubernetes.k8s:
     name: "{{ meta.name }}-db-management"
     kind: Deployment
-    namespace: "{{ meta.namespace }}"
     state: present
     template: "management-pod.yml.j2"
     wait: true

@@ -32,6 +32,9 @@ spec:
                 tower_backup_pvc:
                   description: Name of the PVC to be used for storing the backup
                   type: string
+                tower_backup_pvc_namespace:
+                  description: Namespace PVC is in
+                  type: string
                 tower_backup_dir:
                   description: Backup directory name, a status found on the awxbackup object (towerBackupComplete)
                   type: string

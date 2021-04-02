@@ -4,6 +4,7 @@ tower_name: ''
 
 # Required: specify a pre-created PVC (name) to restore from
 tower_backup_pvc: ''
+tower_backup_pvc_namespace: 'default'
 
 # Required: backup name, found on the awxbackup object
 tower_backup_dir: ''

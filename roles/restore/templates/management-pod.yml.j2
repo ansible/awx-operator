@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: {{ meta.name }}-db-management
-  namespace: {{ meta.namespace }}
+  namespace: {{ tower_backup_pvc_namespace }}
 spec:
   containers:
   - name: {{ meta.name }}-db-management

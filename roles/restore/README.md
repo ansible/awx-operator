@@ -29,8 +29,8 @@ metadata:
   namespace: my-namespace
 spec:
   tower_name: mytower
-  tower_backup_pvc: myoldtower-awxbackup-adfx7ciow
-  tower_backup_dir: tower-openshift-backup-2021-04-01-15:49:17
+  tower_backup_pvc: awxbackup1-backup-claim
+  tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
 Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.

@@ -560,6 +560,10 @@ spec:
                 tower_backup_pvc:
                   description: Name of the PVC to be used for storing the backup
                   type: string
+                tower_backup_pvc_namespace:
+                  default: 'default'
+                  description: Namespace PVC is in
+                  type: string
                 tower_backup_size:
                   description: Size of PVC
                   type: string
@@ -614,6 +618,10 @@ spec:
                   type: string
                 tower_backup_pvc:
                   description: Name of the PVC to be used for storing the backup
+                  type: string
+                tower_backup_pvc_namespace:
+                  default: 'default'
+                  description: Namespace PVC is in
                   type: string
                 tower_backup_size:
                   description: Size of PVC
