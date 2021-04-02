@@ -20,13 +20,13 @@
 
     - include_tasks: init.yml
 
-    # - include_tasks: postgres.yml
-    #
-    # - include_tasks: secrets.yml
+    - include_tasks: postgres.yml
 
-    - name: Set flag signifying this backup was successful
+    - include_tasks: secrets.yml
+
+    - name: Set flag signifying this restore was successful
       set_fact:
-        tower_backup_complete: True
+        tower_restore_complete: True
 
     - include_tasks: cleanup.yml
 

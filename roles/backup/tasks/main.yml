@@ -24,7 +24,7 @@
 
     - name: Set flag signifying this backup was successful
       set_fact:
-        tower_backup_complete: "{{ _backup_dir }}"
+        tower_backup_complete: true
 
     - include_tasks: cleanup.yml
 

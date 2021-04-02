@@ -35,4 +35,4 @@
     namespace: "{{ meta.namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "echo '{{ awx_object_template }}' > {{ _backup_dir }}/awx_object.yml"
+      bash -c "echo '{{ awx_object_template }}' > {{ backup_dir }}/awx_object.yml"

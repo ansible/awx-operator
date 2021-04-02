@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Event
 metadata:
-  name: backup-error.{{ now }}
+  name: restore-error.{{ now }}
   namespace: {{ meta.namespace }}
 involvedObject:
   apiVersion: awx.ansible.com/v1beta1
@@ -10,7 +10,7 @@ involvedObject:
   name: {{ meta.name }}
   namespace: {{ meta.namespace }}
 message: {{ error_msg }}
-reason: BackupFailed
+reason: RestoreFailed
 type: Warning
 firstTimestamp: {{ now }}
 lastTimestamp: {{ now }}

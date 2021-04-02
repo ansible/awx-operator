@@ -25,7 +25,7 @@ Then create a file named `restore-awx.yml` with the following contents:
 apiVersion: awx.ansible.com/v1beta1
 kind: AWXRestore
 metadata:
-  name: awxrestore
+  name: restore1
   namespace: my-namespace
 spec:
   tower_name: mytower
@@ -33,8 +33,7 @@ spec:
   tower_backup_dir: tower-openshift-backup-2021-04-01-15:49:17
 ```
 
-Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.  
-
+Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.
 
 Finally, use `kubectl` to create the restore object in your cluster:
 
@@ -48,7 +47,24 @@ This will create a new deployment and restore your backup to it.
 Role Variables
 --------------
 
-A custom, pre-created pvc can be used by setting the following variables.  
+The name of the backup directory can be found as a status on your AWXBackup object.  This can be found in your cluster's console, or with the client as shown below.  
+
+```bash
+$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.towerBackupDirectory}"
+/backups/tower-openshift-backup-2021-04-02-03:25:08
+```
+
+```
+tower_backup_dir: '/backups/tower-openshift-backup-2021-04-02-03:25:08'
+```
+
+
+The name of the PVC can also be found by looking at the backup object.  
+
+```bash
+$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.towerBackupClaim}"
+awx-backup-volume-claim
+```
 
 ```
 tower_backup_pvc: 'awx-backup-volume-claim'
@@ -69,11 +85,11 @@ You can test this role directly by creating and running the following playbook w
 
 ```
 ---
-- name: Backup Tower
+- name: Restore AWX
   hosts: localhost
   gather_facts: false
   roles:
-    - backup
+    - restore
 ```
 
 License

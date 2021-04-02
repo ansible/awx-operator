@@ -42,44 +42,39 @@
   set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
+- name: Check for presence of AWX Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: this_deployment
 
-# TODO: Add postgres restore logic, just pipe the pg_dump from PVC to db via psql
+- name: Scale down Deployment for migration
+  k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    replicas: 0
+  when: this_deployment['resources'] | length
 
-#
-# - name: Create directory for backup
-#   community.kubernetes.k8s_exec:
-#     namespace: "{{ meta.namespace }}"
-#     pod: "{{ meta.name }}-db-management"
-#     command: >-
-#       mkdir -p {{ _backup_dir }}
-#
-# - name: Precreate file for database dump
-#   community.kubernetes.k8s_exec:
-#     namespace: "{{ meta.namespace }}"
-#     pod: "{{ meta.name }}-db-management"
-#     command: >-
-#       touch {{ _backup_dir }}/tower.db
-#
-# - name: Set permissions on file for database dump
-#   community.kubernetes.k8s_exec:
-#     namespace: "{{ meta.namespace }}"
-#     pod: "{{ meta.name }}-db-management"
-#     command: >-
-#       chmod 0600 {{ _backup_dir }}/tower.db
-#
-# - name: Set pg_dump command
-#   set_fact:
-#     pgdump: >-
-#       pg_dump --clean --create
-#       -h {{ awx_postgres_host }}
-#       -U {{ awx_postgres_user }}
-#       -d {{ awx_postgres_database }}
-#       -p {{ awx_postgres_port }}
-#
-# - name: Write pg_dump to backup on PVC
-#   community.kubernetes.k8s_exec:
-#     namespace: "{{ meta.namespace }}"
-#     pod: "{{ meta.name }}-db-management"
-#     command: >-
-#       bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
-#   register: data_migration
+- name: Set pg_restore command
+  set_fact:
+    psql_restore: >-
+      psql -U {{ awx_postgres_user }}
+      -d template1
+      -p {{ awx_postgres_port }}
+
+- name: Restore database dump to the new postgresql container
+  community.kubernetes.k8s_exec:
+    namespace: "{{ meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    command: |
+      bash -c """
+      set -e -o pipefail
+      cat {{ tower_backup_dir }}/tower.db | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      echo 'Successful'
+      """
+  register: data_migration
+  failed_when: "'Successful' not in data_migration.stdout"

@@ -76,7 +76,7 @@ You can test this role directly by creating and running the following playbook w
 
 ```
 ---
-- name: Backup Tower
+- name: Backup AWX
   hosts: localhost
   gather_facts: false
   roles:

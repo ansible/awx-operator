@@ -48,28 +48,28 @@
 
 - name: Set backup directory name
   set_fact:
-    _backup_dir: "/backups/tower-openshift-backup-{{ now }}"
+    backup_dir: "/backups/tower-openshift-backup-{{ now }}"
 
 - name: Create directory for backup
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      mkdir -p {{ _backup_dir }}
+      mkdir -p {{ backup_dir }}
 
 - name: Precreate file for database dump
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      touch {{ _backup_dir }}/tower.db
+      touch {{ backup_dir }}/tower.db
 
 - name: Set permissions on file for database dump
   community.kubernetes.k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      chmod 0600 {{ _backup_dir }}/tower.db
+      chmod 0600 {{ backup_dir }}/tower.db
 
 - name: Set pg_dump command
   set_fact:
@@ -85,5 +85,5 @@
     namespace: "{{ meta.namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ _backup_dir }}/tower.db"
+      bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db"
   register: data_migration
