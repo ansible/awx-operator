@@ -63,7 +63,7 @@ metadata:
   name: awx
 ```
 
-> The metadata.name you provide, will be the name of the resulting AWX deployment.  If you deploy more than one to the same namespace, be sure to use unique names.  
+> The metadata.name you provide, will be the name of the resulting AWX deployment.  If you deploy more than one to the same namespace, be sure to use unique names.
 
 Finally, use `kubectl` to create the awx instance in your cluster:
 
@@ -287,6 +287,7 @@ If you are attempting to do this on an OpenShift cluster, you will need to grant
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+
 #### Containers Resource Requirements
 
 The resource requirements for both, the task and the web containers are configurable - both the lower end (requests) and the upper end (limits).
@@ -316,6 +317,35 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
+```
+
+#### Assigning AWX pods to specific nodes
+
+You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `tower_node_selector` constrains
+the AWX pods to run only on the nodes that match all the specified key/value pairs. `tower_tolerations` allow the AWX
+pods to be scheduled onto nodes with matching taints.
+
+
+| Name                | Description            | Default |
+| ------------------- | ---------------------- | ------- |
+| tower_node_selector | AWX pods' nodeSelector | ''      |
+| tower_tolerations   | AWX pods' tolerations  | ''      |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  tower_node_selector: |
+    disktype: ssd
+    kubernetes.io/arch: amd64
+    kubernetes.io/os: linux
+  tower_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX"
+      effect: "NoSchedule"
 ```
 
 #### LDAP Certificate Authority
