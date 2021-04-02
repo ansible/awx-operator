@@ -2,11 +2,11 @@
 
 - name: Store Database Configuration
   set_fact:
-    tower_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
-    tower_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
-    tower_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
-    tower_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
-    tower_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
 
 - name: Get the postgres pod information
   k8s_info:
@@ -31,10 +31,10 @@
   set_fact:
     pgdump: >-
       pg_dump --clean --create
-      -h {{ tower_old_postgres_host }}
-      -U {{ tower_old_postgres_user }}
-      -d {{ tower_old_postgres_database }}
-      -p {{ tower_old_postgres_port }}
+      -h {{ awx_old_postgres_host }}
+      -U {{ awx_old_postgres_user }}
+      -d {{ awx_old_postgres_database }}
+      -p {{ awx_old_postgres_port }}
 
 - name: Set pg_restore command
   set_fact:
@@ -50,7 +50,7 @@
     command: |
       bash -c """
       set -e -o pipefail
-      PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      PGPASSWORD={{ awx_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
       echo 'Successful'
       """
   register: data_migration
@@ -58,4 +58,4 @@
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
-    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"
+    tower_migrated_from_secret: "{{ awx_old_postgres_configuration_secret }}"
