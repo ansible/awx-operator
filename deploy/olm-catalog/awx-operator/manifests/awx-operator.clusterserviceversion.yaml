@@ -12,32 +12,10 @@ metadata:
             "namespace": "example-awx"
           },
           "spec": {
-            "tower_admin_email": "test@example.com",
-            "tower_admin_user": "test",
-            "tower_broadcast_websocket_secret": "changeme",
-            "tower_create_preload_data": true,
-            "tower_hostname": "example-awx.test",
-            "tower_image": "quay.io/ansible/awx:18.0.0",
-            "tower_ingress_type": "none",
-            "tower_ee_image": "quay.io/ansible/awx-ee:0.1.1",
-            "tower_memcached_image": "memcached:alpine",
-            "tower_postgres_storage_class": "",
-            "tower_redis_image": "redis:latest",
-            "tower_task_privileged": false
-          }
-        },
-        {
-          "apiVersion": "awx.ansible.com/v1beta1",
-          "kind": "AWX",
-          "metadata": {
-            "name": "example-awx",
-            "namespace": "example-awx"
-          },
-          "spec": {
             "deployment_type": "awx",
             "tower_admin_email": "test@example.com",
-            "tower_broadcast_websocket_secret": "changeme",
             "tower_create_preload_data": true,
+            "tower_ee_image": "quay.io/ansible/awx-ee:0.1.1",
             "tower_image": "quay.io/ansible/awx:18.0.0",
             "tower_ingress_type": "ingress",
             "tower_memcached_image": "memcached:alpine",
@@ -71,8 +49,8 @@ spec:
   customresourcedefinitions:
     owned:
     - description: A AWX Instance
-      kind: AWX
       displayName: AWX
+      kind: AWX
       name: awxs.awx.ansible.com
       specDescriptors:
       - displayName: Hostname
@@ -407,6 +385,12 @@ spec:
           - deployments/finalizers
           verbs:
           - update
+        - apiGroups:
+          - apps
+          resources:
+          - deployments/scale
+          verbs:
+          - patch
         - apiGroups:
           - ""
           resources:
