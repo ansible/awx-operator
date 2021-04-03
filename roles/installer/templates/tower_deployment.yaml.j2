@@ -6,16 +6,26 @@ metadata:
   name: '{{ meta.name }}'
   namespace: '{{ meta.namespace }}'
   labels:
-    app: '{{ deployment_type }}'
+    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/version: '{{ tower_image_version }}'
+    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/component: awx
 spec:
   replicas: {{ tower_replicas }}
   selector:
     matchLabels:
-      app: '{{ deployment_type }}'
+      app.kubernetes.io/name: '{{ meta.name }}'
+      app.kubernetes.io/managed-by: awx-operator
+      app.kubernetes.io/component: awx
   template:
     metadata:
       labels:
-        app: '{{ deployment_type }}'
+        app.kubernetes.io/name: '{{ meta.name }}'
+        app.kubernetes.io/version: '{{ tower_image_version }}'
+        app.kubernetes.io/part-of: '{{ meta.name }}'
+        app.kubernetes.io/managed-by: awx-operator
+        app.kubernetes.io/component: awx
     spec:
       serviceAccountName: '{{ meta.name }}'
 {% if tower_image_pull_secret %}

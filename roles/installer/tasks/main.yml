@@ -1,4 +1,8 @@
 ---
+- name: Get current version
+  set_fact:
+    tower_image_version: "{{ tower_image.split(':')[1] }}"
+
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 
@@ -46,7 +50,9 @@
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app={{ deployment_type }}"
+      - "app.kubernetes.io/name={{ meta.name }}"
+      - "app.kubernetes.io/managed-by=awx-operator"
+      - "app.kubernetes.io/component=awx"
   register: tower_pods
   until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
