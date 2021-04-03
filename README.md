@@ -29,6 +29,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
          * [Testing in Minikube](#testing-in-minikube)
+      * [Generating a bundle](#generating-a-bundle)
    * [Release Process](#release-process)
       * [Build a new release](#build-a-new-release)
       * [Build a new version of the operator yaml file](#build-a-new-version-of-the-operator-yaml-file)
@@ -416,6 +417,55 @@ Alternatively, you can also update the service `awx-service` in your namespace t
 ```sh
 #> minikube service <serviceName> -n <namespaceName> --url
 ```
+
+### Generating a bundle
+
+> :warning: operator-sdk version 0.19.4 is needed to run the following commands
+
+If one has the Operator Lifecycle Manager (OLM) installed, the following steps is the process to generate the bundle that would nicely display in the OLM interface.
+
+At the root of this directory:
+
+1. Build and publish the operator
+
+```
+#> operator-sdk build registry.example.com/ansible/awx-operator:mytag
+#> podman push registry.example.com/ansible/awx-operator:mytag
+```
+
+2. Build and publish the bundle
+
+```
+#> podman build . -f bundle.Dockerfile -t registry.example.com/ansible/awx-operator-bundle:mytag
+#> podman push registry.example.com/ansible/awx-operator-bundle:mytag
+```
+
+3. Build and publish an index with your bundle in it
+
+```
+#> opm index add --bundles registry.example.com/ansible/awx-operator-bundle:mytag --tag registry.example.com/ansible/awx-operator-catalog:mytag
+#> podman push registry.example.com/ansible/awx-operator-catalog:mytag
+```
+
+4. In your Kubernetes create a new CatalogSource pointing to `registry.example.com/ansible/awx-operator-catalog:mytag`
+
+```
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: <catalogsource-name>
+  namespace: <namespace>
+spec:
+  displayName: 'myoperatorhub'
+  image: registry.example.com/ansible/awx-operator-catalog:mytag
+  publisher: 'myoperatorhub'
+  sourceType: grpc
+```
+
+Applying this template will do it. Once the CatalogSource is in a READY state, the bundle should be available on the OperatorHub tab (as part of the custom CatalogSource that just got added)
+
+5. Enjoy
 
 ## Release Process
 
