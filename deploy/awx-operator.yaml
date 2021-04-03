@@ -122,7 +122,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/shanemcd/awx-operator:0.7.1"
+          image: "quay.io/ansible/awx-operator:0.7.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -274,7 +274,6 @@ spec:
                         type: string
                       image:
                         type: string
-
                 tower_image_pull_policy:
                   description: The image pull policy
                   type: string

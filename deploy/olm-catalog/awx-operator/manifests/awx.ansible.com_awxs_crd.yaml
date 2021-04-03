@@ -22,15 +22,16 @@ spec:
               ca_trust_bundle:
                 description: Path where the trusted CA bundle is available
                 type: string
-              ldap_cacert_secret:
-                 description: Secret where can be found the LDAP trusted Certificate Authority Bundle
-                 type: string
               deployment_type:
                 description: Name of the deployment type
                 type: string
               development_mode:
                 description: If the deployment should be done in development mode
                 type: boolean
+              ldap_cacert_secret:
+                description: Secret where can be found the LDAP trusted Certificate
+                  Authority Bundle
+                type: string
               tower_admin_email:
                 description: The admin user email
                 type: string
@@ -38,9 +39,9 @@ spec:
                 description: Secret where the admin password can be found
                 type: string
               tower_admin_user:
+                default: admin
                 description: Username to use for the admin account
                 type: string
-                default: admin
               tower_broadcast_websocket_secret:
                 description: Secret where the broadcast websocket secret can be found
                 type: string
@@ -48,6 +49,17 @@ spec:
                 default: true
                 description: Whether or not to preload data upon Tower instance creation
                 type: boolean
+              tower_ee_images:
+                description: Registry path to the Execution Environment container
+                  to use
+                items:
+                  properties:
+                    image:
+                      type: string
+                    name:
+                      type: string
+                  type: object
+                type: array
               tower_extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string
@@ -92,25 +104,26 @@ spec:
               tower_loadbalancer_annotations:
                 description: Annotations to add to the loadbalancer
                 type: string
-              tower_loadbalancer_protocol:
-                description: Protocol to use for the loadbalancer
-                type: string
-                default: http
-                enum:
-                  - http
-                  - https
               tower_loadbalancer_port:
-                description: Port to use for the loadbalancer
-                type: number
                 default: 80
+                description: Port to use for the loadbalancer
+                type: integer
+              tower_loadbalancer_protocol:
+                default: http
+                description: Protocol to use for the loadbalancer
+                enum:
+                - http
+                - https
+                type: string
               tower_node_selector:
                 description: nodeSelector for the AWX pods
                 type: string
+              tower_old_postgres_configuration_secret:
+                description: Secret where the old database configuration can be found
+                  for data migration
+                type: string
               tower_postgres_configuration_secret:
                 description: Secret where the database configuration can be found
-                type: string
-              tower_old_postgres_configuration_secret:
-                description: Secret where the old database configuration can be found for data migration
                 type: string
               tower_postgres_data_path:
                 description: Path where the PostgreSQL data are located
@@ -142,9 +155,6 @@ spec:
                 type: object
               tower_postgres_storage_class:
                 description: Storage class to use for the PostgreSQL PVC
-                type: string
-              tower_ee_image:
-                description: Registry path to the Execution Environment container to use
                 type: string
               tower_redis_image:
                 description: Registry path to the redis container to use
@@ -185,9 +195,9 @@ spec:
               tower_task_extra_volume_mounts:
                 type: string
               tower_task_privileged:
+                default: false
                 description: If a privileged security context should be enabled
                 type: boolean
-                default: false
               tower_task_resource_requirements:
                 description: Resource requirements for the task container
                 properties:
@@ -273,6 +283,9 @@ spec:
                 type: string
               towerImage:
                 description: URL of the image used for the deployed instance
+                type: string
+              towerMigratedFromSecret:
+                description: The secret used for migrating an old Tower.
                 type: string
               towerURL:
                 description: URL to access the deployed instance
