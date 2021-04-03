@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [devel]
 
+  push:
+    branches: [devel]
+
 jobs:
   pull_request:
     runs-on: ubuntu-18.04
