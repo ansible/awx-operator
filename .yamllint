@@ -8,5 +8,5 @@ ignore: |
 rules:
   truthy: disable
   line-length:
-    max: 160
+    max: 170
     level: warning
