@@ -103,6 +103,9 @@ spec:
                 description: Port to use for the loadbalancer
                 type: number
                 default: 80
+              tower_node_selector:
+                description: nodeSelector for the AWX pods
+                type: string
               tower_postgres_configuration_secret:
                 description: Secret where the database configuration can be found
                 type: string
@@ -207,6 +210,9 @@ spec:
                         type: string
                     type: object
                 type: object
+              tower_tolerations:
+                description: node tolerations for the AWX pods
+                type: string
               tower_web_args:
                 items:
                   type: string
