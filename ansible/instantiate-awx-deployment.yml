@@ -24,3 +24,6 @@
             tower_image: "{{ tower_image | default(omit) }}"
             development_mode: "{{ development_mode | default(omit) | bool }}"
             tower_image_pull_policy: "{{ tower_image_pull_policy | default(omit) }}"
+            # tower_ee_images:
+            #   - name: test-ee
+            #     image: quay.io/<user>/awx-ee
