@@ -150,7 +150,7 @@ spec:
 {% endif %}
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
-              value: "/supervisor.conf"
+              value: "/etc/supervisord_task.conf"
             - name: AWX_SKIP_MIGRATIONS
               value: "1"
             - name: MY_POD_UID
