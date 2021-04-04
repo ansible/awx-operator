@@ -11,7 +11,7 @@ platforms:
   - name: kind-test-local
     groups:
       - k8s
-    image: bsycorp/kind:v1.17.9
+    image: bsycorp/kind:{KUBERNETES_VERSION:-v1.18.6}
     privileged: True
     override_command: no
     exposed_ports:

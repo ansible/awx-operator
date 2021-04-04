@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: delegated 
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+platforms:
+  - name: localhost 
+provisioner:
+  name: ansible
+  log: True
+  inventory:
+    group_vars:
+      all:
+        operator_namespace: ${TEST_NAMESPACE:-default}
+  env:
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
