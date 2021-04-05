@@ -32,7 +32,7 @@
 
 - name: Write awx object to pvc
   community.kubernetes.k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "echo '{{ awx_object_template }}' > {{ backup_dir }}/awx_object.yml"

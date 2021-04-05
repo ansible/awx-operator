@@ -58,4 +58,4 @@
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
-    tower_migrated_from_secret: "{{ awx_old_postgres_configuration_secret }}"
+    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"

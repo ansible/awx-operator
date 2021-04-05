@@ -1,3 +1,4 @@
 ---
 deployment_type: "awx"
 tower_postgres_image: postgres:12
+tower_backup_complete: false

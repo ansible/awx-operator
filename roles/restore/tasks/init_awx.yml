@@ -2,7 +2,7 @@
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
-    namespace: "{{ tower_namespace | default('default') }}"
+    namespace: "{{ namespace | default('default') }}"
     apply: yes
     wait: yes
     template: "{{ tower_backup_dir }}/awx_object.yml"

@@ -29,7 +29,7 @@
     - include_tasks: cleanup.yml
 
   when:
-    - this_backup['resources'][0]['status']['towerBackupComplete'] is not defined
+    - this_backup['resources'][0]['status']['towerBackupDirectory'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml

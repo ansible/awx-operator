@@ -52,21 +52,21 @@
 
 - name: Create directory for backup
   community.kubernetes.k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       mkdir -p {{ backup_dir }}
 
 - name: Precreate file for database dump
   community.kubernetes.k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       touch {{ backup_dir }}/tower.db
 
 - name: Set permissions on file for database dump
   community.kubernetes.k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       chmod 0600 {{ backup_dir }}/tower.db
@@ -82,7 +82,7 @@
 
 - name: Write pg_dump to backup on PVC
   community.kubernetes.k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db"

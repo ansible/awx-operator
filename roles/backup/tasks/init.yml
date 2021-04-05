@@ -54,7 +54,7 @@
 
 - name: Create management pod from templated deployment config
   community.kubernetes.k8s:
-    name: "{{ tower_backup_pvc_namespace }}-db-management"
+    name: "{{ meta.name }}-db-management"
     kind: Deployment
     state: present
     template: "management-pod.yml.j2"
