@@ -15,7 +15,6 @@ metadata:
             "deployment_type": "awx",
             "tower_admin_email": "test@example.com",
             "tower_create_preload_data": true,
-            "tower_ee_image": "quay.io/ansible/awx-ee:0.1.1",
             "tower_image": "quay.io/ansible/awx:18.0.0",
             "tower_ingress_type": "ingress",
             "tower_memcached_image": "memcached:alpine",
@@ -206,11 +205,6 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Image
         path: tower_image
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Tower EE Image
-        path: tower_ee_image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
