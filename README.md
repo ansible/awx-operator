@@ -250,12 +250,12 @@ spec:
 
 There are a few variables that are customizable for awx the image management.
 
-| Name                    | Description                | Default              |
-| ----------------------- | -------------------------- | -------------------- |
-| tower_image             | Path of the image to pull  | ansible/awx:15.0.0   |
-| tower_image_pull_policy | The pull policy to adopt   | IfNotPresent         |
-| tower_image_pull_secret | The pull secret to use     | ''                   |
-| tower_ee_image          | Path of the image to pull  | ansible/awx-ee:latest|
+| Name                    | Description                |
+| ----------------------- | -------------------------- |
+| tower_image             | Path of the image to pull  |
+| tower_image_pull_policy | The pull policy to adopt   |
+| tower_image_pull_secret | The pull secret to use     |
+| tower_ee_images         | A list of EEs to register  |
 
 Example of customization could be:
 
@@ -266,7 +266,9 @@ spec:
   tower_image: myorg/my-custom-awx
   tower_image_pull_policy: Always
   tower_image_pull_secret: pull_secret_name
-  tower_ee_image: myorg/my-custom-awx-ee
+  tower_ee_images: 
+    - name: my-custom-awx-ee
+      image: myorg/my-custom-awx-ee
 ```
 
 #### Privileged Tasks
