@@ -52,7 +52,7 @@
 - name: Set pg_restore command
   set_fact:
     psql_restore: >-
-      psql -U {{ awx_postgres_user }}
+      psql -U {{ database_username }}
       -d template1
       -p {{ awx_postgres_port }}
 
