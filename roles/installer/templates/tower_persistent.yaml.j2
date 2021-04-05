@@ -1,0 +1,21 @@
+{% if tower_projects_persistence|bool and tower_projects_existing_claim == '' %}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: '{{ meta.name }}-projects-claim'
+  namespace: '{{ meta.namespace }}'
+  labels:
+   app.kubernetes.io/name: '{{ meta.name }}'
+   app.kubernetes.io/part-of: '{{ meta.name }}'
+   app.kubernetes.io/managed-by: awx-operator
+   app.kubernetes.io/component: awx
+spec:
+  accessModes:
+    - {{ tower_projects_storage_access_mode }}
+  resources:
+    requests:
+      storage: {{ tower_projects_storage_size }}
+{% if tower_projects_storage_class != '' %}
+  storageClassName: {{ tower_projects_storage_class }}
+{% endif %}
+{% endif %}
