@@ -32,6 +32,9 @@ spec:
                 description: Secret where can be found the LDAP trusted Certificate
                   Authority Bundle
                 type: string
+              tower_custom_settings:
+                description: Name of configmap used to store custom awx custom settings
+                type: string
               tower_projects_persistence:
                 description: Whether or not the /var/lib/projects directory will be persistent
                 default: false

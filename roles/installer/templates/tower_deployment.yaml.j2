@@ -61,7 +61,16 @@ spec:
 {% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
               readOnly: true
 {% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
             - name: "{{ meta.name }}-nginx-certs"
@@ -129,7 +138,16 @@ spec:
 {% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
               readOnly: true
             - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY
@@ -154,6 +172,12 @@ spec:
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
+{% endif %}
+{% if discovered_tower_custom_settings %}
+            - name: "{{meta.name }}-custom-settings"
+              mountPath: /etc/tower/conf.d/custom.py
+              subPath: custom.py
+              readOnly: true
 {% endif %}
 {% if tower_task_extra_volume_mounts -%}
             {{ tower_task_extra_volume_mounts | indent(width=12, indentfirst=True) }}
@@ -229,6 +253,14 @@ spec:
             items:
               - key: ldap-ca.crt
                 path: 'ldap-ca.crt'
+{% endif %}
+{% if discovered_tower_custom_settings %}
+        - name: "{{ meta.name }}-custom-settings"
+          configMap:
+            name: "{{ tower_custom_settings }}"
+            items:
+              - key: custom.py
+                path: 'custom.py'
 {% endif %}
         - name: "{{ meta.name }}-application-credentials"
           secret:

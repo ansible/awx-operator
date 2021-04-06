@@ -11,6 +11,10 @@
   when:
     - ldap_cacert_secret != ''
 
+- name: Load Custom Setting Configmap
+  include_tasks: tower_custom_settings.yml
+  when: tower_custom_settings != ''
+
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
 

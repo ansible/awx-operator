@@ -26,6 +26,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
+         * [Custom Setting Configuration](#tower-custom-settings)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -375,6 +376,35 @@ To create the secret, you can use the command below:
 ```sh
 # kubectl create secret generic <resourcename>-ldap-ca-cert --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
 ```
+### Tower Custom Settings
+
+If the variable `tower_custom_settings` is provided, the operator will look for the ConfigMap specified in the field for a custom.py key.
+
+| Name                             | Description                             | Default |   Key    |
+| -------------------------------- | --------------------------------------- | --------| ---------|
+| tower_custom_settings            | ConfigMap which stores custom settings  |  ''     | custom.py|
+
+To create a ConfigMap, you can use the example yaml file as a reference:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: awx-custom-settings
+  namespace: default
+data:
+  custom.py: |
+    INSIGHTS_URL_BASE: 'example.org'
+    AWX_CLEANUP_PATHS: True
+
+```
+To use this setting for your operator add to spec:
+
+```yaml
+spec:
+  ...
+  tower_custom_settings: awx-custom-settings # Or the name you chose in metadata for the ConfigMap
+```  
 
 #### Persisting Projects Directory
 

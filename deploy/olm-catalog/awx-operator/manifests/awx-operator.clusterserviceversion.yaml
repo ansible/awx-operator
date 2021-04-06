@@ -358,6 +358,12 @@ spec:
         path: towerImage
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - description: ConfigMap for awx custom settings
+        displayName: Custom Awx Setting ConfigMap
+        path: tower_custom_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui.advanced
+        - urn:alm:descriptor:io.kubernetes:Configmap
       version: v1beta1
   description: AWX operator
   displayName: AWX

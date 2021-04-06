@@ -1,0 +1,11 @@
+---
+- name: Retrieve ConfigMap
+  community.kubernetes.k8s_info:
+    kind: ConfigMap
+    namespace: '{{ meta.namespace }}'
+    name: '{{ tower_custom_settings }}'
+  register: custom_settings
+- name: Check for custom settings in configmap
+  set_fact:
+    discovered_tower_custom_settings: '{{ custom_settings["resources"][0]["data"]["custom.py"] }}'
+  when: '"custom.py" in custom_settings["resources"][0]["data"]'

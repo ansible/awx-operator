@@ -282,6 +282,9 @@ spec:
                   description: AccessMode for the /var/lib/projects PersistentVolumeClaim
                   default: ReadWriteMany
                   type: string
+                tower_custom_settings:
+                  description: Name of configmap used to store custom awx settings
+                  type: string
               type: object
             status:
               properties:
