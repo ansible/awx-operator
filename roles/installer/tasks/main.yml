@@ -1,4 +1,21 @@
 ---
+- name: Patching labels to AWX kind
+  k8s:
+    state: present
+    definition:
+      apiVersion: awx.ansible.com/v1beta1
+      kind: AWX
+      name: '{{ meta.name }}'
+      namespace: '{{ meta.namespace }}'
+      metadata:
+        name: '{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app.kubernetes.io/name: '{{ meta.name }}'
+          app.kubernetes.io/part-of: '{{ meta.name }}'
+          app.kubernetes.io/managed-by: awx-operator
+          app.kubernetes.io/component: awx
+
 - name: Get current version
   set_fact:
     tower_image_version: "{{ tower_image.split(':')[1] }}"
