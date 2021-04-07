@@ -260,7 +260,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_Yes_
-        - urn:alm:descriptor:com.tectonic.ui:select:persistent-claim
+        - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
       - displayName: Tower Projects Storage Class Name
         description: Tower Projects Storage Class Name. If not present, the default storage class will be used.
         path: tower_projects_storage_class
