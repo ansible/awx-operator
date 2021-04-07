@@ -13,16 +13,7 @@ metadata:
           },
           "spec": {
             "deployment_type": "awx",
-            "tower_admin_email": "test@example.com",
-            "tower_create_preload_data": true,
-            "tower_image": "quay.io/ansible/awx:18.0.0",
             "tower_ingress_type": "ingress",
-            "tower_memcached_image": "memcached:alpine",
-            "tower_postgres_image": "postgres:12",
-            "tower_postgres_pass": "awxpass",
-            "tower_postgres_storage_class": "",
-            "tower_redis_image": "redis:latest",
-            "tower_task_privileged": false,
             "tower_task_resource_requirements": {
               "requests": {
                 "cpu": "500m",
@@ -266,22 +257,23 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_Yes_
         - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
-      - displayName: Tower Projects Storage Class Name
-        description: Tower Projects Storage Class Name. If not present, the default storage class will be used.
+      - description: Tower Projects Storage Class Name. If not present, the default
+          storage class will be used.
+        displayName: Tower Projects Storage Class Name
         path: tower_projects_storage_class
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_No_
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Tower Projects Storage Size
-        description: Tower Projects Storage Size
+      - description: Tower Projects Storage Size
+        displayName: Tower Projects Storage Size
         path: tower_projects_storage_size
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_No_
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Tower Projects Storage Access Mode
-        description: Tower Projects Storage Access Mode
+      - description: Tower Projects Storage Access Mode
+        displayName: Tower Projects Storage Access Mode
         path: tower_projects_storage_access_mode
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -476,7 +468,7 @@ spec:
                   value: awx-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/ansible/awx-operator:0.7.0
+                image: quay.io/ansible/awx-operator:0.8.0
                 imagePullPolicy: Always
                 livenessProbe:
                   httpGet:
