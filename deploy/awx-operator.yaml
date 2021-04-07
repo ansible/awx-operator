@@ -285,6 +285,9 @@ spec:
                     - never
                     - IfNotPresent
                     - ifnotpresent
+                tower_image_pull_secret:
+                  description: The image pull secret
+                  type: string
                 tower_task_resource_requirements:
                   description: Resource requirements for the task container
                   properties:

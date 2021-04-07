@@ -155,6 +155,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
+      - displayName: Image Pull Secret
+        path: tower_image_pull_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullSecret
       - displayName: Web container resource requirements
         path: tower_web_resource_requirements
         x-descriptors:

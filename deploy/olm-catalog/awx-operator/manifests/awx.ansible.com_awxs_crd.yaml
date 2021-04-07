@@ -108,6 +108,9 @@ spec:
                 - IfNotPresent
                 - ifnotpresent
                 type: string
+              tower_image_pull_secret:
+                description: The image pull secret
+                type: string
               tower_ingress_annotations:
                 description: Annotations to add to the ingress
                 type: string
