@@ -332,6 +332,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Name of configmap used to store custom awx custom settings
+        displayName: Name of configmap used to store custom awx custom settings
+        path: tower_custom_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:ConfigMap
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: Route to access the instance deployed
         displayName: URL
@@ -358,12 +365,6 @@ spec:
         path: towerImage
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - description: ConfigMap for awx custom settings
-        displayName: Custom Awx Setting ConfigMap
-        path: tower_custom_settings
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui.advanced
-        - urn:alm:descriptor:io.kubernetes:Configmap
       version: v1beta1
   description: AWX operator
   displayName: AWX
