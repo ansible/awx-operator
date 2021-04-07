@@ -283,7 +283,16 @@ spec:
               - key: receptor_conf
                 path: receptor.conf
         - name: "{{ meta.name }}-projects"
+{% if tower_projects_persistence|bool %}
+          persistentVolumeClaim:
+{% if tower_projects_existing_claim %}
+            claimName: {{ tower_projects_existing_claim }}
+{% else %}
+            claimName: '{{ meta.name }}-projects-claim'
+{% endif %}
+{% else %}
           emptyDir: {}
+{% endif %}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:

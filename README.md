@@ -25,6 +25,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [LDAP Certificate Authority](#ldap-certificate-authority)
+         * [Persisting Projects Directory](#persisting-projects-directory)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -373,6 +374,29 @@ To create the secret, you can use the command below:
 
 ```sh
 # kubectl create secret generic <resourcename>-ldap-ca-cert --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
+```
+
+#### Persisting Projects Directory
+
+In cases which you want to persist the `/var/lib/projects` directory, there are few variables that are customizable for the `awx-operator`.
+
+| Name                               | Description                                                                                          | Default        |
+| -----------------------------------| ---------------------------------------------------------------------------------------------------- | ---------------|
+| tower_projects_persistence         | Whether or not the /var/lib/projects directory will be persistent                                    |  false         |
+| tower_projects_storage_class       | Define the PersistentVolume storage class                                                            |  ''            |
+| tower_projects_storage_size        | Define the PersistentVolume size                                                                     |  8Gi           |
+| tower_projects_storage_access_mode | Define the PersistentVolume access mode                                                              |  ReadWriteMany |
+| tower_projects_existing_claim      | Define an existing PersistentVolumeClaim to use (cannot be combined with `tower_projects_storage_*`) |  ''            |
+
+Example of customization when the `awx-operator` automatically handles the persistent volume could be:
+
+```yaml
+---
+spec:
+  ...
+  tower_projects_persistence: true
+  tower_projects_storage_class: rook-ceph
+  tower_projects_storage_size: 20Gi
 ```
 
 ## Development

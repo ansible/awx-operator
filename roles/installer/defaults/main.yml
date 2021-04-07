@@ -136,6 +136,19 @@ tower_postgres_resource_requirements:
 tower_postgres_storage_class: ''
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
+# Persistence to the AWX project data folder
+# Whether or not the /var/lib/projects directory will be persistent
+tower_projects_persistence: false
+#
+# Define an existing PersistentVolumeClaim to use
+tower_projects_existing_claim: ''
+#
+# Define the storage_class, size and access_mode
+# when not using an existing claim
+tower_projects_storage_class: ''
+tower_projects_storage_size: 8Gi
+tower_projects_storage_access_mode: ReadWriteMany
+
 # Secret to lookup that provide the PostgreSQL configuration
 #
 tower_postgres_configuration_secret: ''

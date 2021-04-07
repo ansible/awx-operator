@@ -243,6 +243,45 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Enable persistence for /var/lib/projects directory?
+        path: tower_projects_persistence
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Use existing Persistent Claim?
+        path: tower_projects_use_existing_claim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:_Yes_
+        - urn:alm:descriptor:com.tectonic.ui:select:_No_
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_persistence:true
+      - displayName: Tower Projects Existing Persistent Claim
+        path: tower_projects_existing_claim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_Yes_
+        - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
+      - displayName: Tower Projects Storage Class Name
+        description: Tower Projects Storage Class Name. If not present, the default storage class will be used.
+        path: tower_projects_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Tower Projects Storage Size
+        description: Tower Projects Storage Size
+        path: tower_projects_storage_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Tower Projects Storage Access Mode
+        description: Tower Projects Storage Access Mode
+        path: tower_projects_storage_access_mode
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:tower_projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Tower Task Command
         path: tower_task_command
         x-descriptors:

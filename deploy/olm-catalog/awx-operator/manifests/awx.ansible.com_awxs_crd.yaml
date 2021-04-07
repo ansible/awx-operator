@@ -32,6 +32,30 @@ spec:
                 description: Secret where can be found the LDAP trusted Certificate
                   Authority Bundle
                 type: string
+              tower_projects_persistence:
+                description: Whether or not the /var/lib/projects directory will be persistent
+                default: false
+                type: boolean
+              tower_projects_use_existing_claim:
+                description: Using existing PersistentVolumeClaim
+                type: string
+                enum:
+                  - _Yes_
+                  - _No_
+              tower_projects_existing_claim:
+                description: PersistentVolumeClaim to mount /var/lib/projects directory
+                type: string
+              tower_projects_storage_class:
+                description: Storage class for the /var/lib/projects PersistentVolumeClaim
+                type: string
+              tower_projects_storage_size:
+                description: Size for the /var/lib/projects PersistentVolumeClaim
+                default: 8Gi
+                type: string
+              tower_projects_storage_access_mode:
+                description: AccessMode for the /var/lib/projects PersistentVolumeClaim
+                default: ReadWriteMany
+                type: string
               tower_admin_email:
                 description: The admin user email
                 type: string
