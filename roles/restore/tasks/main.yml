@@ -14,11 +14,9 @@
   register: this_restore
 
 - block:
-    - include_tasks: preflight.yml
+    - include_tasks: init.yml
 
     - include_tasks: init_awx.yml
-
-    - include_tasks: init.yml
 
     - include_tasks: postgres.yml
 

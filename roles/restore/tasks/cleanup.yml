@@ -1,5 +1,10 @@
 ---
 
+- name: Clean up _secrets directory
+  ansible.builtin.file:
+    path: "_definitions"
+    state: absent
+
 - name: Delete any existing management pod
   community.kubernetes.k8s:
     name: "{{ meta.name }}-db-management"

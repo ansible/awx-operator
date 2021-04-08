@@ -6,6 +6,7 @@ tower_name: ''
 tower_backup_pvc: ''
 tower_backup_pvc_namespace: 'default'
 
+# TODO: If the backup_dir is not provided, it should default to the most recent backup based on the timestamp at the end of the file name.
 # Required: backup name, found on the awxbackup object
 tower_backup_dir: ''
 

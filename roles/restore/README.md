@@ -33,7 +33,13 @@ spec:
   tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
-Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.
+Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.  
+
+The namespace specified is the namespace the resulting AWX deployment will be in.  The namespace you specified must be pre-created.  
+
+```
+kubectl create ns my-namespace
+```
 
 Finally, use `kubectl` to create the restore object in your cluster:
 

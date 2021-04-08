@@ -1,11 +1,31 @@
 ---
+
+- name: Get AWX object definition from pvc
+  community.kubernetes.k8s_exec:
+    namespace: "{{ tower_backup_pvc_namespace }}"
+    pod: "{{ meta.name }}-db-management"
+    command: >-
+      bash -c "cat '{{ tower_backup_dir }}/awx_object.yml'"
+  register: awx_object
+
+- name: Write temp AWX definition template file
+  copy:
+    dest: "_definitions/awx_object.yml.j2"
+    content: |
+      {{ awx_object.stdout }}
+    mode: '0600'
+
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
     namespace: "{{ namespace | default('default') }}"
     apply: yes
     wait: yes
-    template: "{{ tower_backup_dir }}/awx_object.yml"
+    template: "_definitions/awx_object.yml.j2"
+    wait: true
+
+
+# TODO: The awx object and secrets need to be applied from the awx-operator, because that is where the service account is?.  So we will need to either copy them over or pipe them into a template command
 
 # TODO: Add logic to allow users to provide override values here,
 #       or to specify spec values that were not in the backed up AWX object.
