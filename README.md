@@ -147,7 +147,7 @@ spec:
 spec:
   ...
   tower_ingress_type: LoadBalancer
-  tower_ingress_protocol: http
+  tower_loadbalancer_protocol: http
 ```
 
 #### TLS Termination
@@ -267,7 +267,7 @@ spec:
   tower_image: myorg/my-custom-awx
   tower_image_pull_policy: Always
   tower_image_pull_secret: pull_secret_name
-  tower_ee_images: 
+  tower_ee_images:
     - name: my-custom-awx-ee
       image: myorg/my-custom-awx-ee
 ```
