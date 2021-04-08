@@ -75,8 +75,8 @@
     - tower_backup_dir != ''
     - stat_backup_dir.return_code != 0
 
-- name: Make _definitions directory
-  file:
-    path: "_definitions"
+- name: Make temp definitions directory
+  tempfile:
+    prefix: "definitions-"
     state: directory
-    mode: '0700'
+  register: definitions_dir

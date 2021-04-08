@@ -10,7 +10,7 @@
 
 - name: Write temp AWX definition template file
   copy:
-    dest: "_definitions/awx_object.yml.j2"
+    dest: "{{ definitions_dir.path }}/awx_object.yml.j2"
     content: |
       {{ awx_object.stdout }}
     mode: '0600'
@@ -18,10 +18,10 @@
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
-    namespace: "{{ namespace | default('default') }}"
+    namespace: "{{ meta.namespace | default('default') }}"
     apply: yes
     wait: yes
-    template: "_definitions/awx_object.yml.j2"
+    template: "{{ definitions_dir.path }}/awx_object.yml.j2"
 
 
 # TODO: The awx object and secrets need to be applied from the awx-operator, because that is where the service account is?

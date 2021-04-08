@@ -32,7 +32,7 @@
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app={{ tower_name }}-{{ deployment_type }}-postgres"
+      - "app.kubernetes.io/name={{ tower_name }}-postgres"
   register: postgres_pod
   until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5

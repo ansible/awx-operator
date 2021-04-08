@@ -32,7 +32,7 @@
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app={{ tower_name }}-{{ deployment_type }}-postgres"
+      - "app.kubernetes.io/name={{ tower_name }}-postgres"
   register: postgres_pod
   until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
@@ -59,17 +59,23 @@
     replicas: 0
   when: this_deployment['resources'] | length
 
+- name: Get the postgres pod information
+  set_fact:
+    resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
+
 - name: Set pg_restore command
   set_fact:
     psql_restore: >-
       psql -U {{ awx_postgres_user }}
-      -d template1
+      -h {{ resolvable_db_host }}
+      -U {{ awx_postgres_user }}
+      -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
 
 - name: Restore database dump to the new postgresql container
   k8s_exec:
-    namespace: "{{ meta.namespace }}"
-    pod: "{{ postgres_pod_name }}"
+    namespace: "{{ tower_backup_pvc_namespace }}"
+    pod: "{{ meta.name }}-db-management"
     command: |
       bash -c """
       set -e -o pipefail

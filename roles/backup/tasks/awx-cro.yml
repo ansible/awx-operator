@@ -23,12 +23,12 @@
 - name: Template AWX object definition
   template:
     src: awx_object.yml.j2
-    dest: "_secrets/awx_object.yml"
+    dest: "{{ secrets_dir.path }}/awx_object.yml"
     mode: '0600'
 
 - name: Set AWX object template file as var
   set_fact:
-    awx_object_template: "{{ lookup('file', '_secrets/awx_object.yml') }}"
+    awx_object_template: "{{ lookup('file', '{{ secrets_dir.path }}/awx_object.yml') }}"
 
 - name: Write awx object to pvc
   k8s_exec:

@@ -1,11 +1,5 @@
 ---
 
-# After copying secret files to the PVC, delete the local tmp copies
-- name: Clean up _secrets directory
-  file:
-    path: "_secrets"
-    state: absent
-
 - name: Delete any existing management pod
   k8s:
     name: "{{ meta.name }}-db-management"
