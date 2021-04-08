@@ -502,21 +502,34 @@ There are a few moving parts to this project:
 
 Each of these must be appropriately built in preparation for a new tag:
 
-### Build a new release
+### Verify Functionality
 
 Run the following command inside this directory:
 
 ```sh
-#> operator-sdk build quay.io/ansible/awx-operator:$VERSION
+#> operator-sdk build quay.io/<user>/awx-operator:test
 ```
 
 Then push the generated image to Docker Hub:
 
 ```sh
-#> docker push quay.io/ansible/awx-operator:$VERSION
+#> docker push quay.io/<user>/awx-operator:test
 ```
 
-### Build a new version of the operator yaml file
+After it is built, test it on a local cluster:
+
+
+```sh
+#> minikube start --memory 6g --cpus 4
+#> minikube addons enable ingress
+#> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=test
+#> kubectl create namespace example-awx
+#> ansible-playbook ansible/instantiate-awx-deployment.yml -e tower_namespace=example-awx
+#> <test everything>
+#> minikube delete
+```
+
+### Update version
 
 Update the awx-operator version:
 
@@ -528,20 +541,11 @@ Once the version has been updated, run from the root of the repo:
 #> ansible-playbook ansible/chain-operator-files.yml
 ```
 
-After it is built, test it on a local cluster:
+### Commit / Create Release
 
+If everything works, commit the updated version, then [publish a new release](https://github.com/ansible/awx-operator/releases/new) using the same version you used in `ansible/group_vars/all`.
 
-```sh
-#> minikube start --memory 6g --cpus 4
-#> minikube addons enable ingress
-#> ansible-playbook ansible/deploy-operator.yml
-#> kubectl create namespace example-awx
-#> ansible-playbook ansible/instantiate-awx-deployment.yml -e tower_namespace=example-awx
-#> <test everything>
-#> minikube delete
-```
-
-If everything works, commit the updated version, then tag a new repository release with the same tag as the Docker image pushed earlier.
+After creating the release, [this GitHub Workflow](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/release.yaml) will run and publish the new image to quay.io.
 
 ## Author
 
