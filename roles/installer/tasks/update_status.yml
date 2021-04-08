@@ -18,7 +18,7 @@
       towerAdminUser: "{{ tower_admin_user }}"
 
 - name: Retrieve instance version
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ meta.name }}-task"
@@ -47,7 +47,7 @@
 
 - block:
     - name: Retrieve route URL
-      community.kubernetes.k8s_info:
+      k8s_info:
         kind: Route
         namespace: '{{ meta.namespace }}'
         name: '{{ meta.name }}'

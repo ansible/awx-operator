@@ -67,7 +67,7 @@
       -p {{ awx_postgres_port }}
 
 - name: Restore database dump to the new postgresql container
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |

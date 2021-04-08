@@ -35,7 +35,7 @@
     - provided_pvc.resources | length == 0
 
 - name: Delete any existing management pod
-  community.kubernetes.k8s:
+  k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
     namespace: "{{ tower_backup_pvc_namespace }}"
@@ -44,7 +44,7 @@
     wait: true
 
 - name: Create management pod from templated deployment config
-  community.kubernetes.k8s:
+  k8s:
     name: "{{ meta.name }}-db-management"
     kind: Deployment
     state: present
@@ -52,15 +52,12 @@
     wait: true
 
 - name: Check to make sure backup directory exists on PVC
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "stat {{ tower_backup_dir }}"
   register: stat_backup_dir
-
-- debug:
-    msg: "{{stat_backup_dir}}"
 
 - name: Error if backup dir is missing
   block:

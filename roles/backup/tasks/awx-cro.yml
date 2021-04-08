@@ -31,7 +31,7 @@
     awx_object_template: "{{ lookup('file', '_secrets/awx_object.yml') }}"
 
 - name: Write awx object to pvc
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
