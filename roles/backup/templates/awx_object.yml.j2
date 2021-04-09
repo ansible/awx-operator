@@ -1,9 +1,3 @@
 ---
-apiVersion: '{{ awx_api_version }}'
-kind: AWX
-metadata:
-{% raw %}
-  name: '{{ tower_name }}'
-  namespace: '{{ meta.namespace }}'
-{% endraw %}
-spec: {{ awx_spec }}
+awx_api_version: {{ awx_api_version }}
+awx_spec: {{ awx_spec }}

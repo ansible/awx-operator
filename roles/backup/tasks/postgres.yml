@@ -69,13 +69,17 @@
     namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      chmod 0600 {{ backup_dir }}/tower.db && chown postgres:root {{ backup_dir }}/tower.db
+      bash -c "chmod 0600 {{ backup_dir }}/tower.db && chown postgres:root {{ backup_dir }}/tower.db"
+
+- name: Get the postgres pod information
+  set_fact:
+    resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
 
 - name: Set pg_dump command
   set_fact:
     pgdump: >-
       pg_dump --clean --create
-      -h {{ awx_postgres_host }}
+      -h {{ resolvable_db_host }}
       -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
