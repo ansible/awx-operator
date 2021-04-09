@@ -206,7 +206,7 @@ stringData:
   port: <external port, this usually defaults to 5432>
   database: <desired database name>
   username: <username to connect as>
-  password: <password to connect with>
+  password: <password to connect with>  # do not use 'single-quotes' or "double-quotes" as it will be considered part of the password
 type: Opaque
 ```
 
