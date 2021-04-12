@@ -207,8 +207,11 @@ stringData:
   database: <desired database name>
   username: <username to connect as>
   password: <password to connect with>
+  sslmode: prefer
 type: Opaque
 ```
+
+**Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
 
 #### Migrating data from an old AWX instance
 
