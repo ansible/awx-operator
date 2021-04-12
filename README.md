@@ -150,6 +150,14 @@ spec:
   tower_loadbalancer_protocol: http
 ```
 
+The AWX `Service` that gets created will have a `type` set based on the `tower_ingress_type` being used:
+
+If `tower_ingress_type: LoadBalancer` is used the `Service` will be set as `type: LoadBalancer`.
+
+If `tower_ingress_type: Ingress` is used the `Service` will be set as `type: ClusterIP`.
+
+If `tower_ingress_type: Route`, or no `tower_ingress_type` is specified in the Custom Resource Definition, the `Service` will be set as `type: NodePort`.
+
 #### TLS Termination
 
   * Route
