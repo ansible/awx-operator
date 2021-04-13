@@ -32,6 +32,9 @@ spec:
                 description: Secret where can be found the LDAP trusted Certificate
                   Authority Bundle
                 type: string
+              service_account_image_pull_secret:
+                description: The service account image pull secret
+                type: string
               tower_admin_email:
                 description: The admin user email
                 type: string

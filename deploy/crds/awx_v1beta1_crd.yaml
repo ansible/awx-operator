@@ -26,6 +26,9 @@ spec:
                 deployment_type:
                   description: Name of the deployment type
                   type: string
+                service_account_image_pull_secret:
+                  description: The service account image pull secret
+                  type: string
                 tower_task_privileged:
                   description: If a privileged security context should be enabled
                   type: boolean

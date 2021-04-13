@@ -234,6 +234,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Service Account Image Pull Secret
+        path: service_account_image_pull_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:serviceAccountImagePullSecret
       - displayName: Tower Task Args
         path: tower_task_args
         x-descriptors:

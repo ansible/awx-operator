@@ -7,34 +7,37 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 # Table of Contents
 
 <!--ts-->
-* [AWX Operator](#awx-operator)
-* [Table of Contents](#table-of-contents)
-   * [Purpose](#purpose)
-   * [Usage](#usage)
-      * [Basic Install](#basic-install)
-      * [Admin user account configuration](#admin-user-account-configuration)
-      * [Network and TLS Configuration](#network-and-tls-configuration)
-         * [Ingress Type](#ingress-type)
-         * [TLS Termination](#tls-termination)
-      * [Database Configuration](#database-configuration)
-         * [External PostgreSQL Service](#external-postgresql-service)
-         * [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
-         * [Managed PostgreSQL Service](#managed-postgresql-service)
-      * [Advanced Configuration](#advanced-configuration)
-         * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
-         * [Privileged Tasks](#privileged-tasks)
-         * [Containers Resource Requirements](#containers-resource-requirements)
-         * [LDAP Certificate Authority](#ldap-certificate-authority)
-         * [Persisting Projects Directory](#persisting-projects-directory)
-   * [Development](#development)
-      * [Testing](#testing)
-         * [Testing in Docker](#testing-in-docker)
-         * [Testing in Minikube](#testing-in-minikube)
-      * [Generating a bundle](#generating-a-bundle)
-   * [Release Process](#release-process)
-      * [Build a new release](#build-a-new-release)
-      * [Build a new version of the operator yaml file](#build-a-new-version-of-the-operator-yaml-file)
-   * [Author](#author)
+- [AWX Operator](#awx-operator)
+- [Table of Contents](#table-of-contents)
+  - [Purpose](#purpose)
+  - [Usage](#usage)
+    - [Basic Install](#basic-install)
+    - [Admin user account configuration](#admin-user-account-configuration)
+    - [Network and TLS Configuration](#network-and-tls-configuration)
+      - [Ingress Type](#ingress-type)
+      - [TLS Termination](#tls-termination)
+    - [Database Configuration](#database-configuration)
+      - [External PostgreSQL Service](#external-postgresql-service)
+      - [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
+      - [Managed PostgreSQL Service](#managed-postgresql-service)
+    - [Advanced Configuration](#advanced-configuration)
+      - [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+    - [Adding a pull secret to the service account](#adding-a-pull-secret-to-the-service-account)
+      - [Privileged Tasks](#privileged-tasks)
+      - [Containers Resource Requirements](#containers-resource-requirements)
+      - [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
+      - [LDAP Certificate Authority](#ldap-certificate-authority)
+      - [Persisting Projects Directory](#persisting-projects-directory)
+  - [Development](#development)
+    - [Testing](#testing)
+      - [Testing in Docker](#testing-in-docker)
+      - [Testing in Minikube](#testing-in-minikube)
+    - [Generating a bundle](#generating-a-bundle)
+  - [Release Process](#release-process)
+    - [Verify Functionality](#verify-functionality)
+    - [Update version](#update-version)
+    - [Commit / Create Release](#commit--create-release)
+  - [Author](#author)
 <!--te-->
 
 ## Purpose
@@ -270,6 +273,17 @@ spec:
   tower_ee_images:
     - name: my-custom-awx-ee
       image: myorg/my-custom-awx-ee
+```
+
+### Adding a pull secret to the service account
+
+In some cases it may be necessary to add a pull secret at the service account level to be used for all image pulls.  An example of this would be to avoid the daily rate limits associated with a docker registry without a registered account.  You can add a pull secret to the service account used for image pulls using the following syntax:
+
+```yaml
+---
+spec:
+  ...
+  service_account_image_pull_secret: pull_secret_name
 ```
 
 #### Privileged Tasks

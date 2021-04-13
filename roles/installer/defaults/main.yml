@@ -4,6 +4,9 @@ deployment_type: awx
 database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
+# Add to make pull secret available for all image pulls
+service_account_image_pull_secret: ''
+
 tower_task_privileged: false
 tower_ingress_type: none
 
