@@ -1,12 +1,11 @@
-Role Name
+Backup Role
 =========
 
-The purpose of this role is to create a backup of your AWX deployment.  This includes:
+The purpose of this role is to create a backup of your AWX deployment which includes:
+  - custom deployment specific values in the spec section of the AWX custom resource object
   - backup of the postgresql database
-  - secret_key
-  - custom user config files
-  - manual projects
-
+  - secret_key, admin_password, and broadcast_websocket secrets
+  - database configuration
 
 Requirements
 ------------
@@ -32,13 +31,12 @@ spec:
   tower_name: mytower
 ```
 
-Note that the `tower_name` above is the name of the AWX deployment you intend to backup from.  
-
+Note that the `tower_name` above is the name of the AWX deployment you intend to backup from.  The namespace above is the one containing the AWX deployment that will be backed up.
 
 Finally, use `kubectl` to create the backup object in your cluster:
 
 ```bash
-#> kubectl apply -f backup-awx.yml
+$ kubectl apply -f backup-awx.yml
 ```
 
 The resulting pvc will contain a backup tar that can be used to restore to a new deployment. Future backups will also be stored in separate tars on the same pvc.
@@ -60,6 +58,14 @@ This role will automatically create a pvc using a Storage Class if provided:
 ```
 tower_backup_storage_class: 'standard'
 tower_backup_size: '20Gi'
+```
+
+By default, the backup pvc will be created in the `default` namespace.  If you want your backup to be stored
+in a specific namespace, you can do so by specifying `tower_backup_pvc_namespace`.  Keep in mind that you will
+need to provide the same namespace when restoring.  
+
+```
+tower_backup_pvc_namespace: 'custom-namespace'
 ```
 
 If a custom postgres configuration secret was used when deploying AWX, it must be set:

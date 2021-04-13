@@ -34,7 +34,9 @@
     label_selectors:
       - "app.kubernetes.io/name={{ tower_name }}-postgres"
   register: postgres_pod
-  until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+  until:
+    - "postgres_pod['resources'] | length"
+    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
 
@@ -71,7 +73,7 @@
     command: >-
       bash -c "chmod 0600 {{ backup_dir }}/tower.db && chown postgres:root {{ backup_dir }}/tower.db"
 
-- name: Get the postgres pod information
+- name: Set full resolvable host name for postgres pod
   set_fact:
     resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
 

@@ -16,11 +16,11 @@
 - block:
     - include_tasks: init.yml
 
-    - include_tasks: init_awx.yml
+    - include_tasks: secrets.yml
+
+    - include_tasks: deploy_awx.yml
 
     - include_tasks: postgres.yml
-
-    - include_tasks: secrets.yml
 
     - name: Set flag signifying this restore was successful
       set_fact:

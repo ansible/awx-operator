@@ -8,7 +8,8 @@
       bash -c "cat '{{ tower_backup_dir }}/awx_object'"
   register: awx_object
 
-- set_fact:
+- name: Set AWX spec variable from backup
+  set_fact:
     awx_spec: "{{ awx_object.stdout }}"
 
 - name: Deploy AWX
@@ -16,11 +17,11 @@
     state: "{{ state | default('present') }}"
     namespace: "{{ meta.namespace | default('default') }}"
     apply: yes
-    wait: yes
     template: awx_object.yml.j2
-
-# TODO: The awx object and secrets need to be applied from the awx-operator, because that is where the service account is?
-#       So we will need to either copy them over or pipe them into a template command
+    wait: true
+    wait_condition:
+      type: "Running"
+      status: "True"
 
 # TODO: Add logic to allow users to provide override values here,
 #       or to specify spec values that were not in the backed up AWX object.

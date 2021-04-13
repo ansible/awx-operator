@@ -1,10 +1,12 @@
-Role Name
+Restore Role
 =========
 
-The purpose of this role is to restore your AWX deployment from an existing PVC backup. The backup should include:
+The purpose of this role is to restore your AWX deployment from an existing PVC backup. The backup includes:
+  - custom deployment specific values in the spec section of the AWX custom resource object
   - backup of the postgresql database
-  - secrets, included the secret_key.  
-  - AWX custom resource object with deployment specific settings
+  - secret_key, admin_password, and broadcast_websocket secrets
+  - database configuration
+
 
 
 Requirements
@@ -44,7 +46,7 @@ kubectl create ns my-namespace
 Finally, use `kubectl` to create the restore object in your cluster:
 
 ```bash
-#> kubectl apply -f restore-awx.yml
+$ kubectl apply -f restore-awx.yml
 ```
 
 This will create a new deployment and restore your backup to it.  

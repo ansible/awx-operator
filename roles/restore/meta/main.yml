@@ -18,6 +18,7 @@ galaxy_info:
 
   galaxy_tags:
     - tower
+    - controller
     - awx
     - ansible
     - restore

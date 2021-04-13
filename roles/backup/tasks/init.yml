@@ -40,7 +40,7 @@
   set_fact:
     _default_backup_pvc: "{{ meta.name }}-backup-claim"
 
-# by default, it will re-use the old pvc if already created (unless pvc is provided)
+# by default, it will re-use the old pvc if already created (unless a pvc is provided)
 - name: Set PVC to use for backup
   set_fact:
     backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true) }}"

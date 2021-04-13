@@ -457,7 +457,7 @@ spec:
         openAPIV3Schema:
           type: object
           x-kubernetes-preserve-unknown-fields: true
-          description: Schema validation for the AWXBackup CRD
+          description: Schema validation for the AWXRestore CRD
           properties:
             spec:
               type: object
@@ -466,10 +466,10 @@ spec:
                   description: Name of the deployment to be restored to
                   type: string
                 tower_backup_pvc:
-                  description: Name of the PVC to be used for storing the backup
+                  description: Name of the PVC to be restored from
                   type: string
                 tower_backup_pvc_namespace:
-                  description: Namespace PVC is in
+                  description: Namespace the PVC is in
                   type: string
                 tower_backup_dir:
                   description: Backup directory name, a status found on the awxbackup object (towerBackupComplete)
@@ -487,7 +487,7 @@ spec:
                   description: Custom postgres_configuration secret name
                   type: string
               oneOf:
-                - required: ["tower_name", "tower_backup_pvc"]
+                - required: ["tower_name", "tower_backup_pvc", "tower_backup_dir"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -570,6 +570,7 @@ rules:
     resources:
       - '*'
       - awxbackups
+      - awxrestores
     verbs:
       - '*'
 
@@ -612,7 +613,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/chadams/awx-operator:new-crd"
+          image: "quay.io/ansible/awx-operator:0.8.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
