@@ -141,7 +141,7 @@ tower_postgres_image: postgres:12
 tower_postgres_selector: ''
 
 # Add node tolerations for the Postgres pods.
-#Specify as literal block. E.g.:
+# Specify as literal block. E.g.:
 # tower_postgres_tolerations: |
 #   - key: "dedicated"
 #     operator: "Equal"
