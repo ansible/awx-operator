@@ -12,21 +12,17 @@
   set_fact:
     _awx: "{{ _awx_cro['resources'][0] }}"
 
-- name: Set apiVersion
-  set_fact:
-    awx_api_version: "{{ _awx['apiVersion'] }}"
-
 - name: Set user specified spec
   set_fact:
     awx_spec: "{{ _awx['spec'] }}"
 
 - name: Template secrets into yaml
   set_fact:
-    awx_definition_file: "{{ lookup('template', 'awx_object.yml.j2')}}"
+    awx_definition_file: "{{ awx_spec }}"
 
 - name: Write awx object to pvc
   k8s_exec:
     namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "echo '{{ awx_definition_file }}' > {{ backup_dir }}/awx_object.yml"
+      bash -c "echo '{{ awx_definition_file }}' > {{ backup_dir }}/awx_object"

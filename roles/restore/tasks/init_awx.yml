@@ -5,15 +5,11 @@
     namespace: "{{ tower_backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "cat '{{ tower_backup_dir }}/awx_object.yml'"
+      bash -c "cat '{{ tower_backup_dir }}/awx_object'"
   register: awx_object
 
-- name: Write temp AWX definition template file
-  copy:
-    dest: "{{ definitions_dir.path }}/awx_object.yml.j2"
-    content: |
-      {{ awx_object.stdout }}
-    mode: '0600'
+- set_fact:
+    awx_spec: "{{ awx_object.stdout }}"
 
 - name: Deploy AWX
   k8s:
@@ -21,8 +17,7 @@
     namespace: "{{ meta.namespace | default('default') }}"
     apply: yes
     wait: yes
-    template: "{{ definitions_dir.path }}/awx_object.yml.j2"
-
+    template: awx_object.yml.j2
 
 # TODO: The awx object and secrets need to be applied from the awx-operator, because that is where the service account is?
 #       So we will need to either copy them over or pipe them into a template command
