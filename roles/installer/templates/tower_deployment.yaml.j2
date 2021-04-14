@@ -61,7 +61,16 @@ spec:
 {% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
               readOnly: true
 {% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
             - name: "{{ meta.name }}-nginx-certs"
@@ -129,7 +138,16 @@ spec:
 {% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
               readOnly: true
             - name: "{{ secret_key_secret_name }}"
               mountPath: /etc/tower/SECRET_KEY

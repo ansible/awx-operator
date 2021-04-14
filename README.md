@@ -26,7 +26,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
-         * [Custom Volume and Volume Mount Options](#custom-volume-volumemount-options)
+         * [Custom Volume and Volume Mount Options](#custom-volume-volume-mount-options)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -445,22 +445,22 @@ Example spec file for volumes and volume mounts
 ```yaml
 ---
   tower_task_extra_volume_mounts: |
-    - name: ansible_cfg
+    - name: ansible-cfg
       mountPath: /etc/ansible/ansible.cfg
       subPath: ansible.cfg
-    - name: custom_py
+    - name: custom-py
       mountPath: /etc/tower/conf.d/custom.py
       subPath: custom.py
 
   tower_extra_volumes: |
-    - name: ansible_cfg
+    - name: ansible-cfg
       configMap:
         defaultMode: 420
         items:
           - key: ansible.cfg
             path: ansible.cfg
         name: <resourcename>-extra-config
-    - name: custom_py
+    - name: custom-py
       configMap:
         defaultMode: 420
         items:
