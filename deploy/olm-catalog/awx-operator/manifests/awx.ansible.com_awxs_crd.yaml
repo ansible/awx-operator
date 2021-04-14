@@ -227,6 +227,7 @@ spec:
               tower_task_extra_env:
                 type: string
               tower_task_extra_volume_mounts:
+                description: Specify volume mounts to be added to Task container
                 type: string
               tower_task_privileged:
                 default: false
@@ -268,6 +269,7 @@ spec:
               tower_web_extra_env:
                 type: string
               tower_web_extra_volume_mounts:
+                description: Specify volume mounts to be added to web container
                 type: string
               tower_web_resource_requirements:
                 description: Resource requirements for the web container
