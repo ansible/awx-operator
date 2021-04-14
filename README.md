@@ -325,15 +325,17 @@ spec:
 
 #### Assigning AWX pods to specific nodes
 
-You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `tower_node_selector` constrains
-the AWX pods to run only on the nodes that match all the specified key/value pairs. `tower_tolerations` allow the AWX
+You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `tower_node_selector` and `tower_postgres_selector` constrains
+the AWX pods to run only on the nodes that match all the specified key/value pairs. `tower_tolerations` and `tower_postgres_tolerations` allow the AWX
 pods to be scheduled onto nodes with matching taints.
 
 
-| Name                | Description            | Default |
-| ------------------- | ---------------------- | ------- |
-| tower_node_selector | AWX pods' nodeSelector | ''      |
-| tower_tolerations   | AWX pods' tolerations  | ''      |
+| Name                       | Description                 | Default |
+| -------------------------- | --------------------------- | ------- |
+| tower_node_selector        | AWX pods' nodeSelector      | ''      |
+| tower_tolerations          | AWX pods' tolerations       | ''      |
+| tower_postgres_selector    | Postgres pods' nodeSelector | ''      |
+| tower_postgres_tolerations | Postgres pods' tolerations  | ''      |
 
 Example of customization could be:
 
@@ -346,6 +348,15 @@ spec:
     kubernetes.io/arch: amd64
     kubernetes.io/os: linux
   tower_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX"
+      effect: "NoSchedule"
+  tower_postgres_selector: |
+    disktype: ssd
+    kubernetes.io/arch: amd64
+    kubernetes.io/os: linux
+  tower_postgres_tolerations: |
     - key: "dedicated"
       operator: "Equal"
       value: "AWX"

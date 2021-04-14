@@ -224,6 +224,12 @@ spec:
                 tower_postgres_image:
                   description: Registry path to the PostgreSQL container to use
                   type: string
+                tower_postgres_selector:
+                  description: nodeSelector for the Postgres pods
+                  type: string
+                tower_postgres_tolerations:
+                  description: node tolerations for the Postgres pods
+                  type: string
                 tower_postgres_resource_requirements:
                   description: Resource requirements for the PostgreSQL container
                   properties:

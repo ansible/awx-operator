@@ -60,6 +60,14 @@ spec:
             - name: postgres
               mountPath: '{{ tower_postgres_data_path | dirname }}'
               subPath: '{{ tower_postgres_data_path | dirname | basename }}'
+{% if tower_postgres_selector %}
+      nodeSelector:
+        {{ tower_postgres_selector | indent(width=8) }}
+{% endif %}
+{% if tower_postgres_tolerations %}
+      tolerations:
+        {{ tower_postgres_tolerations | indent(width=8) }}
+{% endif %}
   volumeClaimTemplates:
     - metadata:
         name: postgres

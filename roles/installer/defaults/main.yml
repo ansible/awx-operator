@@ -130,6 +130,25 @@ tower_web_extra_volume_mounts: ''
 tower_redis_image: redis:latest
 
 tower_postgres_image: postgres:12
+
+# Add a nodeSelector for the Postgres pods.
+# It must match a node's labels for the pod to be scheduled on that node.
+# Specify as literal block. E.g.:
+# tower_postgres_selector: |
+#   disktype: ssd
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+tower_postgres_selector: ''
+
+# Add node tolerations for the Postgres pods.
+# Specify as literal block. E.g.:
+# tower_postgres_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWX"
+#     effect: "NoSchedule"
+tower_postgres_tolerations: ''
+
 tower_postgres_resource_requirements:
   requests:
     storage: 8Gi
