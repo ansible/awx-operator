@@ -119,7 +119,7 @@ stringData:
 
 By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, if `tower_ingress_type` is not specified as part of the Custom Resource specification, it will default to `none` and nothing ingress-wise will be created.
 
-The AWX operator provides support for three kinds of `Ingress` to access AWX: `Ingress`, `Route` and `LoadBalancer`, To toggle between these options, you can add the following to your AWX CR:
+The AWX operator provides support for four kinds of `Ingress` to access AWX: `Ingress`, `Route`,  `LoadBalancer` and `NodePort`, To toggle between these options, you can add the following to your AWX CR:
 
   * Route
 
@@ -150,13 +150,22 @@ spec:
   tower_loadbalancer_protocol: http
 ```
 
+  * NodePort
+
+```yaml
+---
+spec:
+  ...
+  tower_ingress_type: NodePort
+```
+
 The AWX `Service` that gets created will have a `type` set based on the `tower_ingress_type` being used:
 
-If `tower_ingress_type: LoadBalancer` is used the `Service` will be set as `type: LoadBalancer`.
-
-If `tower_ingress_type: Ingress` is used the `Service` will be set as `type: ClusterIP`.
-
-If `tower_ingress_type: Route`, or no `tower_ingress_type` is specified in the Custom Resource Definition, the `Service` will be set as `type: NodePort`.
+| Ingress Type `tower_ingress_type`     | Service Type   |
+| ------------------------------------- | -------------- |
+| `LoadBalancer`                        | `LoadBalancer` |
+| `NodePort`                            | `NodePort`     |
+| `Ingress` or `Route` or not specified | `ClusterIP`    |
 
 #### TLS Termination
 

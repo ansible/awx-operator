@@ -44,8 +44,8 @@ spec:
     app.kubernetes.io/component: awx
 {% if tower_ingress_type | lower == "loadbalancer" %}
   type: LoadBalancer
-{% elif tower_ingress_type | lower == "ingress" %}
-  type: ClusterIP
-{% elif tower_ingress_type != "none" %}
+{% elif tower_ingress_type | lower == "nodeport" %}
   type: NodePort
+{% elif  %}
+  type: ClusterIP
 {% endif %}
