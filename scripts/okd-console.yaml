@@ -1,5 +1,5 @@
 ### Don't run this deployment in production
-### The current configuration will run the 
+### The current configuration will run the
 ### OKD console without any autentication!!!!
 ###
 ### A prerequisite is to install the OLM
@@ -45,7 +45,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: okd-console
-  namespace: okd-console 
+  namespace: okd-console
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,8 +76,8 @@ spec:
           imagePullPolicy: IfNotPresent
           livenessProbe:
             tcpSocket:
-              port: web 
-            initialDelaySeconds: 2 
+              port: web
+            initialDelaySeconds: 2
             periodSeconds: 10
             failureThreshold: 60
           readinessProbe:
@@ -107,7 +107,7 @@ metadata:
     k8s-app: okd-console
 spec:
   ports:
-  - name: web 
+  - name: web
     targetPort: 9000
     port: 9000
     protocol: TCP
