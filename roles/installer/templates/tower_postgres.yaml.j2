@@ -66,8 +66,8 @@ spec:
 {% endif %}
 {% if tower_postgres_tolerations %}
       tolerations:
-        {{ tower_tolerations | indent(width=8) }}
-{% endif %}  
+        {{ tower_postgres_tolerations | indent(width=8) }}
+{% endif %}
   volumeClaimTemplates:
     - metadata:
         name: postgres
