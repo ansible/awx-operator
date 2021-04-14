@@ -43,9 +43,9 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: okd-console
-  namespace: okd-console
+  - kind: ServiceAccount
+    name: okd-console
+    namespace: okd-console
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,9 +107,9 @@ metadata:
     k8s-app: okd-console
 spec:
   ports:
-  - name: web
-    targetPort: 9000
-    port: 9000
-    protocol: TCP
+    - name: web
+      targetPort: 9000
+      port: 9000
+      protocol: TCP
   selector:
     k8s-app: okd-console
