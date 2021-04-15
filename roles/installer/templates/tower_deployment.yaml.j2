@@ -214,6 +214,9 @@ spec:
               mountPath: "/var/run/receptor"
             - name: "{{ meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
+{% if tower_ee_extra_volume_mounts -%}
+            {{ tower_ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% endif %}
 {% if development_mode | bool %}
           env:
             - name: SDB_NOTIFY_HOST

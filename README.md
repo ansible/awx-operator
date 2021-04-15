@@ -26,7 +26,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
-         * [Custom Volume and Volume Mount Options](#custom-volume-volume-mount-options)
+         * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -420,6 +420,7 @@ In a scenario where custom volumes and volume mounts are required to either over
 | tower_extra_volumes            | Specify extra volumes to add to the application pod      | ''      |
 | tower_web_extra_volume_mounts  | Specify volume mounts to be added to Web container       | ''      |
 | tower_task_extra_volume_mounts | Specify volume mounts to be added to Task container      | ''      |
+| tower_ee_extra_volume_mounts   | Specify volume mounts to be added to Execution container | ''      |
 
 Example configuration for ConfigMap
 
@@ -444,29 +445,33 @@ Example spec file for volumes and volume mounts
 
 ```yaml
 ---
-  tower_task_extra_volume_mounts: |
-    - name: ansible-cfg
-      mountPath: /etc/ansible/ansible.cfg
-      subPath: ansible.cfg
-    - name: custom-py
-      mountPath: /etc/tower/conf.d/custom.py
-      subPath: custom.py
+    spec:
+    ...
+      tower_ee_extra_volume_mounts: |
+        - name: ansible-cfg
+          mountPath: /etc/ansible/ansible.cfg
+          subPath: ansible.cfg
 
-  tower_extra_volumes: |
-    - name: ansible-cfg
-      configMap:
-        defaultMode: 420
-        items:
-          - key: ansible.cfg
-            path: ansible.cfg
-        name: <resourcename>-extra-config
-    - name: custom-py
-      configMap:
-        defaultMode: 420
-        items:
-          - key: custom.py
-            path: custom.py
-        name: <resourcename>-extra-config
+      tower_task_extra_volume_mounts: |
+        - name: custom-py
+          mountPath: /etc/tower/conf.d/custom.py
+          subPath: custom.py
+
+      tower_extra_volumes: |
+        - name: ansible-cfg
+          configMap:
+            defaultMode: 420
+            items:
+              - key: ansible.cfg
+                path: ansible.cfg
+            name: <resourcename>-extra-config
+        - name: custom-py
+          configMap:
+            defaultMode: 420
+            items:
+              - key: custom.py
+                path: custom.py
+            name: <resourcename>-extra-config
 
 ```
 
