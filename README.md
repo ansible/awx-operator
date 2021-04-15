@@ -26,6 +26,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
+         * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -409,6 +410,72 @@ spec:
   tower_projects_storage_class: rook-ceph
   tower_projects_storage_size: 20Gi
 ```
+
+#### Custom Volume and Volume Mount Options
+
+In a scenario where custom volumes and volume mounts are required to either overwrite defaults or mount configuration files.
+
+| Name                           | Description                                              | Default |
+| ------------------------------ | -------------------------------------------------------- | ------- |
+| tower_extra_volumes            | Specify extra volumes to add to the application pod      | ''      |
+| tower_web_extra_volume_mounts  | Specify volume mounts to be added to Web container       | ''      |
+| tower_task_extra_volume_mounts | Specify volume mounts to be added to Task container      | ''      |
+| tower_ee_extra_volume_mounts   | Specify volume mounts to be added to Execution container | ''      |
+
+Example configuration for ConfigMap
+
+```yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <resourcename>-extra-config
+  namespace: <target namespace>
+data:
+  ansible.cfg: |
+     [defaults]
+     remote_tmp = /tmp
+     [ssh_connection]
+     ssh_args = -C -o ControlMaster=auto -o ControlPersist=60s
+  custom.py:  |
+      INSIGHTS_URL_BASE = "example.org"
+      AWX_CLEANUP_PATHS = True
+```
+Example spec file for volumes and volume mounts
+
+```yaml
+---
+    spec:
+    ...
+      tower_ee_extra_volume_mounts: |
+        - name: ansible-cfg
+          mountPath: /etc/ansible/ansible.cfg
+          subPath: ansible.cfg
+
+      tower_task_extra_volume_mounts: |
+        - name: custom-py
+          mountPath: /etc/tower/conf.d/custom.py
+          subPath: custom.py
+
+      tower_extra_volumes: |
+        - name: ansible-cfg
+          configMap:
+            defaultMode: 420
+            items:
+              - key: ansible.cfg
+                path: ansible.cfg
+            name: <resourcename>-extra-config
+        - name: custom-py
+          configMap:
+            defaultMode: 420
+            items:
+              - key: custom.py
+                path: custom.py
+            name: <resourcename>-extra-config
+
+```
+
+> :warning: **Volume and VolumeMount names cannot contain underscores(_)**
 
 ## Development
 

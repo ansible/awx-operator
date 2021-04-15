@@ -126,7 +126,7 @@ tower_web_extra_env: ''
 #     mountPath: /some/path
 tower_task_extra_volume_mounts: ''
 tower_web_extra_volume_mounts: ''
-
+tower_ee_extra_volume_mounts: ''
 tower_redis_image: redis:latest
 
 tower_postgres_image: postgres:12

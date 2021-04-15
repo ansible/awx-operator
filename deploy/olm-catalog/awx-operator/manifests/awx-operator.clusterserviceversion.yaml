@@ -299,7 +299,14 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: 
+        path: tower_ee_extra_volume_mounts
+        description: Specify volume mounts to be added to Execution container
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Task Extra Volume Mounts
+        description: Specify volume mounts to be added to Task container
         path: tower_task_extra_volume_mounts
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -320,11 +327,13 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Web Extra Volume Mounts
+        description: Specify volume mounts to be added to Web container
         path: tower_web_extra_volume_mounts
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Extra Volumes
+        description: Specify extra volumes to add to the application pod
         path: tower_extra_volumes
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
