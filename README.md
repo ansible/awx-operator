@@ -475,6 +475,8 @@ Example spec file for volumes and volume mounts
 
 ```
 
+> :warning: **Volume and VolumeMount names cannot contain underscores(_)**
+
 ## Development
 
 ### Testing
