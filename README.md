@@ -27,6 +27,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
+         * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -476,6 +477,28 @@ Example spec file for volumes and volume mounts
 ```
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
+
+#### Exporting Environment Variables to Containers
+
+If you need to export custom environment variables to your containers.
+
+| Name                          | Description                                              | Default |
+| ----------------------------- | -------------------------------------------------------- | ------- |
+| tower_task_extra_env          | Environment variables to be added to Task container      | ''      |
+| tower_web_extra_env           | Environment variables to be added to Web container       | ''      |
+
+Example configuration of environment variables
+
+```yaml
+  spec:
+    tower_task_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+    tower_web_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+```
+
 
 ## Development
 

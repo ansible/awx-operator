@@ -225,6 +225,7 @@ spec:
                   type: string
                 type: array
               tower_task_extra_env:
+                description: Environment variables to be added to Task container
                 type: string
               tower_ee_extra_volume_mounts:
                 description: Specify volume mounts to be added to Execution container
@@ -270,6 +271,7 @@ spec:
                   type: string
                 type: array
               tower_web_extra_env:
+                description: Environment variables to be added to Web container
                 type: string
               tower_web_extra_volume_mounts:
                 description: Specify volume mounts to be added to web container
