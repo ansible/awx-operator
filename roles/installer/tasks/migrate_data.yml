@@ -1,5 +1,9 @@
 ---
 
+- name: Set actual old postgres configuration secret name
+  set_fact:
+    old_postgres_configuration_name: "{{ old_pg_config['resources'][0]['metadata']['name'] }}"
+
 - name: Store Database Configuration
   set_fact:
     awx_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
@@ -60,4 +64,4 @@
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
-    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"
+    tower_migrated_from_secret: "{{ old_postgres_configuration_name }}"

@@ -348,7 +348,16 @@ spec:
                   description: Admin user of the deployed instance
                   type: string
                 towerAdminPasswordSecret:
-                  description: Admin password of the deployed instance
+                  description: Admin password secret name of the deployed instance
+                  type: string
+                towerPostgresConfigurationSecret:
+                  description: Postgres Configuration secret name of the deployed instance
+                  type: string
+                towerBroadcastWebsocketSecret:
+                  description: Broadcast websocket secret name of the deployed instance
+                  type: string
+                towerSecretKeySecret:
+                  description: Secret key secret name of the deployed instance
                   type: string
                 towerMigratedFromSecret:
                   description: The secret used for migrating an old Tower.

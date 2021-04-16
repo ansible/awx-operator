@@ -53,17 +53,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: '{{ tower_postgres_configuration_secret }}'
+                  name: '{{ postgres_configuration_secret }}'
                   key: database
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ tower_postgres_configuration_secret }}'
+                  name: '{{ postgres_configuration_secret }}'
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ tower_postgres_configuration_secret }}'
+                  name: '{{ postgres_configuration_secret }}'
                   key: password
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
@@ -72,7 +72,7 @@ spec:
             - name: POSTGRES_HOST_AUTH_METHOD
               value: '{{ postgres_host_auth_method }}'
           ports:
-            - containerPort: '{{ awx_postgres_port }}'
+            - containerPort: {{ awx_postgres_port | default('5432')}}
               name: postgres
           volumeMounts:
             - name: postgres

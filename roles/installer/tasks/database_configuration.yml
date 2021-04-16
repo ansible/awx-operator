@@ -100,7 +100,6 @@
         definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
   when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
 
-
 - name: Store Database Configuration
   set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
@@ -110,12 +109,6 @@
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
 
-- name: Create Database if no database is specified
-  k8s:
-    apply: true
-    definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
-  when:
-    - pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
 
 - name: Set apiVersion and kind variables
   set_fact:

@@ -17,6 +17,33 @@
     status:
       towerAdminUser: "{{ tower_admin_user }}"
 
+- name: Update postgres configuration status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerPostgresConfigurationSecret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
+
+- name: Update broadcast websocket status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerBroadcastWebsocketSecret: "{{ broadcast_websocket_secret['resources'][0]['metadata']['name'] }}"
+
+- name: Update secret key status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      towerSecretKeySecret: "{{ secret_key_secret_name }}"
+
 - name: Retrieve instance version
   k8s_exec:
     namespace: "{{ meta.namespace }}"

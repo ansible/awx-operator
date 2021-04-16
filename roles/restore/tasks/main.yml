@@ -5,7 +5,7 @@
     api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
     kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
 
-- name: Look up details for this deployment
+- name: Look up details for this restore object
   k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
@@ -34,4 +34,4 @@
 - name: Update status variables
   include_tasks: update_status.yml
 
-# TODO: backup tower settings or make sure that users only specify settigns/config changes via AWX object.  See ticket
+# TODO: backup tower settings or make sure that users only specify settings/config changes via AWX object.  See ticket
