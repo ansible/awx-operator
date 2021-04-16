@@ -16,7 +16,9 @@
     field_selectors:
       - status.phase=Running
   register: postgres_pod
-  until: postgres_pod['resources'] | length
+  until:
+    - "postgres_pod['resources'] | length"
+    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
 

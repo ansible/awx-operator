@@ -53,17 +53,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ tower_postgres_configuration_secret }}'
                   key: database
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ tower_postgres_configuration_secret }}'
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ tower_postgres_configuration_secret }}'
                   key: password
             - name: PGDATA
               value: '{{ tower_postgres_data_path }}'
