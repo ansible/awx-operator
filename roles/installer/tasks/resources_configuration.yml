@@ -1,0 +1,107 @@
+---
+
+- name: Check if deployment is present
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    namespace: '{{ meta.namespace }}'
+    name: '{{ meta.name }}'
+  register: _deployment_result
+
+- name: Set manual_deployment_upgrade to false since deployment does not exist yet
+  set_fact:
+    manual_deployment_upgrade: False
+  when: not _deployment_result['resources'] | length
+
+- name: Determine if deployment requires manual upgrade
+  set_fact:
+    manual_deployment_upgrade: '{{ _deployment_result["resources"][0]["metadata"]["labels"]["app.kubernetes.io/managed-by"] | default("") | ternary("False", "True") }}'
+  when: manual_deployment_upgrade is not defined
+
+- name: Determine pod label_selector to be used
+  set_fact:
+    tower_pod_label_selector: '{{ manual_deployment_upgrade|bool | default("false"|bool)| ternary("app={{ deployment_type }}", "app.kubernetes.io/name={{ meta.name }}") }}'
+
+- name: Show help message since deployment was created by a legacy version
+  debug:
+    var: manual_upgrade_msg
+  when: manual_deployment_upgrade|bool
+
+- name: Get the current resource pod information.
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - '{{ tower_pod_label_selector }}'
+    field_selectors:
+      - status.phase=Running
+  register: tower_pods
+  changed_when: tower_pods["resources"] | length
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
+
+- name: Apply Resources
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', item + '.yaml.j2') }}"
+    wait: yes
+  register: tower_resources_result
+  loop:
+    - 'tower_config'
+    - 'tower_app_credentials'
+    - 'tower_service_account'
+    - 'tower_persistent'
+    - 'tower_service'
+    - 'tower_ingress'
+  when: not manual_deployment_upgrade|bool
+
+- name: Apply deployment resources
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_deployment.yaml.j2') | from_yaml }}"
+    wait: yes
+  register: tower_deployment_result
+  when: not manual_deployment_upgrade|bool
+
+- block:
+    - name: Delete pod to reload configuration
+      k8s:
+        api_version: v1
+        state: absent
+        kind: Pod
+        namespace: '{{ meta.namespace }}'
+        name: '{{ tower_pod_name }}'
+        wait: yes
+      when:
+        - tower_resources_result.changed
+        - tower_pod_name | length
+
+    - name: Get the new resource pod information after updating resource.
+      k8s_info:
+        kind: Pod
+        namespace: '{{ meta.namespace }}'
+        label_selectors:
+          - '{{ tower_pod_label_selector }}'
+        field_selectors:
+          - status.phase=Running
+      register: _new_pod
+      until:
+        - _new_pod['resources'] | length
+        - _new_pod['resources'][0]['metadata']['name'] != tower_pod_name
+      delay: 5
+      retries: 60
+      when: not manual_deployment_upgrade|bool
+
+    - name: Update new resource pod name as a variable.
+      set_fact:
+        tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
+  when:
+    - tower_resources_result.changed or tower_deployment_result.changed
+
+- name: Verify the resource pod name is populated.
+  assert:
+    that: tower_pod_name != ''
+    fail_msg: "Could not find the tower pod's name."

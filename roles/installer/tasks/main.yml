@@ -43,47 +43,8 @@
     - tower_ingress_type | lower == 'route'
     - tower_route_tls_secret != ''
 
-- name: Ensure configured instance resources exist in the cluster.
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', item) | from_yaml_all | list }}"
-  with_items:
-    - tower_config.yaml.j2
-
-- name: Apply Resources
-  k8s:
-    apply: yes
-    definition: "{{ lookup('template', item + '.yaml.j2') }}"
-  register: tower_deployment_result
-  loop:
-    - 'tower_app_credentials'
-    - 'tower_service_account'
-    - 'tower_persistent'
-    - 'tower_deployment'
-    - 'tower_service'
-    - 'tower_ingress'
-
-- name: Get the resource pod information.
-  k8s_info:
-    kind: Pod
-    namespace: '{{ meta.namespace }}'
-    label_selectors:
-      - "app.kubernetes.io/name={{ meta.name }}"
-      - "app.kubernetes.io/managed-by=awx-operator"
-      - "app.kubernetes.io/component=awx"
-  register: tower_pods
-  until: "tower_pods['resources'][0]['status']['phase'] == 'Running'"
-  delay: 5
-  retries: 60
-
-- name: Set the resource pod name as a variable.
-  set_fact:
-    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] }}"
-
-- name: Verify the resource pod name is populated.
-  assert:
-    that: tower_pod_name != ''
-    fail_msg: "Could not find the tower pod's name."
+- name: Include resources configuration tasks
+  include_tasks: resources_configuration.yml
 
 - name: Check for pending migrations
   k8s_exec:
@@ -107,7 +68,8 @@
     - database_check is defined
     - (database_check.stdout|trim) != '0'
 
-- include_tasks: initialize.yml
+- name: Initialize Django
+  include_tasks: initialize_django.yml
 
 - name: Update status variables
   include_tasks: update_status.yml
