@@ -27,6 +27,8 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
+   * [Upgrade Notes](#upgrade-notes)
+      * [From Older Versions](#from-older-versions)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -476,6 +478,16 @@ Example spec file for volumes and volume mounts
 ```
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
+
+## Upgrade Notes
+
+### From Older Versions
+
+For `AWX` instances created by the `awx-operator<=0.0.7` a manual upgrade will be required. On version `0.0.8` a new set of `labels` were introduced to the PostgreSQL `statefulset` (when applied) and the AWX `deployment`. Since `selector.matchLabels` are `ready-only` by the Kubernetes API, the resource must be deleted and recreated.
+
+The `awx-operator` to avoid deleting data from environments which the `persistence` layer is not configured to retain the data, it will be up to the system administrator to perform such operator. For instances created from `awx-operator>=0.0.8`, no manual intervetion shall be necessary.
+
+For example, if you are running a `managed` PostgreSQL configured instance and have the cluster storage layer to maintain the `PV` storage area upon the `statefulset` deletion, you could just delete the `awx` resource and recreate it on the newer version.
 
 ## Development
 
