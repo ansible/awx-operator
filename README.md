@@ -236,10 +236,15 @@ spec:
   ...
   tower_postgres_resource_requirements:
     requests:
+      cpu: 500m
       memory: 2Gi
+    limits:
+      cpu: 1
+      memory: 4Gi
+  tower_postgres_storage_requirements:
+    requests:
       storage: 8Gi
     limits:
-      memory: 4Gi
       storage: 50Gi
   tower_postgres_storage_class: fast-ssd
 ```

@@ -140,28 +140,38 @@ spec:
               tower_postgres_tolerations:
                 description: node tolerations for the Postgres pods
                 type: string
-              tower_postgres_resource_requirements:
-                description: Resource requirements for the PostgreSQL container
-                properties:
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                      storage:
-                        type: string
-                    type: object
-                  requests:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                      storage:
-                        type: string
-                    type: object
-                type: object
+              tower_postgres_storage_requirements:
+                  description: Storage requirements for the PostgreSQL container
+                  properties:
+                    requests:
+                      properties:
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                tower_postgres_resource_requirements:
+                  description: Resource requirements for the PostgreSQL container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                  type: object
               tower_postgres_storage_class:
                 description: Storage class to use for the PostgreSQL PVC
                 type: string

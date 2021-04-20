@@ -60,6 +60,7 @@ spec:
             - name: postgres
               mountPath: '{{ tower_postgres_data_path | dirname }}'
               subPath: '{{ tower_postgres_data_path | dirname | basename }}'
+          resources: {{ tower_postgres_resource_requirements }}
 {% if tower_postgres_selector %}
       nodeSelector:
         {{ tower_postgres_selector | indent(width=8) }}
@@ -77,7 +78,7 @@ spec:
 {% if tower_postgres_storage_class != '' %}
         storageClassName: '{{ tower_postgres_storage_class }}'
 {% endif %}
-        resources: {{ tower_postgres_resource_requirements }}
+        resources: {{ tower_postgres_storage_requirements }}
 
 # Postgres Service.
 ---
