@@ -295,6 +295,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Task Extra Env
+        description: Environment variables to be added to Task container
         path: tower_task_extra_env
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -322,6 +323,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Web Extra Env
+        description: Environment variables to be added to Web container
         path: tower_web_extra_env
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced

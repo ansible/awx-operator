@@ -29,6 +29,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
    * [Upgrade Notes](#upgrade-notes)
       * [From Older Versions](#from-older-versions)
+         * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
    * [Development](#development)
       * [Testing](#testing)
          * [Testing in Docker](#testing-in-docker)
@@ -52,10 +53,12 @@ Note that the operator is not supported by Red Hat, and is in **alpha** status. 
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
-First you need to deploy AWX Operator into your cluster:
+First, you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release.
+
+Replace `<tag>` in the URL below with the version you are deploying:
 
 ```bash
-#> kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
+#> kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/<tag>/deploy/awx-operator.yaml
 ```
 
 Then create a file named `my-awx.yml` with the following contents:
@@ -486,6 +489,27 @@ Example spec file for volumes and volume mounts
 For `AWX` instances created by the `awx-operator<0.0.8`, it is required both PostgreSQL `statefulset` and AWX `deployment` resources to be deleted and recreated. This is required due to new labels added on both resources and the requirement of the Kubernetes API which enforces `selector.matchLabels` attributes to be `ready-only`.
 
 The `awx-operator` will handle the upgrading both resources. Note that just the `statefulset` and `deployment` will be recreated. Therefore, any `persistent volume` used on any of these 2 resources, **shall not be deleted**.
+#### Exporting Environment Variables to Containers
+
+If you need to export custom environment variables to your containers.
+
+| Name                          | Description                                              | Default |
+| ----------------------------- | -------------------------------------------------------- | ------- |
+| tower_task_extra_env          | Environment variables to be added to Task container      | ''      |
+| tower_web_extra_env           | Environment variables to be added to Web container       | ''      |
+
+Example configuration of environment variables
+
+```yaml
+  spec:
+    tower_task_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+    tower_web_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+```
+
 
 ## Development
 
