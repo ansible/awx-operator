@@ -258,7 +258,7 @@ There are a few variables that are customizable for awx the image management.
 | Name                      | Description                | Default                      |
 | --------------------------| -------------------------- |------------------------------|
 | tower_image               | Path of the image to pull  | quay.io/ansible/awx          |
-| tower_image_version       | Image version to pull      | 19                           |
+| tower_image_version       | Image version to pull      | 19.0.0                       |
 | tower_image_pull_policy   | The pull policy to adopt   | IfNotPresent                 |
 | tower_image_pull_secret   | The pull secret to use     | ''                           |
 | tower_ee_images           | A list of EEs to register  | quay.io/ansible/awx-ee:0.1.1 |
@@ -279,6 +279,15 @@ spec:
     - name: my-custom-awx-ee
       image: myorg/my-custom-awx-ee
 ```
+
+**Note**: The `tower_image` and `tower_image_version` are intended for local mirroring scenarios.
+
+
+| Operator Version   | Suppported AWX version     |
+| -------------------| -------------------------- |
+| 0.0.7 and older    | >= 17.0.0                  |
+| 0.0.8 and later    | >= 18.0.0                  |
+
 
 #### Privileged Tasks
 
