@@ -483,11 +483,9 @@ Example spec file for volumes and volume mounts
 
 ### From Older Versions
 
-For `AWX` instances created by the `awx-operator<=0.0.7` a manual upgrade will be required. On version `0.0.8` a new set of `labels` were introduced to the PostgreSQL `statefulset` (when applied) and the AWX `deployment`. Since `selector.matchLabels` are `ready-only` by the Kubernetes API, the resource must be deleted and recreated.
+For `AWX` instances created by the `awx-operator<0.0.8`, it is required both PostgreSQL `statefulset` and AWX `deployment` resources to be deleted and recreated. This is required due to new labels added on both resources and the requirement of the Kubernetes API which enforces `selector.matchLabels` attributes to be `ready-only`.
 
-The `awx-operator` to avoid deleting data from environments which the `persistence` layer is not configured to retain the data, it will be up to the system administrator to perform such operator. For instances created from `awx-operator>=0.0.8`, no manual intervetion shall be necessary.
-
-For example, if you are running a `managed` PostgreSQL configured instance and have the cluster storage layer to maintain the `PV` storage area upon the `statefulset` deletion, you could just delete the `awx` resource and recreate it on the newer version.
+The `awx-operator` will handle the upgrading both resources. Note that just the `statefulset` and `deployment` will be recreated. Therefore, any `persistent volume` used on any of these 2 resources, **shall not be deleted**.
 
 ## Development
 
