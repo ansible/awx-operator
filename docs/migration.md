@@ -43,6 +43,12 @@ type: Opaque
 
 > For `host`, a URL resolvable by the cluster could look something like `postgresql.<namespace>.svc.cluster.local`, where `<namespace>` is filled in with the namespace of the AWX deployment you are migrating data from.
 
+If your AWX deployment is already using an external database server or its database is otherwise not managed
+by the AWX deployment, you can instead create the same secret as above but omit the `-old-` from the `name`.
+In the next section pass it in through `tower_postgres_configuration_secret` instead, omitting the `_old_`
+from the key and ensuring the value matches the name of the secret. This will make AWX pick up on the existing
+database and apply any pending migrations. It is strongly recommended to backup your database beforehand.
+
 ## Deploy AWX
 
 When you apply your AWX object, you must specify the name to the database secret you created above:
