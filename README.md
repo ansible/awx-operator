@@ -51,10 +51,12 @@ Note that the operator is not supported by Red Hat, and is in **alpha** status. 
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
-First you need to deploy AWX Operator into your cluster:
+First, you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release.
+
+Replace `<tag>` in the URL below with the version you are deploying:
 
 ```bash
-#> kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
+#> kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/<tag>/deploy/awx-operator.yaml
 ```
 
 Then create a file named `my-awx.yml` with the following contents:
