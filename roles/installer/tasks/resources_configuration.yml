@@ -1,19 +1,5 @@
 ---
 
-- name: Check if deployment is present
-  k8s_info:
-    api_version: v1
-    kind: Deployment
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}'
-  register: _deployment_result
-
-- name: Determine if deployment must be recreated
-  set_fact:
-    # yamllint disable-line rule:line-length
-    recreate_deployment: '{{ _deployment_result["resources"][0]["metadata"]["labels"]["app.kubernetes.io/managed-by"] | default("") | ternary("False", "True") }}' # noqa 204
-  when: _deployment_result['resources'] | length
-
 - name: Get the current resource pod information.
   k8s_info:
     api_version: v1
@@ -26,21 +12,10 @@
     field_selectors:
       - status.phase=Running
   register: tower_pods
-  changed_when: tower_pods["resources"] | length
 
 - name: Set the resource pod name as a variable.
   set_fact:
     tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
-
-- name: Delete deployment to ensure expected labels
-  k8s:
-    state: absent
-    api_version: v1
-    kind: Deployment
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}'
-    wait: yes
-  when: recreate_deployment is defined and recreate_deployment|bool
 
 - name: Apply Resources
   k8s:

@@ -27,8 +27,6 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [LDAP Certificate Authority](#ldap-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
-   * [Upgrade Notes](#upgrade-notes)
-      * [From Older Versions](#from-older-versions)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
    * [Development](#development)
       * [Testing](#testing)
@@ -482,13 +480,6 @@ Example spec file for volumes and volume mounts
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
 
-## Upgrade Notes
-
-### From Older Versions
-
-For `AWX` instances created by the `awx-operator<0.0.8`, it is required both PostgreSQL `statefulset` and AWX `deployment` resources to be deleted and recreated. This is required due to new labels added on both resources and the requirement of the Kubernetes API which enforces `selector.matchLabels` attributes to be `ready-only`.
-
-The `awx-operator` will handle the upgrading both resources. Note that just the `statefulset` and `deployment` will be recreated. Therefore, any `persistent volume` used on any of these 2 resources, **shall not be deleted**.
 #### Exporting Environment Variables to Containers
 
 If you need to export custom environment variables to your containers.
