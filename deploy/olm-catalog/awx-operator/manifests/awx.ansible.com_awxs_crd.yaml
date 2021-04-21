@@ -73,6 +73,9 @@ spec:
               tower_image:
                 description: Registry path to the application container to use
                 type: string
+              tower_image_version:
+                description: Application container image version to use
+                type: string
               tower_image_pull_policy:
                 default: IfNotPresent
                 description: The image pull policy
@@ -134,6 +137,9 @@ spec:
               tower_postgres_image:
                 description: Registry path to the PostgreSQL container to use
                 type: string
+              tower_postgres_image_version:
+                description: PostgreSQL container image version to use
+                type: string
               tower_postgres_selector:
                 description: nodeSelector for the Postgres pods
                 type: string
@@ -192,6 +198,9 @@ spec:
                 type: string
               tower_redis_image:
                 description: Registry path to the redis container to use
+                type: string
+              tower_redis_image_version:
+                description: Redis container image version to use
                 type: string
               tower_replicas:
                 default: 1

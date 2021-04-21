@@ -255,12 +255,15 @@ spec:
 
 There are a few variables that are customizable for awx the image management.
 
-| Name                    | Description                |
-| ----------------------- | -------------------------- |
-| tower_image             | Path of the image to pull  |
-| tower_image_pull_policy | The pull policy to adopt   |
-| tower_image_pull_secret | The pull secret to use     |
-| tower_ee_images         | A list of EEs to register  |
+| Name                      | Description                | Default                      |
+| --------------------------| -------------------------- |------------------------------|
+| tower_image               | Path of the image to pull  | quay.io/ansible/awx          |
+| tower_image_version       | Image version to pull      | 19                           |
+| tower_image_pull_policy   | The pull policy to adopt   | IfNotPresent                 |
+| tower_image_pull_secret   | The pull secret to use     | ''                           |
+| tower_ee_images           | A list of EEs to register  | quay.io/ansible/awx-ee:0.1.1 |
+| tower_redis_image         | Path of the image to pull  | docker.io/redis              |
+| tower_redis_image_version | Image version to pull      | latest                       |
 
 Example of customization could be:
 
@@ -269,6 +272,7 @@ Example of customization could be:
 spec:
   ...
   tower_image: myorg/my-custom-awx
+  tower_image_version: latest
   tower_image_pull_policy: Always
   tower_image_pull_secret: pull_secret_name
   tower_ee_images:
@@ -334,12 +338,14 @@ the AWX pods to run only on the nodes that match all the specified key/value pai
 pods to be scheduled onto nodes with matching taints.
 
 
-| Name                       | Description                 | Default |
-| -------------------------- | --------------------------- | ------- |
-| tower_node_selector        | AWX pods' nodeSelector      | ''      |
-| tower_tolerations          | AWX pods' tolerations       | ''      |
-| tower_postgres_selector    | Postgres pods' nodeSelector | ''      |
-| tower_postgres_tolerations | Postgres pods' tolerations  | ''      |
+| Name                           | Description                 | Default |
+| -------------------------------| --------------------------- | ------- |
+| tower_postgres_image           | Path of the image to pull   | 12      |
+| tower_postgres_image_version   | Image version to pull       | 12      |
+| tower_node_selector            | AWX pods' nodeSelector      | ''      |
+| tower_tolerations              | AWX pods' tolerations       | ''      |
+| tower_postgres_selector        | Postgres pods' nodeSelector | ''      |
+| tower_postgres_tolerations     | Postgres pods' tolerations  | ''      |
 
 Example of customization could be:
 

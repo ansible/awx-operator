@@ -115,6 +115,9 @@ spec:
                 tower_image:
                   description: Registry path to the application container to use
                   type: string
+                tower_image_version:
+                  description: Application container image version to use
+                  type: string
                 tower_ee_images:
                   description: Registry path to the Execution Environment container to use
                   type: array
@@ -223,8 +226,14 @@ spec:
                 tower_redis_image:
                   description: Registry path to the redis container to use
                   type: string
+                tower_redis_image_version:
+                  description: Redis container image version to use
+                  type: string
                 tower_postgres_image:
                   description: Registry path to the PostgreSQL container to use
+                  type: string
+                tower_postgres_image_version:
+                  description: PostgreSQL container image version to use
                   type: string
                 tower_postgres_selector:
                   description: nodeSelector for the Postgres pods
