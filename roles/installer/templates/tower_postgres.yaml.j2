@@ -29,7 +29,7 @@ spec:
         app.kubernetes.io/component: database
     spec:
       containers:
-        - image: '{{ tower_postgres_image }}'
+        - image: '{{ tower_postgres_image }}:{{ tower_postgres_image_version }}'
           name: postgres
           env:
             - name: POSTGRES_DB
