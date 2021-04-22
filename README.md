@@ -227,7 +227,8 @@ The following variables are customizable for the managed PostgreSQL service
 | Name                                 | Description                                | Default                           |
 | ------------------------------------ | ------------------------------------------ | --------------------------------- |
 | tower_postgres_image                 | Path of the image to pull                  | postgres:12                       |
-| tower_postgres_resource_requirements | PostgreSQL container resource requirements | requests: {storage: 8Gi}          |
+| tower_postgres_resource_requirements | PostgreSQL container resource requirements | Empty object                      |
+| tower_postgres_storage_requirements  | PostgreSQL container storage requirements  | requests: {storage: 8Gi}          |
 | tower_postgres_storage_class         | PostgreSQL PV storage class                | Empty string                      |
 | tower_postgres_data_path             | PostgreSQL data path                       | `/var/lib/postgresql/data/pgdata` |
 
@@ -239,10 +240,15 @@ spec:
   ...
   tower_postgres_resource_requirements:
     requests:
+      cpu: 500m
       memory: 2Gi
+    limits:
+      cpu: 1
+      memory: 4Gi
+  tower_postgres_storage_requirements:
+    requests:
       storage: 8Gi
     limits:
-      memory: 4Gi
       storage: 50Gi
   tower_postgres_storage_class: fast-ssd
 ```
