@@ -58,6 +58,9 @@ spec:
                 tower_old_postgres_configuration_secret:
                   description: Secret where the old database configuration can be found for data migration
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for data migration
+                  type: string
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string

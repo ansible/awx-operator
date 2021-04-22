@@ -60,6 +60,9 @@ spec:
                 tower_old_postgres_configuration_secret:
                   description: Secret where the old database configuration can be found for data migration
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for data migration
+                  type: string
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
@@ -440,6 +443,10 @@ spec:
                 tower_postgres_configuration_secret:
                   description: Custom postgres_configuration secret name
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
+                  type: string
+
               oneOf:
                 - required: ["tower_name"]
 
@@ -494,6 +501,9 @@ spec:
                   type: string
                 tower_postgres_configuration_secret:
                   description: Custom postgres_configuration secret name
+                  type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
                   type: string
               oneOf:
                 - required: ["tower_name", "tower_backup_pvc", "tower_backup_pvc_namespace", "tower_backup_dir"]

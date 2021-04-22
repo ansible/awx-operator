@@ -12,6 +12,11 @@
     awx_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
 
+- name: Default label selector to custom resource generated postgres
+  set_fact:
+    postgres_label_selector: "app.kubernetes.io/name={{ meta.name }}-postgres"
+  when: postgres_label_selector is not defined
+
 - name: Get the postgres pod information
   k8s_info:
     kind: Pod

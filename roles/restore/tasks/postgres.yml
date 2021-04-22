@@ -27,12 +27,17 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
 
+- name: Default label selector to custom resource generated postgres
+  set_fact:
+    postgres_label_selector: "app.kubernetes.io/name={{ meta.name }}-postgres"
+  when: postgres_label_selector is not defined
+
 - name: Get the postgres pod information
   k8s_info:
     kind: Pod
     namespace: '{{ meta.namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ tower_name }}-postgres"
+      - "{{ postgres_label_selector }}"
   register: postgres_pod
   until:
     - "postgres_pod['resources'] | length"
@@ -64,6 +69,7 @@
 - name: Set full resolvable host name for postgres pod
   set_fact:
     resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
+  when: awx_postgres_type == 'managed'
 
 - name: Set pg_restore command
   set_fact:

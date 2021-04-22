@@ -50,5 +50,8 @@ spec:
                 tower_postgres_configuration_secret:
                   description: Custom postgres_configuration secret name
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
+                  type: string
               oneOf:
                 - required: ["tower_name", "tower_backup_pvc", "tower_backup_pvc_namespace", "tower_backup_dir"]
