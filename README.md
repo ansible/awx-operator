@@ -255,15 +255,15 @@ spec:
 
 There are a few variables that are customizable for awx the image management.
 
-| Name                      | Description                | Default                      |
-| --------------------------| -------------------------- |------------------------------|
-| tower_image               | Path of the image to pull  | quay.io/ansible/awx          |
-| tower_image_version       | Image version to pull      | 19.0.0                       |
-| tower_image_pull_policy   | The pull policy to adopt   | IfNotPresent                 |
-| tower_image_pull_secret   | The pull secret to use     | ''                           |
-| tower_ee_images           | A list of EEs to register  | quay.io/ansible/awx-ee:0.1.1 |
-| tower_redis_image         | Path of the image to pull  | docker.io/redis              |
-| tower_redis_image_version | Image version to pull      | latest                       |
+| Name                      | Description                |
+| --------------------------| -------------------------- |
+| tower_image               | Path of the image to pull  |
+| tower_image_version       | Image version to pull      |
+| tower_image_pull_policy   | The pull policy to adopt   |
+| tower_image_pull_secret   | The pull secret to use     |
+| tower_ee_images           | A list of EEs to register  |
+| tower_redis_image         | Path of the image to pull  |
+| tower_redis_image_version | Image version to pull      |
 
 Example of customization could be:
 
@@ -280,14 +280,7 @@ spec:
       image: myorg/my-custom-awx-ee
 ```
 
-**Note**: The `tower_image` and `tower_image_version` are intended for local mirroring scenarios.
-
-
-| Operator Version   | Suppported AWX version     |
-| -------------------| -------------------------- |
-| 0.0.7 and older    | >= 17.0.0                  |
-| 0.0.8 and later    | >= 18.0.0                  |
-
+**Note**: The `tower_image` and `tower_image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
 
 #### Privileged Tasks
 
