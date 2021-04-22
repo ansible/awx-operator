@@ -74,9 +74,3 @@
   when:
     - tower_backup_dir != ''
     - stat_backup_dir.return_code != 0
-
-- name: Make temp definitions directory
-  tempfile:
-    prefix: "definitions-"
-    state: directory
-  register: definitions_dir

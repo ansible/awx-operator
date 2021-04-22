@@ -12,9 +12,10 @@ The purpose of this role is to restore your AWX deployment from an existing PVC 
 Requirements
 ------------
 
-This role assumes you are authenticated with an Openshift or Kubernetes cluster which:
-  - The awx-operator has been deployed to
+This role assumes you are authenticated with an Openshift or Kubernetes cluster:
+  - The awx-operator has been deployed to the cluster
   - AWX is deployed to via the operator
+  - An AWX backup is available on a PVC in your cluster (see the backup [README.md](../backup/README.md))
 
 
 Usage
@@ -32,6 +33,7 @@ metadata:
 spec:
   tower_name: mytower
   tower_backup_pvc: awxbackup1-backup-claim
+  tower_backup_pvc_namespace: 'old-awx-namespace'
   tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
@@ -78,6 +80,11 @@ awx-backup-volume-claim
 tower_backup_pvc: 'awx-backup-volume-claim'
 ```
 
+By default, the backup pvc will be created in the same namespace the awxbackup object is created in. This namespace must be specified using the `tower_backup_pvc_namespace` variable.
+
+```
+tower_backup_pvc_namespace: 'custom-namespace'
+```
 
 If a custom postgres configuration secret was used when deploying AWX, it must be set:
 

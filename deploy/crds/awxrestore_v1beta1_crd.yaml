@@ -51,4 +51,4 @@ spec:
                   description: Custom postgres_configuration secret name
                   type: string
               oneOf:
-                - required: ["tower_name", "tower_backup_pvc", "tower_backup_dir"]
+                - required: ["tower_name", "tower_backup_pvc", "tower_backup_pvc_namespace", "tower_backup_dir"]

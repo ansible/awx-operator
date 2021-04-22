@@ -10,8 +10,8 @@ The purpose of this role is to create a backup of your AWX deployment which incl
 Requirements
 ------------
 
-This role assumes you are authenticated with an Openshift or Kubernetes cluster which:
-  - The awx-operator has been deployed to
+This role assumes you are authenticated with an Openshift or Kubernetes cluster:
+  - The awx-operator has been deployed to the cluster
   - AWX is deployed to via the operator
 
 
@@ -60,7 +60,7 @@ tower_backup_storage_class: 'standard'
 tower_backup_size: '20Gi'
 ```
 
-By default, the backup pvc will be created in the `default` namespace.  If you want your backup to be stored
+By default, the backup pvc will be created in the same namespace the awxbackup object is created in.  If you want your backup to be stored
 in a specific namespace, you can do so by specifying `tower_backup_pvc_namespace`.  Keep in mind that you will
 need to provide the same namespace when restoring.  
 
@@ -68,12 +68,8 @@ need to provide the same namespace when restoring.
 tower_backup_pvc_namespace: 'custom-namespace'
 ```
 
-If a custom postgres configuration secret was used when deploying AWX, it must be set:
-
-```
-tower_postgres_configuration_secret: 'awx-postgres-configuration'
-```
-
+If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.  
+To check the name of this secret, look at the towerPostgresConfigurationSecret status on your AWX object.  
 
 Testing
 ----------------

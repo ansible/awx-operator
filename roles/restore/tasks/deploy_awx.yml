@@ -15,7 +15,7 @@
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
-    namespace: "{{ meta.namespace | default('default') }}"
+    namespace: "{{ meta.namespace }}"
     apply: yes
     template: awx_object.yml.j2
     wait: true
