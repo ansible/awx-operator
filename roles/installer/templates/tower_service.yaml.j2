@@ -46,6 +46,6 @@ spec:
   type: LoadBalancer
 {% elif tower_ingress_type | lower == "nodeport" %}
   type: NodePort
-{% elif  %}
+{% else %}
   type: ClusterIP
 {% endif %}
