@@ -19,7 +19,7 @@ spec:
     - host: '{{ tower_hostname }}'
       http:
         paths:
-          - path: /
+          - path: '{{ tower_ingress_rule_path | default('/') }}'
             backend:
               serviceName: '{{ meta.name }}-service'
               servicePort: 80
