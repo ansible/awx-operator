@@ -117,8 +117,9 @@ spec:
         - image: '{{ tower_image }}'
           name: '{{ meta.name }}-task'
           imagePullPolicy: '{{ tower_image_pull_policy }}'
-{% if tower_task_privileged == true %}
           securityContext:
+            runAsUser: 0
+{% if tower_task_privileged == true %}
             privileged: true
 {% endif %}
 {% if tower_task_command %}
@@ -186,6 +187,8 @@ spec:
         - image: '{{ tower_ee_images[0].image }}'
           name: '{{ meta.name }}-ee'
           imagePullPolicy: '{{ tower_image_pull_policy }}'
+          securityContext:
+            runAsUser: 0
           args: ['receptor', '--config', '/etc/receptor.conf']
           volumeMounts:
             - name: "{{ meta.name }}-receptor-config"
@@ -206,6 +209,10 @@ spec:
 {% if tower_node_selector %}
       nodeSelector:
         {{ tower_node_selector | indent(width=8) }}
+{% endif %}
+{% if tower_affinity %}
+      affinity:
+        {{ tower_affinity | indent(width=8) }}
 {% endif %}
 {% if tower_tolerations %}
       tolerations:
