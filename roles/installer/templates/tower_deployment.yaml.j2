@@ -34,6 +34,7 @@ spec:
 {% endif %}
       containers:
         - image: '{{ tower_redis_image }}:{{ tower_redis_image_version }}'
+          imagePullPolicy: '{{ tower_image_pull_policy }}'
           name: redis
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
