@@ -91,8 +91,8 @@ tower_image_pull_policy: IfNotPresent
 tower_image_pull_secret: ''
 
 tower_ee_images:
-  - name: AWX EE 0.1.1
-    image: quay.io/ansible/awx-ee:0.1.1
+  - name: AWX EE 0.2.0
+    image: quay.io/ansible/awx-ee:0.2.0
 
 tower_create_preload_data: true
 
