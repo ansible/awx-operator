@@ -30,13 +30,16 @@ spec:
                   description: Name of the deployment to be restored to
                   type: string
                 tower_backup_pvc:
-                  description: Name of the PVC to be restored from
+                  description: Name of the PVC to be restored from, set as a status found on the awxbackup object (towerBackupClaim)
                   type: string
                 tower_backup_pvc_namespace:
                   description: Namespace the PVC is in
                   type: string
                 tower_backup_dir:
-                  description: Backup directory name, a status found on the awxbackup object (towerBackupComplete)
+                  description: Backup directory name, set as a status found on the awxbackup object (towerBackupDirectory)
+                  type: string
+                tower_backup:
+                  description: AWXBackup object name
                   type: string
                 tower_secret_key_secret:
                   description: Custom secret_key secret name
@@ -54,4 +57,4 @@ spec:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
               oneOf:
-                - required: ["tower_name", "tower_backup_pvc", "tower_backup_pvc_namespace", "tower_backup_dir"]
+                - required: ["tower_name", "tower_backup_pvc_namespace"]

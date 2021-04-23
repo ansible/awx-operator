@@ -32,9 +32,8 @@ metadata:
   namespace: my-namespace
 spec:
   tower_name: mytower
-  tower_backup_pvc: myoldtower-backup-claim
+  tower_backup: awxbackup-2021-04-22
   tower_backup_pvc_namespace: 'old-awx-namespace'
-  tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
 Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.  
@@ -90,6 +89,13 @@ If a custom postgres configuration secret was used when deploying AWX, it must b
 
 ```
 tower_postgres_configuration_secret: 'awx-postgres-configuration'
+```
+
+If the awxbackup object no longer exists, it is still possible to restore from the backup it created by specifying the pvc name and the back directory.
+
+```
+tower_backup_pvc: myoldtower-backup-claim
+tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
 

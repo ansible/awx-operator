@@ -17,6 +17,6 @@ spec:
   volumes:
     - name: {{ meta.name }}-backup
       persistentVolumeClaim:
-        claimName: {{ backup_pvc }}
+        claimName: {{ tower_backup_pvc }}
         readOnly: false
   restartPolicy: Never

@@ -25,7 +25,7 @@ Then create a file named `backup-awx.yml` with the following contents:
 apiVersion: awx.ansible.com/v1beta1
 kind: AWXBackup
 metadata:
-  name: awxbackup
+  name: awxbackup-2021-04-22
   namespace: my-namespace
 spec:
   tower_name: mytower

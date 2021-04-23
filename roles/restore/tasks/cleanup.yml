@@ -7,3 +7,18 @@
     namespace: "{{ tower_backup_pvc_namespace }}"
     state: absent
     force: true
+
+- name: Remove ownerReferences from secrets to avoid garbage collection
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: '{{ item }}'
+        namespace: '{{ meta.namespace }}'
+        ownerReferences: null
+  loop:
+    - '{{ tower_name }}-admin-password'
+    - '{{ tower_name }}-secret-key'
+    - '{{ tower_name }}-postgres-configuration'
+    - '{{ tower_name }}-broadcast-websocket'

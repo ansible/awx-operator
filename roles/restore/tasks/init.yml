@@ -1,12 +1,24 @@
 ---
-- name: Set default pvc name
-  set_fact:
-    _default_backup_pvc: "{{ tower_name }}-backup-claim"
 
-# by default, it will re-use the old pvc if already created (unless pvc is provided)
-- name: Set PVC to use for backup
-  set_fact:
-    backup_pvc: "{{ tower_backup_pvc | default(_default_backup_pvc, true) }}"
+- name: Set variables from awxbackup object statuses if provided
+  block:
+  - name: Look up details for the backup object
+    k8s_info:
+      api_version: "{{ api_version }}"
+      kind: "AWXBackup"
+      name: "{{ tower_backup }}"
+      namespace: "{{ tower_backup_pvc_namespace }}"
+    register: this_backup
+
+  - name: Set backup pvc name from status
+    set_fact:
+      tower_backup_pvc: "{{ this_backup['resources'][0]['status']['towerBackupClaim'] }}"
+
+  - name: Set tmp backup directory from status
+    set_fact:
+      tower_backup_dir: "{{ this_backup['resources'][0]['status']['towerBackupDirectory'] }}"
+  when:
+    - tower_backup != '' or tower_backup is defined
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
