@@ -26,3 +26,13 @@
 # TODO: Add logic to allow users to provide override values here,
 #       or to specify spec values that were not in the backed up AWX object.
 #       This may involve changing how we back up the spec section of the AWX object
+
+- name: Remove ownerReferences to prevent garbage collection of new AWX CRO
+  k8s:
+    definition:
+      apiVersion: '{{ api_version }}'
+      kind: AWX
+      metadata:
+        name: '{{ tower_name }}'
+        namespace: '{{ meta.namespace }}'
+        ownerReferences: null

@@ -1,6 +1,6 @@
 ---
 
-- name: Check for default PostgreSQL configuration
+- name: Get PostgreSQL configuration
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
@@ -19,11 +19,11 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_type: "{{ _postgres_configuration['resources'][0]['data']['type'] | b64decode | default('unmanaged') }}"
+    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | b64decode | default('unmanaged') }}"
 
 - name: Default label selector to custom resource generated postgres
   set_fact:
-    postgres_label_selector: "app.kubernetes.io/name={{ meta.name }}-postgres"
+    postgres_label_selector: "app.kubernetes.io/name={{ tower_name }}-postgres"
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
