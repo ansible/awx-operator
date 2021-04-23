@@ -38,7 +38,7 @@
 # If tower_backup_pvc is defined, use in management-pod.yml.j2
 - name: Set default pvc name
   set_fact:
-    _default_backup_pvc: "{{ meta.name }}-backup-claim"
+    _default_backup_pvc: "{{ tower_name }}-backup-claim"
 
 # by default, it will re-use the old pvc if already created (unless a pvc is provided)
 - name: Set PVC to use for backup

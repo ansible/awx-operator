@@ -32,7 +32,7 @@ metadata:
   namespace: my-namespace
 spec:
   tower_name: mytower
-  tower_backup_pvc: awxbackup1-backup-claim
+  tower_backup_pvc: myoldtower-backup-claim
   tower_backup_pvc_namespace: 'old-awx-namespace'
   tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
