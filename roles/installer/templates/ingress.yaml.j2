@@ -1,6 +1,6 @@
 {% if 'ingress' == ingress_type|lower %}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: '{{ ingress_apiversion }}'
 kind: Ingress
 metadata:
   name: '{{ meta.name }}-ingress'
@@ -20,6 +20,14 @@ spec:
     - host: '{{ hostname }}'
       http:
         paths:
+{% if ingress_apiversion == 'networking.k8s.io/v1' %}
+          - path: /
+            backend:
+              service:
+                name: '{{ meta.name }}-service'
+                port:
+                  number: 80
+{% else %}
           - path: /
             backend:
               serviceName: '{{ meta.name }}-service'

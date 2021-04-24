@@ -138,6 +138,7 @@ spec:
 spec:
   ...
   ingress_type: Ingress
+  ingress_apiversion: networking.k8s.io/v1
   hostname: awx.mycompany.com
 ```
 
@@ -184,10 +185,13 @@ The following variables are customizable to specify the TLS termination procedur
 
 The following variables are customizable to specify the TLS termination procedure when `Ingress` is picked as an Ingress
 
-| Name                       | Description                              | Default       |
-| -------------------------- | ---------------------------------------- | ------------- |
-| ingress_annotations        | Ingress annotations                      | Empty string  |
-| ingress_tls_secret         | Secret that contains the TLS information | Empty string  |
+| Name                       | Description                              | Default             |
+| -------------------------- | ---------------------------------------- | ------------------- |
+| ingress_annotations        | Ingress annotations                      | Empty string        |
+| ingress_apiversion         | API Version for the Ingress              | extensions/v1beta1  |
+| ingress_tls_secret         | Secret that contains the TLS information | Empty string        |
+
+The default ingress_apiversion is `extensions/v1beta1`, but if you have a newer nginx-ingress deployment in k8s, you may need to change this to `networking.k8s.io/v1beta1`.
 
   * LoadBalancer
 
