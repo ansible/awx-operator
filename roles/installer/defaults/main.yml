@@ -6,6 +6,7 @@ database_username: "{{ deployment_type }}"
 
 tower_task_privileged: false
 tower_ingress_type: none
+tower_ingress_rule_path: '/'
 
 # Add annotations to the ingress. Specify as literal block. E.g.:
 # tower_ingress_annotations: |
