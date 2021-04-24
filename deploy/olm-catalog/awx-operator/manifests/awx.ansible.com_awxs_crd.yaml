@@ -103,6 +103,8 @@ spec:
                 - route
                 - LoadBalancer
                 - loadbalancer
+                - NodePort
+                - nodeport
                 type: string
               tower_loadbalancer_annotations:
                 description: Annotations to add to the loadbalancer
