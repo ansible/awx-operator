@@ -69,6 +69,8 @@ spec:
                     - route
                     - LoadBalancer
                     - loadbalancer
+                    - NodePort
+                    - nodeport
                 tower_ingress_annotations:
                   description: Annotations to add to the ingress
                   type: string
