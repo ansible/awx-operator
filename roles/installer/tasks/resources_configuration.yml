@@ -1,0 +1,80 @@
+---
+
+- name: Get the current resource pod information.
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: '{{ meta.namespace }}'
+    label_selectors:
+      - "app.kubernetes.io/name={{ meta.name }}"
+      - "app.kubernetes.io/managed-by=awx-operator"
+      - "app.kubernetes.io/component=awx"
+    field_selectors:
+      - status.phase=Running
+  register: tower_pods
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
+
+- name: Apply Resources
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', item + '.yaml.j2') }}"
+    wait: yes
+  register: tower_resources_result
+  loop:
+    - 'tower_config'
+    - 'tower_app_credentials'
+    - 'tower_service_account'
+    - 'tower_persistent'
+    - 'tower_service'
+    - 'tower_ingress'
+
+- name: Apply deployment resources
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'tower_deployment.yaml.j2') | from_yaml }}"
+    wait: yes
+  register: tower_deployment_result
+
+- block:
+    - name: Delete pod to reload a resource configuration
+      k8s:
+        api_version: v1
+        state: absent
+        kind: Pod
+        namespace: '{{ meta.namespace }}'
+        name: '{{ tower_pod_name }}'
+        wait: yes
+      when:
+        - tower_resources_result.changed
+        - tower_pod_name | length
+
+    - name: Get the new resource pod information after updating resource.
+      k8s_info:
+        kind: Pod
+        namespace: '{{ meta.namespace }}'
+        label_selectors:
+          - "app.kubernetes.io/name={{ meta.name }}"
+          - "app.kubernetes.io/managed-by=awx-operator"
+          - "app.kubernetes.io/component=awx"
+        field_selectors:
+          - status.phase=Running
+      register: _new_pod
+      until:
+        - _new_pod['resources'] | length
+        - _new_pod['resources'][0]['metadata']['name'] != tower_pod_name
+      delay: 5
+      retries: 60
+
+    - name: Update new resource pod name as a variable.
+      set_fact:
+        tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
+  when:
+    - tower_resources_result.changed or tower_deployment_result.changed
+
+- name: Verify the resource pod name is populated.
+  assert:
+    that: tower_pod_name != ''
+    fail_msg: "Could not find the tower pod's name."

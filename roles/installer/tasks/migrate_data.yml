@@ -12,10 +12,11 @@
   k8s_info:
     kind: Pod
     namespace: '{{ meta.namespace }}'
-    label_selectors:
-      - "app.kubernetes.io/name={{ meta.name }}-postgres"
+    name: '{{ meta.name }}-postgres-0'  # using name to keep compatibility
+    field_selectors:
+      - status.phase=Running
   register: postgres_pod
-  until: "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+  until: postgres_pod['resources'] | length
   delay: 5
   retries: 60
 
@@ -38,6 +39,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     replicas: 0
+    wait: yes
   when: tower_deployment['resources'] | length
 
 - name: Set pg_dump command
