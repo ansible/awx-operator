@@ -50,7 +50,9 @@ Finally, use `kubectl` to create the restore object in your cluster:
 $ kubectl apply -f restore-awx.yml
 ```
 
-This will create a new deployment and restore your backup to it.  
+This will create a new deployment and restore your backup to it.
+
+> :warning: tower_admin_password_secret value will replace the password for the `tower_admin_user` user (by default, this is the `admin` user).
 
 
 Role Variables

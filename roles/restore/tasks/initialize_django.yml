@@ -1,4 +1,22 @@
 ---
+
+- name: Get the new deployment resource pod information.
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: '{{ tower_backup_pvc_namespace }}'
+    label_selectors:
+      - "app.kubernetes.io/name={{ tower_name }}"
+      - "app.kubernetes.io/managed-by=awx-operator"
+      - "app.kubernetes.io/component=awx"
+    field_selectors:
+      - status.phase=Running
+  register: tower_pods
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
+
 - name: Check if there are any super users defined.
   k8s_exec:
     namespace: "{{ meta.namespace }}"
@@ -34,14 +52,3 @@
       User.objects.create_superuser('{{ tower_admin_user }}', '{{ tower_admin_email }}', '{{ tower_admin_password }}')\"
       | awx-manage shell"
   when: users_result.return_code > 0
-
-- name: Create preload data if necessary.  # noqa 305
-  k8s_exec:
-    namespace: "{{ meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
-    container: "{{ meta.name }}-task"
-    command: >-
-      bash -c "awx-manage create_preload_data"
-  register: cdo
-  changed_when: "'added' in cdo.stdout"
-  when: tower_create_preload_data | bool
