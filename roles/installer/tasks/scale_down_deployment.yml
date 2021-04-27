@@ -1,0 +1,19 @@
+---
+
+- name: Check for presence of Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  register: tower_deployment
+
+- name: Scale down Deployment for migration
+  community.kubernetes.k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    replicas: 0
+    wait: yes
+  when: tower_deployment['resources'] | length
