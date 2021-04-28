@@ -3,8 +3,8 @@
   k8s:
     state: present
     definition:
-      apiVersion: awx.ansible.com/v1beta1
-      kind: AWX
+      apiVersion: '{{ api_version }}'
+      kind: '{{ kind }}'
       name: '{{ meta.name }}'
       namespace: '{{ meta.namespace }}'
       metadata:
@@ -13,8 +13,8 @@
         labels:
           app.kubernetes.io/name: '{{ meta.name }}'
           app.kubernetes.io/part-of: '{{ meta.name }}'
-          app.kubernetes.io/managed-by: awx-operator
-          app.kubernetes.io/component: awx
+          app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+          app.kubernetes.io/component: '{{ deployment_type }}'
 
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml

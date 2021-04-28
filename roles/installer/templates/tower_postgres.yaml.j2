@@ -8,13 +8,13 @@ metadata:
   labels:
     app.kubernetes.io/name: '{{ meta.name }}-postgres'
     app.kubernetes.io/part-of: '{{ meta.name }}'
-    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: database
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: '{{ meta.name }}-postgres'
-      app.kubernetes.io/managed-by: awx-operator
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
       app.kubernetes.io/component: database
   serviceName: '{{ meta.name }}'
   replicas: 1
@@ -25,7 +25,7 @@ spec:
       labels:
         app.kubernetes.io/name: '{{ meta.name }}-postgres'
         app.kubernetes.io/part-of: '{{ meta.name }}'
-        app.kubernetes.io/managed-by: awx-operator
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
         app.kubernetes.io/component: database
     spec:
       containers:
@@ -90,7 +90,7 @@ metadata:
   labels:
     app.kubernetes.io/name: '{{ meta.name }}-postgres'
     app.kubernetes.io/part-of: '{{ meta.name }}'
-    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: database
 spec:
   ports:
@@ -98,5 +98,5 @@ spec:
   clusterIP: None
   selector:
     app.kubernetes.io/name: '{{ meta.name }}-postgres'
-    app.kubernetes.io/managed-by: awx-operator
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: database
