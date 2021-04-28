@@ -108,6 +108,7 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
 
 - name: Look up details for this deployment
   k8s_info:
