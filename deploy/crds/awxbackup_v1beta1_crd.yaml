@@ -26,19 +26,19 @@ spec:
             spec:
               type: object
               properties:
-                tower_name:
+                deployment_name:
                   description: Name of the deployment to be backed up
                   type: string
-                tower_backup_pvc:
+                backup_pvc:
                   description: Name of the PVC to be used for storing the backup
                   type: string
-                tower_backup_pvc_namespace:
+                backup_pvc_namespace:
                   description: Namespace PVC is in
                   type: string
-                tower_backup_size:
-                  description: Size of PVC
+                backup_storage_requirements:
+                  description: Storage requirements for the PostgreSQL container
                   type: string
-                tower_backup_storage_class:
+                backup_storage_class:
                   description: Storage class to use when creating PVC for backup
                   type: string
                 tower_secret_key_secret:
@@ -58,4 +58,4 @@ spec:
                   type: string
 
               oneOf:
-                - required: ["tower_name"]
+                - required: ["deployment_name"]
