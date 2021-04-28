@@ -64,6 +64,10 @@
   set_fact:
     pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
 
+- name: Set actual postgres configuration secret used
+  set_fact:
+    postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
+
 - block:
     - name: Create Database if no database is specified
       k8s:
