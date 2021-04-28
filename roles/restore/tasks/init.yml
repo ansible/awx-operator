@@ -6,35 +6,35 @@
     k8s_info:
       api_version: "{{ api_version }}"
       kind: "AWXBackup"
-      name: "{{ tower_backup }}"
-      namespace: "{{ tower_backup_pvc_namespace }}"
+      name: "{{ backup }}"
+      namespace: "{{ backup_pvc_namespace }}"
     register: this_backup
 
   - name: Set backup pvc name from status
     set_fact:
-      tower_backup_pvc: "{{ this_backup['resources'][0]['status']['towerBackupClaim'] }}"
+      backup_pvc: "{{ this_backup['resources'][0]['status']['backupClaim'] }}"
 
   - name: Set tmp backup directory from status
     set_fact:
-      tower_backup_dir: "{{ this_backup['resources'][0]['status']['towerBackupDirectory'] }}"
+      backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] }}"
   when:
-    - tower_backup != '' or tower_backup is defined
+    - backup != '' or backup is defined
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
   k8s_info:
-    name: "{{ tower_backup_pvc }}"
+    name: "{{ backup_pvc }}"
     kind: PersistentVolumeClaim
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
   register: provided_pvc
   when:
-    - tower_backup_pvc != ''
+    - backup_pvc != ''
 
 - name: Surface error to user
   block:
     - name: Set error message
       set_fact:
-        error_msg: "{{ tower_backup_pvc }} does not exist, please create this pvc first."
+        error_msg: "{{ backup_pvc }} does not exist, please create this pvc first."
 
     - name: Handle error
       import_tasks: error_handling.yml
@@ -43,14 +43,14 @@
       fail:
         msg: "{{ error_msg }}"
   when:
-    - tower_backup_pvc != ''
+    - backup_pvc != ''
     - provided_pvc.resources | length == 0
 
 - name: Delete any existing management pod
   k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     state: absent
     force: true
     wait: true
@@ -65,17 +65,17 @@
 
 - name: Check to make sure backup directory exists on PVC
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "stat {{ tower_backup_dir }}"
+      bash -c "stat {{ backup_dir }}"
   register: stat_backup_dir
 
 - name: Error if backup dir is missing
   block:
     - name: Set error message
       set_fact:
-        error_msg: "{{ tower_backup_dir }} does not exist, see the towerBackupDirectory status on your AWXBackup for the correct tower_backup_dir."
+        error_msg: "{{ backup_dir }} does not exist, see the backupDirectory status on your AWXBackup for the correct backup_dir."
 
     - name: Handle error
       import_tasks: error_handling.yml
@@ -84,5 +84,5 @@
       fail:
         msg: "{{ error_msg }}"
   when:
-    - tower_backup_dir != ''
+    - backup_dir != ''
     - stat_backup_dir.return_code != 0

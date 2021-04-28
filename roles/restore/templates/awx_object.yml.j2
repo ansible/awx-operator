@@ -2,6 +2,6 @@
 apiVersion: '{{ api_version }}'
 kind: AWX
 metadata:
-  name: '{{ tower_name }}'
+  name: '{{ deployment_name }}'
   namespace: '{{ meta.namespace }}'
 spec: {{ awx_spec }}

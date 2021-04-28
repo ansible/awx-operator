@@ -28,10 +28,10 @@ metadata:
   name: awxbackup-2021-04-22
   namespace: my-namespace
 spec:
-  tower_name: mytower
+  deployment_name: mytower
 ```
 
-Note that the `tower_name` above is the name of the AWX deployment you intend to backup from.  The namespace above is the one containing the AWX deployment that will be backed up.
+Note that the `deployment_name` above is the name of the AWX deployment you intend to backup from.  The namespace above is the one containing the AWX deployment that will be backed up.
 
 Finally, use `kubectl` to create the backup object in your cluster:
 
@@ -48,7 +48,7 @@ Role Variables
 A custom, pre-created pvc can be used by setting the following variables.  
 
 ```
-tower_backup_pvc: 'awx-backup-volume-claim'
+backup_pvc: 'awx-backup-volume-claim'
 ```
 
 > If no pvc or storage class is provided, the cluster's default storage class will be used to create the pvc.
@@ -56,16 +56,16 @@ tower_backup_pvc: 'awx-backup-volume-claim'
 This role will automatically create a pvc using a Storage Class if provided:
 
 ```
-tower_backup_storage_class: 'standard'
-tower_backup_size: '20Gi'
+backup_storage_class: 'standard'
+backup_storage_requirements: '20Gi'
 ```
 
 By default, the backup pvc will be created in the same namespace the awxbackup object is created in.  If you want your backup to be stored
-in a specific namespace, you can do so by specifying `tower_backup_pvc_namespace`.  Keep in mind that you will
+in a specific namespace, you can do so by specifying `backup_pvc_namespace`.  Keep in mind that you will
 need to provide the same namespace when restoring.  
 
 ```
-tower_backup_pvc_namespace: 'custom-namespace'
+backup_pvc_namespace: 'custom-namespace'
 ```
 
 If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.  

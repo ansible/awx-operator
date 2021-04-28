@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ tower_name }}-backup-claim
-  namespace: {{ tower_backup_pvc_namespace }}
+  name: {{ deployment_name }}-backup-claim
+  namespace: {{ backup_pvc_namespace }}
 spec:
   accessModes:
     - ReadWriteOnce
-{% if tower_backup_storage_class != '' %}
-  storageClassName: {{ tower_backup_storage_class }}
+{% if backup_storage_class != '' %}
+  storageClassName: {{ backup_storage_class }}
 {% endif %}
   resources:
     requests:
-      storage: {{ tower_backup_size | default('5Gi', true) }}
+      storage: {{ backup_storage_requirements | default('5Gi', true) }}

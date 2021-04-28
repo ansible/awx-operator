@@ -31,12 +31,12 @@ metadata:
   name: restore1
   namespace: my-namespace
 spec:
-  tower_name: mytower
-  tower_backup: awxbackup-2021-04-22
-  tower_backup_pvc_namespace: 'old-awx-namespace'
+  deployment_name: mytower
+  backup: awxbackup-2021-04-22
+  backup_pvc_namespace: 'old-awx-namespace'
 ```
 
-Note that the `tower_name` above is the name of the AWX deployment you intend to create and restore to.  
+Note that the `deployment_name` above is the name of the AWX deployment you intend to create and restore to.  
 
 The namespace specified is the namespace the resulting AWX deployment will be in.  The namespace you specified must be pre-created.  
 
@@ -61,30 +61,30 @@ Role Variables
 The name of the backup directory can be found as a status on your AWXBackup object.  This can be found in your cluster's console, or with the client as shown below.  
 
 ```bash
-$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.towerBackupDirectory}"
+$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.backupDirectory}"
 /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
 ```
-tower_backup_dir: '/backups/tower-openshift-backup-2021-04-02-03:25:08'
+backup_dir: '/backups/tower-openshift-backup-2021-04-02-03:25:08'
 ```
 
 
 The name of the PVC can also be found by looking at the backup object.  
 
 ```bash
-$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.towerBackupClaim}"
+$ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.backupClaim}"
 awx-backup-volume-claim
 ```
 
 ```
-tower_backup_pvc: 'awx-backup-volume-claim'
+backup_pvc: 'awx-backup-volume-claim'
 ```
 
-By default, the backup pvc will be created in the same namespace the awxbackup object is created in. This namespace must be specified using the `tower_backup_pvc_namespace` variable.
+By default, the backup pvc will be created in the same namespace the awxbackup object is created in. This namespace must be specified using the `backup_pvc_namespace` variable.
 
 ```
-tower_backup_pvc_namespace: 'custom-namespace'
+backup_pvc_namespace: 'custom-namespace'
 ```
 
 If a custom postgres configuration secret was used when deploying AWX, it must be set:
@@ -96,8 +96,8 @@ tower_postgres_configuration_secret: 'awx-postgres-configuration'
 If the awxbackup object no longer exists, it is still possible to restore from the backup it created by specifying the pvc name and the back directory.
 
 ```
-tower_backup_pvc: myoldtower-backup-claim
-tower_backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
+backup_pvc: myoldtower-backup-claim
+backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
 

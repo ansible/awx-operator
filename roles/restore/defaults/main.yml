@@ -1,17 +1,17 @@
 ---
 # Required: specify name of tower deployment to restore to
-tower_name: ''
+deployment_name: ''
 
 # Required: specify a pre-created PVC (name) to restore from
-tower_backup_pvc: ''
-tower_backup_pvc_namespace: ''
+backup_pvc: ''
+backup_pvc_namespace: ''
 
 # Required: backup name, found on the awxbackup object
-tower_backup_dir: ''
+backup_dir: ''
 
 # TODO: Is this necessary?  User's will be able to use the rekey role
 
-tower_admin_password_secret: "{{ tower_name }}-admin-password"
-tower_postgres_configuration_secret: "{{ tower_name }}-postgres-configuration"
-tower_secret_key_secret: "{{ tower_name }}-secret-key"
-tower_broadcast_websocket_secret: "{{ tower_name }}-broadcast-websocket"
+tower_admin_password_secret: "{{ deployment_name }}-admin-password"
+tower_postgres_configuration_secret: "{{ deployment_name }}-postgres-configuration"
+tower_secret_key_secret: "{{ deployment_name }}-secret-key"
+tower_broadcast_websocket_secret: "{{ deployment_name }}-broadcast-websocket"

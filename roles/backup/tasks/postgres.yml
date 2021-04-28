@@ -23,7 +23,7 @@
 
 - name: Default label selector to custom resource generated postgres
   set_fact:
-    postgres_label_selector: "app.kubernetes.io/name={{ tower_name }}-postgres"
+    postgres_label_selector: "app.kubernetes.io/name={{ deployment_name }}-postgres"
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
@@ -53,21 +53,21 @@
 
 - name: Create directory for backup
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       mkdir -p {{ backup_dir }}
 
 - name: Precreate file for database dump
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       touch {{ backup_dir }}/tower.db
 
 - name: Set permissions on file for database dump
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "chmod 0600 {{ backup_dir }}/tower.db && chown postgres:root {{ backup_dir }}/tower.db"
@@ -88,7 +88,7 @@
 
 - name: Write pg_dump to backup on PVC
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db"

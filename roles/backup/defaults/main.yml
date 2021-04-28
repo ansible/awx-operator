@@ -1,13 +1,13 @@
 ---
 # Required: specify name of tower deployment to backup from
-tower_name: ''
+deployment_name: ''
 
 # Specify a pre-created PVC (name) to backup to
-tower_backup_pvc: ''
-tower_backup_pvc_namespace: "{{ meta.namespace }}"
+backup_pvc: ''
+backup_pvc_namespace: "{{ meta.namespace }}"
 
 # Size of backup PVC if created dynamically
-tower_backup_size: ''
+backup_storage_requirements: ''
 
 # Specify storage class to determine how to dynamically create PVC's with
-tower_backup_storage_class: ''
+backup_storage_class: ''

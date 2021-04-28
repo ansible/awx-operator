@@ -2,10 +2,10 @@
 
 - name: Get AWX object definition from pvc
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "cat '{{ tower_backup_dir }}/awx_object'"
+      bash -c "cat '{{ backup_dir }}/awx_object'"
   register: awx_object
 
 - name: Set AWX spec variable from backup
@@ -33,6 +33,6 @@
       apiVersion: '{{ api_version }}'
       kind: AWX
       metadata:
-        name: '{{ tower_name }}'
+        name: '{{ deployment_name }}'
         namespace: '{{ meta.namespace }}'
         ownerReferences: null

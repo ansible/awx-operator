@@ -12,6 +12,6 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerBackupDirectory: "{{ backup_dir }}"
-      towerBackupClaim: "{{ backup_pvc }}"
-  when: tower_backup_complete
+      backupDirectory: "{{ backup_dir }}"
+      backupClaim: "{{ backup_claim }}"
+  when: backup_complete

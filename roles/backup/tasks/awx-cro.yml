@@ -5,7 +5,7 @@
     version: v1beta1
     kind: AWX
     namespace: '{{ meta.namespace }}'
-    name: '{{ tower_name }}'
+    name: '{{ deployment_name }}'
   register: _awx_cro
 
 - name: Set AWX object
@@ -22,7 +22,7 @@
 
 - name: Write awx object to pvc
   k8s_exec:
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
       bash -c "echo '{{ awx_definition_file }}' > {{ backup_dir }}/awx_object"

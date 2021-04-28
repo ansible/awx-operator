@@ -1,4 +1,4 @@
 ---
 
 deployment_type: "awx"
-tower_postgres_image: postgres:12
+postgres_image: postgres:12

@@ -24,12 +24,12 @@
 
     - name: Set flag signifying this backup was successful
       set_fact:
-        tower_backup_complete: true
+        backup_complete: true
 
     - include_tasks: cleanup.yml
 
   when:
-    - this_backup['resources'][0]['status']['towerBackupDirectory'] is not defined
+    - this_backup['resources'][0]['status']['backupDirectory'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml

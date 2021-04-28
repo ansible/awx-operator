@@ -664,7 +664,7 @@ After it is built, test it on a local cluster:
 #> minikube addons enable ingress
 #> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=test
 #> kubectl create namespace example-awx
-#> ansible-playbook ansible/instantiate-awx-deployment.yml -e tower_namespace=example-awx
+#> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx
 #> <test everything>
 #> minikube delete
 ```

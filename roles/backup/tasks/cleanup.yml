@@ -4,6 +4,6 @@
   k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     state: absent
     force: true

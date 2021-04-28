@@ -4,9 +4,9 @@
   k8s_info:
     api_version: v1
     kind: Pod
-    namespace: '{{ tower_backup_pvc_namespace }}'
+    namespace: '{{ backup_pvc_namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ tower_name }}"
+      - "app.kubernetes.io/name={{ deployment_name }}"
       - "app.kubernetes.io/managed-by=awx-operator"
       - "app.kubernetes.io/component=awx"
     field_selectors:

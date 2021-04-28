@@ -4,7 +4,7 @@
   k8s:
     name: "{{ meta.name }}-db-management"
     kind: Pod
-    namespace: "{{ tower_backup_pvc_namespace }}"
+    namespace: "{{ backup_pvc_namespace }}"
     state: absent
     force: true
 
@@ -18,7 +18,7 @@
         namespace: '{{ meta.namespace }}'
         ownerReferences: null
   loop:
-    - '{{ tower_name }}-admin-password'
-    - '{{ tower_name }}-secret-key'
-    - '{{ tower_name }}-postgres-configuration'
-    - '{{ tower_name }}-broadcast-websocket'
+    - '{{ deployment_name }}-admin-password'
+    - '{{ deployment_name }}-secret-key'
+    - '{{ deployment_name }}-postgres-configuration'
+    - '{{ deployment_name }}-broadcast-websocket'
