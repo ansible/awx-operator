@@ -22,8 +22,6 @@
 
     - include_tasks: postgres.yml
 
-    - include_tasks: initialize_django.yml
-
     - name: Set flag signifying this restore was successful
       set_fact:
         tower_restore_complete: True
