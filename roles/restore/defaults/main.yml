@@ -9,9 +9,4 @@ backup_pvc_namespace: ''
 # Required: backup name, found on the awxbackup object
 backup_dir: ''
 
-# TODO: Is this necessary?  User's will be able to use the rekey role
-
-tower_admin_password_secret: "{{ deployment_name }}-admin-password"
 tower_postgres_configuration_secret: "{{ deployment_name }}-postgres-configuration"
-tower_secret_key_secret: "{{ deployment_name }}-secret-key"
-tower_broadcast_websocket_secret: "{{ deployment_name }}-broadcast-websocket"
