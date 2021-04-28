@@ -16,13 +16,9 @@
   set_fact:
     awx_spec: "{{ _awx['spec'] }}"
 
-- name: Template secrets into yaml
-  set_fact:
-    awx_definition_file: "{{ awx_spec }}"
-
 - name: Write awx object to pvc
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "echo '{{ awx_definition_file }}' > {{ backup_dir }}/awx_object"
+      bash -c "echo '{{ awx_spec }}' > {{ backup_dir }}/awx_object"
