@@ -7,8 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: '{{ meta.name }}'
     app.kubernetes.io/part-of: '{{ meta.name }}'
-    app.kubernetes.io/managed-by: awx-operator
-    app.kubernetes.io/component: awx
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/component: '{{ deployment_type }}'
 {% if tower_ingress_type | lower == 'loadbalancer' and tower_loadbalancer_annotations %}
   annotations:
     {{ tower_loadbalancer_annotations | indent(width=4) }}
@@ -40,8 +40,8 @@ spec:
 {% endif %}
   selector:
     app.kubernetes.io/name: '{{ meta.name }}'
-    app.kubernetes.io/managed-by: awx-operator
-    app.kubernetes.io/component: awx
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/component: '{{ deployment_type }}'
 {% if tower_ingress_type | lower == "loadbalancer" %}
   type: LoadBalancer
 {% elif tower_ingress_type != "none" %}

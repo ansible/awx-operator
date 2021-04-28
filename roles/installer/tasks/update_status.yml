@@ -1,9 +1,4 @@
 ---
-- name: Set apiVersion and kind variables
-  set_fact:
-    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
-    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
-
 - name: Update admin password status
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
