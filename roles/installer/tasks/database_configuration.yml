@@ -113,12 +113,6 @@
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
 
-
-- name: Set apiVersion and kind variables
-  set_fact:
-    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
-    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
-
 - name: Look up details for this deployment
   k8s_info:
     api_version: "{{ api_version }}"

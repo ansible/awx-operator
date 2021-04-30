@@ -1,10 +1,5 @@
 ---
 
-- name: Set apiVersion and kind variables
-  set_fact:
-    api_version: '{{ hostvars["localhost"]["inventory_file"].split("/")[4:6] | join("/")  }}'
-    kind: '{{ hostvars["localhost"]["inventory_file"].split("/")[6]  }}'
-
 - name: Look up details for this restore object
   k8s_info:
     api_version: "{{ api_version }}"
