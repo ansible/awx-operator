@@ -89,6 +89,10 @@ data:
     BROADCAST_WEBSOCKET_PORT = 8052
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
+{% for item in extra_settings | default([]) %}
+    {{ item.setting }} = {{ item.value }}
+{% endfor %}
+
   nginx_conf: |
     worker_processes  1;
     pid        /tmp/nginx.pid;

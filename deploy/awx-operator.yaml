@@ -328,6 +328,16 @@ spec:
                   description: AccessMode for the /var/lib/projects PersistentVolumeClaim
                   default: ReadWriteMany
                   type: string
+                extra_settings:
+                  description: Extra settings to specify for the API
+                  items:
+                    properties:
+                      setting:
+                        type: string
+                      value:
+                        type: string
+                    type: object
+                  type: array
               type: object
             status:
               properties:

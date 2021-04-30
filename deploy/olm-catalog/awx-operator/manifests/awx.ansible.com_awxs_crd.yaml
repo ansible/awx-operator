@@ -328,6 +328,16 @@ spec:
                         type: string
                     type: object
                 type: object
+              extra_settings:
+                description: Extra settings to specify for the API
+                items:
+                  properties:
+                    setting:
+                      type: string
+                    value:
+                      type: string
+                  type: object
+                type: array
             type: object
           status:
             properties:
