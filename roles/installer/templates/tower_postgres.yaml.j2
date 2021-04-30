@@ -32,6 +32,24 @@ spec:
         - image: '{{ tower_postgres_image }}:{{ tower_postgres_image_version }}'
           name: postgres
           env:
+            # For tower_postgres_image based on rhel8/postgresql-12
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: database
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: username
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: '{{ meta.name }}-postgres-configuration'
+                  key: password
+
+            # For tower_postgres_image based on postgres
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
