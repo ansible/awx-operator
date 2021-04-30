@@ -336,6 +336,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Tower EE Images
+        description: Registry path to the Execution Environment container to use
+        path: tower_ee_images
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Tower Task Extra Volume Mounts
         description: Specify volume mounts to be added to Task container
         path: tower_task_extra_volume_mounts
