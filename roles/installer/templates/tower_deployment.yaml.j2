@@ -104,6 +104,8 @@ spec:
               mountPath: "/var/run/awx-rsyslog"
             - name: rsyslog-dir
               mountPath: "/var/lib/awx/rsyslog"
+            - name: "{{ meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
