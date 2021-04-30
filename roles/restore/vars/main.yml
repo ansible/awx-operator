@@ -2,3 +2,12 @@
 
 deployment_type: "awx"
 postgres_image: postgres:12
+
+backup_api_version: '{{ deployment_type }}.ansible.com/v1beta1'
+backup_kind: 'AWXBackup'
+
+# set default secret names to be used if a backup dir and claim are provided (not a backup_name)
+secret_key_secret_name: '{{ deployment_name }}-secret-key'
+admin_password_secret_name: '{{ deployment_name }}-admin-password'
+broadcast_websocket_secret_name: '{{ deployment_name }}-broadcast-websocket'
+postgres_configuration_secret_name: '{{ deployment_name }}-postgres-configuration'

@@ -4,20 +4,8 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{ tower_postgres_configuration_secret }}'
-  register: _custom_pg_config_resources
-  when: tower_postgres_configuration_secret | length
-
-- name: Check for default PostgreSQL configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ deployment_name }}-postgres-configuration'
-  register: _default_pg_config_resources
-
-- name: Set PostgreSQL configuration
-  set_fact:
-    pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
+    name: '{{ postgres_configuration_secret_name }}'
+  register: pg_config
 
 - name: Store Database Configuration
   set_fact:

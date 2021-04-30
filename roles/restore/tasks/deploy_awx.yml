@@ -8,9 +8,30 @@
       bash -c "cat '{{ backup_dir }}/awx_object'"
   register: awx_object
 
-- name: Set AWX spec variable from backup
+- name: Create temp file for spec dict
+  tempfile:
+    state: file
+  register: tmp_spec
+
+- name: Write spec vars to temp file
+  shell: |
+    echo '{{ awx_object.stdout }} > {{ tmp_spec.path }}'
+
+- include_vars: "{{ tmp_spec.path }}"
+  register: spec
+
+- name: Use include_vars to read in spec as a dict (because spec doesn't have quotes)
   set_fact:
-    awx_spec: "{{ awx_object.stdout }}"
+    awx_spec: "{{ spec.ansible_facts }}"
+
+- name: Set names of backed up secrets in the CR spec
+  set_fact:
+    awx_spec: "{{ awx_spec | combine ({ item.key : item.value }) }}"
+  with_items:
+    - {'key': 'tower_secret_key_secret', 'value': '{{ secret_key_secret_name }}'}
+    - {'key': 'tower_admin_password_secret', 'value': '{{ admin_password_secret_name }}'}
+    - {'key': 'tower_broadcast_websocket_secret', 'value': '{{ broadcast_websocket_secret_name }}'}
+    - {'key': 'tower_postgres_configuration_secret', 'value': '{{ postgres_configuration_secret_name }}'}
 
 - name: Deploy AWX
   k8s:
@@ -22,10 +43,6 @@
     wait_condition:
       type: "Running"
       status: "True"
-
-# TODO: Add logic to allow users to provide override values here,
-#       or to specify spec values that were not in the backed up AWX object.
-#       This may involve changing how we back up the spec section of the AWX object
 
 - name: Remove ownerReferences to prevent garbage collection of new AWX CRO
   k8s:

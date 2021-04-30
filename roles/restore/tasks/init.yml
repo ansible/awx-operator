@@ -2,23 +2,39 @@
 
 - name: Set variables from awxbackup object statuses if provided
   block:
-  - name: Look up details for the backup object
+  - name: Look up details for the backup
     k8s_info:
-      api_version: "{{ api_version }}"
-      kind: "AWXBackup"
-      name: "{{ backup }}"
+      api_version: "{{ backup_api_version }}"
+      kind: "{{ backup_kind }}"
+      name: "{{ backup_name }}"
       namespace: "{{ backup_pvc_namespace }}"
     register: this_backup
 
-  - name: Set backup pvc name from status
+  - name: Surface error to user
+    block:
+      - name: Set error message
+        set_fact:
+          error_msg: "Cannot read the backup status variables for {{ backup_kind }} {{ backup_name  }}."
+
+      - name: Handle error
+        import_tasks: error_handling.yml
+
+      - name: Fail early if pvc is defined but does not exist
+        fail:
+          msg: "{{ error_msg }}"
+    when:
+      - this_backup['resources'] | length == 0
+      - this_backup['resources'][0] is not defined
+      - this_backup['resources'][0]['status'] is not defined
+      - this_backup['resources'][0]['status']['backupClaim'] is not defined
+      - this_backup['resources'][0]['status']['backupDirectory'] is not defined
+
+  - name: Set backup facts
     set_fact:
       backup_pvc: "{{ this_backup['resources'][0]['status']['backupClaim'] }}"
-
-  - name: Set tmp backup directory from status
-    set_fact:
       backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] }}"
   when:
-    - backup != '' or backup is defined
+    - backup_name != '' or backup_name is defined
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists

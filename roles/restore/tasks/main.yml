@@ -28,5 +28,3 @@
 
 - name: Update status variables
   include_tasks: update_status.yml
-
-# TODO: backup tower settings or make sure that users only specify settings/config changes via AWX object.  See ticket

@@ -2,3 +2,4 @@
 deployment_type: "awx"
 postgres_image: postgres:12
 backup_complete: false
+database_type: "unmanaged"

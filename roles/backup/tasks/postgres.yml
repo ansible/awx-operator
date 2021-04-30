@@ -4,12 +4,12 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: "{{ this_awx['resources'][0]['status']['towerPostgresConfigurationSecret'] }}"
+    name: "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"
   register: pg_config
 
 - name: Fail if postgres configuration secret status does not exist
   fail:
-    msg: "The towerPostgresConfigurationSecret status is not set on the AWX object yet or the secret has been deleted."
+    msg: "The postgresConfigurationSecret status is not set on the AWX object yet or the secret has been deleted."
   when: not pg_config | default([]) | length
 
 - name: Store Database Configuration
