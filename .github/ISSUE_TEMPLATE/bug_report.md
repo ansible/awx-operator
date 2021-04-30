@@ -18,6 +18,7 @@ assignees: ''
 * Operator version: X.Y.Z
 * Kubernetes version: 
 * AWX install method: openshift, minishift, docker on linux, docker for mac, boot2docker
+
 ##### STEPS TO REPRODUCE
 
 <!-- Please describe exactly how to reproduce the problem. -->
@@ -34,3 +35,5 @@ assignees: ''
 
 <!-- Include any links to sosreport, database dumps, screenshots or other
 information. -->
+
+##### AWX-OPERATOR LOGS
