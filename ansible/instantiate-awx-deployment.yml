@@ -18,8 +18,8 @@
           metadata:
             name: awx
           spec:
-            tower_admin_user: test
-            tower_admin_email: test@example.com
+            tower_admin_user: admin
+            tower_admin_email: admin@localhost
             tower_ingress_type: "{{ tower_ingress_type | default(omit) }}"  # Either Route, Ingress or LoadBalancer
             tower_image: "{{ tower_image | default(omit) }}"
             tower_image_version: "{{ tower_image_version | default(omit) }}"
