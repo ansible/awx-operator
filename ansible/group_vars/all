@@ -1,3 +1,3 @@
 operator_image: quay.io/ansible/awx-operator
-operator_version: 0.8.0
+operator_version: 0.9.0
 pull_policy: Always
