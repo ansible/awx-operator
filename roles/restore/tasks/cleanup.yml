@@ -1,0 +1,24 @@
+---
+
+- name: Delete any existing management pod
+  k8s:
+    name: "{{ meta.name }}-db-management"
+    kind: Pod
+    namespace: "{{ backup_pvc_namespace }}"
+    state: absent
+    force: true
+
+- name: Remove ownerReferences from secrets to avoid garbage collection
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: '{{ item }}'
+        namespace: '{{ meta.namespace }}'
+        ownerReferences: null
+  loop:
+    - '{{ deployment_name }}-admin-password'
+    - '{{ deployment_name }}-secret-key'
+    - '{{ deployment_name }}-postgres-configuration'
+    - '{{ deployment_name }}-broadcast-websocket'

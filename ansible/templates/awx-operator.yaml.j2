@@ -3,6 +3,10 @@
 # Update templates under ansible/templates/
 {% include 'crd.yml.j2' %}
 
+{% include 'awxbackup_crd.yml.j2' %}
+
+{% include 'awxrestore_crd.yml.j2' %}
+
 {% include 'role.yml.j2' %}
 
 {% include 'role_binding.yml.j2' %}

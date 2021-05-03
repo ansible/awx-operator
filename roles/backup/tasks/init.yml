@@ -1,0 +1,69 @@
+---
+
+- name: Delete any existing management pod
+  k8s:
+    name: "{{ meta.name }}-db-management"
+    kind: Pod
+    namespace: "{{ backup_pvc_namespace }}"
+    state: absent
+    force: true
+    wait: true
+
+# Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
+- name: Check provided PVC exists
+  k8s_info:
+    name: "{{ backup_pvc }}"
+    kind: PersistentVolumeClaim
+    namespace: "{{ backup_pvc_namespace }}"
+  register: provided_pvc
+  when:
+    - backup_pvc != ''
+
+- name: Surface error to user
+  block:
+    - name: Set error message
+      set_fact:
+        error_msg: "{{ backup_pvc }} does not exist, please create this pvc first."
+
+    - name: Handle error
+      import_tasks: error_handling.yml
+
+    - name: Fail early if pvc is defined but does not exist
+      fail:
+        msg: "{{ backup_pvc }} does not exist, please create this pvc first."
+  when:
+    - backup_pvc != ''
+    - provided_pvc.resources | length == 0
+
+# If backup_pvc is defined, use in management-pod.yml.j2
+- name: Set default pvc name
+  set_fact:
+    _default_backup_pvc: "{{ deployment_name }}-backup-claim"
+
+# by default, it will re-use the old pvc if already created (unless a pvc is provided)
+- name: Set PVC to use for backup
+  set_fact:
+    backup_claim: "{{ backup_pvc | default(_default_backup_pvc, true) }}"
+
+- name: Create PVC for backup
+  k8s:
+    kind: PersistentVolumeClaim
+    template: "backup_pvc.yml.j2"
+  when:
+    - backup_pvc == '' or backup_pvc is not defined
+
+- name: Create management pod from templated deployment config
+  k8s:
+    name: "{{ meta.name }}-db-management"
+    kind: Deployment
+    state: present
+    template: "management-pod.yml.j2"
+    wait: true
+
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "AWX"
+    name: "{{ deployment_name }}"
+    namespace: "{{ meta.namespace }}"
+  register: this_awx

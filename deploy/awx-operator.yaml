@@ -60,6 +60,9 @@ spec:
                 tower_old_postgres_configuration_secret:
                   description: Secret where the old database configuration can be found for data migration
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for data migration
+                  type: string
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
@@ -348,7 +351,16 @@ spec:
                   description: Admin user of the deployed instance
                   type: string
                 towerAdminPasswordSecret:
-                  description: Admin password of the deployed instance
+                  description: Admin password secret name of the deployed instance
+                  type: string
+                towerPostgresConfigurationSecret:
+                  description: Postgres Configuration secret name of the deployed instance
+                  type: string
+                towerBroadcastWebsocketSecret:
+                  description: Broadcast websocket secret name of the deployed instance
+                  type: string
+                towerSecretKeySecret:
+                  description: Secret key secret name of the deployed instance
                   type: string
                 towerMigratedFromSecret:
                   description: The secret used for migrating an old Tower.
@@ -375,6 +387,129 @@ spec:
                   type: array
               type: object
           type: object
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: awxbackups.awx.ansible.com
+spec:
+  group: awx.ansible.com
+  names:
+    kind: AWXBackup
+    listKind: AWXBackupList
+    plural: awxbackups
+    singular: awxbackup
+  scope: Namespaced
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          x-kubernetes-preserve-unknown-fields: true
+          description: Schema validation for the AWXBackup CRD
+          properties:
+            spec:
+              type: object
+              properties:
+                deployment_name:
+                  description: Name of the deployment to be backed up
+                  type: string
+                backup_pvc:
+                  description: Name of the PVC to be used for storing the backup
+                  type: string
+                backup_pvc_namespace:
+                  description: Namespace PVC is in
+                  type: string
+                backup_storage_requirements:
+                  description: Storage requirements for the PostgreSQL container
+                  type: string
+                backup_storage_class:
+                  description: Storage class to use when creating PVC for backup
+                  type: string
+                tower_secret_key_secret:
+                  description: Custom secret_key secret name
+                  type: string
+                tower_admin_password_secret:
+                  description: Custom admin_password secret name
+                  type: string
+                tower_broadcast_websocket_secret:
+                  description: Custom broadcast_websocket secret name
+                  type: string
+                tower_postgres_configuration_secret:
+                  description: Custom postgres_configuration secret name
+                  type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
+                  type: string
+
+              oneOf:
+                - required: ["deployment_name"]
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: awxrestores.awx.ansible.com
+spec:
+  group: awx.ansible.com
+  names:
+    kind: AWXRestore
+    listKind: AWXRestoreList
+    plural: awxrestores
+    singular: awxrestore
+  scope: Namespaced
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          x-kubernetes-preserve-unknown-fields: true
+          description: Schema validation for the AWXRestore CRD
+          properties:
+            spec:
+              type: object
+              properties:
+                deployment_name:
+                  description: Name of the deployment to be restored to
+                  type: string
+                backup:
+                  description: AWXBackup object name
+                  type: string
+                backup_pvc:
+                  description: Name of the PVC to be restored from, set as a status found on the awxbackup object (backupClaim)
+                  type: string
+                backup_pvc_namespace:
+                  description: Namespace the PVC is in
+                  type: string
+                backup_dir:
+                  description: Backup directory name, set as a status found on the awxbackup object (backupDirectory)
+                  type: string
+                tower_secret_key_secret:
+                  description: Custom secret_key secret name
+                  type: string
+                tower_admin_password_secret:
+                  description: Custom admin_password secret name
+                  type: string
+                tower_broadcast_websocket_secret:
+                  description: Custom broadcast_websocket secret name
+                  type: string
+                tower_postgres_configuration_secret:
+                  description: Custom postgres_configuration secret name
+                  type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
+                  type: string
+              oneOf:
+                - required: ["deployment_name", "backup_pvc_namespace"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -457,6 +592,8 @@ rules:
       - awx.ansible.com
     resources:
       - '*'
+      - awxbackups
+      - awxrestores
     verbs:
       - '*'
 

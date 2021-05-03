@@ -1,0 +1,13 @@
+---
+
+# The backup directory in this status can be referenced when restoring
+- name: Update Tower Backup status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+    status:
+      backupDirectory: "{{ backup_dir }}"
+      backupClaim: "{{ backup_claim }}"
+  when: backup_complete

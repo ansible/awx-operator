@@ -1,0 +1,7 @@
+---
+apiVersion: '{{ api_version }}'
+kind: AWX
+metadata:
+  name: '{{ deployment_name }}'
+  namespace: '{{ meta.namespace }}'
+spec: {{ awx_spec }}

@@ -229,8 +229,11 @@ stringData:
   username: <username to connect as>
   password: <password to connect with>
   sslmode: prefer
+  type: unmanaged
 type: Opaque
 ```
+
+> It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.  
 
 **Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
 
@@ -665,7 +668,7 @@ After it is built, test it on a local cluster:
 #> minikube addons enable ingress
 #> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=test
 #> kubectl create namespace example-awx
-#> ansible-playbook ansible/instantiate-awx-deployment.yml -e tower_namespace=example-awx
+#> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx
 #> <test everything>
 #> minikube delete
 ```

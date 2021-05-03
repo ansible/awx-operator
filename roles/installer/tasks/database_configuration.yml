@@ -64,6 +64,10 @@
   set_fact:
     pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
 
+- name: Set actual postgres configuration secret used
+  set_fact:
+    postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
+
 - block:
     - name: Create Database if no database is specified
       k8s:
@@ -100,7 +104,6 @@
         definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
   when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
 
-
 - name: Store Database Configuration
   set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
@@ -112,8 +115,8 @@
 
 - name: Look up details for this deployment
   k8s_info:
-    api_version: 'v1beta1'  # TODO: How to parameterize this?
-    kind: "AWX"  #  TODO: How to parameterize this?
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
   register: this_awx

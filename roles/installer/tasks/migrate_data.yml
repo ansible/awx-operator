@@ -1,12 +1,21 @@
 ---
 
+- name: Set actual old postgres configuration secret name
+  set_fact:
+    old_postgres_configuration_name: "{{ old_pg_config['resources'][0]['metadata']['name'] }}"
+
 - name: Store Database Configuration
   set_fact:
-    tower_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
-    tower_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
-    tower_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
-    tower_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
-    tower_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
+
+- name: Default label selector to custom resource generated postgres
+  set_fact:
+    postgres_label_selector: "app.kubernetes.io/name={{ meta.name }}-postgres"
+  when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
   k8s_info:
@@ -16,7 +25,9 @@
     field_selectors:
       - status.phase=Running
   register: postgres_pod
-  until: postgres_pod['resources'] | length
+  until:
+    - "postgres_pod['resources'] | length"
+    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
 
@@ -31,10 +42,10 @@
   set_fact:
     pgdump: >-
       pg_dump --clean --create
-      -h {{ tower_old_postgres_host }}
-      -U {{ tower_old_postgres_user }}
-      -d {{ tower_old_postgres_database }}
-      -p {{ tower_old_postgres_port }}
+      -h {{ awx_old_postgres_host }}
+      -U {{ awx_old_postgres_user }}
+      -d {{ awx_old_postgres_database }}
+      -p {{ awx_old_postgres_port }}
 
 - name: Set pg_restore command
   set_fact:
@@ -44,13 +55,13 @@
       -p {{ awx_postgres_port }}
 
 - name: Stream backup from pg_dump to the new postgresql container
-  community.kubernetes.k8s_exec:
+  k8s_exec:
     namespace: "{{ meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |
       bash -c """
       set -e -o pipefail
-      PGPASSWORD={{ tower_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      PGPASSWORD={{ awx_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
       echo 'Successful'
       """
   register: data_migration
@@ -58,4 +69,4 @@
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
-    tower_migrated_from_secret: "{{ tower_old_postgres_configuration_secret }}"
+    tower_migrated_from_secret: "{{ old_postgres_configuration_name }}"

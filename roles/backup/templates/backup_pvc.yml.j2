@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ deployment_name }}-backup-claim
+  namespace: {{ backup_pvc_namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+{% if backup_storage_class != '' %}
+  storageClassName: {{ backup_storage_class }}
+{% endif %}
+  resources:
+    requests:
+      storage: {{ backup_storage_requirements | default('5Gi', true) }}

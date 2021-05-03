@@ -1,0 +1,38 @@
+---
+
+- name: Get AWX object definition from pvc
+  k8s_exec:
+    namespace: "{{ backup_pvc_namespace }}"
+    pod: "{{ meta.name }}-db-management"
+    command: >-
+      bash -c "cat '{{ backup_dir }}/awx_object'"
+  register: awx_object
+
+- name: Set AWX spec variable from backup
+  set_fact:
+    awx_spec: "{{ awx_object.stdout }}"
+
+- name: Deploy AWX
+  k8s:
+    state: "{{ state | default('present') }}"
+    namespace: "{{ meta.namespace }}"
+    apply: yes
+    template: awx_object.yml.j2
+    wait: true
+    wait_condition:
+      type: "Running"
+      status: "True"
+
+# TODO: Add logic to allow users to provide override values here,
+#       or to specify spec values that were not in the backed up AWX object.
+#       This may involve changing how we back up the spec section of the AWX object
+
+- name: Remove ownerReferences to prevent garbage collection of new AWX CRO
+  k8s:
+    definition:
+      apiVersion: '{{ api_version }}'
+      kind: AWX
+      metadata:
+        name: '{{ deployment_name }}'
+        namespace: '{{ meta.namespace }}'
+        ownerReferences: null

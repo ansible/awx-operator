@@ -58,6 +58,9 @@ spec:
                 tower_old_postgres_configuration_secret:
                   description: Secret where the old database configuration can be found for data migration
                   type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for data migration
+                  type: string
                 tower_secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
@@ -346,7 +349,16 @@ spec:
                   description: Admin user of the deployed instance
                   type: string
                 towerAdminPasswordSecret:
-                  description: Admin password of the deployed instance
+                  description: Admin password secret name of the deployed instance
+                  type: string
+                towerPostgresConfigurationSecret:
+                  description: Postgres Configuration secret name of the deployed instance
+                  type: string
+                towerBroadcastWebsocketSecret:
+                  description: Broadcast websocket secret name of the deployed instance
+                  type: string
+                towerSecretKeySecret:
+                  description: Secret key secret name of the deployed instance
                   type: string
                 towerMigratedFromSecret:
                   description: The secret used for migrating an old Tower.
