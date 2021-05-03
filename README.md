@@ -636,6 +636,10 @@ There are a few moving parts to this project:
 
   1. The Docker image which powers AWX Operator.
   2. The `awx-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
+  3. Then use the command below to generate a list of commits between the versions.
+  ```sh
+  #> git log --pretty="- %s (%an) - %h " <old_tag>..<new_tag> | grep -v Merge
+  ```
 
 Each of these must be appropriately built in preparation for a new tag:
 
