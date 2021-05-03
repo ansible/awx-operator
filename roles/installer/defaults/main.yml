@@ -9,6 +9,12 @@ database_username: "{{ deployment_type }}"
 tower_task_privileged: false
 tower_ingress_type: none
 
+# Custom labels for the tower service. Specify as literal block. E.g.:
+# tower_ingress_annotations: |
+#   environment: non-production
+#   zone: internal
+tower_service_labels: ''
+
 # Add annotations to the ingress. Specify as literal block. E.g.:
 # tower_ingress_annotations: |
 #   kubernetes.io/ingress.class: nginx

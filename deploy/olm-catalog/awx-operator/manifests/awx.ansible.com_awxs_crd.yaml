@@ -135,6 +135,9 @@ spec:
               tower_node_selector:
                 description: nodeSelector for the AWX pods
                 type: string
+              tower_service_labels:
+                description: Additional labels to apply to the service
+                type: string
               tower_old_postgres_configuration_secret:
                 description: Secret where the old database configuration can be found
                   for data migration
