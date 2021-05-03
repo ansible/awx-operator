@@ -10,7 +10,7 @@ tower_task_privileged: false
 tower_ingress_type: none
 
 # Custom labels for the tower service. Specify as literal block. E.g.:
-# tower_ingress_annotations: |
+# tower_service_labels: |
 #   environment: non-production
 #   zone: internal
 tower_service_labels: ''
