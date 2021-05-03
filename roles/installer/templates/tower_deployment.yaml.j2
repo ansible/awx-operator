@@ -220,6 +220,10 @@ spec:
 {% if tower_ee_extra_volume_mounts -%}
             {{ tower_ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
+{% if tower_ee_extra_env -%}
+            {{ tower_ee_extra_env | indent(width=12, indentfirst=True) }}
+{% endif %}
+          resources: {{ tower_ee_resource_requirements }}
 {% if development_mode | bool %}
           env:
             - name: SDB_NOTIFY_HOST

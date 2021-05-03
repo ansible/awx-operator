@@ -116,6 +116,11 @@ tower_web_resource_requirements:
     cpu: 1000m
     memory: 2Gi
 
+tower_ee_resource_requirements:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # tower_task_extra_env: |
@@ -125,6 +130,7 @@ tower_web_resource_requirements:
 #     value: bing
 tower_task_extra_env: ''
 tower_web_extra_env: ''
+tower_ee_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
 # E.g.:

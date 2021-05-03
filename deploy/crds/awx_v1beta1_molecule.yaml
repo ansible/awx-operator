@@ -15,3 +15,7 @@ spec:
     requests:
       cpu: 500m
       memory: 128M
+  tower_ee_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 128M

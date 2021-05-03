@@ -162,6 +162,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: EE container resource requirements
+        path: tower_ee_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: PostgreSQL container resource requirements (when using a managed instance)
         path: tower_postgres_resource_requirements
         x-descriptors:
@@ -339,6 +344,12 @@ spec:
       - displayName: Tower EE Images
         description: Registry path to the Execution Environment container to use
         path: tower_ee_images
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Tower EE Extra Env
+        description: Environment variables to be added to EE container
+        path: tower_ee_extra_env
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
