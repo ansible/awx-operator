@@ -41,21 +41,8 @@ spec:
                 backup_storage_class:
                   description: Storage class to use when creating PVC for backup
                   type: string
-                tower_secret_key_secret:
-                  description: Custom secret_key secret name
-                  type: string
-                tower_admin_password_secret:
-                  description: Custom admin_password secret name
-                  type: string
-                tower_broadcast_websocket_secret:
-                  description: Custom broadcast_websocket secret name
-                  type: string
-                tower_postgres_configuration_secret:
-                  description: Custom postgres_configuration secret name
-                  type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
-
               oneOf:
                 - required: ["deployment_name"]

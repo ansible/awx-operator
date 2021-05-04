@@ -18,7 +18,7 @@
         namespace: '{{ meta.namespace }}'
         ownerReferences: null
   loop:
-    - '{{ deployment_name }}-admin-password'
-    - '{{ deployment_name }}-secret-key'
-    - '{{ deployment_name }}-postgres-configuration'
-    - '{{ deployment_name }}-broadcast-websocket'
+    - '{{ secret_key_secret_name }}'
+    - '{{ admin_password_secret_name }}'
+    - '{{ broadcast_websocket_secret_name }}'
+    - '{{ postgres_configuration_secret_name }}'

@@ -32,7 +32,7 @@ metadata:
   namespace: my-namespace
 spec:
   deployment_name: mytower
-  backup: awxbackup-2021-04-22
+  backup_name: awxbackup-2021-04-22
   backup_pvc_namespace: 'old-awx-namespace'
 ```
 

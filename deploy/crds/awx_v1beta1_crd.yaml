@@ -351,13 +351,13 @@ spec:
                 towerAdminPasswordSecret:
                   description: Admin password secret name of the deployed instance
                   type: string
-                towerPostgresConfigurationSecret:
+                postgresConfigurationSecret:
                   description: Postgres Configuration secret name of the deployed instance
                   type: string
-                towerBroadcastWebsocketSecret:
+                broadcastWebsocketSecret:
                   description: Broadcast websocket secret name of the deployed instance
                   type: string
-                towerSecretKeySecret:
+                secretKeySecret:
                   description: Secret key secret name of the deployed instance
                   type: string
                 towerMigratedFromSecret:

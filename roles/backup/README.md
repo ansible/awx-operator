@@ -69,7 +69,7 @@ backup_pvc_namespace: 'custom-namespace'
 ```
 
 If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.  
-To check the name of this secret, look at the towerPostgresConfigurationSecret status on your AWX object.  
+To check the name of this secret, look at the postgresConfigurationSecret status on your AWX object.  
 
 The postgresql pod for the old deployment is used when backing up data to the new postgresql pod.  If your postgresql pod has a custom label,
 you can pass that via the `postgres_label_selector` variable to make sure the postgresql pod can be found.

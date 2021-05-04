@@ -36,17 +36,17 @@ spec:
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ postgres_configuration_secret }}'
                   key: database
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ postgres_configuration_secret }}'
                   key: username
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ meta.name }}-postgres-configuration'
+                  name: '{{ postgres_configuration_secret }}'
                   key: password
 
             # For tower_postgres_image based on postgres
