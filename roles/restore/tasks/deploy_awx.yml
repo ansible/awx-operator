@@ -14,9 +14,9 @@
   register: tmp_spec
 
 - name: Write spec vars to temp file
-  shell: |
-    echo '{{ awx_object.stdout }} > {{ tmp_spec.path }}'
-  changed_when: false
+  copy:
+    content: "{{ awx_object.stdout }}"
+    dest: "{{ tmp_spec.path }}"
 
 - name: Include spec vars to save them as a dict
   include_vars: "{{ tmp_spec.path }}"
