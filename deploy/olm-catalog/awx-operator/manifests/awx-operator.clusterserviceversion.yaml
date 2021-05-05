@@ -38,6 +38,96 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
+    - kind: AWXBackup
+      name: awxbackups.awx.ansible.com
+      version: v1beta1
+      displayName: AWX Backup
+      specDescriptors:
+      - displayName: Deployment name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup persistent volume claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup persistent volume claim namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup PVC storage requirements
+        path: backup_storage_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup PVC storage class
+        path: backup_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Database backup label selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - displayName: Backup claim
+        description: The persistent volume claim name used during backup
+        path: backupClaim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup directory
+        description: The directory data is backed up to on the PVC
+        path: backupDirectory
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+    - kind: AWXRestore
+      name: awxrestores.awx.ansible.com
+      version: v1beta1
+      displayName: AWX Restore
+      specDescriptors:
+      - displayName: Backup source to restore ?
+        path: backup_source
+        x-descriptors:
+          - urn:alm:descriptor:com.tectonic.ui:select:CR
+          - urn:alm:descriptor:com.tectonic.ui:select:PVC
+      - displayName: Backup name
+        path: backup_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:CR
+      - displayName: Deployment name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Backup persistent volume claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Backup persistent volume claim namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Backup directory in the persistent volume claim
+        path: backup_dir
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Database restore label selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - displayName: Restore status
+        description: The state of the restore
+        path: towerRestoreComplete
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
     - description: A AWX Instance
       displayName: AWX
       kind: AWX

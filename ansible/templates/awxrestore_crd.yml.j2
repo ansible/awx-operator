@@ -26,6 +26,12 @@ spec:
             spec:
               type: object
               properties:
+                backup_source:
+                  description: Backup source
+                  type: string
+                  enum:
+                    - CR
+                    - PVC
                 deployment_name:
                   description: Name of the deployment to be restored to
                   type: string
@@ -44,5 +50,3 @@ spec:
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
-              oneOf:
-                - required: ["deployment_name", "backup_pvc_namespace"]
