@@ -17,6 +17,7 @@
   copy:
     content: "{{ awx_object.stdout }}"
     dest: "{{ tmp_spec.path }}"
+    mode: '0644'
 
 - name: Include spec vars to save them as a dict
   include_vars: "{{ tmp_spec.path }}"
