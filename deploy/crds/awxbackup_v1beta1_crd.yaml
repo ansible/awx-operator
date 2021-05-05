@@ -25,6 +25,8 @@ spec:
           properties:
             spec:
               type: object
+              required:
+                - deployment_name
               properties:
                 deployment_name:
                   description: Name of the deployment to be backed up
@@ -44,5 +46,3 @@ spec:
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
-              oneOf:
-                - required: ["deployment_name"]
