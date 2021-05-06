@@ -1,6 +1,6 @@
 ---
 - name: Reconstruct awx-operator.yaml
-  include: chain-operator-files.yml
+  import_playbook: chain-operator-files.yml
 
 - name: Deploy Operator
   hosts: localhost
