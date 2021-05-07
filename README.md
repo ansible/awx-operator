@@ -152,6 +152,7 @@ spec:
   ...
   tower_ingress_type: LoadBalancer
   tower_loadbalancer_protocol: http
+  tower_loadbalancer_annotations: ''
 ```
 
   * NodePort
