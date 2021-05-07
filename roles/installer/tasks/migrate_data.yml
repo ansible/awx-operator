@@ -14,7 +14,7 @@
 
 - name: Default label selector to custom resource generated postgres
   set_fact:
-    postgres_label_selector: "app.kubernetes.io/name={{ meta.name }}-postgres"
+    postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ meta.name }}"
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
