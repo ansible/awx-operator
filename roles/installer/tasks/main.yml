@@ -69,3 +69,6 @@
 
 - name: Update status variables
   include_tasks: update_status.yml
+
+- name: Cleanup & Set garbage collection refs
+  include_tasks: cleanup.yml

@@ -71,6 +71,10 @@ tower_broadcast_websocket_secret: ''
 #
 tower_secret_key_secret: ''
 
+# Secret to lookup that provide the PostgreSQL configuration
+#
+tower_postgres_configuration_secret: ''
+
 # Secret to lookup that provides old database credentials (for migration)
 
 tower_old_postgres_configuration_secret: ''
@@ -172,14 +176,15 @@ tower_projects_storage_class: ''
 tower_projects_storage_size: 8Gi
 tower_projects_storage_access_mode: ReadWriteMany
 
-# Secret to lookup that provide the PostgreSQL configuration
-#
-tower_postgres_configuration_secret: ''
-
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
 # Secret to lookup that provides the LDAP CACert trusted bundle
 #
 ldap_cacert_secret: ''
+
+# Whether secrets should be garbage collected
+# on teardown
+#
+tower_garbage_collect_secrets: false
 
 development_mode: false
