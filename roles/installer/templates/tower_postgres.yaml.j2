@@ -30,6 +30,7 @@ spec:
     spec:
       containers:
         - image: '{{ tower_postgres_image }}:{{ tower_postgres_image_version }}'
+          imagePullPolicy: '{{ tower_image_pull_policy }}'
           name: postgres
           env:
             # For tower_postgres_image based on rhel8/postgresql-12

@@ -42,7 +42,7 @@
   k8s_info:
     api_version: v1
     kind: Deployment
-    name: "{{ meta.name }}"
+    name: "{{ deployment_name }}"
     namespace: "{{ meta.namespace }}"
   register: this_deployment
 
@@ -50,9 +50,10 @@
   k8s_scale:
     api_version: v1
     kind: Deployment
-    name: "{{ meta.name }}"
+    name: "{{ deployment_name }}"
     namespace: "{{ meta.namespace }}"
     replicas: 0
+    wait: yes
   when: this_deployment['resources'] | length
 
 - name: Set full resolvable host name for postgres pod
