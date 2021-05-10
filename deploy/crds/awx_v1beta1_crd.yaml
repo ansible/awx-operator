@@ -121,6 +121,9 @@ spec:
                 tower_node_selector:
                   description: nodeSelector for the AWX pods
                   type: string
+                tower_service_labels:
+                  description: Additional labels to apply to the service
+                  type: string
                 tower_tolerations:
                   description: node tolerations for the AWX pods
                   type: string
