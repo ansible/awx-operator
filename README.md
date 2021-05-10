@@ -538,6 +538,11 @@ Example configuration of environment variables
         value: foo
 ```
 
+### Upgrading
+
+To upgrade AWX, it is recommended to upgrade the awx-operator to the version that maps to the desired version of AWX.  To find the version of AWX that will be installed by the awx-operator by default, check the version specified in the `tower_image_version` variable in `roles/installer/defaults/main.yml` for that particular release.
+
+Apply the awx-operator.yml for that release to upgrade the operator, and in turn also upgrade your AWX deployment.
 
 ## Development
 
