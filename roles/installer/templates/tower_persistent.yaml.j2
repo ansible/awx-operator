@@ -5,10 +5,11 @@ metadata:
   name: '{{ meta.name }}-projects-claim'
   namespace: '{{ meta.namespace }}'
   labels:
-   app.kubernetes.io/name: '{{ meta.name }}'
-   app.kubernetes.io/part-of: '{{ meta.name }}'
-   app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-   app.kubernetes.io/component: '{{ deployment_type }}'
+    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/component: '{{ deployment_type }}'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 spec:
   accessModes:
     - {{ tower_projects_storage_access_mode }}

@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 data:
   environment: |
     AWX_SKIP_MIGRATIONS=true

@@ -33,6 +33,8 @@ spec:
               value: awx-operator
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: OPERATOR_VERSION
+              value: "{{ operator_version }}"
           livenessProbe:
             httpGet:
               path: /healthz
