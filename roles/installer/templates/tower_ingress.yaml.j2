@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 {% if tower_ingress_annotations %}
   annotations:
     {{ tower_ingress_annotations | indent(width=4) }}
@@ -43,6 +44,7 @@ metadata:
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 spec:
 {% if tower_route_host != '' %}
   host: {{ tower_route_host }}

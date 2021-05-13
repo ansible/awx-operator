@@ -635,6 +635,8 @@ spec:
               value: awx-operator
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: OPERATOR_VERSION
+              value: "0.9.0"
           livenessProbe:
             httpGet:
               path: /healthz

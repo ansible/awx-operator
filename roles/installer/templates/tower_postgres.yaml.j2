@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/name: '{{ meta.name }}-postgres'
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
     app.kubernetes.io/component: database
 spec:
   selector:
@@ -110,6 +111,7 @@ metadata:
     app.kubernetes.io/name: '{{ meta.name }}-postgres'
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
     app.kubernetes.io/component: database
 spec:
   ports:
