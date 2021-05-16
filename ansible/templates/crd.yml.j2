@@ -103,6 +103,10 @@ spec:
                   description: Port to use for the loadbalancer
                   type: integer
                   default: 80
+                tower_nodeport_port:
+                  description: Port to use for the NodePort
+                  type: integer
+                  default: 30080
                 tower_route_host:
                   description: The DNS to use to points to the instance
                   type: string

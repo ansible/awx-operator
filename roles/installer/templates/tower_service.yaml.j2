@@ -40,13 +40,20 @@ spec:
       targetPort: 8052
       name: http
 {% endif %}
+{% elif tower_ingress_type | lower == 'nodeport' %}
+    - nodePort: {{ tower_nodeport_port }}
+      port: 8052
+      protocol: TCP
+      targetPort: 8052
+      name: http
+{% endif %}
   selector:
     app.kubernetes.io/name: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
 {% if tower_ingress_type | lower == "loadbalancer" %}
   type: LoadBalancer
-{% elif tower_ingress_type != "none" %}
+{% elif tower_ingress_type | lower == "nodeport" %}
   type: NodePort
 {% else %}
   type: ClusterIP
