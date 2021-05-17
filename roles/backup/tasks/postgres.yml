@@ -85,6 +85,7 @@
       -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
+      -F custom
 
 - name: Write pg_dump to backup on PVC
   k8s_exec:
