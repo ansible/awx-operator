@@ -178,7 +178,6 @@ tower_projects_existing_claim: ''
 #
 # Define the storage_class, size and access_mode
 # when not using an existing claim
-tower_projects_storage_class: ''
 tower_projects_storage_size: 8Gi
 tower_projects_storage_access_mode: ReadWriteMany
 

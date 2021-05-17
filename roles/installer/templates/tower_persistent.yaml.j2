@@ -16,7 +16,7 @@ spec:
   resources:
     requests:
       storage: {{ tower_projects_storage_size }}
-{% if tower_projects_storage_class != '' %}
+{% if tower_projects_storage_class is defined %}
   storageClassName: {{ tower_projects_storage_class }}
 {% endif %}
 {% endif %}
