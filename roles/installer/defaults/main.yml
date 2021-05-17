@@ -167,7 +167,6 @@ tower_postgres_storage_requirements:
   requests:
     storage: 8Gi
 tower_postgres_resource_requirements: {}
-tower_postgres_storage_class: ''
 tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
 # Persistence to the AWX project data folder
