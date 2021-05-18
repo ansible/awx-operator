@@ -63,8 +63,9 @@
 
 - name: Set pg_restore command
   set_fact:
-    psql_restore: >-
-      psql -U {{ awx_postgres_user }}
+    pg_restore: >-
+      pg_restore --clean --if-exists
+      -U {{ awx_postgres_user }}
       -h {{ resolvable_db_host }}
       -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
@@ -77,7 +78,7 @@
     command: |
       bash -c """
       set -e -o pipefail
-      cat {{ backup_dir }}/tower.db | PGPASSWORD={{ awx_postgres_pass }} {{ psql_restore }}
+      cat {{ backup_dir }}/tower.db | PGPASSWORD={{ awx_postgres_pass }} {{ pg_restore }}
       echo 'Successful'
       """
   register: data_migration
