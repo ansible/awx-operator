@@ -19,29 +19,31 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | b64decode | default('unmanaged') }}"
+    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged'|b64encode) | b64decode }}"
 
-- name: Default label selector to custom resource generated postgres
-  set_fact:
-    postgres_label_selector: "app.kubernetes.io/name={{ deployment_name }}-postgres"
-  when: postgres_label_selector is not defined
+- block:
+    - name: Delete pod to reload a resource configuration
+      set_fact:
+        postgres_label_selector: "app.kubernetes.io/name={{ deployment_name }}-postgres"
+      when: postgres_label_selector is not defined
 
-- name: Get the postgres pod information
-  k8s_info:
-    kind: Pod
-    namespace: '{{ meta.namespace }}'
-    label_selectors:
-      - "{{ postgres_label_selector }}"
-  register: postgres_pod
-  until:
-    - "postgres_pod['resources'] | length"
-    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
-  delay: 5
-  retries: 60
+    - name: Get the postgres pod information
+      k8s_info:
+        kind: Pod
+        namespace: '{{ meta.namespace }}'
+        label_selectors:
+          - "{{ postgres_label_selector }}"
+      register: postgres_pod
+      until:
+        - "postgres_pod['resources'] | length"
+        - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+      delay: 5
+      retries: 60
 
-- name: Set the resource pod name as a variable.
-  set_fact:
-    postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+    - name: Set the resource pod name as a variable.
+      set_fact:
+        postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+  when: awx_postgres_type == 'managed'
 
 - name: Determine the timestamp for the backup once for all nodes
   set_fact:
@@ -74,8 +76,7 @@
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
-  when: awx_postgres_type == 'managed'
+    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # noqa 204
 
 - name: Set pg_dump command
   set_fact:

@@ -1,4 +1,21 @@
 ---
+- name: Patching labels to {{ kind }} kind
+  k8s:
+    state: present
+    definition:
+      apiVersion: '{{ api_version }}'
+      kind: '{{ kind }}'
+      name: '{{ meta.name }}'
+      namespace: '{{ meta.namespace }}'
+      metadata:
+        name: '{{ meta.name }}'
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app.kubernetes.io/name: '{{ meta.name }}'
+          app.kubernetes.io/part-of: '{{ meta.name }}'
+          app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+          app.kubernetes.io/component: '{{ deployment_type }}'
+          app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 
 - name: Look up details for this backup object
   k8s_info:
