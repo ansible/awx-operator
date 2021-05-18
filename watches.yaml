@@ -3,9 +3,6 @@
   group: awx.ansible.com
   kind: AWX
   playbook: /opt/ansible/main.yml
-  finalizer:
-    name: finalizer.awx.ansible.com
-    role: finalizer
 
 - version: v1beta1
   group: awx.ansible.com
