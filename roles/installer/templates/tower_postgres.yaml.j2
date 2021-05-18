@@ -6,7 +6,9 @@ metadata:
   name: '{{ meta.name }}-postgres'
   namespace: '{{ meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ meta.name }}-postgres'
+    app.kubernetes.io/name: 'postgres'
+    app.kubernetes.io/instance: 'postgres-{{ meta.name }}'
+    app.kubernetes.io/component: 'database'
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -14,9 +16,10 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: '{{ meta.name }}-postgres'
+      app.kubernetes.io/name: 'postgres'
+      app.kubernetes.io/instance: 'postgres-{{ meta.name }}'
+      app.kubernetes.io/component: 'database'
       app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-      app.kubernetes.io/component: database
   serviceName: '{{ meta.name }}'
   replicas: 1
   updateStrategy:
@@ -24,10 +27,11 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: '{{ meta.name }}-postgres'
+        app.kubernetes.io/name: 'postgres'
+        app.kubernetes.io/instance: 'postgres-{{ meta.name }}'
+        app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ meta.name }}'
-        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-        app.kubernetes.io/component: database
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
     spec:
       containers:
         - image: '{{ tower_postgres_image }}:{{ tower_postgres_image_version }}'
@@ -108,7 +112,9 @@ metadata:
   name: '{{ meta.name }}-postgres'
   namespace: '{{ meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ meta.name }}-postgres'
+    app.kubernetes.io/name: 'postgres'
+    app.kubernetes.io/instance: 'postgres-{{ meta.name }}'
+    app.kubernetes.io/component: 'database'
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -118,6 +124,8 @@ spec:
     - port: 5432
   clusterIP: None
   selector:
-    app.kubernetes.io/name: '{{ meta.name }}-postgres'
+    app.kubernetes.io/name: 'postgres'
+    app.kubernetes.io/instance: 'postgres-{{ meta.name }}'
+    app.kubernetes.io/component: 'database'
+    app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: database
