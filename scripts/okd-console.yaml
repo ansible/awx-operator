@@ -1,0 +1,115 @@
+### Don't run this deployment in production
+### The current configuration will run the
+### OKD console without any autentication!!!!
+###
+### A prerequisite is to install the OLM
+### as instructed at https://olm.operatorframework.io/docs/getting-started/#install-released-olm
+###
+### i.e:
+### $ export olm_release=0.15.1
+### $ kubectl apply -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${olm_release}/crds.yaml
+### $ kubectl apply -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${olm_release}/olm.yaml
+###
+### This deployment is intented to run locally
+### and to troubleshoot OLM UI changes.
+###
+### To access the console, then execute:
+### kubectl port-forward svc/okd-console -n okd-console 9000:9000
+###
+### Then point your browser:
+### http://localhost:9000
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: okd-console
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: okd-console
+  name: okd-console
+  namespace: okd-console
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: okd-console
+  labels:
+    k8s-app: okd-console
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: okd-console
+    namespace: okd-console
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: okd-console
+  namespace: okd-console
+  labels:
+    k8s-app: okd-console
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: okd-console
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: okd-console
+    spec:
+      serviceAccountName: okd-console
+      containers:
+        - name: okd-console
+          image: quay.io/openshift/origin-console:4.9.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            tcpSocket:
+              port: web
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            tcpSocket:
+              port: web
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            failureThreshold: 60
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "1024Mi"
+              cpu: "550m"
+          ports:
+            - name: web
+              containerPort: 9000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: okd-console
+  namespace: okd-console
+  labels:
+    k8s-app: okd-console
+spec:
+  ports:
+    - name: web
+      targetPort: 9000
+      port: 9000
+      protocol: TCP
+  selector:
+    k8s-app: okd-console
