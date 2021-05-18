@@ -14,8 +14,8 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
       * [Basic Install](#basic-install)
       * [Admin user account configuration](#admin-user-account-configuration)
       * [Network and TLS Configuration](#network-and-tls-configuration)
+         * [Service Type](#service-type)
          * [Ingress Type](#ingress-type)
-         * [TLS Termination](#tls-termination)
       * [Database Configuration](#database-configuration)
          * [External PostgreSQL Service](#external-postgresql-service)
          * [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
@@ -32,8 +32,9 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
    * [Upgrading](#upgrading)
    * [Contributing](#contributing)
    * [Release Process](#release-process)
-      * [Build a new release](#build-a-new-release)
-      * [Build a new version of the operator yaml file](#build-a-new-version-of-the-operator-yaml-file)
+      * [Verifiy Functionality](#verify-functionality)
+      * [Update Version](#update-version)
+      * [Commit / Create Release](#commit--create-release)
    * [Author](#author)
 <!--te-->
 
@@ -41,7 +42,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 
 This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
 
-Note that the operator is not supported by Red Hat, and is in **alpha** status. For now, use it at your own risk!
+> :warning: The operator is not supported by Red Hat, and is in **alpha** status. For now, use it at your own risk!
 
 ## Usage
 
@@ -49,40 +50,119 @@ Note that the operator is not supported by Red Hat, and is in **alpha** status. 
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
-First, you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release.
-
-Replace `<tag>` in the URL below with the version you are deploying:
+For testing purposes, the `awx-operator` can be deployed on a [Minikube](https://minikube.sigs.k8s.io/docs/) cluster. Due to different OS and hardware environments, please refer to the official Minikube documentation for further information.
 
 ```bash
-#> kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/<tag>/deploy/awx-operator.yaml
+$ minikube start --addons=ingress --cpus=4 --cni=flannel --install-addons=true \
+    --kubernetes-version=stable --memory=6g
+😄  minikube v1.20.0 on Fedora 34
+✨  Using the kvm2 driver based on user configuration
+👍  Starting control plane node minikube in cluster minikube
+🔥  Creating kvm2 VM (CPUs=4, Memory=6144MB, Disk=20000MB) ...
+🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔗  Configuring Flannel (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image docker.io/jettech/kube-webhook-certgen:v1.5.1
+    ▪ Using image k8s.gcr.io/ingress-nginx/controller:v0.44.0
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+    ▪ Using image docker.io/jettech/kube-webhook-certgen:v1.5.1
+🔎  Verifying ingress addon...
+🌟  Enabled addons: storage-provisioner, default-storageclass, ingress
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 
-Then create a file named `my-awx.yml` with the following contents:
+Once Minikube is deployed, check if the node(s) and `kube-apiserver` communication is working as expected.
+
+```bash
+$ kubectl get nodes
+NAME       STATUS   ROLES                  AGE     VERSION
+minikube   Ready    control-plane,master   6m28s   v1.20.2
+
+$ kubectl get pods -A
+NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
+ingress-nginx   ingress-nginx-admission-create-tjk94        0/1     Completed   0          6m4s
+ingress-nginx   ingress-nginx-admission-patch-r4pl6         0/1     Completed   0          6m4s
+ingress-nginx   ingress-nginx-controller-5d88495688-sbtp9   1/1     Running     0          6m4s
+kube-system     coredns-74ff55c5b-2wz6n                     1/1     Running     0          6m4s
+kube-system     etcd-minikube                               1/1     Running     0          6m13s
+kube-system     kube-apiserver-minikube                     1/1     Running     0          6m13s
+kube-system     kube-controller-manager-minikube            1/1     Running     0          6m13s
+kube-system     kube-flannel-ds-amd64-lw7lv                 1/1     Running     0          6m3s
+kube-system     kube-proxy-lcxx7                            1/1     Running     0          6m3s
+kube-system     kube-scheduler-minikube                     1/1     Running     0          6m13s
+kube-system     storage-provisioner                         1/1     Running     1          6m17s
+```
+
+Now you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release. Replace `<TAG>` in the URL `https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml` with the version you are deploying.
+
+> For this example, we are using the `devel` tag  which points to the latest nightly development version.
+
+```bash
+$ kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/devel/deploy/awx-operator.yaml
+customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
+clusterrole.rbac.authorization.k8s.io/awx-operator created
+clusterrolebinding.rbac.authorization.k8s.io/awx-operator created
+serviceaccount/awx-operator created
+deployment.apps/awx-operator created
+```
+
+Wait a few minutes and you should have the `awx-operator` running.
+
+```bash
+$ kubectl get pods
+NAME                            READY   STATUS    RESTARTS   AGE
+awx-operator-7dbf9db9d7-z9hqx   1/1     Running   0          50s
+```
+
+Then create a file named `awx-demo.yml` with the suggested content. The `metadata.name` you provide, will be the name of the resulting AWX deployment.  If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
 ```yaml
 ---
 apiVersion: awx.ansible.com/v1beta1
 kind: AWX
 metadata:
-  name: awx
+  name: awx-demo
+spec:
+  service_type: nodeport
+  ingress_type: none
+  hostname: awx-demo.example.com
 ```
-
-> The metadata.name you provide, will be the name of the resulting AWX deployment.  If you deploy more than one to the same namespace, be sure to use unique names.
 
 Finally, use `kubectl` to create the awx instance in your cluster:
 
 ```bash
-#> kubectl apply -f my-awx.yml
+$ kubectl apply -f awx-demo.yml
+awx.awx.ansible.com/awx-demo created
 ```
 
 After a few minutes, the new AWX instance will be deployed. One can look at the operator pod logs in order to know where the installation process is at. This can be done by running the following command: `kubectl logs -f deployments/awx-operator`.
 
-Once deployed, the AWX instance will be accessible at `http://awx.mycompany.com/` (assuming your cluster has an Ingress controller configured).
+```bash
+$ kubectl get pods -l "app.kubernetes.io/managed-by=awx-operator"
+NAME                        READY   STATUS    RESTARTS   AGE
+awx-demo-77d96f88d5-pnhr8   4/4     Running   0          3m24s
+awx-demo-postgres-0         1/1     Running   0          3m34s
+
+$ kubectl get svc -l "app.kubernetes.io/managed-by=awx-operator"
+NAME                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+awx-demo-postgres   ClusterIP   None           <none>        5432/TCP       4m4s
+awx-demo-service    NodePort    10.109.40.38   <none>        80:31006/TCP   3m56s
+```
+
+Once deployed, the AWX instance will be accessible by the command `minikube service awx-demo-service --url`.
 
 By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run `kubectl get secret <resourcename>-admin-password -o jsonpath="{.data.password}" | base64 --decode`
 
+You just completed the most basic install of an AWX instance via this operator. Congratulations!!!!
 
-You just completed the most basic install of an AWX instance via this operator. Congratulations !
+For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
+
+[![asciicast](https://raw.githubusercontent.com/ansible/awx-operator/devel/docs/awx-demo.svg)](https://asciinema.org/a/416946)
 
 ### Admin user account configuration
 
@@ -117,92 +197,108 @@ stringData:
 
 ### Network and TLS Configuration
 
-#### Ingress Type
+#### Service Type
 
-By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, if `ingress_type` is not specified as part of the Custom Resource specification, it will default to `none` and nothing ingress-wise will be created.
+If the `service_type` is not specified, the `ClusterIP` service will be used for your AWX Tower service.
 
-The AWX operator provides support for four kinds of `Ingress` to access AWX: `Ingress`, `Route`,  `LoadBalancer` and `NodePort`, To toggle between these options, you can add the following to your AWX CR:
+The `service_type` supported options are: `ClusterIP`, `LoadBalancer` and `NodePort`.
 
-  * Route
-
-```yaml
----
-spec:
-  ...
-  ingress_type: Route
-```
-
-  * Ingress
-
-```yaml
----
-spec:
-  ...
-  ingress_type: Ingress
-  hostname: awx.mycompany.com
-```
-
-  * LoadBalancer
-
-```yaml
----
-spec:
-  ...
-  ingress_type: LoadBalancer
-  loadbalancer_protocol: http
-```
-
-  * NodePort
-
-```yaml
----
-spec:
-  ...
-  ingress_type: NodePort
-```
-
-The AWX `Service` that gets created will have a `type` set based on the `ingress_type` being used:
-
-| Ingress Type `ingress_type`           | Service Type   |
-| ------------------------------------- | -------------- |
-| `LoadBalancer`                        | `LoadBalancer` |
-| `NodePort`                            | `NodePort`     |
-| `Ingress` or `Route` or not specified | `ClusterIP`    |
-
-#### TLS Termination
-
-  * Route
-
-The following variables are customizable to specify the TLS termination procedure when `Route` is picked as an Ingress
+The following variables are customizable for any `service_type`
 
 | Name                                  | Description                                   | Default                           |
 | ------------------------------------- | --------------------------------------------- | --------------------------------- |
-| route_host                            | Common name the route answers for             | Empty string                      |
-| route_tls_termination_mechanism       | TLS Termination mechanism (Edge, Passthrough) | Edge                              |
-| route_tls_secret                      | Secret that contains the TLS information      | Empty string                      |
+| service_labels                  | Add custom labels                             | Empty string                      |
 
-  * Ingress
-
-The following variables are customizable to specify the TLS termination procedure when `Ingress` is picked as an Ingress
-
-| Name                       | Description                              | Default       |
-| -------------------------- | ---------------------------------------- | ------------- |
-| ingress_annotations        | Ingress annotations                      | Empty string  |
-| ingress_tls_secret         | Secret that contains the TLS information | Empty string  |
+```yaml
+---
+spec:
+  ...
+  service_type: ClusterIP
+  service_labels: |
+    environment: testing
+```
 
   * LoadBalancer
 
-The following variables are customizable to specify the TLS termination procedure when `LoadBalancer` is picked as an Ingress
+The following variables are customizable only when `service_type=LoadBalancer`
 
 | Name                           | Description                              | Default       |
 | ------------------------------ | ---------------------------------------- | ------------- |
-| loadbalancer_annotations       | LoadBalancer annotations                 | Empty string  |
-| loadbalancer_protocol          | Protocol to use for Loadbalancer ingress | http          |
-| loadbalancer_port              | Port used for Loadbalancer ingress       | 80            |
+| loadbalancer_annotations | LoadBalancer annotations                 | Empty string  |
+| loadbalancer_protocol    | Protocol to use for Loadbalancer ingress | http          |
+| loadbalancer_port        | Port used for Loadbalancer ingress       | 80            |
+
+```yaml
+---
+spec:
+  ...
+  service_type: LoadBalancer
+  loadbalancer_protocol: https
+  loadbalancer_port: 443
+  loadbalancer_annotations: |
+    environment: testing
+  service_labels: |
+    environment: testing
+```
 
 When setting up a Load Balancer for HTTPS you will be required to set the `loadbalancer_port` to move the port away from `80`.
 
 The HTTPS Load Balancer also uses SSL termination at the Load Balancer level and will offload traffic to AWX over HTTP.
+
+#### Ingress Type
+
+By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, when the `ingress_type` is not specified, it will default to `none` and nothing ingress-wise will be created.
+
+The `ingress_type` supported options are: `none`, `ingress` and `route`. To toggle between these options, you can add the following to your AWX CRD:
+
+  * None
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: none
+```
+
+  * Generic Ingress Controller
+
+The following variables are customizable when `ingress_type=ingress`. The `ingress` type creates an Ingress resource as [documented](https://kubernetes.io/docs/concepts/services-networking/ingress/) which can be shared with many other Ingress Controllers as [listed](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
+
+| Name                       | Description                              | Default                      |
+| -------------------------- | ---------------------------------------- | ---------------------------- |
+| ingress_annotations        | Ingress annotations                      | Empty string                 |
+| ingress_tls_secret         | Secret that contains the TLS information | Empty string                 |
+| hostname                   | Define the FQDN                          | {{ meta.name }}.example.com  |
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: ingress
+  hostname: awx-demo.example.com
+  ingress_annotations: |
+    environment: testing
+```
+
+  * Route
+
+The following variables are customizable when `ingress_type=route`
+
+| Name                                  | Description                                   | Default                                                 |
+| ------------------------------------- | --------------------------------------------- | --------------------------------------------------------|
+| route_host                      | Common name the route answers for             | `<instance-name>-<namespace>-<routerCanonicalHostname>` |
+| route_tls_termination_mechanism | TLS Termination mechanism (Edge, Passthrough) | Edge                                                    |
+| route_tls_secret                | Secret that contains the TLS information      | Empty string                                            |
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: route
+  route_host: awx-demo.example.com
+  route_tls_termination_mechanism: Passthrough
+  route_tls_secret: custom-route-tls-secret-name
+```
 
 ### Database Configuration
 
@@ -572,7 +668,7 @@ There are a few moving parts to this project:
   2. The `awx-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
   3. Then use the command below to generate a list of commits between the versions.
   ```sh
-  #> git log --pretty="- %s (%an) - %h " <old_tag>..<new_tag> | grep -v Merge
+  #> git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
   ```
 
 Each of these must be appropriately built in preparation for a new tag:

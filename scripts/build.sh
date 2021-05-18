@@ -8,7 +8,7 @@
 ##
 ## git clone https://github.com/ansible/awx-operator.git
 ## cd awx-operator
-## REGISTRY=registry.example.com/ansible TAG=mytag scripts/build.sh
+## REGISTRY=registry.example.com/ansible TAG=mytag ANSIBLE_DEBUG_LOGS=true scripts/build.sh
 ##
 ## As a result, the $REGISTRY will be populated with 2 images
 ## registry.example.com/ansible/awx-operator:mytag
@@ -51,6 +51,7 @@ prepare_local_deploy() {
     echo "operator_image: $REGISTRY/$OPERATOR_IMAGE" > ansible/group_vars/all
     echo "operator_version: $TAG" >> ansible/group_vars/all
     echo "pull_policy: Always" >> ansible/group_vars/all
+    echo "ansible_debug_logs: ${ANSIBLE_DEBUG_LOGS:-false}" >> ansible/group_vars/all
     ansible-playbook ansible/chain-operator-files.yml
 }
 

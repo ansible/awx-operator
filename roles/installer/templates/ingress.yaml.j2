@@ -1,4 +1,4 @@
-{% if 'ingress' == ingress_type|lower %}
+{% if ingress_type|lower == "ingress" %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -32,7 +32,7 @@ spec:
 {% endif %}
 {% endif %}
 
-{% if 'route' == ingress_type|lower %}
+{% if ingress_type|lower == "route" %}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route

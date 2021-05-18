@@ -28,6 +28,7 @@
     pull_policy: Never
     operator_image: awx.ansible.com/awx-operator
     operator_version: testing
+    ansible_debug_logs: "true"
     custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_molecule.yaml'])) | from_yaml }}"
 
   tasks:

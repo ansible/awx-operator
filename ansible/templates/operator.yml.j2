@@ -35,6 +35,8 @@ spec:
               value: explicit
             - name: OPERATOR_VERSION
               value: "{{ operator_version }}"
+            - name: ANSIBLE_DEBUG_LOGS
+              value: "{{ ansible_debug_logs|lower | default('false'|lower) }}"
           livenessProbe:
             httpGet:
               path: /healthz

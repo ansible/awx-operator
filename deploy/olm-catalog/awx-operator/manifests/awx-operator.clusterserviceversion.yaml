@@ -178,46 +178,51 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Ingress Type
+      - displayName: Tower Service Type
+        path: service_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:ClusterIP
+        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
+        - urn:alm:descriptor:com.tectonic.ui:select:NodePort
+      - displayName: Tower Ingress Type
         path: ingress_type
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:select:none
         - urn:alm:descriptor:com.tectonic.ui:select:Ingress
         - urn:alm:descriptor:com.tectonic.ui:select:Route
-        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
-        - urn:alm:descriptor:com.tectonic.ui:select:NodePort
-      - displayName: Ingress Annotations
+      - displayName: Tower Ingress Annotations
         path: ingress_annotations
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Ingress TLS Secret
+      - displayName: Tower Ingress TLS Secret
         path: ingress_tls_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: LoadBalancer Annotations
+      - displayName: Tower LoadBalancer Annotations
         path: loadbalancer_annotations
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:LoadBalancer
-      - displayName: LoadBalancer Protocol
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Tower LoadBalancer Protocol
         path: loadbalancer_protocol
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:select:http
         - urn:alm:descriptor:com.tectonic.ui:select:https
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:LoadBalancer
-      - displayName: LoadBalancer Port
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Tower LoadBalancer Port
         path: loadbalancer_port
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:LoadBalancer
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
       - displayName: Route DNS host
         path: route_host
         x-descriptors:

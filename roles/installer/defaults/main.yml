@@ -7,6 +7,7 @@ database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
 task_privileged: false
+service_type: ClusterIP
 ingress_type: none
 
 # Add annotations to the service account. Specify as literal block. E.g.:
@@ -51,7 +52,7 @@ route_tls_secret: ''
 #
 route_host: ''
 
-hostname: '{{ deployment_type }}.example.com'
+hostname: '{{ meta.name }}.example.com'
 
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:

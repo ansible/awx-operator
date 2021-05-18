@@ -20,7 +20,8 @@
           spec:
             admin_user: admin
             admin_email: admin@localhost
-            ingress_type: "{{ ingress_type | default(omit) }}"  # Either Route, Ingress or LoadBalancer
+            service_type: "{{ service_type | default(omit) }}"  # Either clusterIP, Loadbalancer or NodePort
+            ingress_type: "{{ ingress_type | default(omit) }}"  # Either none, Ingress, Route
             image: "{{ image | default(omit) }}"
             image_version: "{{ image_version | default(omit) }}"
             development_mode: "{{ development_mode | default(omit) | bool }}"

@@ -17,7 +17,7 @@ metadata:
 {% endif %}
 spec:
   ports:
-{% if ingress_type | lower != 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
+{% if service_type | lower != 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
     - port: 80
       protocol: TCP
       targetPort: 8052
@@ -29,12 +29,12 @@ spec:
       targetPort: 8053
       name: https
 {% endif %}
-{% if ingress_type | lower == 'loadbalancer' and loadbalancer_protocol | lower == 'https' %}
+{% if service_type | lower == 'loadbalancer' and loadbalancer_protocol | lower == 'https' %}
     - port: {{ loadbalancer_port }}
       protocol: TCP
       targetPort: 8052
       name: https
-{% elif ingress_type | lower == 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
+{% elif service_type | lower == 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
     - port: {{ loadbalancer_port }}
       protocol: TCP
       targetPort: 8052
@@ -44,9 +44,9 @@ spec:
     app.kubernetes.io/name: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
-{% if ingress_type | lower == "loadbalancer" %}
+{% if service_type | lower == "loadbalancer" %}
   type: LoadBalancer
-{% elif ingress_type != "none" %}
+{% elif service_type | lower == "nodeport" %}
   type: NodePort
 {% else %}
   type: ClusterIP
