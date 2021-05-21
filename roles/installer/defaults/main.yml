@@ -6,180 +6,181 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
-tower_task_privileged: false
-tower_ingress_type: none
+task_privileged: false
+ingress_type: none
 
 # Custom labels for the tower service. Specify as literal block. E.g.:
-# tower_service_labels: |
+# service_labels: |
 #   environment: non-production
 #   zone: internal
-tower_service_labels: ''
+service_labels: ''
 
 # Add annotations to the ingress. Specify as literal block. E.g.:
-# tower_ingress_annotations: |
+# ingress_annotations: |
 #   kubernetes.io/ingress.class: nginx
 #   nginx.ingress.kubernetes.io/proxy-connect-timeout: 60s
-tower_ingress_annotations: ''
+ingress_annotations: ''
+
 # TLS secret for the ingress. The secret either has to exist before hand with
 # the corresponding cert and key or just be an indicator for where an automated
 # process like cert-manager (enabled via annotations) will store the TLS
 # certificate and key.
-tower_ingress_tls_secret: ''
+ingress_tls_secret: ''
 
-tower_loadbalancer_protocol: 'http'
-tower_loadbalancer_port: '80'
-tower_loadbalancer_annotations: ''
+loadbalancer_protocol: 'http'
+loadbalancer_port: '80'
+loadbalancer_annotations: ''
 
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
 #
-tower_route_tls_termination_mechanism: edge
+route_tls_termination_mechanism: edge
 
 # Secret to lookup that provide the TLS specific
 # credentials to deploy
 #
-tower_route_tls_secret: ''
+route_tls_secret: ''
 
 # Host to create the root with.
 # If not specific will default to <instance-name>-<namespace>-<routerCanonicalHostname>
 #
-tower_route_host: ''
+route_host: ''
 
-tower_hostname: '{{ deployment_type }}.example.com'
+hostname: '{{ deployment_type }}.example.com'
 
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:
-# tower_node_selector: |
+# node_selector: |
 #   disktype: ssd
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
-tower_node_selector: ''
+node_selector: ''
 
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
-# tower_tolerations: |
+# tolerations: |
 #   - key: "dedicated"
 #     operator: "Equal"
 #     value: "AWX"
 #     effect: "NoSchedule"
-tower_tolerations: ''
+tolerations: ''
 
-tower_admin_user: admin
-tower_admin_email: test@example.com
+admin_user: admin
+admin_email: test@example.com
 
 # Secret to lookup that provide the admin password
 #
-tower_admin_password_secret: ''
+admin_password_secret: ''
 
 # Secret to lookup that provide the broadcast websocket key
 #
-tower_broadcast_websocket_secret: ''
+broadcast_websocket_secret: ''
 
 # Secret to lookup that provide the secret key
 #
-tower_secret_key_secret: ''
+secret_key_secret: ''
 
 # Secret to lookup that provide the PostgreSQL configuration
 #
-tower_postgres_configuration_secret: ''
+postgres_configuration_secret: ''
 
 # Secret to lookup that provides old database credentials (for migration)
 
-tower_old_postgres_configuration_secret: ''
+old_postgres_configuration_secret: ''
 
 # Add extra volumes to the AWX pod. Specify as literal block. E.g.:
-# tower_extra_volumes: |
+# extra_volumes: |
 #   - name: my-volume
 #     emptyDir: {}
-tower_extra_volumes: ''
+extra_volumes: ''
 
 # Use these image versions for Ansible AWX.
 
-tower_image: quay.io/ansible/awx
-tower_image_version: 19.1.0
-tower_redis_image: docker.io/redis
-tower_redis_image_version: latest
-tower_postgres_image: postgres
-tower_postgres_image_version: 12
-tower_image_pull_policy: IfNotPresent
-tower_image_pull_secret: ''
+image: quay.io/ansible/awx
+image_version: 19.1.0
+redis_image: docker.io/redis
+redis_image_version: latest
+postgres_image: postgres
+postgres_image_version: 12
+image_pull_policy: IfNotPresent
+image_pull_secret: ''
 
-tower_ee_images:
+ee_images:
   - name: AWX EE 0.2.0
     image: quay.io/ansible/awx-ee:0.2.0
 
-tower_create_preload_data: true
+create_preload_data: true
 
-tower_replicas: "1"
+replicas: "1"
 
-tower_task_args:
+task_args:
   - /usr/bin/launch_awx_task.sh
-tower_task_command: []
-tower_web_args: []
-tower_web_command: []
+task_command: []
+web_args: []
+web_command: []
 
-tower_task_resource_requirements:
+task_resource_requirements:
   requests:
     cpu: 500m
     memory: 1Gi
 
-tower_web_resource_requirements:
+web_resource_requirements:
   requests:
     cpu: 1000m
     memory: 2Gi
 
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
-# tower_task_extra_env: |
+# task_extra_env: |
 #   - name: FOO
 #     value: bar
 #   - name: BAZ
 #     value: bing
-tower_task_extra_env: ''
-tower_web_extra_env: ''
+task_extra_env: ''
+web_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
 # E.g.:
-# tower_task_extra_volume_mounts: ''
+# task_extra_volume_mounts: ''
 #   - name: my-volume
 #     mountPath: /some/path
-tower_task_extra_volume_mounts: ''
-tower_web_extra_volume_mounts: ''
-tower_ee_extra_volume_mounts: ''
+task_extra_volume_mounts: ''
+web_extra_volume_mounts: ''
+ee_extra_volume_mounts: ''
 
 # Add a nodeSelector for the Postgres pods.
 # It must match a node's labels for the pod to be scheduled on that node.
 # Specify as literal block. E.g.:
-# tower_postgres_selector: |
+# postgres_selector: |
 #   disktype: ssd
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
-tower_postgres_selector: ''
+postgres_selector: ''
 
 # Add node tolerations for the Postgres pods.
 # Specify as literal block. E.g.:
-# tower_postgres_tolerations: |
+# postgres_tolerations: |
 #   - key: "dedicated"
 #     operator: "Equal"
 #     value: "AWX"
 #     effect: "NoSchedule"
-tower_postgres_tolerations: ''
-tower_postgres_storage_requirements:
+postgres_tolerations: ''
+postgres_storage_requirements:
   requests:
     storage: 8Gi
-tower_postgres_resource_requirements: {}
-tower_postgres_data_path: '/var/lib/postgresql/data/pgdata'
+postgres_resource_requirements: {}
+postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
 # Persistence to the AWX project data folder
 # Whether or not the /var/lib/projects directory will be persistent
-tower_projects_persistence: false
+projects_persistence: false
 #
 # Define an existing PersistentVolumeClaim to use
-tower_projects_existing_claim: ''
+projects_existing_claim: ''
 #
 # Define the storage_class, size and access_mode
 # when not using an existing claim
-tower_projects_storage_size: 8Gi
-tower_projects_storage_access_mode: ReadWriteMany
+projects_storage_size: 8Gi
+projects_storage_access_mode: ReadWriteMany
 
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
@@ -190,6 +191,6 @@ ldap_cacert_secret: ''
 # Whether secrets should be garbage collected
 # on teardown
 #
-tower_garbage_collect_secrets: false
+garbage_collect_secrets: false
 
 development_mode: false

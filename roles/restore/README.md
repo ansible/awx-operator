@@ -52,7 +52,7 @@ $ kubectl apply -f restore-awx.yml
 
 This will create a new deployment and restore your backup to it.
 
-> :warning: tower_admin_password_secret value will replace the password for the `tower_admin_user` user (by default, this is the `admin` user).
+> :warning: admin_password_secret value will replace the password for the `admin_user` user (by default, this is the `admin` user).
 
 
 Role Variables
@@ -90,7 +90,7 @@ backup_pvc_namespace: 'custom-namespace'
 If a custom postgres configuration secret was used when deploying AWX, it must be set:
 
 ```
-tower_postgres_configuration_secret: 'awx-postgres-configuration'
+postgres_configuration_secret: 'awx-postgres-configuration'
 ```
 
 If the awxbackup object no longer exists, it is still possible to restore from the backup it created by specifying the pvc name and the back directory.

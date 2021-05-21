@@ -3,9 +3,9 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{ tower_postgres_configuration_secret }}'
+    name: '{{ postgres_configuration_secret }}'
   register: _custom_pg_config_resources
-  when: tower_postgres_configuration_secret | length
+  when: postgres_configuration_secret | length
 
 - name: Check for default PostgreSQL configuration
   k8s_info:
@@ -18,9 +18,9 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{ tower_old_postgres_configuration_secret }}'
+    name: '{{ old_postgres_configuration_secret }}'
   register: _custom_old_pg_config_resources
-  when: tower_old_postgres_configuration_secret | length
+  when: old_postgres_configuration_secret | length
 
 - name: Check for default old PostgreSQL configuration
   k8s_info:
@@ -50,7 +50,7 @@
     - name: Create Database configuration
       k8s:
         apply: true
-        definition: "{{ lookup('template', 'tower_postgres_secret.yaml.j2') }}"
+        definition: "{{ lookup('template', 'postgres_secret.yaml.j2') }}"
 
     - name: Read Database Configuration
       k8s_info:
@@ -72,7 +72,7 @@
     - name: Create Database if no database is specified
       k8s:
         apply: true
-        definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
+        definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
       register: create_statefulset_result
 
   rescue:
@@ -101,7 +101,7 @@
     - name: Recreate PostgreSQL statefulset with updated values
       k8s:
         apply: true
-        definition: "{{ lookup('template', 'tower_postgres.yaml.j2') }}"
+        definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
   when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
 
 - name: Store Database Configuration
@@ -126,4 +126,4 @@
   when:
     - old_pg_config['resources'] is defined
     - old_pg_config['resources'] | length
-    - this_awx['resources'][0]['status']['towerMigratedFromSecret'] is not defined
+    - this_awx['resources'][0]['status']['migratedFromSecret'] is not defined

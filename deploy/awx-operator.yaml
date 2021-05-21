@@ -37,42 +37,42 @@ spec:
                   description: apiVersion of the deployment type
                   type: string
                   default: awx.ansible.com/v1beta1
-                tower_task_privileged:
+                task_privileged:
                   description: If a privileged security context should be enabled
                   type: boolean
                   default: false
-                tower_admin_user:
+                admin_user:
                   description: Username to use for the admin account
                   type: string
                   default: admin
-                tower_hostname:
+                hostname:
                   description: The hostname of the instance
                   type: string
-                tower_admin_email:
+                admin_email:
                   description: The admin user email
                   type: string
-                tower_admin_password_secret:
+                admin_password_secret:
                   description: Secret where the admin password can be found
                   type: string
-                tower_postgres_configuration_secret:
+                postgres_configuration_secret:
                   description: Secret where the database configuration can be found
                   type: string
-                tower_old_postgres_configuration_secret:
+                old_postgres_configuration_secret:
                   description: Secret where the old database configuration can be found for data migration
                   type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for data migration
                   type: string
-                tower_secret_key_secret:
+                secret_key_secret:
                   description: Secret where the secret key can be found
                   type: string
-                tower_broadcast_websocket_secret:
+                broadcast_websocket_secret:
                   description: Secret where the broadcast websocket secret can be found
                   type: string
-                tower_extra_volumes:
+                extra_volumes:
                   description: Specify extra volumes to add to the application pod
                   type: string
-                tower_ingress_type:
+                ingress_type:
                   description: The ingress type to use to reach the deployed instance
                   type: string
                   enum:
@@ -85,30 +85,30 @@ spec:
                     - loadbalancer
                     - NodePort
                     - nodeport
-                tower_ingress_annotations:
+                ingress_annotations:
                   description: Annotations to add to the ingress
                   type: string
-                tower_ingress_tls_secret:
+                ingress_tls_secret:
                   description: Secret where the ingress TLS secret can be found
                   type: string
-                tower_loadbalancer_annotations:
+                loadbalancer_annotations:
                   description: Annotations to add to the loadbalancer
                   type: string
-                tower_loadbalancer_protocol:
+                loadbalancer_protocol:
                   description: Protocol to use for the loadbalancer
                   type: string
                   default: http
                   enum:
                     - http
                     - https
-                tower_loadbalancer_port:
+                loadbalancer_port:
                   description: Port to use for the loadbalancer
                   type: integer
                   default: 80
-                tower_route_host:
+                route_host:
                   description: The DNS to use to points to the instance
                   type: string
-                tower_route_tls_termination_mechanism:
+                route_tls_termination_mechanism:
                   description: The secure TLS termination mechanism to use
                   type: string
                   default: Edge
@@ -117,25 +117,25 @@ spec:
                     - edge
                     - Passthrough
                     - passthrough
-                tower_route_tls_secret:
+                route_tls_secret:
                   description: Secret where the TLS related credentials are stored
                   type: string
-                tower_node_selector:
-                  description: nodeSelector for the AWX pods
+                node_selector:
+                  description: nodeSelector for the pods
                   type: string
-                tower_service_labels:
+                service_labels:
                   description: Additional labels to apply to the service
                   type: string
-                tower_tolerations:
-                  description: node tolerations for the AWX pods
+                tolerations:
+                  description: node tolerations for the pods
                   type: string
-                tower_image:
+                image:
                   description: Registry path to the application container to use
                   type: string
-                tower_image_version:
+                image_version:
                   description: Application container image version to use
                   type: string
-                tower_ee_images:
+                ee_images:
                   description: Registry path to the Execution Environment container to use
                   type: array
                   items:
@@ -145,7 +145,7 @@ spec:
                         type: string
                       image:
                         type: string
-                tower_image_pull_policy:
+                image_pull_policy:
                   description: The image pull policy
                   type: string
                   default: IfNotPresent
@@ -156,10 +156,10 @@ spec:
                     - never
                     - IfNotPresent
                     - ifnotpresent
-                tower_image_pull_secret:
+                image_pull_secret:
                   description: The image pull secret
                   type: string
-                tower_task_resource_requirements:
+                task_resource_requirements:
                   description: Resource requirements for the task container
                   properties:
                     requests:
@@ -181,7 +181,7 @@ spec:
                           type: string
                       type: object
                   type: object
-                tower_web_resource_requirements:
+                web_resource_requirements:
                   description: Resource requirements for the web container
                   properties:
                     requests:
@@ -203,67 +203,67 @@ spec:
                           type: string
                       type: object
                   type: object
-                tower_replicas:
+                replicas:
                   description: Number of instance replicas
                   type: integer
                   default: 1
                   format: int32
-                tower_garbage_collect_secrets:
+                garbage_collect_secrets:
                   description: Whether or not to remove secrets upon instance removal
                   default: false
                   type: boolean
-                tower_create_preload_data:
-                  description: Whether or not to preload data upon Tower instance creation
+                create_preload_data:
+                  description: Whether or not to preload data upon instance creation
                   default: true
                   type: boolean
-                tower_task_args:
+                task_args:
                   type: array
                   items:
                     type: string
-                tower_task_command:
+                task_command:
                   type: array
                   items:
                     type: string
-                tower_web_args:
+                web_args:
                   type: array
                   items:
                     type: string
-                tower_web_command:
+                web_command:
                   type: array
                   items:
                     type: string
-                tower_task_extra_env:
+                task_extra_env:
                   type: string
-                tower_web_extra_env:
+                web_extra_env:
                   type: string
-                tower_ee_extra_volume_mounts:
+                ee_extra_volume_mounts:
                   description: Specify volume mounts to be added to Execution container
                   type: string
-                tower_task_extra_volume_mounts:
+                task_extra_volume_mounts:
                   description: Specify volume mounts to be added to Task container
                   type: string
-                tower_web_extra_volume_mounts:
+                web_extra_volume_mounts:
                   description: Specify volume mounts to be added to the Web container
                   type: string
-                tower_redis_image:
+                redis_image:
                   description: Registry path to the redis container to use
                   type: string
-                tower_redis_image_version:
+                redis_image_version:
                   description: Redis container image version to use
                   type: string
-                tower_postgres_image:
+                postgres_image:
                   description: Registry path to the PostgreSQL container to use
                   type: string
-                tower_postgres_image_version:
+                postgres_image_version:
                   description: PostgreSQL container image version to use
                   type: string
-                tower_postgres_selector:
+                postgres_selector:
                   description: nodeSelector for the Postgres pods
                   type: string
-                tower_postgres_tolerations:
+                postgres_tolerations:
                   description: node tolerations for the Postgres pods
                   type: string
-                tower_postgres_storage_requirements:
+                postgres_storage_requirements:
                   description: Storage requirements for the PostgreSQL container
                   properties:
                     requests:
@@ -277,7 +277,7 @@ spec:
                           type: string
                       type: object
                   type: object
-                tower_postgres_resource_requirements:
+                postgres_resource_requirements:
                   description: Resource requirements for the PostgreSQL container
                   properties:
                     requests:
@@ -295,10 +295,10 @@ spec:
                           type: string
                       type: object
                   type: object
-                tower_postgres_storage_class:
+                postgres_storage_class:
                   description: Storage class to use for the PostgreSQL PVC
                   type: string
-                tower_postgres_data_path:
+                postgres_data_path:
                   description: Path where the PostgreSQL data are located
                   type: string
                 ca_trust_bundle:
@@ -310,27 +310,27 @@ spec:
                 ldap_cacert_secret:
                   description: Secret where can be found the LDAP trusted Certificate Authority Bundle
                   type: string
-                tower_projects_persistence:
+                projects_persistence:
                   description: Whether or not the /var/lib/projects directory will be persistent
                   default: false
                   type: boolean
-                tower_projects_use_existing_claim:
+                projects_use_existing_claim:
                   description: Using existing PersistentVolumeClaim
                   type: string
                   enum:
                     - _Yes_
                     - _No_
-                tower_projects_existing_claim:
+                projects_existing_claim:
                   description: PersistentVolumeClaim to mount /var/lib/projects directory
                   type: string
-                tower_projects_storage_class:
+                projects_storage_class:
                   description: Storage class for the /var/lib/projects PersistentVolumeClaim
                   type: string
-                tower_projects_storage_size:
+                projects_storage_size:
                   description: Size for the /var/lib/projects PersistentVolumeClaim
                   default: 8Gi
                   type: string
-                tower_projects_storage_access_mode:
+                projects_storage_access_mode:
                   description: AccessMode for the /var/lib/projects PersistentVolumeClaim
                   default: ReadWriteMany
                   type: string
@@ -347,13 +347,13 @@ spec:
               type: object
             status:
               properties:
-                towerURL:
+                URL:
                   description: URL to access the deployed instance
                   type: string
-                towerAdminUser:
+                adminUser:
                   description: Admin user of the deployed instance
                   type: string
-                towerAdminPasswordSecret:
+                adminPasswordSecret:
                   description: Admin password secret name of the deployed instance
                   type: string
                 postgresConfigurationSecret:
@@ -365,13 +365,13 @@ spec:
                 secretKeySecret:
                   description: Secret key secret name of the deployed instance
                   type: string
-                towerMigratedFromSecret:
-                  description: The secret used for migrating an old Tower.
+                migratedFromSecret:
+                  description: The secret used for migrating an old instance.
                   type: string
-                towerVersion:
+                version:
                   description: Version of the deployed instance
                   type: string
-                towerImage:
+                image:
                   description: URL of the image used for the deployed instance
                   type: string
                 conditions:

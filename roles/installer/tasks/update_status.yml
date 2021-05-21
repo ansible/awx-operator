@@ -6,7 +6,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerAdminPasswordSecret: "{{ admin_password_secret['resources'][0]['metadata']['name'] }}"
+      adminPasswordSecret: "{{ admin_password_secret['resources'][0]['metadata']['name'] }}"
 
 - name: Update admin user status
   operator_sdk.util.k8s_status:
@@ -15,7 +15,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerAdminUser: "{{ tower_admin_user }}"
+      adminUser: "{{ admin_user }}"
 
 - name: Update postgres configuration status
   operator_sdk.util.k8s_status:
@@ -61,7 +61,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerVersion: "{{ instance_version.stdout | trim }}"
+      version: "{{ instance_version.stdout | trim }}"
 
 - name: Update image status
   operator_sdk.util.k8s_status:
@@ -70,7 +70,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerImage: "{{ tower_image }}"
+      image: "{{ image }}"
 
 - block:
     - name: Retrieve route URL
@@ -87,16 +87,16 @@
         name: "{{ meta.name }}"
         namespace: "{{ meta.namespace }}"
         status:
-          towerURL: "https://{{ route_url['resources'][0]['status']['ingress'][0]['host'] }}"
+          URL: "https://{{ route_url['resources'][0]['status']['ingress'][0]['host'] }}"
 
-  when: tower_ingress_type | lower == 'route'
+  when: ingress_type | lower == 'route'
 
-- name: Update towerMigratedFromSecret status
+- name: Update migratedFromSecret status
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      towerMigratedFromSecret: "{{ tower_migrated_from_secret }}"
+      migratedFromSecret: "{{ tower_migrated_from_secret }}"
   when: tower_migrated_from_secret is defined
