@@ -9,6 +9,11 @@ database_username: "{{ deployment_type }}"
 task_privileged: false
 ingress_type: none
 
+# Add annotations to the service account. Specify as literal block. E.g.:
+# service_account_annotations: |
+#   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
+service_account_annotations: ''
+
 # Custom labels for the tower service. Specify as literal block. E.g.:
 # service_labels: |
 #   environment: non-production
