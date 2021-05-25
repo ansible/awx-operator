@@ -1,4 +1,4 @@
-{% if 'ingress' == tower_ingress_type|lower %}
+{% if 'ingress' == ingress_type|lower %}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -11,28 +11,28 @@ metadata:
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
-{% if tower_ingress_annotations %}
+{% if ingress_annotations %}
   annotations:
-    {{ tower_ingress_annotations | indent(width=4) }}
+    {{ ingress_annotations | indent(width=4) }}
 {% endif %}
 spec:
   rules:
-    - host: '{{ tower_hostname }}'
+    - host: '{{ hostname }}'
       http:
         paths:
           - path: /
             backend:
               serviceName: '{{ meta.name }}-service'
               servicePort: 80
-{% if tower_ingress_tls_secret %}
+{% if ingress_tls_secret %}
   tls:
     - hosts:
-        - {{ tower_hostname }}
-      secretName: {{ tower_ingress_tls_secret }}
+        - {{ hostname }}
+      secretName: {{ ingress_tls_secret }}
 {% endif %}
 {% endif %}
 
-{% if 'route' == tower_ingress_type|lower %}
+{% if 'route' == ingress_type|lower %}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -46,22 +46,22 @@ metadata:
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 spec:
-{% if tower_route_host != '' %}
-  host: {{ tower_route_host }}
+{% if route_host != '' %}
+  host: {{ route_host }}
 {% endif %}
   port:
-    targetPort: '{{ (tower_route_tls_termination_mechanism | lower == "passthrough") | ternary("https", "http") }}'
+    targetPort: '{{ (route_tls_termination_mechanism | lower == "passthrough") | ternary("https", "http") }}'
   tls:
     insecureEdgeTerminationPolicy: Redirect
-    termination: {{ tower_route_tls_termination_mechanism | lower }}
-{% if tower_route_tls_termination_mechanism | lower == 'edge' and tower_route_tls_secret != '' %}
+    termination: {{ route_tls_termination_mechanism | lower }}
+{% if route_tls_termination_mechanism | lower == 'edge' and route_tls_secret != '' %}
     key: |-
-{{ tower_route_tls_key | indent(width=6, indentfirst=True) }}
+{{ route_tls_key | indent(width=6, indentfirst=True) }}
     certificate: |-
-{{ tower_route_tls_crt | indent(width=6, indentfirst=True) }}
-{% if tower_route_ca_crt is defined %}
+{{ route_tls_crt | indent(width=6, indentfirst=True) }}
+{% if route_ca_crt is defined %}
     caCertificate: |-
-{{ tower_route_ca_crt | indent(width=6, indentfirst=True) }}
+{{ route_ca_crt | indent(width=6, indentfirst=True) }}
 {% endif %}
 {% endif %}
   to:

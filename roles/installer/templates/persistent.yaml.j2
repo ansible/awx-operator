@@ -1,4 +1,4 @@
-{% if tower_projects_persistence|bool and tower_projects_existing_claim == '' %}
+{% if projects_persistence|bool and projects_existing_claim == '' %}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -12,11 +12,11 @@ metadata:
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 spec:
   accessModes:
-    - {{ tower_projects_storage_access_mode }}
+    - {{ projects_storage_access_mode }}
   resources:
     requests:
-      storage: {{ tower_projects_storage_size }}
-{% if tower_projects_storage_class is defined %}
-  storageClassName: {{ tower_projects_storage_class }}
+      storage: {{ projects_storage_size }}
+{% if projects_storage_class is defined %}
+  storageClassName: {{ projects_storage_class }}
 {% endif %}
 {% endif %}

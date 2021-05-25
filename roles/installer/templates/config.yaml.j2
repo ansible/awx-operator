@@ -130,7 +130,7 @@ data:
         }
     
 
-        {% if tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+        {% if route_tls_termination_mechanism | lower == 'passthrough' %}
         server {
             listen 8052 default_server;
             server_name _;
@@ -141,7 +141,7 @@ data:
         {% endif %}
 
         server {
-        {% if tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+        {% if route_tls_termination_mechanism | lower == 'passthrough' %}
             listen 8053 ssl;
 
             ssl_certificate /etc/nginx/pki/web.crt;

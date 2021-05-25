@@ -24,17 +24,17 @@
     wait: yes
   register: tower_resources_result
   loop:
-    - 'tower_config'
-    - 'tower_app_credentials'
-    - 'tower_service_account'
-    - 'tower_persistent'
-    - 'tower_service'
-    - 'tower_ingress'
+    - 'config'
+    - 'app_credentials'
+    - 'service_account'
+    - 'persistent'
+    - 'service'
+    - 'ingress'
 
 - name: Apply deployment resources
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'tower_deployment.yaml.j2') }}"
+    definition: "{{ lookup('template', 'deployment.yaml.j2') }}"
     wait: yes
   register: tower_deployment_result
 

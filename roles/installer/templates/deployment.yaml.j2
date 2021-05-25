@@ -7,13 +7,13 @@ metadata:
   namespace: '{{ meta.namespace }}'
   labels:
     app.kubernetes.io/name: '{{ meta.name }}'
-    app.kubernetes.io/version: '{{ tower_image_version }}'
+    app.kubernetes.io/version: '{{ image_version }}'
     app.kubernetes.io/part-of: '{{ meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 spec:
-  replicas: {{ tower_replicas }}
+  replicas: {{ replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: '{{ meta.name }}'
@@ -23,19 +23,19 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: '{{ meta.name }}'
-        app.kubernetes.io/version: '{{ tower_image_version }}'
+        app.kubernetes.io/version: '{{ image_version }}'
         app.kubernetes.io/part-of: '{{ meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
         app.kubernetes.io/component: '{{ deployment_type }}'
     spec:
       serviceAccountName: '{{ meta.name }}'
-{% if tower_image_pull_secret %}
+{% if image_pull_secret %}
       imagePullSecrets:
-        - name: {{ tower_image_pull_secret }}
+        - name: {{ image_pull_secret }}
 {% endif %}
       containers:
-        - image: '{{ tower_redis_image }}:{{ tower_redis_image_version }}'
-          imagePullPolicy: '{{ tower_image_pull_policy }}'
+        - image: '{{ redis_image }}:{{ redis_image_version }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
@@ -47,18 +47,18 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ meta.name }}-redis-data"
               mountPath: "/data"
-        - image: '{{ tower_image }}:{{ tower_image_version }}'
+        - image: '{{ image }}:{{ image_version }}'
           name: '{{ meta.name }}-web'
-{% if tower_web_command %}
-          command: {{ tower_web_command }}
+{% if web_command %}
+          command: {{ web_command }}
 {% endif %}
-{% if tower_web_args %}
-          args: {{ tower_web_args }}
+{% if web_args %}
+          args: {{ web_args }}
 {% endif %}
-          imagePullPolicy: '{{ tower_image_pull_policy }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
           ports:
             - containerPort: 8052
-{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
             - containerPort: 8053
 {% endif %}
           volumeMounts:
@@ -74,7 +74,7 @@ spec:
               mountPath: "/etc/tower/conf.d/ldap.py"
               subPath: ldap.py
               readOnly: true
-{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
             - name: "{{ meta.name }}-nginx-certs"
               mountPath: "/etc/nginx/pki"
               readOnly: true
@@ -111,8 +111,8 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
-{% if tower_web_extra_volume_mounts -%}
-            {{ tower_web_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% if web_extra_volume_mounts -%}
+            {{ web_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
           env:
             - name: MY_POD_NAMESPACE
@@ -123,22 +123,22 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if tower_web_extra_env -%}
-            {{ tower_web_extra_env | indent(width=12, indentfirst=True) }}
+{% if web_extra_env -%}
+            {{ web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
-          resources: {{ tower_web_resource_requirements }}
-        - image: '{{ tower_image }}:{{ tower_image_version }}'
+          resources: {{ web_resource_requirements }}
+        - image: '{{ image }}:{{ image_version }}'
           name: '{{ meta.name }}-task'
-          imagePullPolicy: '{{ tower_image_pull_policy }}'
-{% if tower_task_privileged == true %}
+          imagePullPolicy: '{{ image_pull_policy }}'
+{% if task_privileged == true %}
           securityContext:
             privileged: true
 {% endif %}
-{% if tower_task_command %}
-          command: {{ tower_task_command }}
+{% if task_command %}
+          command: {{ task_command }}
 {% endif %}
-{% if tower_task_args %}
-          args: {{ tower_task_args }}
+{% if task_args %}
+          args: {{ task_args }}
 {% endif %}
           volumeMounts:
             - name: "{{ meta.name }}-application-credentials"
@@ -177,8 +177,8 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
-{% if tower_task_extra_volume_mounts -%}
-            {{ tower_task_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% if task_extra_volume_mounts -%}
+            {{ task_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
@@ -201,13 +201,13 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if tower_task_extra_env -%}
-            {{ tower_task_extra_env | indent(width=12, indentfirst=True) }}
+{% if task_extra_env -%}
+            {{ task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
-          resources: {{ tower_task_resource_requirements }}
-        - image: '{{ tower_ee_images[0].image }}'
+          resources: {{ task_resource_requirements }}
+        - image: '{{ ee_images[0].image }}'
           name: '{{ meta.name }}-ee'
-          imagePullPolicy: '{{ tower_image_pull_policy }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
           args: ['receptor', '--config', '/etc/receptor.conf']
           volumeMounts:
             - name: "{{ meta.name }}-receptor-config"
@@ -218,8 +218,8 @@ spec:
               mountPath: "/var/run/receptor"
             - name: "{{ meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
-{% if tower_ee_extra_volume_mounts -%}
-            {{ tower_ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% if ee_extra_volume_mounts -%}
+            {{ ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
 {% if development_mode | bool %}
           env:
@@ -228,19 +228,19 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
 {% endif %}
-{% if tower_node_selector %}
+{% if node_selector %}
       nodeSelector:
-        {{ tower_node_selector | indent(width=8) }}
+        {{ node_selector | indent(width=8) }}
 {% endif %}
-{% if tower_tolerations %}
+{% if tolerations %}
       tolerations:
-        {{ tower_tolerations | indent(width=8) }}
+        {{ tolerations | indent(width=8) }}
 {% endif %}
       volumes:
-{% if tower_ingress_type | lower == 'route' and tower_route_tls_termination_mechanism | lower == 'passthrough' %}
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ meta.name }}-nginx-certs"
           secret:
-            secretName: "{{ tower_route_tls_secret }}"
+            secretName: "{{ route_tls_secret }}"
             items:
               - key: tls.key
                 path: 'web.key'
@@ -308,10 +308,10 @@ spec:
               - key: receptor_conf
                 path: receptor.conf
         - name: "{{ meta.name }}-projects"
-{% if tower_projects_persistence|bool %}
+{% if projects_persistence|bool %}
           persistentVolumeClaim:
-{% if tower_projects_existing_claim %}
-            claimName: {{ tower_projects_existing_claim }}
+{% if projects_existing_claim %}
+            claimName: {{ projects_existing_claim }}
 {% else %}
             claimName: '{{ meta.name }}-projects-claim'
 {% endif %}
@@ -323,6 +323,6 @@ spec:
           hostPath:
             path: /awx_devel
 {% endif %}
-{% if tower_extra_volumes -%}
-        {{ tower_extra_volumes | indent(width=8, indentfirst=True) }}
+{% if extra_volumes -%}
+        {{ extra_volumes | indent(width=8, indentfirst=True) }}
 {% endif %}

@@ -41,7 +41,7 @@
     - include_tasks: cleanup.yml
 
   when:
-    - this_restore['resources'][0]['status']['towerRestoreComplete'] is not defined
+    - this_restore['resources'][0]['status']['restoreComplete'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml

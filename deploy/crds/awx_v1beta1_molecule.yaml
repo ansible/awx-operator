@@ -6,12 +6,12 @@ metadata:
   namespace: example-awx
 spec:
   deployment_type: awx
-  tower_ingress_type: ingress
-  tower_web_resource_requirements:
+  ingress_type: ingress
+  web_resource_requirements:
     requests:
       cpu: 500m
       memory: 128M
-  tower_task_resource_requirements:
+  task_resource_requirements:
     requests:
       cpu: 500m
       memory: 128M

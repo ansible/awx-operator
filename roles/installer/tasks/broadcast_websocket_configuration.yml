@@ -3,9 +3,9 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{ tower_broadcast_websocket_secret }}'
+    name: '{{ broadcast_websocket_secret }}'
   register: _custom_broadcast_websocket
-  when: tower_broadcast_websocket_secret | length
+  when: broadcast_websocket_secret | length
 
 - name: Check for default broadcast websocket secret configuration
   k8s_info:
@@ -23,7 +23,7 @@
     - name: Create broadcast websocket secret
       k8s:
         apply: true
-        definition: "{{ lookup('template', 'tower_broadcast_websocket_secret.yaml.j2') }}"
+        definition: "{{ lookup('template', 'broadcast_websocket_secret.yaml.j2') }}"
 
     - name: Read broadcast websocket secret
       k8s_info:
@@ -37,8 +37,8 @@
 - name: Set broadcast websocket secret
   set_fact:
     # yamllint disable-line rule:line-length
-    broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'  # noqa 204
+    __broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'  # noqa 204
 
 - name: Store broadcast websocket secret name
   set_fact:
-    broadcast_websocket_secret_value: "{{ broadcast_websocket_secret['resources'][0]['data']['secret'] | b64decode }}"
+    broadcast_websocket_secret_value: "{{ __broadcast_websocket_secret['resources'][0]['data']['secret'] | b64decode }}"

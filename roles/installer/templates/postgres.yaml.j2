@@ -34,45 +34,45 @@ spec:
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
     spec:
       containers:
-        - image: '{{ tower_postgres_image }}:{{ tower_postgres_image_version }}'
-          imagePullPolicy: '{{ tower_image_pull_policy }}'
+        - image: '{{ postgres_image }}:{{ postgres_image_version }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
           env:
-            # For tower_postgres_image based on rhel8/postgresql-12
+            # For postgres_image based on rhel8/postgresql-12
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: database
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: username
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: password
 
-            # For tower_postgres_image based on postgres
+            # For postgres_image based on postgres
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: database
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: password
             - name: PGDATA
-              value: '{{ tower_postgres_data_path }}'
+              value: '{{ postgres_data_path }}'
             - name: POSTGRES_INITDB_ARGS
               value: '{{ postgres_initdb_args }}'
             - name: POSTGRES_HOST_AUTH_METHOD
@@ -82,16 +82,16 @@ spec:
               name: postgres
           volumeMounts:
             - name: postgres
-              mountPath: '{{ tower_postgres_data_path | dirname }}'
-              subPath: '{{ tower_postgres_data_path | dirname | basename }}'
-          resources: {{ tower_postgres_resource_requirements }}
-{% if tower_postgres_selector %}
+              mountPath: '{{ postgres_data_path | dirname }}'
+              subPath: '{{ postgres_data_path | dirname | basename }}'
+          resources: {{ postgres_resource_requirements }}
+{% if postgres_selector %}
       nodeSelector:
-        {{ tower_postgres_selector | indent(width=8) }}
+        {{ postgres_selector | indent(width=8) }}
 {% endif %}
-{% if tower_postgres_tolerations %}
+{% if postgres_tolerations %}
       tolerations:
-        {{ tower_postgres_tolerations | indent(width=8) }}
+        {{ postgres_tolerations | indent(width=8) }}
 {% endif %}
   volumeClaimTemplates:
     - metadata:
@@ -99,10 +99,10 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-{% if tower_postgres_storage_class is defined %}
-        storageClassName: '{{ tower_postgres_storage_class }}'
+{% if postgres_storage_class is defined %}
+        storageClassName: '{{ postgres_storage_class }}'
 {% endif %}
-        resources: {{ tower_postgres_storage_requirements }}
+        resources: {{ postgres_storage_requirements }}
 
 # Postgres Service.
 ---

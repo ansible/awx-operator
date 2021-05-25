@@ -35,10 +35,10 @@
   set_fact:
     awx_spec: "{{ awx_spec | combine ({ item.key : item.value }) }}"
   with_items:
-    - {'key': 'tower_secret_key_secret', 'value': '{{ secret_key_secret_name }}'}
-    - {'key': 'tower_admin_password_secret', 'value': '{{ admin_password_secret_name }}'}
-    - {'key': 'tower_broadcast_websocket_secret', 'value': '{{ broadcast_websocket_secret_name }}'}
-    - {'key': 'tower_postgres_configuration_secret', 'value': '{{ postgres_configuration_secret_name }}'}
+    - {'key': 'secret_key_secret', 'value': '{{ secret_key_secret_name }}'}
+    - {'key': 'admin_password_secret', 'value': '{{ admin_password_secret_name }}'}
+    - {'key': 'broadcast_websocket_secret', 'value': '{{ broadcast_websocket_secret_name }}'}
+    - {'key': 'postgres_configuration_secret', 'value': '{{ postgres_configuration_secret_name }}'}
 
 - name: Restore kind
   set_fact:

@@ -1,7 +1,7 @@
 ---
 
 # The backup directory in this status can be referenced when restoring
-- name: Update Tower Backup status
+- name: Update CR Backup status
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
