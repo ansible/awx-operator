@@ -42,34 +42,34 @@ spec:
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: database
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: username
             - name: POSTGRESQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: password
 
             # For postgres_image based on postgres
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: database
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: '{{ postgres_configuration_secret }}'
+                  name: '{{ __postgres_configuration_secret }}'
                   key: password
             - name: PGDATA
               value: '{{ postgres_data_path }}'

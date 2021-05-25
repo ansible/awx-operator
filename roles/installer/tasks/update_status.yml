@@ -6,7 +6,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      adminPasswordSecret: "{{ admin_password_secret['resources'][0]['metadata']['name'] }}"
+      adminPasswordSecret: "{{ __admin_password_secret['resources'][0]['metadata']['name'] }}"
 
 - name: Update admin user status
   operator_sdk.util.k8s_status:
@@ -33,7 +33,7 @@
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
     status:
-      broadcastWebsocketSecret: "{{ broadcast_websocket_secret['resources'][0]['metadata']['name'] }}"
+      broadcastWebsocketSecret: "{{ __broadcast_websocket_secret['resources'][0]['metadata']['name'] }}"
 
 - name: Update secret key status
   operator_sdk.util.k8s_status:

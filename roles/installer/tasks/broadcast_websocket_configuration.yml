@@ -37,8 +37,8 @@
 - name: Set broadcast websocket secret
   set_fact:
     # yamllint disable-line rule:line-length
-    broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'  # noqa 204
+    __broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'  # noqa 204
 
 - name: Store broadcast websocket secret name
   set_fact:
-    broadcast_websocket_secret_value: "{{ broadcast_websocket_secret['resources'][0]['data']['secret'] | b64decode }}"
+    broadcast_websocket_secret_value: "{{ __broadcast_websocket_secret['resources'][0]['data']['secret'] | b64decode }}"
