@@ -31,6 +31,21 @@
     - 'service'
     - 'ingress'
 
+- block:
+
+    - name: Extract image_pull_secret when specified
+      k8s_info:
+        kind: Secret
+        namespace: '{{ meta.namespace }}'
+        name: '{{ image_pull_secret }}'
+      register: _image_pull_secret
+
+    - name: Store image_pull_secret
+      set_fact:
+        __image_pull_secret: "{{ _image_pull_secret['resources'][0]['data']['secret'] | b64decode }}"
+
+  when: image_pull_secret | default('') | length
+
 - name: Apply deployment resources
   k8s:
     apply: yes

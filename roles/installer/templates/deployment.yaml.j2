@@ -29,9 +29,9 @@ spec:
         app.kubernetes.io/component: '{{ deployment_type }}'
     spec:
       serviceAccountName: '{{ meta.name }}'
-{% if image_pull_secret %}
+{% if __image_pull_secret is defined %}
       imagePullSecrets:
-        - name: {{ image_pull_secret }}
+        - name: {{ __image_pull_secret }}
 {% endif %}
       containers:
         - image: '{{ redis_image }}:{{ redis_image_version }}'

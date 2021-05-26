@@ -155,7 +155,7 @@ spec:
                     - IfNotPresent
                     - ifnotpresent
                 image_pull_secret:
-                  description: The image pull secret
+                  description: The image pull secret's Secret
                   type: string
                 task_resource_requirements:
                   description: Resource requirements for the task container

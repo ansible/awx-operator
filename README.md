@@ -282,15 +282,15 @@ spec:
 
 There are a few variables that are customizable for awx the image management.
 
-| Name                      | Description                |
-| --------------------------| -------------------------- |
-| image                     | Path of the image to pull  |
-| image_version             | Image version to pull      |
-| image_pull_policy         | The pull policy to adopt   |
-| image_pull_secret         | The pull secret to use     |
-| ee_images                 | A list of EEs to register  |
-| redis_image               | Path of the image to pull  |
-| redis_image_version       | Image version to pull      |
+| Name                      | Description                      |
+| --------------------------| -------------------------------- |
+| image                     | Path of the image to pull        |
+| image_version             | Image version to pull            |
+| image_pull_policy         | The pull policy to adopt         |
+| image_pull_secret         | The pull secret's Secret to use  |
+| ee_images                 | A list of EEs to register        |
+| redis_image               | Path of the image to pull        |
+| redis_image_version       | Image version to pull            |
 
 Example of customization could be:
 

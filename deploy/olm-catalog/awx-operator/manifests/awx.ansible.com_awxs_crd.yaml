@@ -97,7 +97,7 @@ spec:
                 - ifnotpresent
                 type: string
               image_pull_secret:
-                description: The image pull secret
+                description: The image pull secret's Secret
                 type: string
               ingress_annotations:
                 description: Annotations to add to the ingress
