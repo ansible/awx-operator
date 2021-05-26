@@ -28,6 +28,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
+         * [Service Account](#service-account)
    * [Upgrading](#upgrading)
    * [Contributing](#contributing)
    * [Release Process](#release-process)
@@ -533,6 +534,22 @@ Example configuration of environment variables
     web_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
+```
+
+#### Service Account
+
+If you need to modify some `ServiceAccount` proprieties
+
+| Name                          | Description                                              | Default |
+| ----------------------------- | -------------------------------------------------------- | ------- |
+| service_account_annotations   | Annotations to the ServiceAccount                        | ''      |
+
+Example configuration of environment variables
+
+```yaml
+  spec:
+    service_account_annotations: |
+      eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
 ```
 
 ### Upgrading

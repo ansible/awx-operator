@@ -226,6 +226,9 @@ spec:
               redis_image_version:
                 description: Redis container image version to use
                 type: string
+              service_account_annotations:
+                description: ServiceAccount annotations
+                type: string
               replicas:
                 default: 1
                 description: Number of instance replicas
