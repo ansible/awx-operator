@@ -455,10 +455,10 @@ In a scenario where custom volumes and volume mounts are required to either over
 
 | Name                           | Description                                              | Default |
 | ------------------------------ | -------------------------------------------------------- | ------- |
-| extra_volumes                  | Specify extra volumes to add to the application pod      | ''      |
-| web_extra_volume_mounts        | Specify volume mounts to be added to Web container       | ''      |
-| task_extra_volume_mounts       | Specify volume mounts to be added to Task container      | ''      |
-| ee_extra_volume_mounts         | Specify volume mounts to be added to Execution container | ''      |
+| tower_extra_volumes            | Specify extra volumes to add to the application pod      | ''      |
+| tower_web_extra_volume_mounts  | Specify volume mounts to be added to Web container       | ''      |
+| tower_task_extra_volume_mounts | Specify volume mounts to be added to Task container      | ''      |
+| tower_ee_extra_volume_mounts   | Specify volume mounts to be added to Execution container | ''      |
 
 Example configuration for ConfigMap
 
@@ -521,8 +521,8 @@ If you need to export custom environment variables to your containers.
 
 | Name                          | Description                                              | Default |
 | ----------------------------- | -------------------------------------------------------- | ------- |
-| task_extra_env                | Environment variables to be added to Task container      | ''      |
-| web_extra_env                 | Environment variables to be added to Web container       | ''      |
+| tower_task_extra_env          | Environment variables to be added to Task container      | ''      |
+| tower_web_extra_env           | Environment variables to be added to Web container       | ''      |
 
 Example configuration of environment variables
 
