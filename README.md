@@ -485,17 +485,17 @@ Example spec file for volumes and volume mounts
 ---
     spec:
     ...
-      ee_extra_volume_mounts: |
+      tower_ee_extra_volume_mounts: |
         - name: ansible-cfg
           mountPath: /etc/ansible/ansible.cfg
           subPath: ansible.cfg
 
-      task_extra_volume_mounts: |
+      tower_task_extra_volume_mounts: |
         - name: custom-py
           mountPath: /etc/tower/conf.d/custom.py
           subPath: custom.py
 
-      extra_volumes: |
+      tower_extra_volumes: |
         - name: ansible-cfg
           configMap:
             defaultMode: 420
@@ -528,10 +528,10 @@ Example configuration of environment variables
 
 ```yaml
   spec:
-    task_extra_env: |
+    tower_task_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
-    web_extra_env: |
+    tower_web_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
 ```
