@@ -37,6 +37,9 @@ spec:
         - image: '{{ redis_image }}:{{ redis_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+          securityContext:
+            runAsGroup: 999
+            runAsUser: 999
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ meta.name }}-redis-config
