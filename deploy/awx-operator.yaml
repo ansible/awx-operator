@@ -627,7 +627,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/ansible/awx-operator:devel"
+          image: "quay.io/ansible/awx-operator:0.10.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -645,7 +645,7 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: OPERATOR_VERSION
-              value: "devel"
+              value: "0.10.0"
             - name: ANSIBLE_DEBUG_LOGS
               value: "false"
           livenessProbe:
