@@ -14,6 +14,7 @@ metadata:
           "spec": {
             "deployment_type": "awx",
             "ingress_type": "ingress",
+            "service_account_annotations": "foo: bar\n",
             "task_resource_requirements": {
               "requests": {
                 "cpu": "500m",
@@ -38,10 +39,9 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - kind: AWXBackup
+    - displayName: AWX Backup
+      kind: AWXBackup
       name: awxbackups.awx.ansible.com
-      version: v1beta1
-      displayName: AWX Backup
       specDescriptors:
       - displayName: Deployment name
         path: deployment_name
@@ -73,26 +73,26 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
-      - displayName: Backup claim
-        description: The persistent volume claim name used during backup
+      - description: The persistent volume claim name used during backup
+        displayName: Backup claim
         path: backupClaim
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Backup directory
-        description: The directory data is backed up to on the PVC
+      - description: The directory data is backed up to on the PVC
+        displayName: Backup directory
         path: backupDirectory
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-    - kind: AWXRestore
-      name: awxrestores.awx.ansible.com
       version: v1beta1
-      displayName: AWX Restore
+    - displayName: AWX Restore
+      kind: AWXRestore
+      name: awxrestores.awx.ansible.com
       specDescriptors:
       - displayName: Backup source to restore ?
         path: backup_source
         x-descriptors:
-          - urn:alm:descriptor:com.tectonic.ui:select:CR
-          - urn:alm:descriptor:com.tectonic.ui:select:PVC
+        - urn:alm:descriptor:com.tectonic.ui:select:CR
+        - urn:alm:descriptor:com.tectonic.ui:select:PVC
       - displayName: Backup name
         path: backup_name
         x-descriptors:
@@ -123,11 +123,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
-      - displayName: Restore status
-        description: The state of the restore
+      - description: The state of the restore
+        displayName: Restore status
         path: restoreComplete
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1beta1
     - description: A AWX Instance
       displayName: AWX
       kind: AWX
@@ -262,12 +263,14 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: PostgreSQL container resource requirements (when using a managed instance)
+      - displayName: PostgreSQL container resource requirements (when using a managed
+          instance)
         path: postgres_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: PostgreSQL container storage requirements (when using a managed instance)
+      - displayName: PostgreSQL container storage requirements (when using a managed
+          instance)
         path: postgres_storage_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -397,8 +400,8 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_Yes_
         - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
-      - description: Projects Storage Class Name. If not present, the default
-          storage class will be used.
+      - description: Projects Storage Class Name. If not present, the default storage
+          class will be used.
         displayName: Projects Storage Class Name
         path: projects_storage_class
         x-descriptors:
@@ -424,26 +427,26 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Task Extra Env
-        description: Environment variables to be added to Task container
+      - description: Environment variables to be added to Task container
+        displayName: Task Extra Env
         path: task_extra_env
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: EE Extra Volume Mounts
+      - description: Specify volume mounts to be added to Execution container
+        displayName: EE Extra Volume Mounts
         path: ee_extra_volume_mounts
-        description: Specify volume mounts to be added to Execution container
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: EE Images
-        description: Registry path to the Execution Environment container to use
+      - description: Registry path to the Execution Environment container to use
+        displayName: EE Images
         path: ee_images
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Task Extra Volume Mounts
-        description: Specify volume mounts to be added to Task container
+      - description: Specify volume mounts to be added to Task container
+        displayName: Task Extra Volume Mounts
         path: task_extra_volume_mounts
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -458,20 +461,20 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Web Extra Env
-        description: Environment variables to be added to Web container
+      - description: Environment variables to be added to Web container
+        displayName: Web Extra Env
         path: web_extra_env
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Web Extra Volume Mounts
-        description: Specify volume mounts to be added to Web container
+      - description: Specify volume mounts to be added to Web container
+        displayName: Web Extra Volume Mounts
         path: web_extra_volume_mounts
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Extra Volumes
-        description: Specify extra volumes to add to the application pod
+      - description: Specify extra volumes to add to the application pod
+        displayName: Extra Volumes
         path: extra_volumes
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -607,6 +610,8 @@ spec:
           - awx.ansible.com
           resources:
           - '*'
+          - awxbackups
+          - awxrestores
           verbs:
           - '*'
         serviceAccountName: awx-operator
@@ -637,7 +642,11 @@ spec:
                   value: awx-operator
                 - name: ANSIBLE_GATHERING
                   value: explicit
-                image: quay.io/ansible/awx-operator:0.8.0
+                - name: OPERATOR_VERSION
+                  value: 0.10.0
+                - name: ANSIBLE_DEBUG_LOGS
+                  value: "false"
+                image: quay.io/ansible/awx-operator:0.10.0
                 imagePullPolicy: Always
                 livenessProbe:
                   httpGet:
