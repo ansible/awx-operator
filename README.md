@@ -662,12 +662,9 @@ Please visit [our contributing guidelines](https://github.com/ansible/awx-operat
 
 There are a few moving parts to this project:
 
-  1. The Docker image which powers AWX Operator.
-  2. The `awx-operator.yaml` Kubernetes manifest file which initially deploys the Operator into a cluster.
-  3. Then use the command below to generate a list of commits between the versions.
-  ```sh
-  #> git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
-  ```
+  * The `awx-operator` container image which powers AWX Operator
+  * The `awx-operator.yaml` file, which initially deploys the Operator
+  * The ClusterServiceVersion (CSV), which is generated as part of the bundle and needed for the olm-catalog
 
 Each of these must be appropriately built in preparation for a new tag:
 
@@ -698,7 +695,7 @@ After it is built, test it on a local cluster:
 #> minikube delete
 ```
 
-### Update version
+### Update version and files
 
 Update the awx-operator version:
 
@@ -708,6 +705,23 @@ Once the version has been updated, run from the root of the repo:
 
 ```sh
 #> ansible-playbook ansible/chain-operator-files.yml
+```
+
+Generate the olm-catalog bundle.
+
+```bash
+$ operator-sdk generate bundle --operator-name awx-operator --version <new_tag>
+```
+
+> This should be done with operator-sdk v0.19.4.  
+
+> It is a good idea to use the [build script](./build.sh) at this point to build the catalog and test out installing it in Operator Hub.
+
+### Update changelog
+
+Generate a list of commits between the versions and add it to the [changelog](./CHANGELOG.md).
+```sh
+#> git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
 ```
 
 ### Commit / Create Release
