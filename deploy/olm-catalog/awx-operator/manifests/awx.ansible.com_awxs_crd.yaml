@@ -113,10 +113,6 @@ spec:
                 - ingress
                 - Route
                 - route
-                - LoadBalancer
-                - loadbalancer
-                - NodePort
-                - nodeport
                 type: string
               loadbalancer_annotations:
                 description: Annotations to add to the loadbalancer
@@ -135,6 +131,16 @@ spec:
               node_selector:
                 description: nodeSelector for the pods
                 type: string
+              service_type:
+                description: The service type to be used on the deployed instance
+                type: string
+                enum:
+                  - LoadBalancer
+                  - loadbalancer
+                  - ClusterIP
+                  - clusterip
+                  - NodePort
+                  - nodeport
               service_labels:
                 description: Additional labels to apply to the service
                 type: string
