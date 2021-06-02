@@ -149,6 +149,9 @@ spec:
                         type: string
                       image:
                         type: string
+                control_plane_ee_image:
+                  description: Registry path to the Execution Environment container image to use on control plane pods
+                  type: string
                 image_pull_policy:
                   description: The image pull policy
                   type: string
