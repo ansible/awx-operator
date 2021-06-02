@@ -50,3 +50,24 @@ spec:
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is
+                    instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                restoreComplete:
+                  description: Restore process complete
+                  type: string
