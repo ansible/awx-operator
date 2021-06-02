@@ -151,6 +151,9 @@ spec:
                         type: string
                       image:
                         type: string
+                ee_pull_credentials_secret:
+                  description: Secret where pull credentials for registered ees can be found
+                  type: string
                 image_pull_policy:
                   description: The image pull policy
                   type: string
