@@ -19,28 +19,6 @@ spec:
         properties:
           spec:
             properties:
-              ca_trust_bundle:
-                description: Path where the trusted CA bundle is available
-                type: string
-              deployment_type:
-                description: Name of the deployment type
-                type: string
-                default: awx
-              kind:
-                description: Kind of the deployment type
-                type: string
-                default: AWX
-              api_version:
-                description: apiVersion of the deployment type
-                type: string
-                default: awx.ansible.com/v1beta1
-              development_mode:
-                description: If the deployment should be done in development mode
-                type: boolean
-              ldap_cacert_secret:
-                description: Secret where can be found the LDAP trusted Certificate
-                  Authority Bundle
-                type: string
               admin_email:
                 description: The admin user email
                 type: string
@@ -51,13 +29,30 @@ spec:
                 default: admin
                 description: Username to use for the admin account
                 type: string
+              api_version:
+                default: awx.ansible.com/v1beta1
+                description: apiVersion of the deployment type
+                type: string
               broadcast_websocket_secret:
                 description: Secret where the broadcast websocket secret can be found
+                type: string
+              ca_trust_bundle:
+                description: Path where the trusted CA bundle is available
                 type: string
               create_preload_data:
                 default: true
                 description: Whether or not to preload data upon instance creation
                 type: boolean
+              deployment_type:
+                default: awx
+                description: Name of the deployment type
+                type: string
+              development_mode:
+                description: If the deployment should be done in development mode
+                type: boolean
+              ee_extra_volume_mounts:
+                description: Specify volume mounts to be added to Execution container
+                type: string
               ee_images:
                 description: Registry path to the Execution Environment container
                   to use
@@ -66,6 +61,16 @@ spec:
                     image:
                       type: string
                     name:
+                      type: string
+                  type: object
+                type: array
+              extra_settings:
+                description: Extra settings to specify for the API
+                items:
+                  properties:
+                    setting:
+                      type: string
+                    value:
                       type: string
                   type: object
                 type: array
@@ -82,9 +87,6 @@ spec:
               image:
                 description: Registry path to the application container to use
                 type: string
-              image_version:
-                description: Application container image version to use
-                type: string
               image_pull_policy:
                 default: IfNotPresent
                 description: The image pull policy
@@ -99,11 +101,14 @@ spec:
               image_pull_secret:
                 description: The image pull secret
                 type: string
+              image_version:
+                description: Application container image version to use
+                type: string
               ingress_annotations:
-                description: Annotations to add to the ingress
+                description: Annotations to add to the Ingress Controller
                 type: string
               ingress_tls_secret:
-                description: Secret where the ingress TLS secret can be found
+                description: Secret where the Ingress TLS secret can be found
                 type: string
               ingress_type:
                 description: The ingress type to use to reach the deployed instance
@@ -113,10 +118,14 @@ spec:
                 - ingress
                 - Route
                 - route
-                - LoadBalancer
-                - loadbalancer
-                - NodePort
-                - nodeport
+                type: string
+              kind:
+                default: AWX
+                description: Kind of the deployment type
+                type: string
+              ldap_cacert_secret:
+                description: Secret where can be found the LDAP trusted Certificate
+                  Authority Bundle
                 type: string
               loadbalancer_annotations:
                 description: Annotations to add to the loadbalancer
@@ -135,9 +144,6 @@ spec:
               node_selector:
                 description: nodeSelector for the pods
                 type: string
-              service_labels:
-                description: Additional labels to apply to the service
-                type: string
               old_postgres_configuration_secret:
                 description: Secret where the old database configuration can be found
                   for data migration
@@ -154,46 +160,50 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              postgres_label_selector:
+                description: Label selector used to identify postgres pod for data
+                  migration
+                type: string
+              postgres_resource_requirements:
+                description: Resource requirements for the PostgreSQL container
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  requests:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
               postgres_selector:
                 description: nodeSelector for the Postgres pods
                 type: string
-              postgres_tolerations:
-                description: node tolerations for the Postgres pods
+              postgres_storage_class:
+                description: Storage class to use for the PostgreSQL PVC
                 type: string
               postgres_storage_requirements:
                 description: Storage requirements for the PostgreSQL container
                 properties:
-                  requests:
-                    properties:
-                      storage:
-                        type: string
-                    type: object
                   limits:
                     properties:
                       storage:
                         type: string
                     type: object
-                type: object
-              postgres_resource_requirements:
-                description: Resource requirements for the PostgreSQL container
-                properties:
                   requests:
                     properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                    type: object
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
+                      storage:
                         type: string
                     type: object
                 type: object
-              postgres_storage_class:
-                description: Storage class to use for the PostgreSQL PVC
+              postgres_tolerations:
+                description: node tolerations for the Postgres pods
                 type: string
               projects_existing_claim:
                 description: PersistentVolumeClaim to mount /var/lib/projects directory
@@ -226,9 +236,6 @@ spec:
               redis_image_version:
                 description: Redis container image version to use
                 type: string
-              service_account_annotations:
-                description: ServiceAccount annotations
-                type: string
               replicas:
                 default: 1
                 description: Number of instance replicas
@@ -252,6 +259,22 @@ spec:
               secret_key_secret:
                 description: Secret where the secret key can be found
                 type: string
+              service_account_annotations:
+                description: ServiceAccount annotations
+                type: string
+              service_labels:
+                description: Additional labels to apply to the service
+                type: string
+              service_type:
+                description: The service type to be used on the deployed instance
+                enum:
+                - LoadBalancer
+                - loadbalancer
+                - ClusterIP
+                - clusterip
+                - NodePort
+                - nodeport
+                type: string
               task_args:
                 items:
                   type: string
@@ -261,10 +284,6 @@ spec:
                   type: string
                 type: array
               task_extra_env:
-                description: Environment variables to be added to Task container
-                type: string
-              ee_extra_volume_mounts:
-                description: Specify volume mounts to be added to Execution container
                 type: string
               task_extra_volume_mounts:
                 description: Specify volume mounts to be added to Task container
@@ -307,10 +326,9 @@ spec:
                   type: string
                 type: array
               web_extra_env:
-                description: Environment variables to be added to Web container
                 type: string
               web_extra_volume_mounts:
-                description: Specify volume mounts to be added to web container
+                description: Specify volume mounts to be added to the Web container
                 type: string
               web_resource_requirements:
                 description: Resource requirements for the web container
@@ -334,19 +352,21 @@ spec:
                         type: string
                     type: object
                 type: object
-              extra_settings:
-                description: Extra settings to specify for the API
-                items:
-                  properties:
-                    setting:
-                      type: string
-                    value:
-                      type: string
-                  type: object
-                type: array
             type: object
           status:
             properties:
+              URL:
+                description: URL to access the deployed instance
+                type: string
+              adminPasswordSecret:
+                description: Admin password secret name of the deployed instance
+                type: string
+              adminUser:
+                description: Admin user of the deployed instance
+                type: string
+              broadcastWebsocketSecret:
+                description: Broadcast websocket secret name of the deployed instance
+                type: string
               conditions:
                 description: The resulting conditions when a Service Telemetry is
                   instantiated
@@ -362,12 +382,6 @@ spec:
                       type: string
                   type: object
                 type: array
-              adminPasswordSecret:
-                description: Admin password of the deployed instance
-                type: string
-              adminUser:
-                description: Admin user of the deployed instance
-                type: string
               image:
                 description: URL of the image used for the deployed instance
                 type: string
@@ -383,8 +397,11 @@ spec:
               migratedFromSecret:
                 description: The secret used for migrating an old instance.
                 type: string
-              URL:
-                description: URL to access the deployed instance
+              postgresConfigurationSecret:
+                description: Postgres Configuration secret name of the deployed instance
+                type: string
+              secretKeySecret:
+                description: Secret key secret name of the deployed instance
                 type: string
               version:
                 description: Version of the deployed instance

@@ -19,12 +19,6 @@ spec:
         properties:
           spec:
             properties:
-              backup_source:
-                description: Backup source
-                type: string
-                enum:
-                  - CR
-                  - PVC
               backup_dir:
                 description: Backup directory name, set as a status found on the awxbackup
                   object (backupDirectory)
@@ -38,6 +32,12 @@ spec:
                 type: string
               backup_pvc_namespace:
                 description: Namespace the PVC is in
+                type: string
+              backup_source:
+                description: Backup source
+                enum:
+                - CR
+                - PVC
                 type: string
               deployment_name:
                 description: Name of the deployment to be restored to
