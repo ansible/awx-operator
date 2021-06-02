@@ -150,6 +150,11 @@ data:
 
             ssl_certificate /etc/nginx/pki/web.crt;
             ssl_certificate_key /etc/nginx/pki/web.key;
+            ssl_session_cache shared:SSL:50m;
+            ssl_session_timeout 1d;
+            ssl_session_tickets off;
+            ssl_ciphers PROFILE=SYSTEM;
+            ssl_prefer_server_ciphers on;
         {% else %}
             listen 8052 default_server;
         {% endif %}
@@ -160,8 +165,6 @@ data:
     
             # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
             add_header Strict-Transport-Security max-age=15768000;
-            add_header Content-Security-Policy "default-src 'self'; connect-src 'self' ws: wss:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' *.pendo.io; img-src 'self' *.pendo.io data:; report-uri /csp-violation/";
-            add_header X-Content-Security-Policy "default-src 'self'; connect-src 'self' ws: wss:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' *.pendo.io; img-src 'self' *.pendo.io data:; report-uri /csp-violation/";
     
             # Protect against click-jacking https://www.owasp.org/index.php/Testing_for_Clickjacking_(OTG-CLIENT-009)
             add_header X-Frame-Options "DENY";
@@ -214,6 +217,13 @@ data:
                 {%- endif %}
                 proxy_set_header X-Forwarded-Port 443;
                 uwsgi_param HTTP_X_FORWARDED_PORT 443;
+
+                add_header Strict-Transport-Security max-age=15768000;
+                # Protect against click-jacking https://www.owasp.org/index.php/Testing_for_Clickjacking_(OTG-CLIENT-009)
+                add_header X-Frame-Options "DENY";
+                add_header Cache-Control "no-cache, no-store, must-revalidate";
+                add_header Expires "0";
+                add_header Pragma "no-cache";
             }
         }
     }
