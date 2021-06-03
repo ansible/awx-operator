@@ -437,7 +437,7 @@ spec:
                   description: Name of the PVC to be used for storing the backup
                   type: string
                 backup_pvc_namespace:
-                  description: Namespace PVC is in
+                  description: Namespace the PVC is in
                   type: string
                 backup_storage_requirements:
                   description: Storage requirements for the PostgreSQL container
@@ -447,6 +447,30 @@ spec:
                   type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
+                  type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is
+                    instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                backupDirectory:
+                  description: Backup directory name on the specified pvc
+                  type: string
+                backupClaim:
+                  description: Backup persistent volume claim
                   type: string
 
 ---
@@ -500,6 +524,27 @@ spec:
                   type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
+                  type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is
+                    instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                restoreComplete:
+                  description: Restore process complete
                   type: string
 
 ---

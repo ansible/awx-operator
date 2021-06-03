@@ -33,7 +33,7 @@ metadata:
     capabilities: Basic Install
     operators.operatorframework.io/builder: operator-sdk-v0.19.4
     operators.operatorframework.io/project_layout: ansible
-  name: awx-operator.v0.0.1
+  name: awx-operator.v0.10.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -685,4 +685,5 @@ spec:
   provider:
     name: AWX Community
     url: https://github.com/ansible/awx-operator
-  version: 0.0.1
+  replaces: awx-operator.v0.0.1
+  version: 0.10.0

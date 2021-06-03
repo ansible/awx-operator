@@ -385,15 +385,6 @@ spec:
               image:
                 description: URL of the image used for the deployed instance
                 type: string
-              postgresConfigurationSecret:
-                description: Postgres Configuration secret name of the deployed instance
-                type: string
-              broadcastWebsocketSecret:
-                description: Broadcast websocket secret name of the deployed instance
-                type: string
-              secretKeySecret:
-                description: Secret key secret name of the deployed instance
-                type: string
               migratedFromSecret:
                 description: The secret used for migrating an old instance.
                 type: string
