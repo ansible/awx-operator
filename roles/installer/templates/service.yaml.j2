@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
     {{ service_labels | indent(width=4) }}
-{% if ingress_type | lower == 'loadbalancer' and loadbalancer_annotations %}
+{% if service_type | lower == 'loadbalancer' and loadbalancer_annotations %}
   annotations:
     {{ loadbalancer_annotations | indent(width=4) }}
 {% endif %}
