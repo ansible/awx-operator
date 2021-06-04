@@ -92,6 +92,11 @@
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
-    command: >-
-      bash -c "PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db"
+    command: |
+      bash -c """
+      set -e -o pipefail
+      PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db
+      echo 'Successful'
+      """
   register: data_migration
+  failed_when: "'Successful' not in data_migration.stdout"
