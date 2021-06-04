@@ -19,12 +19,6 @@ spec:
         properties:
           spec:
             properties:
-              backup_source:
-                description: Backup source
-                type: string
-                enum:
-                  - CR
-                  - PVC
               backup_dir:
                 description: Backup directory name, set as a status found on the awxbackup
                   object (backupDirectory)
@@ -39,12 +33,39 @@ spec:
               backup_pvc_namespace:
                 description: Namespace the PVC is in
                 type: string
+              backup_source:
+                description: Backup source
+                enum:
+                - CR
+                - PVC
+                type: string
               deployment_name:
                 description: Name of the deployment to be restored to
                 type: string
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for backing
                   up data
+                type: string
+            type: object
+          status:
+            properties:
+              conditions:
+                description: The resulting conditions when a Service Telemetry is
+                  instantiated
+                items:
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  type: object
+                type: array
+              restoreComplete:
+                description: Restore process complete
                 type: string
             type: object
         type: object

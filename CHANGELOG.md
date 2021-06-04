@@ -2,6 +2,23 @@
 
 This is a list of high-level changes for each release of `awx-operator`. A full list of commits can be found at `https://github.com/ansible/awx-operator/releases/tag/<version>`.
 
+# 0.10.0 (Jun 1, 2021)
+
+- Make tower_ingress_type to respect ClusterIP definition (Marcelo Moreira de Mello) - e37c091 (breaking_change)
+- Add ability to get/create/delete secrets for the awx service account (Christian M. Adams) - 61b3cb4
+- Added ability to specify annotations to ServiceAccount (Marcelo Moreira de Mello) - 446ac0b
+- Do not shadow other variables (Yanis Guenane) - 223fe98
+- Do not prepend variables name with tower_ (Yanis Guenane) - 75458d0 (breaking_change)
+- Fully remove finalizer (Christian M. Adams) - fd92050
+- Use custom pg_dump format for faster restores (Christian M. Adams) - f16d9ac
+- Allow user to specify empty string for storage class on PVC (Christian M. Adams) - 818b837
+- Unset ownerRefs in the installer instead of the finalizer (Christian M. Adams) - c12a1f0
+- Make awx-operator compatible with Ansible 2.12 (Alan Rominger) - 5216489
+- Restore: set proper kind var after deploying AWX CR (Julen Landa Alustiza) - fc4687f
+- Add support for custom service labels (Jeremy Kimber) - fd42802
+- Rename product specific variable names (Christian M. Adams) - 5ae3636 (breaking_change)
+- Add watcher for backup CR (Christian M. Adams) - fdcc745
+
 # 0.9.0 (May 1, 2021)
 
 - Update playbook to allow for deploying custom image version/tag (Shane McDonald) - 77e7039 

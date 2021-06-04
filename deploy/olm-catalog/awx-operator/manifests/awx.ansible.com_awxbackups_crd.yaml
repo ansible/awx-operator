@@ -18,14 +18,12 @@ spec:
         description: Schema validation for the AWXBackup CRD
         properties:
           spec:
-            required:
-              - deployment_name
             properties:
               backup_pvc:
                 description: Name of the PVC to be used for storing the backup
                 type: string
               backup_pvc_namespace:
-                description: Namespace PVC is in
+                description: Namespace the PVC is in
                 type: string
               backup_storage_class:
                 description: Storage class to use when creating PVC for backup
@@ -40,6 +38,32 @@ spec:
                 description: Label selector used to identify postgres pod for backing
                   up data
                 type: string
+            required:
+            - deployment_name
+            type: object
+          status:
+            properties:
+              backupClaim:
+                description: Backup persistent volume claim
+                type: string
+              backupDirectory:
+                description: Backup directory name on the specified pvc
+                type: string
+              conditions:
+                description: The resulting conditions when a Service Telemetry is
+                  instantiated
+                items:
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  type: object
+                type: array
             type: object
         type: object
         x-kubernetes-preserve-unknown-fields: true

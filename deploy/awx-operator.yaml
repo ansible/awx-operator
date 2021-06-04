@@ -72,6 +72,16 @@ spec:
                 extra_volumes:
                   description: Specify extra volumes to add to the application pod
                   type: string
+                service_type:
+                  description: The service type to be used on the deployed instance
+                  type: string
+                  enum:
+                    - LoadBalancer
+                    - loadbalancer
+                    - ClusterIP
+                    - clusterip
+                    - NodePort
+                    - nodeport
                 ingress_type:
                   description: The ingress type to use to reach the deployed instance
                   type: string
@@ -81,15 +91,11 @@ spec:
                     - ingress
                     - Route
                     - route
-                    - LoadBalancer
-                    - loadbalancer
-                    - NodePort
-                    - nodeport
                 ingress_annotations:
-                  description: Annotations to add to the ingress
+                  description: Annotations to add to the Ingress Controller
                   type: string
                 ingress_tls_secret:
-                  description: Secret where the ingress TLS secret can be found
+                  description: Secret where the Ingress TLS secret can be found
                   type: string
                 loadbalancer_annotations:
                   description: Annotations to add to the loadbalancer
@@ -431,7 +437,7 @@ spec:
                   description: Name of the PVC to be used for storing the backup
                   type: string
                 backup_pvc_namespace:
-                  description: Namespace PVC is in
+                  description: Namespace the PVC is in
                   type: string
                 backup_storage_requirements:
                   description: Storage requirements for the PostgreSQL container
@@ -441,6 +447,30 @@ spec:
                   type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
+                  type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is
+                    instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                backupDirectory:
+                  description: Backup directory name on the specified pvc
+                  type: string
+                backupClaim:
+                  description: Backup persistent volume claim
                   type: string
 
 ---
@@ -494,6 +524,27 @@ spec:
                   type: string
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
+                  type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is
+                    instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                restoreComplete:
+                  description: Restore process complete
                   type: string
 
 ---
@@ -621,7 +672,7 @@ spec:
       serviceAccountName: awx-operator
       containers:
         - name: awx-operator
-          image: "quay.io/ansible/awx-operator:0.9.0"
+          image: "quay.io/ansible/awx-operator:0.10.0"
           imagePullPolicy: "Always"
           volumeMounts:
             - mountPath: /tmp/ansible-operator/runner
@@ -639,7 +690,9 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
             - name: OPERATOR_VERSION
-              value: "0.9.0"
+              value: "0.10.0"
+            - name: ANSIBLE_DEBUG_LOGS
+              value: "false"
           livenessProbe:
             httpGet:
               path: /healthz

@@ -7,6 +7,7 @@ database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
 task_privileged: false
+service_type: ClusterIP
 ingress_type: none
 
 # Add annotations to the service account. Specify as literal block. E.g.:
@@ -51,7 +52,7 @@ route_tls_secret: ''
 #
 route_host: ''
 
-hostname: '{{ deployment_type }}.example.com'
+hostname: '{{ meta.name }}.example.com'
 
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:
@@ -101,7 +102,7 @@ extra_volumes: ''
 # Use these image versions for Ansible AWX.
 
 image: quay.io/ansible/awx
-image_version: 19.1.0
+image_version: 19.2.0
 redis_image: docker.io/redis
 redis_image_version: latest
 postgres_image: postgres
@@ -110,8 +111,8 @@ image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
 ee_images:
-  - name: AWX EE 0.2.0
-    image: quay.io/ansible/awx-ee:0.2.0
+  - name: AWX EE 0.3.0
+    image: quay.io/ansible/awx-ee:0.3.0
 
 create_preload_data: true
 

@@ -70,6 +70,16 @@ spec:
                 extra_volumes:
                   description: Specify extra volumes to add to the application pod
                   type: string
+                service_type:
+                  description: The service type to be used on the deployed instance
+                  type: string
+                  enum:
+                    - LoadBalancer
+                    - loadbalancer
+                    - ClusterIP
+                    - clusterip
+                    - NodePort
+                    - nodeport
                 ingress_type:
                   description: The ingress type to use to reach the deployed instance
                   type: string
@@ -79,15 +89,11 @@ spec:
                     - ingress
                     - Route
                     - route
-                    - LoadBalancer
-                    - loadbalancer
-                    - NodePort
-                    - nodeport
                 ingress_annotations:
-                  description: Annotations to add to the ingress
+                  description: Annotations to add to the Ingress Controller
                   type: string
                 ingress_tls_secret:
-                  description: Secret where the ingress TLS secret can be found
+                  description: Secret where the Ingress TLS secret can be found
                   type: string
                 loadbalancer_annotations:
                   description: Annotations to add to the loadbalancer
