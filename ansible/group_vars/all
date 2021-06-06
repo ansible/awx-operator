@@ -2,3 +2,4 @@ operator_image: quay.io/ansible/awx-operator
 operator_version: 0.10.0
 pull_policy: Always
 ansible_debug_logs: "false"
+awx_namespace: "awx"

@@ -6,7 +6,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: awx-operator
-    namespace: default
+    namespace: {{ awx_namespace }}
 roleRef:
   kind: ClusterRole
   name: awx-operator
