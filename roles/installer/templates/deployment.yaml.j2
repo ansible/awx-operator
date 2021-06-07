@@ -205,7 +205,7 @@ spec:
             {{ task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ task_resource_requirements }}
-        - image: '{{ ee_images[0].image }}'
+        - image: '{{ control_plane_ee_image }}'
           name: '{{ meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           args: ['receptor', '--config', '/etc/receptor.conf']
