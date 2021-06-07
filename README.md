@@ -578,7 +578,7 @@ type: Opaque
 ```
 
 ##### Control plane ee from private registry
-The first default execution environment will be deployed as part of the control plane. In order to use a private image for this you'll need to use `image_pull_secret` to provide a k8s pull secret to access it.
+The images listed in "ee_images" will be added as globally available Execution Environments. The "control_plane_ee_image" will be used to run project updates. In order to use a private image for any of these you'll need to use `image_pull_secret` to provide a k8s pull secret to access it. Currently the same secret is used for any of these images supplied at install time.
 
 ```yaml
 ---
