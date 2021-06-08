@@ -6,7 +6,7 @@
     container: "{{ meta.name }}-task"
     command: >-
       bash -c "echo 'from django.contrib.auth.models import User;
-      nsu = User.objects.filter(is_superuser=True, username='{{ admin_user }}').count();
+      nsu = User.objects.filter(is_superuser=True, username=\"{{ admin_user }}\").count();
       exit(0 if nsu > 0 else 1)'
       | awx-manage shell"
   ignore_errors: true
