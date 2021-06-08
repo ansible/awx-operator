@@ -46,14 +46,6 @@
   changed_when: "'added' in cdo.stdout"
   when: create_preload_data | bool
 
-- name: Register the instance in the database
-  k8s_exec:
-    namespace: "{{ meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
-    container: "{{ meta.name }}-task"
-    command: >-
-      bash -c "awx-manage provision_instance --hostname={{ tower_pod_name }}"
-
 - name: Check if legacy queue is present
   k8s_exec:
     namespace: "{{ meta.namespace }}"
