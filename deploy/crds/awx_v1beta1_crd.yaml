@@ -152,6 +152,9 @@ spec:
                 control_plane_ee_image:
                   description: Registry path to the Execution Environment container image to use on control plane pods
                   type: string
+                ee_pull_credentials_secret:
+                  description: Secret where pull credentials for registered ees can be found
+                  type: string
                 image_pull_policy:
                   description: The image pull policy
                   type: string

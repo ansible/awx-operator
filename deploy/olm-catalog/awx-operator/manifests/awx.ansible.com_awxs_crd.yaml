@@ -64,6 +64,9 @@ spec:
                       type: string
                   type: object
                 type: array
+              ee_pull_credentials_secret:
+                description: Secret where pull credentials for registered ees can be found
+                type: string
               extra_settings:
                 description: Extra settings to specify for the API
                 items:

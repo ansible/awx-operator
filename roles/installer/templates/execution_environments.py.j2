@@ -1,5 +1,6 @@
-DEFAULT_EXECUTION_ENVIRONMENTS = [
+GLOBAL_JOB_EXECUTION_ENVIRONMENTS = [
 {% for item in ee_images %}
     {'name': '{{ item.name }}' , 'image': '{{ item.image }}'},
 {% endfor %}
 ]
+CONTROL_PLANE_EXECUTION_ENVIRONMENT = '{{ control_plane_ee_image }}'
