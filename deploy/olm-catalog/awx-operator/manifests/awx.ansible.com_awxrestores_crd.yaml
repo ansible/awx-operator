@@ -42,6 +42,12 @@ spec:
               deployment_name:
                 description: Name of the deployment to be restored to
                 type: string
+              postgres_image:
+                description: Registry path to the PostgreSQL container to use
+                type: string
+              postgres_image_version:
+                description: PostgreSQL container image version to use
+                type: string
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for backing
                   up data

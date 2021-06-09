@@ -50,6 +50,12 @@ spec:
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string
+                postgres_image:
+                  description: Registry path to the PostgreSQL container to use
+                  type: string
+                postgres_image_version:
+                  description: PostgreSQL container image version to use
+                  type: string
             status:
               type: object
               properties:

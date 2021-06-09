@@ -1,5 +1,6 @@
 ---
 deployment_type: "awx"
-postgres_image: postgres:12
+postgres_image: postgres
+postgres_image_version: 12
 backup_complete: false
 database_type: "unmanaged"
