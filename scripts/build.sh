@@ -1,5 +1,5 @@
 #!/bin/bash
-## This script will build 3 images awx-{operator,bundle,catalog}
+## This script will generate a bundle manifest, build 3 images awx-{operator,bundle,catalog}
 ## and push to the $REGISTRY specified.
 ##
 ## The goal is provide an quick way to build a test image.
@@ -78,6 +78,7 @@ build_operator_image() {
 
 build_bundle_image() {
   echo "Building and pushing $BUNDLE_IMAGE image"
+  operator-sdk generate bundle --operator-name awx-operator --version $TAG
   $POD_MANAGER build . -f bundle.Dockerfile -t $REGISTRY/$BUNDLE_IMAGE:$TAG
   $POD_MANAGER push $REGISTRY/$BUNDLE_IMAGE:$TAG
 }
