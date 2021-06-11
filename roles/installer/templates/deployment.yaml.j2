@@ -33,6 +33,25 @@ spec:
       imagePullSecrets:
         - name: {{ image_pull_secret }}
 {% endif %}
+{% if bundle_ca_crt %}
+      initContainers:
+        - name: init
+          image: '{{ init_container_image }}:{{ init_container_image_version }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
+              update-ca-trust
+          volumeMounts:
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
       containers:
         - image: '{{ redis_image }}:{{ redis_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -62,6 +81,14 @@ spec:
             - containerPort: 8053
 {% endif %}
           volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
             - name: "{{ meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/execution_environments.py"
               subPath: execution_environments.py
@@ -141,6 +168,14 @@ spec:
           args: {{ task_args }}
 {% endif %}
           volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
             - name: "{{ meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/execution_environments.py"
               subPath: execution_environments.py
@@ -211,6 +246,14 @@ spec:
           resources: {{ ee_resource_requirements }}
           args: ['receptor', '--config', '/etc/receptor.conf']
           volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
             - name: "{{ meta.name }}-receptor-config"
               mountPath: "/etc/receptor.conf"
               subPath: receptor.conf
@@ -241,6 +284,16 @@ spec:
         {{ tolerations | indent(width=8) }}
 {% endif %}
       volumes:
+{% if bundle_ca_crt %}
+        - name: "ca-trust-extracted"
+          emptyDir: {}
+        - name: "{{ meta.name }}-bundle-cacert"
+          secret:
+            secretName: "{{ bundle_cacert_secret }}"
+            items:
+              - key: bundle-ca.crt
+                path: 'bundle-ca.crt'
+{% endif %}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ meta.name }}-nginx-certs"
           secret:

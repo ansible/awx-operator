@@ -285,6 +285,12 @@ spec:
                 redis_image_version:
                   description: Redis container image version to use
                   type: string
+                init_container_image:
+                  description: Registry path to the init container to use
+                  type: string
+                init_container_image_version:
+                  description: Init container image version to use
+                  type: string
                 postgres_image:
                   description: Registry path to the PostgreSQL container to use
                   type: string
@@ -343,6 +349,9 @@ spec:
                   type: boolean
                 ldap_cacert_secret:
                   description: Secret where can be found the LDAP trusted Certificate Authority Bundle
+                  type: string
+                bundle_cacert_secret:
+                  description: Secret where can be found the trusted Certificate Authority Bundle
                   type: string
                 projects_persistence:
                   description: Whether or not the /var/lib/projects directory will be persistent
