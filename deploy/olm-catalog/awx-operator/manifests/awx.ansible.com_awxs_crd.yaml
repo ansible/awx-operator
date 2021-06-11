@@ -30,7 +30,6 @@ spec:
                 description: Username to use for the admin account
                 type: string
               api_version:
-                default: awx.ansible.com/v1beta1
                 description: apiVersion of the deployment type
                 type: string
               broadcast_websocket_secret:
@@ -44,7 +43,6 @@ spec:
                 description: Whether or not to preload data upon instance creation
                 type: boolean
               deployment_type:
-                default: awx
                 description: Name of the deployment type
                 type: string
               development_mode:
@@ -123,7 +121,6 @@ spec:
                 - route
                 type: string
               kind:
-                default: AWX
                 description: Kind of the deployment type
                 type: string
               ldap_cacert_secret:
