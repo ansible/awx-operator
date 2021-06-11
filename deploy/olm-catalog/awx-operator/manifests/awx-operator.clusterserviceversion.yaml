@@ -352,6 +352,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Label Selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Tolerations
         path: postgres_tolerations
         x-descriptors:
