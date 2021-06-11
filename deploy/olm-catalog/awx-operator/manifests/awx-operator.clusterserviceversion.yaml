@@ -445,6 +445,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: EE Images Pull Credentials Secret
+        displayName: EE Images Pull Credentials Secret
+        path: ee_pull_credentials_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       - description: Specify volume mounts to be added to Task container
         displayName: Task Extra Volume Mounts
         path: task_extra_volume_mounts
