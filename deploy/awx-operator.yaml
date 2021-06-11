@@ -560,7 +560,7 @@ spec:
                   type: array
                 restoreComplete:
                   description: Restore process complete
-                  type: string
+                  type: boolean
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1

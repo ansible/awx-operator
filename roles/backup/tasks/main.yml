@@ -30,9 +30,9 @@
 
     - include_tasks: postgres.yml
 
-    - include_tasks: secrets.yml
-
     - include_tasks: awx-cro.yml
+
+    - include_tasks: secrets.yml
 
     - name: Set flag signifying this backup was successful
       set_fact:
@@ -45,5 +45,3 @@
 
 - name: Update status variables
   include_tasks: update_status.yml
-
-# TODO: backup tower settings or make sure that users only specify settings/config changes via AWX object.  See ticket

@@ -76,4 +76,4 @@ spec:
                   type: array
                 restoreComplete:
                   description: Restore process complete
-                  type: string
+                  type: boolean
