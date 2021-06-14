@@ -28,15 +28,12 @@ spec:
                 deployment_type:
                   description: Name of the deployment type
                   type: string
-                  default: awx
                 kind:
                   description: Kind of the deployment type
                   type: string
-                  default: AWX
                 api_version:
                   description: apiVersion of the deployment type
                   type: string
-                  default: awx.ansible.com/v1beta1
                 task_privileged:
                   description: If a privileged security context should be enabled
                   type: boolean
