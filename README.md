@@ -657,7 +657,7 @@ Example configuration of environment variables
 
 #### Extra Settings
 
-With`extra_settings`, you can pass multiple custom settings via the `awx-operator`. The parameter `extra_settings`  will be appended to the `/etc/tower/settings.py` and be can an alternative to the `extra_volumes` parameter.
+With`extra_settings`, you can pass multiple custom settings via the `awx-operator`. The parameter `extra_settings`  will be appended to the `/etc/tower/settings.py` and can an alternative to the `extra_volumes` parameter.
 
 | Name                          | Description                                              | Default |
 | ----------------------------- | -------------------------------------------------------- | ------- |
