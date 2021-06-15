@@ -450,6 +450,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Registry path to the Execution Environment container to use on control plane pods
+        displayName: Control Plane EE Image
+        path: control_plane_ee_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: EE Images Pull Credentials Secret
         displayName: EE Images Pull Credentials Secret
         path: ee_pull_credentials_secret

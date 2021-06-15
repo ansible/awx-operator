@@ -65,6 +65,9 @@ spec:
               ee_pull_credentials_secret:
                 description: Secret where pull credentials for registered ees can be found
                 type: string
+              control_plane_ee_image:
+                description: Registry path to the Execution Environment container image to use on control plane pods
+                type: string
               extra_settings:
                 description: Extra settings to specify for the API
                 items:
