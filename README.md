@@ -28,6 +28,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
+         * [Extra Settings](#extra-settings)
          * [Service Account](#service-account)
    * [Upgrading](#upgrading)
    * [Contributing](#contributing)
@@ -652,6 +653,26 @@ Example configuration of environment variables
     web_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
+```
+
+#### Extra Settings
+
+With`extra_settings`, you can pass multiple custom settings via the `awx-operator`. The parameter `extra_settings`  will be appended to the `/etc/tower/settings.py` and can be an alternative to the `extra_volumes` parameter.
+
+| Name                          | Description                                              | Default |
+| ----------------------------- | -------------------------------------------------------- | ------- |
+| extra_settings                | Extra settings                                           | ''      |
+
+Example configuration of `extra_settings` parameter
+
+```yaml
+  spec:
+    extra_settings:
+      - setting: MAX_PAGE_SIZE
+        value: "500"
+
+      - setting: AUTH_LDAP_BIND_DN
+        value: "cn=admin,dc=example,dc=com"
 ```
 
 #### Service Account
