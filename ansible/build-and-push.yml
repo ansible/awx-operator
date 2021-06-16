@@ -3,15 +3,15 @@
   hosts: localhost
 
   collections:
-    - community.general
+    - community.docker
 
   tasks:
     - name: Build and (optionally) push operator image
       docker_image:
         name: "{{ operator_image }}:{{ operator_version }}"
-        pull: no
-        push: "{{ push_image | bool }}"
+        source: "build"
+        push: "{{ push_image }}"
         build:
           dockerfile: "build/Dockerfile"
           path: "../"
-        force: yes
+        force_source: "yes"
