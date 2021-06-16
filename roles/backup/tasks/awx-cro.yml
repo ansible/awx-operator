@@ -21,4 +21,4 @@
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c "echo '{{ awx_spec }}' > {{ backup_dir }}/awx_object"
+      bash -c 'echo "$0" > {{ backup_dir  }}/awx_object' {{ awx_spec | quote  }}
