@@ -4,6 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ deployment_name }}-backup-claim
   namespace: {{ backup_pvc_namespace }}
+  ownerReferences: null
   labels:
     app.kubernetes.io/name: '{{ meta.name }}'
     app.kubernetes.io/part-of: '{{ meta.name }}'
