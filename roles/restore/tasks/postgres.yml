@@ -4,7 +4,7 @@
   k8s_info:
     kind: Secret
     namespace: '{{ meta.namespace }}'
-    name: '{{ postgres_configuration_secret_name }}'
+    name: '{{ postgres_configuration_secret }}'
   register: pg_config
 
 - name: Store Database Configuration
