@@ -50,7 +50,7 @@
   k8s:
     definition:
       apiVersion: '{{ api_version }}'
-      kind: AWX
+      kind: '{{ kind }}'
       metadata:
         name: '{{ deployment_name }}'
         namespace: '{{ meta.namespace }}'
