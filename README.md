@@ -725,33 +725,6 @@ There are a few moving parts to this project:
 
 Each of these must be appropriately built in preparation for a new tag:
 
-### Verify Functionality
-
-Run the following command inside this directory:
-
-```sh
-#> operator-sdk build quay.io/<user>/awx-operator:test
-```
-
-Then push the generated image to Docker Hub:
-
-```sh
-#> docker push quay.io/<user>/awx-operator:test
-```
-
-After it is built, test it on a local cluster:
-
-
-```sh
-#> minikube start --memory 6g --cpus 4
-#> minikube addons enable ingress
-#> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=test
-#> kubectl create namespace example-awx
-#> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx
-#> <test everything>
-#> minikube delete
-```
-
 ### Update version and files
 
 Update the awx-operator version:
@@ -773,6 +746,34 @@ $ operator-sdk generate bundle --operator-name awx-operator --version <new_tag>
 > This should be done with operator-sdk v0.19.4.  
 
 > It is a good idea to use the [build script](./build.sh) at this point to build the catalog and test out installing it in Operator Hub.
+
+### Verify Functionality
+
+Run the following command inside this directory:
+
+```sh
+#> operator-sdk build quay.io/<user>/awx-operator:<new-version>
+```
+
+Then push the generated image to Docker Hub:
+
+```sh
+#> docker push quay.io/<user>/awx-operator:<new-version>
+```
+
+After it is built, test it on a local cluster:
+
+
+```sh
+#> minikube start --memory 6g --cpus 4
+#> minikube addons enable ingress
+#> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=<new-version> -e pull_policy=Always
+#> kubectl create namespace example-awx
+#> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx -e image=quay.io/<user>/awx -e service_type=nodeport
+#> # Verify that the awx-task and awx-web containers are launched 
+#> # with the right version of the awx image
+#> minikube delete
+```
 
 ### Update changelog
 
