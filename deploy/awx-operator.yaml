@@ -248,6 +248,8 @@ spec:
                   type: string
                 web_extra_env:
                   type: string
+                ee_extra_env:
+                  type: string
                 ee_extra_volume_mounts:
                   description: Specify volume mounts to be added to Execution container
                   type: string

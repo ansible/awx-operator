@@ -450,6 +450,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to EE container
+        displayName: EE Extra Env
+        path: ee_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Registry path to the Execution Environment container to use on control plane pods
         displayName: Control Plane EE Image
         path: control_plane_ee_image

@@ -221,12 +221,15 @@ spec:
 {% if ee_extra_volume_mounts -%}
             {{ ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
 {% endif %}
-{% if development_mode | bool %}
           env:
+{% if development_mode | bool %}
             - name: SDB_NOTIFY_HOST
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+{% endif %}
+{% if ee_extra_env -%}
+            {{ ee_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
 {% if node_selector %}
       nodeSelector:
