@@ -15,6 +15,12 @@ metadata:
             "deployment_type": "awx",
             "ingress_type": "ingress",
             "service_account_annotations": "foo: bar\n",
+            "ee_resource_requirements": {
+              "requests": {
+                "cpu": "200m",
+                "memory": "64M"
+              }
+            },
             "task_resource_requirements": {
               "requests": {
                 "cpu": "500m",
@@ -260,6 +266,11 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Task container resource requirements
         path: task_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: EE Control Plane container resource requirements
+        path: ee_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements

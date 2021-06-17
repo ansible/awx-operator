@@ -17,3 +17,7 @@ spec:
     requests:
       cpu: 500m
       memory: 128M
+  ee_resource_requirements:
+    requests:
+      cpu: 200m
+      memory: 64M

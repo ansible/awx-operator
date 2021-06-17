@@ -140,6 +140,11 @@ web_resource_requirements:
     cpu: 1000m
     memory: 2Gi
 
+ee_resource_requirements:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
