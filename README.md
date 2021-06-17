@@ -428,10 +428,11 @@ Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to
 
 The resource requirements for both, the task and the web containers are configurable - both the lower end (requests) and the upper end (limits).
 
-| Name                             | Description                          | Default                             |
-| -------------------------------- | ------------------------------------ | ----------------------------------- |
-| web_resource_requirements        | Web container resource requirements  | requests: {cpu: 1000m, memory: 2Gi} |
-| task_resource_requirements       | Task container resource requirements | requests: {cpu: 500m, memory: 1Gi}  |
+| Name                             | Description                                      | Default                             |
+| -------------------------------- | ------------------------------------------------ | ----------------------------------- |
+| web_resource_requirements        | Web container resource requirements              | requests: {cpu: 1000m, memory: 2Gi} |
+| task_resource_requirements       | Task container resource requirements             | requests: {cpu: 500m, memory: 1Gi}  |
+| ee_resource_requirements         | EE control plane container resource requirements | requests: {cpu: 500m, memory: 1Gi}  |
 
 Example of customization could be:
 
@@ -447,6 +448,13 @@ spec:
       cpu: 2000m
       memory: 4Gi
   task_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  ee_resource_requirements:
     requests:
       cpu: 500m
       memory: 1Gi
