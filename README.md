@@ -642,6 +642,7 @@ If you need to export custom environment variables to your containers.
 | ----------------------------- | -------------------------------------------------------- | ------- |
 | task_extra_env                | Environment variables to be added to Task container      | ''      |
 | web_extra_env                 | Environment variables to be added to Web container       | ''      |
+| ee_extra_env                  | Environment variables to be added to EE container        | ''      |
 
 Example configuration of environment variables
 
@@ -651,6 +652,9 @@ Example configuration of environment variables
       - name: MYCUSTOMVAR
         value: foo
     web_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+    ee_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
 ```

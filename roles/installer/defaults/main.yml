@@ -149,6 +149,7 @@ web_resource_requirements:
 #     value: bing
 task_extra_env: ''
 web_extra_env: ''
+ee_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
 # E.g.:
