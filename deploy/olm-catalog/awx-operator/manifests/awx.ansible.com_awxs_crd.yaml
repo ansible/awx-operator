@@ -38,6 +38,10 @@ spec:
               ca_trust_bundle:
                 description: Path where the trusted CA bundle is available
                 type: string
+              control_plane_ee_image:
+                description: Registry path to the Execution Environment container
+                  image to use on control plane pods
+                type: string
               create_preload_data:
                 default: true
                 description: Whether or not to preload data upon instance creation
@@ -48,6 +52,8 @@ spec:
               development_mode:
                 description: If the deployment should be done in development mode
                 type: boolean
+              ee_extra_env:
+                type: string
               ee_extra_volume_mounts:
                 description: Specify volume mounts to be added to Execution container
                 type: string
@@ -62,8 +68,12 @@ spec:
                       type: string
                   type: object
                 type: array
+              ee_pull_credentials_secret:
+                description: Secret where pull credentials for registered ees can
+                  be found
+                type: string
               ee_resource_requirements:
-                description: Resource requirements for the ee control plane container
+                description: Resource requirements for the ee container
                 properties:
                   limits:
                     properties:
@@ -84,14 +94,6 @@ spec:
                         type: string
                     type: object
                 type: object
-              ee_extra_env:
-                type: string
-              ee_pull_credentials_secret:
-                description: Secret where pull credentials for registered ees can be found
-                type: string
-              control_plane_ee_image:
-                description: Registry path to the Execution Environment container image to use on control plane pods
-                type: string
               extra_settings:
                 description: Extra settings to specify for the API
                 items:

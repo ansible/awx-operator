@@ -106,7 +106,7 @@ extra_volumes: ''
 # Use these image versions for Ansible AWX.
 
 image: quay.io/ansible/awx
-image_version: 19.2.0
+image_version: 19.2.1
 redis_image: docker.io/redis
 redis_image_version: latest
 postgres_image: postgres
@@ -115,10 +115,10 @@ image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
 ee_images:
-  - name: AWX EE 0.3.0
-    image: quay.io/ansible/awx-ee:0.3.0
+  - name: AWX EE 0.4.0
+    image: quay.io/ansible/awx-ee:0.4.0
 
-control_plane_ee_image: quay.io/ansible/awx-ee:0.3.0
+control_plane_ee_image: quay.io/ansible/awx-ee:0.4.0
 
 create_preload_data: true
 

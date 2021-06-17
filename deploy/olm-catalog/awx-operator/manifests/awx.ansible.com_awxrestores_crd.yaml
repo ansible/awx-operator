@@ -72,7 +72,7 @@ spec:
                 type: array
               restoreComplete:
                 description: Restore process complete
-                type: string
+                type: boolean
             type: object
         type: object
         x-kubernetes-preserve-unknown-fields: true
