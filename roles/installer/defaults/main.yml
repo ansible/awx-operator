@@ -111,6 +111,8 @@ redis_image: docker.io/redis
 redis_image_version: latest
 postgres_image: postgres
 postgres_image_version: 12
+init_container_image: quay.io/centos/centos
+init_container_image_version: 8
 image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
@@ -205,6 +207,9 @@ ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 # Secret to lookup that provides the LDAP CACert trusted bundle
 #
 ldap_cacert_secret: ''
+
+# Secret to lookup that provides the custom CA trusted bundle
+bundle_cacert_secret: ''
 
 # Whether secrets should be garbage collected
 # on teardown

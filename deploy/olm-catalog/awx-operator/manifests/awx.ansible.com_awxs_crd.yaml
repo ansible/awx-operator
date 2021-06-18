@@ -35,6 +35,9 @@ spec:
               broadcast_websocket_secret:
                 description: Secret where the broadcast websocket secret can be found
                 type: string
+              bundle_cacert_secret:
+                description: Secret where can be found the trusted Certificate Authority Bundle
+                type: string
               ca_trust_bundle:
                 description: Path where the trusted CA bundle is available
                 type: string
@@ -148,6 +151,12 @@ spec:
                 - ingress
                 - Route
                 - route
+                type: string
+              init_container_image:
+                description: Registry path to the init container to use
+                type: string
+              init_container_image_version:
+                description: Initcontainer image version to use
                 type: string
               kind:
                 description: Kind of the deployment type

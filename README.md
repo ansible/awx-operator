@@ -24,7 +24,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
-         * [LDAP Certificate Authority](#ldap-certificate-authority)
+         * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
@@ -505,14 +505,19 @@ spec:
       effect: "NoSchedule"
 ```
 
-#### LDAP Certificate Authority
+#### Trusting a Custom Certificate Authority
 
-If the variable `ldap_cacert_secret` is provided, the operator will look for a the data field `ldap-ca.crt` in the specified secret.
+In cases which you need to trust a custom Certificate Authority, there are few variables you can customize for the `awx-operator`.
 
-| Name                             | Description                             | Default |
-| -------------------------------- | --------------------------------------- | --------|
-| ldap_cacert_secret               | LDAP Certificate Authority secret name  |  ''     |
+Trusting a custom Certificate Authority allows the AWX to access network services configured with SSL certificates issued locally, such as cloning a project from from an internal Git server via HTTPS. It is common for these scenarios, experiencing the error [unable to verify the first certificate](https://github.com/ansible/awx-operator/issues/376).
 
+
+| Name                             | Description                              | Default |
+| -------------------------------- | ---------------------------------------- | --------|
+| ldap_cacert_secret               | LDAP Certificate Authority secret name   |  ''     |
+| bundle_cacert_secret             | Certificate Authority secret name        |  ''     |
+
+Please note the `awx-operator` will look for the data field `ldap-ca.crt` in the specified secret when using the `ldap_cacert_secret`, whereas the data field `bundle-ca.crt` is required for `bundle_cacert_secret` parameter.
 
 Example of customization could be:
 
@@ -520,13 +525,16 @@ Example of customization could be:
 ---
 spec:
   ...
-  ldap_cacert_secret: <resourcename>-ldap-ca-cert
+  ldap_cacert_secret: <resourcename>-custom-certs
+  bundle_cacert_secret: <resourcename>-custom-certs
 ```
 
 To create the secret, you can use the command below:
 
 ```sh
-# kubectl create secret generic <resourcename>-ldap-ca-cert --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
+# kubectl create secret generic <resourcename>-custom-certs \
+    --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>  \
+    --from-fle=bundle-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
 ```
 
 #### Persisting Projects Directory
