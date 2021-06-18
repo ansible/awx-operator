@@ -23,7 +23,7 @@
     - {"key": "secret_key_secret", "value": "{{ this_awx['resources'][0]['status']['secretKeySecret'] }}"}
     - {"key": "admin_password_secret", "value": "{{ this_awx['resources'][0]['status']['adminPasswordSecret'] }}"}
     - {"key": "broadcast_websocket_secret", "value": "{{ this_awx['resources'][0]['status']['broadcastWebsocketSecret'] }}"}
-    - {"key": "postgres_configuration_secret", "value": "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }} "}
+    - {"key": "postgres_configuration_secret", "value": "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"}
 
 - name: Write awx object to pvc
   k8s_exec:
