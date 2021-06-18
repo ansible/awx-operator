@@ -116,6 +116,22 @@ init_container_image_version: 8
 image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
+# Extra commands which will be appended to the initContainer
+# Make sure that each command entered return an exit code 0
+# otherwise the initContainer will fail
+# init_container_extra_commands: |
+#   date >> /var/lib/awx/projects/timestamp
+#   chgrp 1000 /shared
+#   chmod 775 /shared
+init_container_extra_commands: ''
+
+# Mount extra volumes on the initContainer.
+# The volume used must be defined as an `extra_volumes` resource
+# init_container_extra_volume_mounts: |
+#   - name: shared-vol
+#     mountPath: /shared
+init_container_extra_volume_mounts: ''
+
 ee_images:
   - name: AWX EE 0.5.0
     image: quay.io/ansible/awx-ee:0.5.0

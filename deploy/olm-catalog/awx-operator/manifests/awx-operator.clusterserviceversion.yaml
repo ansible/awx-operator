@@ -565,6 +565,18 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify Extra commands for the Init container
+        displayName: Init Container Extra Commands
+        path: init_container_extra_commands
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Init container
+        displayName: Init Container Extra Volume Mounts
+        path: init_container_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Secret where can be found the trusted Certificate Authority Bundle
         path: bundle_cacert_secret
         x-descriptors:
