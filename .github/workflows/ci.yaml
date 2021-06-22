@@ -31,14 +31,21 @@ jobs:
             ansible-lint \
             openshift \
             jmespath \
-            ansible
+            ansible-core
 
       - name: Install Collections
         run: |
-         ansible-galaxy collection install community.kubernetes operator_sdk.util
+         ansible-galaxy collection install community.general kubernetes.core:1.2.1 operator_sdk.util
+
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.4.2
+        with:
+          minikube version: 'v1.16.0'
+          kubernetes version: 'v1.19.2'
+          github token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Molecule
         env:
           MOLECULE_VERBOSITY: 3
         run: |
-          molecule test -s test-local
+          molecule test -s test-minikube

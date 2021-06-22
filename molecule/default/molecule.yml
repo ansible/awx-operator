@@ -27,8 +27,3 @@ provisioner:
     group_vars:
       all:
         operator_namespace: ${TEST_NAMESPACE:-default}
-  env:
-    K8S_AUTH_KUBECONFIG: /tmp/molecule/kind-default/kubeconfig
-    KUBECONFIG: /tmp/molecule/kind-default/kubeconfig
-    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
-    KIND_PORT: '${TEST_CLUSTER_PORT:-9443}'
