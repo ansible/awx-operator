@@ -28,5 +28,5 @@ galaxy_info:
 dependencies: []
 
 collections:
-  - community.kubernetes
+  - kubernetes.core
   - operator_sdk.util

@@ -80,7 +80,7 @@
       include_tasks: scale_down_deployment.yml
 
     - name: Scale down PostgreSQL statefulset for migration
-      community.kubernetes.k8s_scale:
+      kubernetes.core.k8s_scale:
         api_version: apps/v1
         kind: StatefulSet
         name: "{{ meta.name }}-postgres"
