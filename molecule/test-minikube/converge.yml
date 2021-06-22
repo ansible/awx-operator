@@ -126,8 +126,6 @@
           ignore_errors: yes
           failed_when: false
           command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ operator_namespace }} -c operator
-          environment:
-            KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
           vars:
             definition: "{{ lookup('template', '/'.join([templates_dir, 'operator.yml.j2'])) | from_yaml }}"
           register: log

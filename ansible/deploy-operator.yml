@@ -9,7 +9,7 @@
     obliterate: no
 
   collections:
-    - community.kubernetes
+    - kubernetes.core
 
   tasks:
     - name: Obliterate Operator
