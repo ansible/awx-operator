@@ -595,7 +595,26 @@ type: Opaque
 ```
 
 ##### Control plane ee from private registry
-The images listed in "ee_images" will be added as globally available Execution Environments. The "control_plane_ee_image" will be used to run project updates. In order to use a private image for any of these you'll need to use `image_pull_secret` to provide a k8s pull secret to access it. Currently the same secret is used for any of these images supplied at install time.
+The images listed in "ee_images" will be added as globally available Execution Environments. The "control_plane_ee_image" will be used to run project updates. In order to use a private image for any of these you'll need to use `image_pull_secret` to provide a k8s pull secret to access it. Currently the same secret is used for any of these images supplied at install time. 
+
+You can create `image_pull_secret`
+```
+kubectl create secret <resoucename>-cp-pull-credentials regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+```
+If you need more control (for example, to set a namespace or a label on the new secret) then you can customise the Secret before storing it
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: <resoucename>-cp-pull-credentials
+  namespace: <target namespace>
+data:
+  .dockerconfigjson: <base64 docker config>
+type: kubernetes.io/dockerconfigjson
+```
+Example spec file extra-config
 
 ```yaml
 ---
