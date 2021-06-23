@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Collections
         run: |
-         ansible-galaxy collection install community.general kubernetes.core:1.1.1 operator_sdk.util
+         ansible-galaxy collection install community.general kubernetes.core:1.2.1 operator_sdk.util
 
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.4.2
