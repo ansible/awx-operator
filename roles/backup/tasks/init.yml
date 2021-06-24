@@ -45,10 +45,21 @@
   set_fact:
     backup_claim: "{{ backup_pvc | default(_default_backup_pvc, true) }}"
 
-- name: Create PVC for backup
-  k8s:
-    kind: PersistentVolumeClaim
-    template: "backup_pvc.yml.j2"
+- block:
+    - name: Create PVC for backup
+      k8s:
+        kind: PersistentVolumeClaim
+        template: "backup_pvc.yml.j2"
+
+    - name: Remove PVC ownerReference
+      k8s:
+        definition:
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: '{{ deployment_name }}-backup-claim'
+            namespace: '{{ backup_pvc_namespace }}'
+            ownerReferences: null
   when:
     - backup_pvc == '' or backup_pvc is not defined
 
