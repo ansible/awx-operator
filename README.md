@@ -571,6 +571,8 @@ In a scenario where custom volumes and volume mounts are required to either over
 | task_extra_volume_mounts       | Specify volume mounts to be added to Task container      | ''      |
 | ee_extra_volume_mounts         | Specify volume mounts to be added to Execution container | ''      |
 
+> :warning: The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
+
 Example configuration for ConfigMap
 
 #### Default execution environments from private registries
@@ -678,6 +680,8 @@ If you need to export custom environment variables to your containers.
 | task_extra_env                | Environment variables to be added to Task container      | ''      |
 | web_extra_env                 | Environment variables to be added to Web container       | ''      |
 | ee_extra_env                  | Environment variables to be added to EE container        | ''      |
+
+> :warning: The `ee_extra_env` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
 
 Example configuration of environment variables
 
