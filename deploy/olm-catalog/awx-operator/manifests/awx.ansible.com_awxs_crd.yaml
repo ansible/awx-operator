@@ -104,7 +104,7 @@ spec:
                     setting:
                       type: string
                     value:
-                      type: string
+                      x-kubernetes-preserve-unknown-fields: true
                   type: object
                 type: array
               extra_volumes:
@@ -156,7 +156,7 @@ spec:
                 description: Registry path to the init container to use
                 type: string
               init_container_image_version:
-                description: Initcontainer image version to use
+                description: Init container image version to use
                 type: string
               kind:
                 description: Kind of the deployment type

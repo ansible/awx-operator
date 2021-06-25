@@ -90,11 +90,7 @@ data:
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
 {% for item in extra_settings | default([]) %}
-{% if item.value is string %}
-    {{ item.setting }} = '{{ item.value }}'
-{% else %}
     {{ item.setting }} = {{ item.value }}
-{% endif %}
 {% endfor %}
 
   nginx_conf: |
