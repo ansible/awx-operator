@@ -1,9 +1,5 @@
 ---
 
-- name: Save kind
-  set_fact:
-    _kind: "{{ kind }}"
-
 - name: Get AWX object definition from pvc
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
@@ -25,22 +21,13 @@
 
 - name: Include spec vars to save them as a dict
   include_vars: "{{ tmp_spec.path }}"
-  register: spec
-
-- name: Use include_vars to read in spec as a dict (because spec doesn't have quotes)
-  set_fact:
-    awx_spec: "{{ spec.ansible_facts }}"
-
-- name: Restore kind
-  set_fact:
-    kind: "{{ _kind }}"
 
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
     namespace: "{{ meta.namespace }}"
     apply: yes
-    template: awx_object.yml.j2
+    definition: "{{ lookup('template', 'awx_object.yml.j2') }}"
     wait: true
     wait_condition:
       type: "Running"

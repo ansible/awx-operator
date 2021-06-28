@@ -10,11 +10,8 @@
 
 - name: Set AWX object
   set_fact:
-    _awx: "{{ _awx_cro['resources'][0] }}"
-
-- name: Set user specified spec
-  set_fact:
-    awx_spec: "{{ _awx['spec'] }}"
+    awx_spec:
+      spec: "{{ this_awx['resources'][0]['spec'] }}"
 
 - name: Set names of backed up secrets in the CR spec
   set_fact:
@@ -30,4 +27,4 @@
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ meta.name }}-db-management"
     command: >-
-      bash -c 'echo "$0" > {{ backup_dir  }}/awx_object' {{ awx_spec | quote  }}
+      bash -c 'echo "$0" > {{ backup_dir  }}/awx_object' {{ awx_spec | to_yaml | quote  }}
