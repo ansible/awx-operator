@@ -535,6 +535,23 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Registry path to the init container to use
+        displayName: Init Container Image
+        path: init_container_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Init container image version to use
+        displayName: Init Container Image Version
+        path: init_container_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Secret where can be found the trusted Certificate Authority Bundle
+        path: bundle_cacert_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       statusDescriptors:
       - description: Route to access the instance deployed
         displayName: URL
