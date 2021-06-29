@@ -543,7 +543,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Init container image version to use
         displayName: Init Container Image Version
-        path: init_container_image
+        path: init_container_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
