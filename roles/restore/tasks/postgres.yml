@@ -1,5 +1,9 @@
 ---
 
+- name: Set Postgres Configuration Secret name
+  set_fact:
+    postgres_configuration_secret: "{{ spec['postgres_configuration_secret'] | default(postgres_configuration_secret) }}"
+
 - name: Check for specified PostgreSQL configuration
   k8s_info:
     kind: Secret
