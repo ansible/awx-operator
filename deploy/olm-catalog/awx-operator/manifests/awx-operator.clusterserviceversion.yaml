@@ -698,6 +698,16 @@ spec:
                   value: 0.12.0
                 - name: ANSIBLE_DEBUG_LOGS
                   value: "false"
+                - name: DATABASE_CONTAINER_IMAGE
+                  value: postgres:12
+                - name: REDIS_CONTAINER_IMAGE
+                  value: docker.io/redis:latest
+                - name: INIT_CONTAINER_IMAGE
+                  value: quay.io/centos/centos:8
+                - name: APPLICATION_CONTAINER_IMAGE
+                  value: quay.io/ansible/awx:19.2.2
+                - name: CONTROL_PLANE_EE_CONTAINER_IMAGE
+                  value: quay.io/ansible/awx-ee:0.5.0
                 image: quay.io/ansible/awx-operator:0.12.0
                 imagePullPolicy: Always
                 livenessProbe:

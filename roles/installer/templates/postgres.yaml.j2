@@ -34,7 +34,7 @@ spec:
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
     spec:
       containers:
-        - image: '{{ postgres_image }}:{{ postgres_image_version }}'
+        - image: '{{ lookup("env", "DATABASE_CONTAINER_IMAGE") | default(postgres_image + ":" + postgres_image_version | string, true) }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
           env:

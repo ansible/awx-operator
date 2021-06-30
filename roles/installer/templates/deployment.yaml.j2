@@ -36,7 +36,7 @@ spec:
 {% if bundle_ca_crt %}
       initContainers:
         - name: init
-          image: '{{ init_container_image }}:{{ init_container_image_version }}'
+          image: '{{ lookup("env", "INIT_CONTAINER_IMAGE") | default(init_container_image + ":" + init_container_image_version | string, true) }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           command:
             - /bin/sh
@@ -53,7 +53,7 @@ spec:
               readOnly: true
 {% endif %}
       containers:
-        - image: '{{ redis_image }}:{{ redis_image_version }}'
+        - image: '{{ lookup("env", "REDIS_CONTAINER_IMAGE") | default(redis_image + ":" + redis_image_version | string, true) }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
           args: ["redis-server", "/etc/redis.conf"]
@@ -66,7 +66,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ meta.name }}-redis-data"
               mountPath: "/data"
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ lookup("env", "APPLICATION_CONTAINER_IMAGE") | default(image + ":" + image_version | string, true) }}'
           name: '{{ meta.name }}-web'
 {% if web_command %}
           command: {{ web_command }}
@@ -154,7 +154,7 @@ spec:
             {{ web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ web_resource_requirements }}
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ lookup("env", "APPLICATION_CONTAINER_IMAGE") | default(image + ":" + image_version | string, true) }}'
           name: '{{ meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
 {% if task_privileged == true %}
@@ -240,7 +240,7 @@ spec:
             {{ task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ task_resource_requirements }}
-        - image: '{{ control_plane_ee_image }}'
+        - image: '{{ lookup("env", "CONTROL_PLANE_EE_CONTAINER_IMAGE") | default(control_plane_ee_image, true) }}'
           name: '{{ meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}
