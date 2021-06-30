@@ -33,6 +33,10 @@ spec:
         app.kubernetes.io/part-of: '{{ meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
     spec:
+{% if image_pull_secret %}
+      imagePullSecrets:
+        - name: {{ image_pull_secret }}
+{% endif %}
       containers:
         - image: '{{ postgres_image }}:{{ postgres_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
