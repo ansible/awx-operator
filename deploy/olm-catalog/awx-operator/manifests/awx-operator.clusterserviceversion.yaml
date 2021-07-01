@@ -114,21 +114,19 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:CR
-      - displayName: Deployment name
+      - displayName: Name of newly restored deployment
         path: deployment_name
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
       - displayName: Backup persistent volume claim
         path: backup_pvc
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
-      - displayName: Backup persistent volume claim namespace
+      - displayName: Backup namespace
         path: backup_pvc_namespace
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
       - displayName: Backup directory in the persistent volume claim
         path: backup_dir
         x-descriptors:
