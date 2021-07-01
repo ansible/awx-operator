@@ -73,18 +73,12 @@
   register: _custom_execution_environments_pull_credentials
   when: ee_pull_credentials_secret | length
 
-- name: Check for default execution environment pull credentials
-  k8s_info:
-    kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-ee-pull-credentials'
-  register: _default_execution_environments_pull_credentials
-
-- name: Set admin password secret
+- name: Set execution environment pull credential secret
   set_fact:
     _execution_environments_pull_credentials: >-
       {{ _custom_execution_environments_pull_credentials["resources"] | default([]) | length
-      | ternary(_custom_execution_environments_pull_credentials, _default_execution_environments_pull_credentials) }}
+      | ternary(_custom_execution_environments_pull_credentials, []) }}
+
 - name: Register default execution environments (without authentication)
   k8s_exec:
     namespace: "{{ meta.namespace }}"
