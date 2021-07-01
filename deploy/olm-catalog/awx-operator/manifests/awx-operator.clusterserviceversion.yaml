@@ -78,6 +78,16 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: The persistent volume claim name used during backup
         displayName: Backup claim
@@ -127,6 +137,16 @@ spec:
       - displayName: Database restore label selector
         path: postgres_label_selector
         x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: The state of the restore
