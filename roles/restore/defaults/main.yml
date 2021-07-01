@@ -6,7 +6,7 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
 # Required: specify a pre-created PVC (name) to restore from
 backup_pvc: ''
-backup_pvc_namespace: ''
+backup_pvc_namespace: '{{ meta.namespace }}'
 
 # Required: backup name, found on the awxbackup object
 backup_dir: ''
