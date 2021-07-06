@@ -75,6 +75,7 @@
 - block:
     - name: Retrieve route URL
       k8s_info:
+        api_version: 'route.openshift.io/v1'
         kind: Route
         namespace: '{{ meta.namespace }}'
         name: '{{ meta.name }}'
