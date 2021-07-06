@@ -78,11 +78,11 @@ $ minikube start --addons=ingress --cpus=4 --cni=flannel --install-addons=true \
 Once Minikube is deployed, check if the node(s) and `kube-apiserver` communication is working as expected.
 
 ```bash
-$ kubectl get nodes
+$ minikube kubectl -- get nodes
 NAME       STATUS   ROLES                  AGE     VERSION
 minikube   Ready    control-plane,master   6m28s   v1.20.2
 
-$ kubectl get pods -A
+$ minikube kubectl -- get pods -A
 NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
 ingress-nginx   ingress-nginx-admission-create-tjk94        0/1     Completed   0          6m4s
 ingress-nginx   ingress-nginx-admission-patch-r4pl6         0/1     Completed   0          6m4s
@@ -95,6 +95,14 @@ kube-system     kube-flannel-ds-amd64-lw7lv                 1/1     Running     
 kube-system     kube-proxy-lcxx7                            1/1     Running     0          6m3s
 kube-system     kube-scheduler-minikube                     1/1     Running     0          6m13s
 kube-system     storage-provisioner                         1/1     Running     1          6m17s
+```
+
+It is not required for `kubectl` to be separately installed since it comes already wrapped inside minikube. As demonstrated above, simply prefix `minikube kubectl --` before kubectl command, i.e. `kubectl get nodes` would become `minikube kubectl -- get nodes`
+
+Let's create an alias for easier usage: 
+
+```bash
+$ alias kubectl="minikube kubectl --"
 ```
 
 Now you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release. Replace `<TAG>` in the URL `https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml` with the version you are deploying.
