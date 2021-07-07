@@ -6,7 +6,7 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
-task_privileged: false
+task_privileged: true
 service_type: ClusterIP
 ingress_type: none
 
