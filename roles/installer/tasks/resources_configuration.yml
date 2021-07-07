@@ -30,6 +30,7 @@
     - 'persistent'
     - 'service'
     - 'ingress'
+  no_log: true
 
 - name: Apply deployment resources
   k8s:

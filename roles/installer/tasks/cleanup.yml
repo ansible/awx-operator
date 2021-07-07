@@ -23,5 +23,6 @@
         - '{{ _secret_key }}'
         - '{{ _postgres_configuration }}'
         - '{{ _broadcast_websocket_secret }}'
+      no_log: true
 
   when: not garbage_collect_secrets | bool
