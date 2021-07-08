@@ -10,6 +10,7 @@
     namespace: '{{ meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
   register: pg_config
+  no_log: true
 
 - name: Store Database Configuration
   set_fact:
@@ -19,6 +20,7 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | b64decode | default('unmanaged') }}"
+  no_log: true
 
 - name: Default label selector to custom resource generated postgres
   set_fact:
@@ -63,6 +65,7 @@
 - name: Set full resolvable host name for postgres pod
   set_fact:
     resolvable_db_host: "{{ awx_postgres_host }}.{{ meta.namespace }}.svc.cluster.local"
+  no_log: true
   when: awx_postgres_type == 'managed'
 
 - name: Set pg_restore command
@@ -74,6 +77,7 @@
       -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
+  no_log: true
 
 - name: Restore database dump to the new postgresql container
   k8s_exec:
@@ -86,4 +90,5 @@
       echo 'Successful'
       """
   register: data_migration
+  no_log: true
   failed_when: "'Successful' not in data_migration.stdout"
