@@ -542,7 +542,7 @@ To create the secret, you can use the command below:
 ```sh
 # kubectl create secret generic <resourcename>-custom-certs \
     --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>  \
-    --from-fle=bundle-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
+    --from-file=bundle-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
 ```
 
 #### Persisting Projects Directory
