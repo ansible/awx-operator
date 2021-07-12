@@ -276,6 +276,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | ingress_annotations        | Ingress annotations                      | Empty string                 |
 | ingress_tls_secret         | Secret that contains the TLS information | Empty string                 |
 | hostname                   | Define the FQDN                          | {{ meta.name }}.example.com  |
+| ingress_path               | Define the ingress path to the service   | /                            |
 
 ```yaml
 ---
