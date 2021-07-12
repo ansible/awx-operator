@@ -152,6 +152,9 @@ spec:
                 - Route
                 - route
                 type: string
+              ingress_path:
+                  description: The ingress path used to reach the deployed service
+                  type: string
               init_container_image:
                 description: Registry path to the init container to use
                 type: string
