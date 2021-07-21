@@ -33,7 +33,7 @@ spec:
       imagePullSecrets:
         - name: {{ image_pull_secret }}
 {% endif %}
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
         - name: init
           image: '{{ init_container_image }}:{{ init_container_image_version }}'
@@ -42,15 +42,33 @@ spec:
             - /bin/sh
             - -c
             - |
+{% if bundle_ca_crt  %}
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
+{% endif %}
+{% if projects_persistence|bool %}
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+{% endif %}
+{% if init_container_extra_commands %}
+              {{ init_container_extra_commands | indent(width=14) }}
+{% endif %}
           volumeMounts:
+{% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
             - name: "{{ meta.name }}-bundle-cacert"
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
+{% endif %}
+{% if projects_persistence|bool %}
+            - name: "{{ meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% endif %}
+{% if init_container_extra_volume_mounts -%}
+            {{ init_container_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+{% endif %}
 {% endif %}
       containers:
         - image: '{{ redis_image }}:{{ redis_image_version }}'
@@ -282,6 +300,10 @@ spec:
 {% if tolerations %}
       tolerations:
         {{ tolerations | indent(width=8) }}
+{% endif %}
+{% if projects_persistence|bool %}
+      securityContext:
+        fsGroup: 1000
 {% endif %}
       volumes:
 {% if bundle_ca_crt %}
