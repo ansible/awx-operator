@@ -9,7 +9,7 @@ database_username: "{{ deployment_type }}"
 task_privileged: false
 service_type: ClusterIP
 ingress_type: none
-
+ingress_path: '/'
 # Add annotations to the service account. Specify as literal block. E.g.:
 # service_account_annotations: |
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
