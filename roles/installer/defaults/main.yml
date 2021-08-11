@@ -134,9 +134,9 @@ init_container_extra_volume_mounts: ''
 
 ee_images:
   - name: AWX EE 0.5.0
-    image: quay.io/ansible/awx-ee:0.5.0
+    image: quay.io/ansible/awx-ee:latest
 
-control_plane_ee_image: quay.io/ansible/awx-ee:0.5.0
+control_plane_ee_image: quay.io/ansible/awx-ee:latest
 
 create_preload_data: true
 
