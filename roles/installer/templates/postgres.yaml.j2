@@ -37,10 +37,27 @@ spec:
       imagePullSecrets:
         - name: {{ image_pull_secret }}
 {% endif %}
+      initContainers:
+        - name: init-chmod-data
+          image: '{{ postgres_image }}:{{ postgres_image_version }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              if [ ! -f {{ postgres_data_path }}/PG_VERSION ]; then
+                chown postgres:root {{ postgres_data_path | dirname }}
+              fi
+          volumeMounts:
+            - name: postgres
+              mountPath: '{{ postgres_data_path | dirname }}'
+              subPath: '{{ postgres_data_path | dirname | basename }}'
       containers:
         - image: '{{ postgres_image }}:{{ postgres_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
+          securityContext:
+            fsGroup: 999
           env:
             # For postgres_image based on rhel8/postgresql-12
             - name: POSTGRESQL_DATABASE

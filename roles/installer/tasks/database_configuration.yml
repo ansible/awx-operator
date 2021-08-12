@@ -80,8 +80,9 @@
 - block:
     - name: Create Database if no database is specified
       k8s:
-        apply: true
+        apply: yes
         definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
+        wait: yes
       register: create_statefulset_result
 
   rescue:
