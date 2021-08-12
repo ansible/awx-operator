@@ -56,8 +56,6 @@ spec:
         - image: '{{ postgres_image }}:{{ postgres_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
-          securityContext:
-            fsGroup: 999
           env:
             # For postgres_image based on rhel8/postgresql-12
             - name: POSTGRESQL_DATABASE
