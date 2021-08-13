@@ -106,7 +106,7 @@ extra_volumes: ''
 # Use these image versions for Ansible AWX.
 
 image: quay.io/ansible/awx
-image_version: 19.2.2
+image_version: 19.3.0
 redis_image: docker.io/redis
 redis_image_version: latest
 postgres_image: postgres
