@@ -248,6 +248,12 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Tower NodePort Port
+        path: nodeport_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:NodePort
       - displayName: Route DNS host
         path: route_host
         x-descriptors:

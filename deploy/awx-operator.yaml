@@ -126,6 +126,10 @@ spec:
                 route_tls_secret:
                   description: Secret where the TLS related credentials are stored
                   type: string
+                nodeport_port:
+                  description: Port to use for the nodeport
+                  type: integer
+                  default: 30080
                 node_selector:
                   description: nodeSelector for the pods
                   type: string
