@@ -258,7 +258,7 @@ The following variables are customizable only when `service_type=NodePort`
 
 | Name                           | Description                              | Default       |
 | ------------------------------ | ---------------------------------------- | ------------- |
-| nodeport_port            | Port used for NodePort       | 80            |
+| nodeport_port            | Port used for NodePort       | 30080            |
 
 ```yaml
 ---
