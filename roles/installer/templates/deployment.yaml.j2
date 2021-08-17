@@ -297,6 +297,10 @@ spec:
       nodeSelector:
         {{ node_selector | indent(width=8) }}
 {% endif %}
+{% if affinity %}
+      affinity:
+        {{ affinity | indent(width=8) }}
+{% endif %}
 {% if tolerations %}
       tolerations:
         {{ tolerations | indent(width=8) }}
