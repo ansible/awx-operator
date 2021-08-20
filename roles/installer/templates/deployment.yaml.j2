@@ -84,6 +84,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ meta.name }}-redis-data"
               mountPath: "/data"
+          resources: {{ redis_resource_requirements }}
         - image: '{{ image }}:{{ image_version }}'
           name: '{{ meta.name }}-web'
 {% if web_command %}

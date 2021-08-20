@@ -400,6 +400,28 @@ spec:
                         type: string
                     type: object
                 type: object
+              redis_resource_requirements:
+                description: Resource requirements for the redis container
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                      storage:
+                        type: string
+                    type: object
+                  requests:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                      storage:
+                        type: string
+                    type: object
+                type: object
             type: object
           status:
             properties:

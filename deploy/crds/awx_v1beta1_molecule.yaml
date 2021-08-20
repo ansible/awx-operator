@@ -21,3 +21,7 @@ spec:
     requests:
       cpu: 200m
       memory: 64M
+  redis_resource_requirements:
+    requests:
+      cpu: 100m
+      memory: 128M

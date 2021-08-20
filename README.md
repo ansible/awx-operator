@@ -442,6 +442,7 @@ The resource requirements for both, the task and the web containers are configur
 | web_resource_requirements        | Web container resource requirements              | requests: {cpu: 1000m, memory: 2Gi} |
 | task_resource_requirements       | Task container resource requirements             | requests: {cpu: 500m, memory: 1Gi}  |
 | ee_resource_requirements         | EE control plane container resource requirements | requests: {cpu: 500m, memory: 1Gi}  |
+| redis_resource_requirements      | Redis container resource requirements            | requests: {cpu: 200m, memory: 256Mi}|
 
 Example of customization could be:
 
@@ -470,6 +471,13 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
+  redis_resource_requirements:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
 ```
 
 #### Assigning AWX pods to specific nodes
