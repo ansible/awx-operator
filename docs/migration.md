@@ -65,3 +65,17 @@ spec:
   old_postgres_configuration_secret: <resourcename>-old-postgres-configuration
   ...
 ```
+## Important Note
+If you intend to put all the above in one file, make sure to separate each block with three dashes like so:
+
+```yaml
+---
+# Secret key
+
+---
+# Database creds
+
+---
+# AWX Config
+```
+Failing to do so will lead to an inoperable setup.
