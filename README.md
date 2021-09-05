@@ -30,6 +30,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
          * [Extra Settings](#extra-settings)
          * [Service Account](#service-account)
+      * [Uninstall](#uninstall)
    * [Upgrading](#upgrading)
    * [Contributing](#contributing)
    * [Release Process](#release-process)
@@ -759,6 +760,17 @@ Example configuration of environment variables
     service_account_annotations: |
       eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
 ```
+
+
+### Uninstall ###
+
+To uninstall the AWX deployment you need to direct AWX Operator to initiate the removal which will delete all AWX objects except for persistent volumes.
+
+```bash
+$ kubectl delete awx awx-demo
+awx.awx.ansible.com "awx-demo" deleted
+```
+
 
 ### Upgrading
 
