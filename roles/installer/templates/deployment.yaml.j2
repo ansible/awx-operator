@@ -74,6 +74,7 @@ spec:
         - image: '{{ redis_image }}:{{ redis_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+          resources: {{ redis_resource_requirements }}
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ meta.name }}-redis-config

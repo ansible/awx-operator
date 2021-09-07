@@ -99,7 +99,7 @@ kube-system     storage-provisioner                         1/1     Running     
 
 It is not required for `kubectl` to be separately installed since it comes already wrapped inside minikube. As demonstrated above, simply prefix `minikube kubectl --` before kubectl command, i.e. `kubectl get nodes` would become `minikube kubectl -- get nodes`
 
-Let's create an alias for easier usage: 
+Let's create an alias for easier usage:
 
 ```bash
 $ alias kubectl="minikube kubectl --"
@@ -457,6 +457,7 @@ The resource requirements for both, the task and the web containers are configur
 | web_resource_requirements        | Web container resource requirements              | requests: {cpu: 1000m, memory: 2Gi} |
 | task_resource_requirements       | Task container resource requirements             | requests: {cpu: 500m, memory: 1Gi}  |
 | ee_resource_requirements         | EE control plane container resource requirements | requests: {cpu: 500m, memory: 1Gi}  |
+| redis_resource_requirements      | Redis container resource requirements            | requests: {cpu: 500m, memory: 1Gi}  |
 
 Example of customization could be:
 
@@ -479,6 +480,13 @@ spec:
       cpu: 1000m
       memory: 2Gi
   ee_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  redis_resource_requirements:
     requests:
       cpu: 500m
       memory: 1Gi
@@ -842,7 +850,7 @@ After it is built, test it on a local cluster:
 #> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=<new-version> -e pull_policy=Always
 #> kubectl create namespace example-awx
 #> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx -e image=quay.io/<user>/awx -e service_type=nodeport
-#> # Verify that the awx-task and awx-web containers are launched 
+#> # Verify that the awx-task and awx-web containers are launched
 #> # with the right version of the awx image
 #> minikube delete
 ```
