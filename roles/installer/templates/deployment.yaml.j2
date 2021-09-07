@@ -178,6 +178,9 @@ spec:
 {% if task_privileged == true %}
           securityContext:
             privileged: true
+{% else %}
+          securityContext:
+            runAsUser: 65534
 {% endif %}
 {% if task_command %}
           command: {{ task_command }}
