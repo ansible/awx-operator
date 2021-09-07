@@ -189,6 +189,10 @@ spec:
                 - http
                 - https
                 type: string
+              nodeport_port:
+                default: 30080
+                description: Port to use for the nodeport
+                type: integer
               node_selector:
                 description: nodeSelector for the pods
                 type: string
