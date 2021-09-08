@@ -266,7 +266,7 @@ spec:
           name: '{{ meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}
-          args: ['receptor', '--config', '/etc/receptor.conf']
+          args: ['receptor', '--config', '/etc/receptor/receptor.conf']
           volumeMounts:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
@@ -277,7 +277,7 @@ spec:
               readOnly: true
 {% endif %}
             - name: "{{ meta.name }}-receptor-config"
-              mountPath: "/etc/receptor.conf"
+              mountPath: "/etc/receptor/receptor.conf"
               subPath: receptor.conf
               readOnly: true
             - name: receptor-socket
