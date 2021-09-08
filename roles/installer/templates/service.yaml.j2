@@ -44,6 +44,7 @@ spec:
       protocol: TCP
       targetPort: 8052
       name: http
+      nodePort: {{ nodeport_port }}
   type: NodePort
 {% endif %}
   selector:
