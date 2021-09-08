@@ -222,6 +222,10 @@ spec:
               mountPath: "/var/run/awx-rsyslog"
             - name: rsyslog-dir
               mountPath: "/var/lib/awx/rsyslog"
+            - name: "{{ meta.name }}-receptor-config"
+              mountPath: "/etc/receptor/receptor.conf"
+              subPath: receptor.conf
+              readOnly: true
             - name: receptor-socket
               mountPath: "/var/run/receptor"
             - name: "{{ meta.name }}-projects"
