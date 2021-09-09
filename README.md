@@ -771,7 +771,7 @@ $ kubectl delete awx awx-demo
 awx.awx.ansible.com "awx-demo" deleted
 ```
 
-Deleting an AWX instance will remove all related deployments and statefulsets, however, persistent volumes and secrets will remain. To enforce secrets also getting removed, you can use garbage_collect_secrets: true.
+Deleting an AWX instance will remove all related deployments and statefulsets, however, persistent volumes and secrets will remain. To enforce secrets also getting removed, you can use `garbage_collect_secrets: true`.
 
 ### Upgrading
 
