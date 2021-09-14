@@ -621,7 +621,13 @@ rules:
       - routes
       - routes/custom-host
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - ""
       - "rbac.authorization.k8s.io"
@@ -638,7 +644,13 @@ rules:
       - roles
       - rolebindings
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - apps
       - networking.k8s.io
@@ -649,7 +661,13 @@ rules:
       - statefulsets
       - ingresses
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - monitoring.coreos.com
     resources:
@@ -676,6 +694,8 @@ rules:
       - ""
     resources:
       - pods/exec
+      - pods/attach
+      - pods/log  # log & attach rules needed to be able to grant them to AWX service account
     verbs:
       - create
       - get
@@ -685,6 +705,8 @@ rules:
       - replicasets
     verbs:
       - get
+    verbs:
+      - create
   - apiGroups:
       - awx.ansible.com
     resources:
