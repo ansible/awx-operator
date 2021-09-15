@@ -610,7 +610,7 @@ spec:
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   creationTimestamp: null
   name: awx-operator
@@ -705,7 +705,6 @@ rules:
       - replicasets
     verbs:
       - get
-    verbs:
       - create
   - apiGroups:
       - awx.ansible.com
@@ -717,16 +716,15 @@ rules:
       - '*'
 
 ---
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: awx-operator
 subjects:
   - kind: ServiceAccount
     name: awx-operator
-    namespace: default
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: awx-operator
   apiGroup: rbac.authorization.k8s.io
 
@@ -735,7 +733,6 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: awx-operator
-  namespace: default
 
 ---
 apiVersion: apps/v1
@@ -761,9 +758,11 @@ spec:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
           env:
-            # Watch all namespaces (cluster-scoped).
+            # Watch one namespace (namespace-scoped).
             - name: WATCH_NAMESPACE
-              value: ""
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:

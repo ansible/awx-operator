@@ -1,6 +1,6 @@
 ### Don't run this deployment in production
 ### The current configuration will run the
-### OKD console without any autentication!!!!
+### OKD console without any authentication!!!!
 ###
 ### A prerequisite is to install the OLM
 ### as instructed at https://olm.operatorframework.io/docs/getting-started/#install-released-olm

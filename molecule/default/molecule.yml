@@ -26,4 +26,4 @@ provisioner:
   inventory:
     group_vars:
       all:
-        operator_namespace: ${TEST_NAMESPACE:-default}
+        operator_namespace: ${TEST_NAMESPACE:-example-awx}
