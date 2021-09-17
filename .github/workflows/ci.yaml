@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install \
-            molecule \
+            "molecule<3.5" \
             molecule-docker \
             yamllint \
             ansible-lint \
@@ -47,5 +47,7 @@ jobs:
       - name: Run Molecule
         env:
           MOLECULE_VERBOSITY: 3
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
         run: |
           molecule test -s test-minikube
