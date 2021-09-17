@@ -109,6 +109,10 @@ spec:
                   description: Port to use for the loadbalancer
                   type: integer
                   default: 80
+                nodeport_port:
+                  description: Port to use for the nodeport
+                  type: integer
+                  default: 30080
                 route_host:
                   description: The DNS to use to points to the instance
                   type: string
@@ -124,10 +128,6 @@ spec:
                 route_tls_secret:
                   description: Secret where the TLS related credentials are stored
                   type: string
-                nodeport_port:
-                  description: Port to use for the nodeport
-                  type: integer
-                  default: 30080
                 node_selector:
                   description: nodeSelector for the pods
                   type: string
