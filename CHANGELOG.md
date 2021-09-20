@@ -2,6 +2,10 @@
 
 This is a list of high-level changes for each release of `awx-operator`. A full list of commits can be found at `https://github.com/ansible/awx-operator/releases/tag/<version>`.
 
+# 0.14.0 (TBA)
+
+- Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. See [upgrade docs](#upgrading) for necessary cleanup actions. (Christian Adams) - 58c3ebf (breaking change)
+
 # 0.10.0 (Jun 1, 2021)
 
 - Make tower_ingress_type to respect ClusterIP definition (Marcelo Moreira de Mello) - e37c091 (breaking_change)

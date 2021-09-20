@@ -795,6 +795,11 @@ To upgrade AWX, it is recommended to upgrade the awx-operator to the version tha
 Apply the awx-operator.yml for that release to upgrade the operator, and in turn also upgrade your AWX deployment.
 
 
+**Cluster-scope to Namespace-scope considerations**
+
+Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. This is called a namespace-scoped operator. If you are upgrading from an earlier version, you will want to 
+delete your existing `awx-operator` service account, role and role binding.
+
 ## Contributing
 
 Please visit [our contributing guidelines](https://github.com/ansible/awx-operator/blob/devel/CONTRIBUTING.md).
