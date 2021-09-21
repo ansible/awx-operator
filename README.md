@@ -106,10 +106,11 @@ Let's create an alias for easier usage:
 $ alias kubectl="minikube kubectl --"
 ```
 
-Now you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release. Replace `<TAG>` in the URL `https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml` with the version you are deploying.
+Now you need to deploy the AWX Operator into your cluster. Start by going to the [release page](https://github.com/vrubiolo/awx-operator/releases) and make note of the latest release. Replace `$TAG` below with that version.
 
 ```bash
-$ kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml
+$ export AWX_VERSION_TAG="0.13.0"
+$ kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/$AWX_VERSION_TAG/deploy/awx-operator.yaml
 customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
