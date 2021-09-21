@@ -19,7 +19,7 @@ provisioner:
   inventory:
     group_vars:
       all:
-        operator_namespace: ${TEST_NAMESPACE:-default}
+        operator_namespace: ${TEST_NAMESPACE:-example-awx}
   env:
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
 scenario:

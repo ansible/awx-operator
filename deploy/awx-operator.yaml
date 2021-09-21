@@ -610,7 +610,7 @@ spec:
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   creationTimestamp: null
   name: awx-operator
@@ -621,7 +621,13 @@ rules:
       - routes
       - routes/custom-host
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - ""
       - "rbac.authorization.k8s.io"
@@ -638,7 +644,13 @@ rules:
       - roles
       - rolebindings
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - apps
       - networking.k8s.io
@@ -649,7 +661,13 @@ rules:
       - statefulsets
       - ingresses
     verbs:
-      - '*'
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
   - apiGroups:
       - monitoring.coreos.com
     resources:
@@ -676,6 +694,8 @@ rules:
       - ""
     resources:
       - pods/exec
+      - pods/attach
+      - pods/log  # log & attach rules needed to be able to grant them to AWX service account
     verbs:
       - create
       - get
@@ -685,6 +705,7 @@ rules:
       - replicasets
     verbs:
       - get
+      - create
   - apiGroups:
       - awx.ansible.com
     resources:
@@ -695,16 +716,15 @@ rules:
       - '*'
 
 ---
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: awx-operator
 subjects:
   - kind: ServiceAccount
     name: awx-operator
-    namespace: default
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: awx-operator
   apiGroup: rbac.authorization.k8s.io
 
@@ -713,7 +733,6 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: awx-operator
-  namespace: default
 
 ---
 apiVersion: apps/v1
@@ -739,9 +758,11 @@ spec:
             - mountPath: /tmp/ansible-operator/runner
               name: runner
           env:
-            # Watch all namespaces (cluster-scoped).
+            # Watch one namespace (namespace-scoped).
             - name: WATCH_NAMESPACE
-              value: ""
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:
