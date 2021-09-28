@@ -63,6 +63,7 @@ metadata:
   name: awx
 spec:
   old_postgres_configuration_secret: <resourcename>-old-postgres-configuration
+  secret_key_secret: <resourcename>-secret-key
   ...
 ```
 ## Important Note
