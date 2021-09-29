@@ -97,7 +97,7 @@
       rescue:
 
         - name: debug cr
-          ignore_errors: yes
+          ignore_errors: yes  # noqa ignore-errors
           failed_when: false
           debug:
             var: debug_cr
@@ -110,7 +110,7 @@
             }}'
 
         - name: debug awx deployment
-          ignore_errors: yes
+          ignore_errors: yes  # noqa ignore-errors
           failed_when: false
           debug:
             var: deploy
