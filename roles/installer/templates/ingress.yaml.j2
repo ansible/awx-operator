@@ -17,8 +17,7 @@ metadata:
 {% endif %}
 spec:
   rules:
-    - host: '{{ hostname }}'
-      http:
+    - http:
         paths:
           - path: '{{ ingress_path }}'
             pathType: Prefix
@@ -27,6 +26,9 @@ spec:
                 name: '{{ ansible_operator_meta.name }}-service'
                 port:
                   number: 80
+{% if hostname %}      
+      host: {{ hostname }}
+{% endif %}      
 {% if ingress_tls_secret %}
   tls:
     - hosts:
