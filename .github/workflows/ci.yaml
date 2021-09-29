@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Collections
         run: |
-         ansible-galaxy collection install community.general kubernetes.core:1.2.1 operator_sdk.util community.docker
+          ansible-galaxy collection install community.general kubernetes.core:1.2.1 operator_sdk.util community.docker
 
       - name: Run Molecule
         env:
