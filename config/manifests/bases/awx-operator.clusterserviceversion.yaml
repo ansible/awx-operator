@@ -1,4 +1,3 @@
----
 apiVersion: operators.coreos.com/v1beta1
 kind: ClusterServiceVersion
 metadata:
@@ -13,27 +12,27 @@ spec:
   description: An operator for the AWX Project
   displayName: AWX
   icon:
-    - base64data: ""
-      mediatype: ""
+  - base64data: ""
+    mediatype: ""
   install:
     spec:
       deployments: null
     strategy: ""
   installModes:
-    - supported: false
-      type: OwnNamespace
-    - supported: false
-      type: SingleNamespace
-    - supported: false
-      type: MultiNamespace
-    - supported: true
-      type: AllNamespaces
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: true
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
   keywords:
-    - automation
-    - ansible
+  - automation
+  - ansible
   links:
-    - name: Awx Operator
-      url: https://awx-operator.domain
+  - name: Awx Operator
+    url: https://awx-operator.domain
   maturity: alpha
   provider:
     name: Ansible
