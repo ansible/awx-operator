@@ -78,7 +78,7 @@
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # noqa 204
+    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # yamllint disable-line rule:line-length
   no_log: true
 
 - name: Set pg_dump command

@@ -60,8 +60,7 @@ spec:
               type: object
               properties:
                 conditions:
-                  description: The resulting conditions when a Service Telemetry is
-                    instantiated
+                  description: The resulting conditions when a Service Telemetry is instantiated
                   items:
                     properties:
                       lastTransitionTime:
