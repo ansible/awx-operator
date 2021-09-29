@@ -469,8 +469,8 @@ spec:
 
 If you are attempting to do this on an OpenShift cluster, you will need to grant the `awx` ServiceAccount the `privileged` SCC, which can be done with:
 
-```sh
-#> oc adm policy add-scc-to-user privileged -z awx
+```
+$ oc adm policy add-scc-to-user privileged -z awx
 ```
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
@@ -583,7 +583,7 @@ spec:
 
 To create the secret, you can use the command below:
 
-```sh
+```
 # kubectl create secret generic <resourcename>-custom-certs \
     --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>  \
     --from-file=bundle-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
@@ -839,69 +839,39 @@ Please visit [our contributing guidelines](https://github.com/ansible/awx-operat
 
 ## Release Process
 
-There are a few moving parts to this project:
-
-  * The `awx-operator` container image which powers AWX Operator
-  * The `awx-operator.yaml` file, which initially deploys the Operator
-  * The ClusterServiceVersion (CSV), which is generated as part of the bundle and needed for the olm-catalog
-
-Each of these must be appropriately built in preparation for a new tag:
-
 ### Update version and files
 
 Update the awx-operator version:
 
-  - `ansible/group_vars/all`
-
-Once the version has been updated, run from the root of the repo:
-
-```sh
-#> ansible-playbook ansible/chain-operator-files.yml
-```
-
-Generate the olm-catalog bundle.
-
-```bash
-$ operator-sdk generate bundle --operator-name awx-operator --version <new_tag>
-```
-
-> This should be done with operator-sdk v0.19.4.
-
-> It is a good idea to use the [build script](./build.sh) at this point to build the catalog and test out installing it in Operator Hub.
+  - `Makefile`
 
 ### Verify Functionality
 
 Run the following command inside this directory:
 
-```sh
-#> operator-sdk build quay.io/<user>/awx-operator:<new-version>
 ```
-
-Then push the generated image to Docker Hub:
-
-```sh
-#> docker push quay.io/<user>/awx-operator:<new-version>
+$ IMAGE_TAG_BASE=quay.io/<user>/awx-operator make docker-build docker-push
 ```
 
 After it is built, test it on a local cluster:
 
-
-```sh
-#> minikube start --memory 6g --cpus 4
-#> minikube addons enable ingress
-#> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=<new-version> -e pull_policy=Always
-#> kubectl create namespace example-awx
-#> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx -e image=quay.io/<user>/awx -e service_type=nodeport
-#> # Verify that the awx-task and awx-web containers are launched
-#> # with the right version of the awx image
-#> minikube delete
+```
+$ minikube start --memory 6g --cpus 4
+$ minikube addons enable ingress
+$ export NAMESPACE=example-awx
+$ make deploy
+$ ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=$NAMESPACE -e image=quay.io/<user>/awx -e service_type=nodeport
+$ # Verify that the awx-task and awx-web containers are launched
+$ # with the right version of the awx image
+$ # Launch a job at `minikube service awx-demo-service --url -n $NAMESPACE`
+$ minikube delete
 ```
 
 ### Update changelog
 
 Generate a list of commits between the versions and add it to the [changelog](./CHANGELOG.md).
-```sh
-#> git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
+```
+$ git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
 ```
 
 ### Commit / Create Release
