@@ -54,23 +54,19 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 For testing purposes, the `awx-operator` can be deployed on a [Minikube](https://minikube.sigs.k8s.io/docs/) cluster. Due to different OS and hardware environments, please refer to the official Minikube documentation for further information.
 
-```bash
-$ minikube start --addons=ingress --cpus=4 --cni=flannel --install-addons=true \
-    --kubernetes-version=stable --memory=6g
-😄  minikube v1.20.0 on Fedora 34
-✨  Using the kvm2 driver based on user configuration
+```
+$ minikube start --cpus=4 --memory=6g --addons=ingress
+😄  minikube v1.23.2 on Fedora 34
+✨  Using the docker driver based on existing profile
 👍  Starting control plane node minikube in cluster minikube
-🔥  Creating kvm2 VM (CPUs=4, Memory=6144MB, Disk=20000MB) ...
-🐳  Preparing Kubernetes v1.20.2 on Docker 20.10.6 ...
-    ▪ Generating certificates and keys ...
-    ▪ Booting up control plane ...
-    ▪ Configuring RBAC rules ...
-🔗  Configuring Flannel (Container Networking Interface) ...
+🚜  Pulling base image ...
+🏃  Updating the running docker "minikube" container ...
+🐳  Preparing Kubernetes v1.22.2 on Docker 20.10.8 ...
 🔎  Verifying Kubernetes components...
-    ▪ Using image docker.io/jettech/kube-webhook-certgen:v1.5.1
-    ▪ Using image k8s.gcr.io/ingress-nginx/controller:v0.44.0
     ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
-    ▪ Using image docker.io/jettech/kube-webhook-certgen:v1.5.1
+    ▪ Using image k8s.gcr.io/ingress-nginx/controller:v1.0.0-beta.3
+    ▪ Using image k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
+    ▪ Using image k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
 🔎  Verifying ingress addon...
 🌟  Enabled addons: storage-provisioner, default-storageclass, ingress
 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
@@ -78,56 +74,74 @@ $ minikube start --addons=ingress --cpus=4 --cni=flannel --install-addons=true \
 
 Once Minikube is deployed, check if the node(s) and `kube-apiserver` communication is working as expected.
 
-```bash
+```
 $ minikube kubectl -- get nodes
-NAME       STATUS   ROLES                  AGE     VERSION
-minikube   Ready    control-plane,master   6m28s   v1.20.2
+NAME       STATUS   ROLES                  AGE    VERSION
+minikube   Ready    control-plane,master   113s   v1.22.2
 
 $ minikube kubectl -- get pods -A
 NAMESPACE       NAME                                        READY   STATUS      RESTARTS   AGE
-ingress-nginx   ingress-nginx-admission-create-tjk94        0/1     Completed   0          6m4s
-ingress-nginx   ingress-nginx-admission-patch-r4pl6         0/1     Completed   0          6m4s
-ingress-nginx   ingress-nginx-controller-5d88495688-sbtp9   1/1     Running     0          6m4s
-kube-system     coredns-74ff55c5b-2wz6n                     1/1     Running     0          6m4s
-kube-system     etcd-minikube                               1/1     Running     0          6m13s
-kube-system     kube-apiserver-minikube                     1/1     Running     0          6m13s
-kube-system     kube-controller-manager-minikube            1/1     Running     0          6m13s
-kube-system     kube-flannel-ds-amd64-lw7lv                 1/1     Running     0          6m3s
-kube-system     kube-proxy-lcxx7                            1/1     Running     0          6m3s
-kube-system     kube-scheduler-minikube                     1/1     Running     0          6m13s
-kube-system     storage-provisioner                         1/1     Running     1          6m17s
+ingress-nginx   ingress-nginx-admission-create--1-kk67h     0/1     Completed   0          2m1s
+ingress-nginx   ingress-nginx-admission-patch--1-7mp2r      0/1     Completed   1          2m1s
+ingress-nginx   ingress-nginx-controller-69bdbc4d57-bmwg8   1/1     Running     0          2m
+kube-system     coredns-78fcd69978-q7nmx                    1/1     Running     0          2m
+kube-system     etcd-minikube                               1/1     Running     0          2m12s
+kube-system     kube-apiserver-minikube                     1/1     Running     0          2m16s
+kube-system     kube-controller-manager-minikube            1/1     Running     0          2m12s
+kube-system     kube-proxy-5mmnw                            1/1     Running     0          2m1s
+kube-system     kube-scheduler-minikube                     1/1     Running     0          2m15s
+kube-system     storage-provisioner                         1/1     Running     0          2m11s
 ```
 
 It is not required for `kubectl` to be separately installed since it comes already wrapped inside minikube. As demonstrated above, simply prefix `minikube kubectl --` before kubectl command, i.e. `kubectl get nodes` would become `minikube kubectl -- get nodes`
 
-Let's create an alias for easier usage: 
+Let's create an alias for easier usage:
 
-```bash
+```
 $ alias kubectl="minikube kubectl --"
 ```
 
-Now you need to deploy AWX Operator into your cluster. Start by going to https://github.com/ansible/awx-operator/releases and making note of the latest release. Replace `<TAG>` in the URL `https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml` with the version you are deploying.
+Now you need to deploy AWX Operator into your cluster. Clone this repo and `git checkout` the latest version from https://github.com/ansible/awx-operator/releases, and then run the following command:
 
-```bash
-$ kubectl apply -f https://raw.githubusercontent.com/ansible/awx-operator/<TAG>/deploy/awx-operator.yaml
-customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+```
+$ export NAMESPACE=my-namespace
+$ make deploy
+cd config/manager && /home/user/awx-operator/bin/kustomize edit set image controller=quay.io/ansible/awx-operator:0.14.0
+/home/user/awx-operator/bin/kustomize build config/default | kubectl apply -f -
+namespace/my-namespace created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
-clusterrole.rbac.authorization.k8s.io/awx-operator created
-clusterrolebinding.rbac.authorization.k8s.io/awx-operator created
-serviceaccount/awx-operator created
-deployment.apps/awx-operator created
+customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+serviceaccount/awx-operator-controller-manager created
+role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
+role.rbac.authorization.k8s.io/awx-operator-manager-role created
+clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
+clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
+rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
+rolebinding.rbac.authorization.k8s.io/awx-operator-manager-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
+configmap/awx-operator-manager-config created
+service/awx-operator-controller-manager-metrics-service created
+deployment.apps/awx-operator-controller-manager created
 ```
 
-Wait a few minutes and you should have the `awx-operator` running.
+Wait a bit and you should have the `awx-operator` running:
 
-```bash
-$ kubectl get pods
-NAME                            READY   STATUS    RESTARTS   AGE
-awx-operator-7dbf9db9d7-z9hqx   1/1     Running   0          50s
+```
+$ kubectl get pods -n $NAMESPACE
+NAME                                               READY   STATUS    RESTARTS   AGE
+awx-operator-controller-manager-66ccd8f997-rhd4z   2/2     Running   0          11s
 ```
 
-Then create a file named `awx-demo.yml` with the suggested content. The `metadata.name` you provide, will be the name of the resulting AWX deployment.  If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
+So we don't have to keep repeating `-n $NAMESPACE`, let's set the current namespace for `kubectl`:
+
+```
+$ kubectl config set-context --current --namespace=$NAMESPACE 
+```
+
+Next, create a file named `awx-demo.yml` with the suggested content below. The `metadata.name` you provide, will be the name of the resulting AWX deployment.
+
+**Note:** If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
 ```yaml
 ---
@@ -137,20 +151,24 @@ metadata:
   name: awx-demo
 spec:
   service_type: nodeport
-  ingress_type: none
-  hostname: awx-demo.example.com
 ```
 
 Finally, use `kubectl` to create the awx instance in your cluster:
 
-```bash
+```
 $ kubectl apply -f awx-demo.yml
 awx.awx.ansible.com/awx-demo created
 ```
 
-After a few minutes, the new AWX instance will be deployed. One can look at the operator pod logs in order to know where the installation process is at. This can be done by running the following command: `kubectl logs -f deployments/awx-operator`.
+After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
 
-```bash
+```
+$ kubectl logs -f deployments/awx-operator-controller-manager -c manager
+```
+
+After a few seconds, you should see the operator begin to create new resources:
+
+```
 $ kubectl get pods -l "app.kubernetes.io/managed-by=awx-operator"
 NAME                        READY   STATUS    RESTARTS   AGE
 awx-demo-77d96f88d5-pnhr8   4/4     Running   0          3m24s
@@ -162,11 +180,20 @@ awx-demo-postgres   ClusterIP   None           <none>        5432/TCP       4m4s
 awx-demo-service    NodePort    10.109.40.38   <none>        80:31006/TCP   3m56s
 ```
 
-Once deployed, the AWX instance will be accessible by the command `minikube service awx-demo-service --url`.
+Once deployed, the AWX instance will be accessible by running:
 
-By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run `kubectl get secret <resourcename>-admin-password -o jsonpath="{.data.password}" | base64 --decode`
+```
+$ minikube service awx-demo-service --url -n $NAMESPACE
+```
 
-You just completed the most basic install of an AWX instance via this operator. Congratulations!!!!
+By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run:
+
+```
+$ kubectl get secret awx-demo-admin-password -o jsonpath="{.data.password}" | base64 --decode
+yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
+```
+
+You just completed the most basic install of an AWX instance via this operator. Congratulations!!!
 
 For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
 
@@ -351,7 +378,7 @@ stringData:
 type: Opaque
 ```
 
-> It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.  
+> It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 
 **Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
 
@@ -781,7 +808,7 @@ Example configuration of environment variables
 
 To uninstall an AWX deployment instance, you basically need to remove the AWX kind related to that instance. For example, to delete an AWX instance named awx-demo, you would do:
 
-```bash
+```
 $ kubectl delete awx awx-demo
 awx.awx.ansible.com "awx-demo" deleted
 ```
@@ -797,7 +824,7 @@ Apply the awx-operator.yml for that release to upgrade the operator, and in turn
 
 **Cluster-scope to Namespace-scope considerations**
 
-Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. This is called a namespace-scoped operator. If you are upgrading from an earlier version, you will want to 
+Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. This is called a namespace-scoped operator. If you are upgrading from an earlier version, you will want to
 delete your existing `awx-operator` service account, role and role binding.
 
 ## Contributing
@@ -833,7 +860,7 @@ Generate the olm-catalog bundle.
 $ operator-sdk generate bundle --operator-name awx-operator --version <new_tag>
 ```
 
-> This should be done with operator-sdk v0.19.4.  
+> This should be done with operator-sdk v0.19.4.
 
 > It is a good idea to use the [build script](./build.sh) at this point to build the catalog and test out installing it in Operator Hub.
 
@@ -860,7 +887,7 @@ After it is built, test it on a local cluster:
 #> ansible-playbook ansible/deploy-operator.yml -e operator_image=quay.io/<user>/awx-operator -e operator_version=<new-version> -e pull_policy=Always
 #> kubectl create namespace example-awx
 #> ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=example-awx -e image=quay.io/<user>/awx -e service_type=nodeport
-#> # Verify that the awx-task and awx-web containers are launched 
+#> # Verify that the awx-task and awx-web containers are launched
 #> # with the right version of the awx image
 #> minikube delete
 ```
