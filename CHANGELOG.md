@@ -4,7 +4,7 @@ This is a list of high-level changes for each release of `awx-operator`. A full 
 
 # 0.14.0 (TBA)
 
-- Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. See [upgrade docs](#upgrading) for necessary cleanup actions. (Christian Adams) - 58c3ebf (breaking change)
+- Starting with awx-operator 0.14.0, AWX can only be deployed in the namespace that the operator exists in. See [upgrade docs](./README.md#upgrading) for necessary cleanup actions. (Christian Adams) - 58c3ebf (breaking change)
 
 # 0.10.0 (Jun 1, 2021)
 
