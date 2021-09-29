@@ -2,7 +2,7 @@
 
 - name: Delete any existing management pod
   k8s:
-    name: "{{ meta.name }}-db-management"
+    name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Pod
     namespace: "{{ backup_pvc_namespace }}"
     state: absent

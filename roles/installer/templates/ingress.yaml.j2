@@ -3,11 +3,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: '{{ meta.name }}-ingress'
-  namespace: '{{ meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}-ingress'
+  namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ meta.name }}'
-    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -24,7 +24,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: '{{ meta.name }}-service'
+                name: '{{ ansible_operator_meta.name }}-service'
                 port:
                   number: 80
 {% if ingress_tls_secret %}
@@ -40,11 +40,11 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: '{{ meta.name }}'
-  namespace: '{{ meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ meta.name }}'
-    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -69,7 +69,7 @@ spec:
 {% endif %}
   to:
     kind: Service
-    name: {{ meta.name }}-service
+    name: {{ ansible_operator_meta.name }}-service
     weight: 100
   wildcardPolicy: None
 {% endif %}

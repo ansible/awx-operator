@@ -3,8 +3,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       adminPasswordSecret: "{{ __admin_password_secret['resources'][0]['metadata']['name'] }}"
 
@@ -12,8 +12,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       adminUser: "{{ admin_user }}"
 
@@ -21,8 +21,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       postgresConfigurationSecret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
@@ -30,8 +30,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       broadcastWebsocketSecret: "{{ __broadcast_websocket_secret['resources'][0]['metadata']['name'] }}"
 
@@ -39,16 +39,16 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       secretKeySecret: "{{ secret_key_secret_name }}"
 
 - name: Retrieve instance version
   k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
-    container: "{{ meta.name }}-task"
+    container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage --version"
   register: instance_version
@@ -58,8 +58,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       version: "{{ instance_version.stdout | trim }}"
 
@@ -67,8 +67,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       image: "{{ image }}"
 
@@ -77,16 +77,16 @@
       k8s_info:
         api_version: 'route.openshift.io/v1'
         kind: Route
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}'
       register: route_url
 
     - name: Update URL status
       operator_sdk.util.k8s_status:
         api_version: '{{ api_version }}'
         kind: "{{ kind }}"
-        name: "{{ meta.name }}"
-        namespace: "{{ meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
         status:
           URL: "https://{{ route_url['resources'][0]['status']['ingress'][0]['host'] }}"
 
@@ -96,8 +96,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       migratedFromSecret: "{{ tower_migrated_from_secret }}"
   when: tower_migrated_from_secret is defined

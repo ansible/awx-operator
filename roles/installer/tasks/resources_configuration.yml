@@ -4,9 +4,9 @@
   k8s_info:
     api_version: v1
     kind: Pod
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ meta.name }}"
+      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}"
       - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
@@ -30,7 +30,7 @@
     - 'persistent'
     - 'service'
     - 'ingress'
-  no_log: true
+  # no_log: true
 
 - name: Apply deployment resources
   k8s:
@@ -45,7 +45,7 @@
         api_version: v1
         state: absent
         kind: Pod
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         name: '{{ tower_pod_name }}'
         wait: yes
       when:
@@ -55,9 +55,9 @@
     - name: Get the new resource pod information after updating resource.
       k8s_info:
         kind: Pod
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
-          - "app.kubernetes.io/name={{ meta.name }}"
+          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}"
           - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
           - "app.kubernetes.io/component={{ deployment_type }}"
         field_selectors:

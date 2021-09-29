@@ -4,7 +4,7 @@
   k8s_info:
     version: v1beta1
     kind: AWX
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ deployment_name }}'
   register: _awx_cro
 
@@ -29,6 +29,6 @@
 - name: Write awx object to pvc
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       bash -c 'echo "$0" > {{ backup_dir  }}/awx_object' {{ awx_spec | to_yaml | quote  }}

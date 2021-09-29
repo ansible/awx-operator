@@ -5,14 +5,14 @@
     definition:
       apiVersion: '{{ api_version }}'
       kind: '{{ kind }}'
-      name: '{{ meta.name }}'
-      namespace: '{{ meta.namespace }}'
+      name: '{{ ansible_operator_meta.name }}'
+      namespace: '{{ ansible_operator_meta.namespace }}'
       metadata:
-        name: '{{ meta.name }}'
-        namespace: '{{ meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         labels:
-          app.kubernetes.io/name: '{{ meta.name }}'
-          app.kubernetes.io/part-of: '{{ meta.name }}'
+          app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+          app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
           app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
           app.kubernetes.io/component: '{{ deployment_type }}'
           app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -21,8 +21,8 @@
   k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_restore
 
 - block:

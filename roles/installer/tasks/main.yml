@@ -5,14 +5,14 @@
     definition:
       apiVersion: '{{ api_version }}'
       kind: '{{ kind }}'
-      name: '{{ meta.name }}'
-      namespace: '{{ meta.namespace }}'
+      name: '{{ ansible_operator_meta.name }}'
+      namespace: '{{ ansible_operator_meta.namespace }}'
       metadata:
-        name: '{{ meta.name }}'
-        namespace: '{{ meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         labels:
-          app.kubernetes.io/name: '{{ meta.name }}'
-          app.kubernetes.io/part-of: '{{ meta.name }}'
+          app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+          app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
           app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
           app.kubernetes.io/component: '{{ deployment_type }}'
           app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -50,9 +50,9 @@
 
 - name: Check for pending migrations
   k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
-    container: "{{ meta.name }}-task"
+    container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
   changed_when: false
@@ -60,9 +60,9 @@
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
   k8s_exec:
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
-    container: "{{ meta.name }}-task"
+    container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage migrate --noinput"
   register: migrate_result

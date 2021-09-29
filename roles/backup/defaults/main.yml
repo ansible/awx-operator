@@ -6,7 +6,7 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
 # Specify a pre-created PVC (name) to backup to
 backup_pvc: ''
-backup_pvc_namespace: "{{ meta.namespace }}"
+backup_pvc_namespace: "{{ ansible_operator_meta.namespace }}"
 
 # Size of backup PVC if created dynamically
 backup_storage_requirements: ''

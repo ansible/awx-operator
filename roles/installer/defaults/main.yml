@@ -53,7 +53,7 @@ route_tls_secret: ''
 #
 route_host: ''
 
-hostname: '{{ meta.name }}.example.com'
+hostname: '{{ ansible_operator_meta.name }}.example.com'
 
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:

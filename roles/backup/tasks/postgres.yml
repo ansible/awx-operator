@@ -3,7 +3,7 @@
 - name: Get PostgreSQL configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     name: "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"
   register: pg_config
   no_log: true
@@ -32,7 +32,7 @@
     - name: Get the postgres pod information
       k8s_info:
         kind: Pod
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
           - "{{ postgres_label_selector }}"
       register: postgres_pod
@@ -58,27 +58,27 @@
 - name: Create directory for backup
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       mkdir -p {{ backup_dir }}
 
 - name: Precreate file for database dump
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       touch {{ backup_dir }}/tower.db
 
 - name: Set permissions on file for database dump
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       bash -c "chmod 0600 {{ backup_dir }}/tower.db && chown postgres:root {{ backup_dir }}/tower.db"
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # noqa 204
+    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # noqa 204
   no_log: true
 
 - name: Set pg_dump command
@@ -95,7 +95,7 @@
 - name: Write pg_dump to backup on PVC
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: |
       bash -c """
       set -e -o pipefail

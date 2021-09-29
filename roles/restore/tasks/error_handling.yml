@@ -7,5 +7,5 @@
 - name: Emit ocp event with error
   k8s:
     kind: Event
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     template: "event.yml.j2"
