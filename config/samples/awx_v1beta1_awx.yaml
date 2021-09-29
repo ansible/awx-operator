@@ -10,11 +10,11 @@ spec:
   ingress_type: ingress
   web_resource_requirements:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 128M
   task_resource_requirements:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 128M
   ee_resource_requirements:
     requests:
