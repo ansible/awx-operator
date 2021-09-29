@@ -1,39 +1,28 @@
 ---
-- name: Prepare operator resources
+- name: Prepare
   hosts: localhost
   connection: local
-
-  vars:
-    ansible_python_interpreter: '{{ ansible_playbook_python }}'
-    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
-    templates_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/templates"
-  vars_files:
-    - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/ansible/group_vars/all"
+  gather_facts: false
 
   tasks:
-    - name: Create AWX Custom Resource Definition
-      k8s:
-        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awx_v1beta1_crd.yaml'])) }}"
+    - name: Ensure operator image is set
+      fail:
+        msg: |
+          You must specify the OPERATOR_IMAGE environment variable in order to run the
+          'default' scenario
+      when: not operator_image
 
-    - name: Create AWXBackup Custom Resource Definition
-      k8s:
-        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awxbackup_v1beta1_crd.yaml'])) }}"
+    - name: Set testing image
+      command: '{{ kustomize }} edit set image testing={{ operator_image }}'
+      args:
+        chdir: '{{ config_dir }}/testing'
 
-    - name: Create AWXRestore Custom Resource Definition
-      k8s:
-        definition: "{{ lookup('file', '/'.join([deploy_dir, 'crds/awxrestore_v1beta1_crd.yaml'])) }}"
+    - name: Set pull policy
+      command: '{{ kustomize }} edit add patch --path pull_policy/{{ operator_pull_policy }}.yaml'
+      args:
+        chdir: '{{ config_dir }}/testing'
 
-    - name: Ensure specified namespace is present
-      k8s:
-        api_version: v1
-        kind: Namespace
-        name: '{{ operator_namespace }}'
-
-    - name: Create RBAC resources
-      k8s:
-        definition: "{{ lookup('template', '/'.join([templates_dir, item])) }}"
-        namespace: '{{ operator_namespace }}'
-      with_items:
-        - role.yml.j2
-        - role_binding.yml.j2
-        - service_account.yml.j2
+    - name: Set testing namespace
+      command: '{{ kustomize }} edit set namespace {{ namespace }}'
+      args:
+        chdir: '{{ config_dir }}/testing'

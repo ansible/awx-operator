@@ -4,6 +4,7 @@ extends: default
 ignore: |
   .cache/
   deploy/olm-catalog
+  config/testing/kustomization.yaml
 
 rules:
   truthy: disable

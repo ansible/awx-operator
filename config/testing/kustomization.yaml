@@ -1,4 +1,3 @@
----
 # Adds namespace to all resources.
 namespace: osdk-test
 namePrefix: osdk-
@@ -6,15 +5,17 @@ namePrefix: osdk-
 # commonLabels:
 #   someName: someValue
 patchesStrategicMerge:
-  - manager_image.yaml
-  - debug_logs_patch.yaml
-  - ../default/manager_auth_proxy_patch.yaml
+- manager_image.yaml
+- debug_logs_patch.yaml
+- ../default/manager_auth_proxy_patch.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../crd
-  - ../rbac
-  - ../manager
+- ../crd
+- ../rbac
+- ../manager
 images:
-  - name: testing
-    newName: testing-operator
+- name: testing
+  newName: testing-operator
+patches:
+- path: pull_policy/Never.yaml
