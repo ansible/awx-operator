@@ -1,0 +1,24 @@
+# permissions for end users to edit awxs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: awx-editor-role
+rules:
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxs/status
+  verbs:
+  - get

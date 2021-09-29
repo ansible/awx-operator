@@ -1,8 +1,9 @@
 ---
+# Use the 'create api' subcommand to add watches to this file.
 - version: v1beta1
   group: awx.ansible.com
   kind: AWX
-  playbook: /opt/ansible/main.yml
+  role: installer
 
 - version: v1beta1
   group: awx.ansible.com
@@ -13,3 +14,4 @@
   group: awx.ansible.com
   kind: AWXRestore
   role: restore
+#+kubebuilder:scaffold:watch
