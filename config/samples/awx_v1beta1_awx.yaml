@@ -8,6 +8,8 @@ spec:
     foo: bar
   deployment_type: awx
   ingress_type: ingress
+  ingress_annotations: |
+    kubernetes.io/ingress.class: nginx
   web_resource_requirements:
     requests:
       cpu: 250m

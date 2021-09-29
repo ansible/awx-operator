@@ -1,0 +1,29 @@
+---
+- name: Prepare
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - kubernetes.core
+  vars:
+    nginx_ingress_definition: 'https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml'
+  tasks:
+    - name: Install NGINX ingress
+      k8s:
+        definition: |
+          {{ lookup('url', nginx_ingress_definition, split_lines=False) | from_yaml_all }}
+
+    - name: Wait for NGINX ingress to become available
+      k8s_info:
+        kind: Pod
+        namespace: ingress-nginx
+        label_selectors:
+          - app.kubernetes.io/component=controller
+        wait: yes
+        wait_timeout: 30
+        wait_condition:
+          type: Ready
+      register: result  # For some reason, this task always fails on the first try...
+      until: result is not failed
+
+- import_playbook: ../default/prepare.yml

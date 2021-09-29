@@ -13,7 +13,18 @@
   vars:
     cr_file: 'awx_v1beta1_awx.yaml'
 
-# - name: Add assertions here
-#   assert:
-#     that: false
-#     fail_msg: FIXME Add real assertions for your operator
+- name: Obtain generated admin password
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Secret
+    name: example-awx-admin-password
+  register: admin_pw_secret
+
+- name: Launch Demo Job Template
+  awx.awx.job_launch:
+    name: Demo Job Template
+    wait: yes
+    validate_certs: no
+    controller_host: localhost
+    controller_username: admin
+    controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
