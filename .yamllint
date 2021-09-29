@@ -3,8 +3,9 @@ extends: default
 
 ignore: |
   .cache/
-  deploy/olm-catalog
-  config/testing/kustomization.yaml
+  kustomization.yaml
+  awx-operator.clusterserviceversion.yaml
+  bundle
 
 rules:
   truthy: disable
