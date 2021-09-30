@@ -8,4 +8,4 @@
   k8s:
     kind: Event
     namespace: "{{ ansible_operator_meta.namespace }}"
-    template: "event.yml.j2"
+    definition: "{{ lookup('template', 'event.yml.j2') }}"

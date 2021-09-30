@@ -76,7 +76,7 @@
     name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Deployment
     state: present
-    template: "management-pod.yml.j2"
+    definition: "{{ lookup('template', 'management-pod.yml.j2') }}"
     wait: true
 
 - name: Check to make sure backup directory exists on PVC

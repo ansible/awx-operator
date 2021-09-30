@@ -49,7 +49,7 @@
     - name: Create PVC for backup
       k8s:
         kind: PersistentVolumeClaim
-        template: "backup_pvc.yml.j2"
+        definition: "{{ lookup('template', 'backup_pvc.yml.j2') }}"
 
     - name: Remove PVC ownerReference
       k8s:
@@ -68,7 +68,7 @@
     name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Deployment
     state: present
-    template: "management-pod.yml.j2"
+    definition: "{{ lookup('template', 'management-pod.yml.j2') }}"
     wait: true
 
 - name: Look up details for this deployment
