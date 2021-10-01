@@ -1,0 +1,30 @@
+---
+- name: Create the awx.ansible.com/v1alpha1.AWX
+  k8s:
+    state: present
+    namespace: '{{ namespace }}'
+    definition: "{{ lookup('template', '/'.join([samples_dir, cr_file])) | from_yaml }}"
+    wait: yes
+    wait_timeout: 900
+    wait_condition:
+      type: Running
+      reason: Successful
+      status: "True"
+  vars:
+    cr_file: 'awx_v1beta1_awx.yaml'
+
+- name: Obtain generated admin password
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Secret
+    name: example-awx-admin-password
+  register: admin_pw_secret
+
+- name: Launch Demo Job Template
+  awx.awx.job_launch:
+    name: Demo Job Template
+    wait: yes
+    validate_certs: no
+    controller_host: localhost
+    controller_username: admin
+    controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"

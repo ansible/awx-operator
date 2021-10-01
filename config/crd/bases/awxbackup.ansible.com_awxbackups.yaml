@@ -1,0 +1,77 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: awxbackups.awx.ansible.com
+spec:
+  group: awx.ansible.com
+  names:
+    kind: AWXBackup
+    listKind: AWXBackupList
+    plural: awxbackups
+    singular: awxbackup
+  scope: Namespaced
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          x-kubernetes-preserve-unknown-fields: true
+          description: Schema validation for the AWXBackup CRD
+          properties:
+            spec:
+              type: object
+              required:
+                - deployment_name
+              properties:
+                deployment_name:
+                  description: Name of the deployment to be backed up
+                  type: string
+                backup_pvc:
+                  description: Name of the PVC to be used for storing the backup
+                  type: string
+                backup_pvc_namespace:
+                  description: Namespace the PVC is in
+                  type: string
+                backup_storage_requirements:
+                  description: Storage requirements for the PostgreSQL container
+                  type: string
+                backup_storage_class:
+                  description: Storage class to use when creating PVC for backup
+                  type: string
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for backing up data
+                  type: string
+                postgres_image:
+                  description: Registry path to the PostgreSQL container to use
+                  type: string
+                postgres_image_version:
+                  description: PostgreSQL container image version to use
+                  type: string
+            status:
+              type: object
+              properties:
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                backupDirectory:
+                  description: Backup directory name on the specified pvc
+                  type: string
+                backupClaim:
+                  description: Backup persistent volume claim
+                  type: string

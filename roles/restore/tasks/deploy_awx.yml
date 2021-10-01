@@ -3,7 +3,7 @@
 - name: Get AWX object definition from pvc
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ meta.name }}-db-management"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       bash -c "cat '{{ backup_dir }}/awx_object'"
   register: awx_object
@@ -25,7 +25,7 @@
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
-    namespace: "{{ meta.namespace }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     apply: yes
     definition: "{{ lookup('template', 'awx_object.yml.j2') }}"
     wait: true
@@ -40,5 +40,5 @@
       kind: AWX
       metadata:
         name: '{{ deployment_name }}'
-        namespace: '{{ meta.namespace }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
         ownerReferences: null

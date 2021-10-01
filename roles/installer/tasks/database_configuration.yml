@@ -2,7 +2,7 @@
 - name: Check for specified PostgreSQL configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
   register: _custom_pg_config_resources
   when: postgres_configuration_secret | length
@@ -11,15 +11,15 @@
 - name: Check for default PostgreSQL configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-postgres-configuration'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-postgres-configuration'
   register: _default_pg_config_resources
   no_log: true
 
 - name: Check for specified old PostgreSQL configuration secret
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ old_postgres_configuration_secret }}'
   register: _custom_old_pg_config_resources
   when: old_postgres_configuration_secret | length
@@ -28,8 +28,8 @@
 - name: Check for default old PostgreSQL configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-old-postgres-configuration'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-old-postgres-configuration'
   register: _default_old_pg_config_resources
   no_log: true
 
@@ -62,8 +62,8 @@
     - name: Read Database Configuration
       k8s_info:
         kind: Secret
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}-postgres-configuration'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-postgres-configuration'
       register: _generated_pg_config_resources
       no_log: true
   when: not _pg_config['resources'] | default([]) | length
@@ -92,8 +92,8 @@
       kubernetes.core.k8s_scale:
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ meta.name }}-postgres"
-        namespace: "{{ meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}-postgres"
+        namespace: "{{ ansible_operator_meta.namespace }}"
         replicas: 0
         wait: yes
 
@@ -102,8 +102,8 @@
         state: absent
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ meta.name }}-postgres"
-        namespace: "{{ meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}-postgres"
+        namespace: "{{ ansible_operator_meta.namespace }}"
         wait: yes
       when: create_statefulset_result.error == 422
 
@@ -127,8 +127,8 @@
   k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_awx
 
 - name: Migrate data from old Openshift instance

@@ -3,6 +3,6 @@ apiVersion: '{{ api_version }}'
 kind: AWX
 metadata:
   name: '{{ deployment_name }}'
-  namespace: '{{ meta.namespace }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
   {{ spec | to_yaml | indent(2) }}

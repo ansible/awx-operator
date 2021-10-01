@@ -1,0 +1,5 @@
+---
+## Append samples you want in your CSV to this file as resources ##
+resources:
+  - awx_v1beta1_awx.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

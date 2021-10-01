@@ -1,0 +1,106 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+  - apiGroups:
+      - route.openshift.io
+    resources:
+      - routes
+      - routes/custom-host
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+      - "rbac.authorization.k8s.io"
+    resources:
+      - pods
+      - services
+      - services/finalizers
+      - serviceaccounts
+      - endpoints
+      - persistentvolumeclaims
+      - events
+      - configmaps
+      - secrets
+      - roles
+      - rolebindings
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+      - networking.k8s.io
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+      - ingresses
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - apps
+    resourceNames:
+      - awx-operator
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+      - statefulsets/scale
+    verbs:
+      - patch
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+      - pods/attach
+      - pods/log  # log & attach rules needed to be able to grant them to AWX service account
+    verbs:
+      - create
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - replicasets
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - awx.ansible.com
+    resources:
+      - '*'
+      - awxbackups
+      - awxrestores
+    verbs:
+      - '*'

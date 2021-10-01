@@ -2,12 +2,12 @@
 - block:
     - name: Define secrets name
       set_fact:
-        _admin_password: '{{ admin_password_secret | length | ternary(admin_password_secret, meta.name + "-admin-password") }}'
-        _secret_key: '{{ secret_key_secret | length | ternary(secret_key_secret, meta.name + "-secret-key") }}'
+        _admin_password: '{{ admin_password_secret | length | ternary(admin_password_secret, ansible_operator_meta.name + "-admin-password") }}'
+        _secret_key: '{{ secret_key_secret | length | ternary(secret_key_secret, ansible_operator_meta.name + "-secret-key") }}'
         # yamllint disable-line rule:line-length
-        _broadcast_websocket_secret: '{{ broadcast_websocket_secret | length | ternary(broadcast_websocket_secret, meta.name + "-broadcast-websocket") }}'  # noqa 204
+        _broadcast_websocket_secret: '{{ broadcast_websocket_secret | length | ternary(broadcast_websocket_secret, ansible_operator_meta.name + "-broadcast-websocket") }}'  # noqa 204
         # yamllint disable-line rule:line-length
-        _postgres_configuration: '{{ postgres_configuration_secret | length | ternary(postgres_configuration_secret, meta.name + "-postgres-configuration") }}'  # noqa 204
+        _postgres_configuration: '{{ postgres_configuration_secret | length | ternary(postgres_configuration_secret, ansible_operator_meta.name + "-postgres-configuration") }}'  # noqa 204
 
     - name: Remove ownerReferences reference
       k8s:
@@ -16,7 +16,7 @@
           kind: Secret
           metadata:
             name: '{{ item }}'
-            namespace: '{{ meta.namespace }}'
+            namespace: '{{ ansible_operator_meta.namespace }}'
             ownerReferences: null
       loop:
         - '{{ _admin_password }}'

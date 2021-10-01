@@ -24,25 +24,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install \
-            "molecule<3.5" \
-            molecule-docker \
-            yamllint \
-            ansible-lint \
-            openshift \
-            jmespath \
-            ansible-core
+          pip install -r molecule/requirements.txt
 
       - name: Install Collections
         run: |
-         ansible-galaxy collection install community.general kubernetes.core:1.2.1 operator_sdk.util
-
-      - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.4.2
-        with:
-          minikube version: 'v1.16.0'
-          kubernetes version: 'v1.19.2'
-          github token: ${{ secrets.GITHUB_TOKEN }}
+          ansible-galaxy collection install -r molecule/requirements.yml
 
       - name: Run Molecule
         env:
@@ -50,4 +36,6 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
         run: |
-          molecule test -s test-minikube
+          sudo rm -f $(which kustomize)
+          make kustomize
+          KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind

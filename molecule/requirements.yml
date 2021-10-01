@@ -1,0 +1,8 @@
+---
+collections:
+  - name: community.general
+  - name: kubernetes.core
+    version: 1.2.1
+  - name: operator_sdk.util
+  - name: community.docker
+  - name: awx.awx

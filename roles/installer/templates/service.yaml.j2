@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: '{{ meta.name }}-service'
-  namespace: '{{ meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}-service'
+  namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ meta.name }}'
-    app.kubernetes.io/part-of: '{{ meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
     app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
@@ -39,19 +39,15 @@ spec:
       protocol: TCP
       targetPort: 8052
       name: http
-{% elif service_type | lower == "nodeport" %}
-    - port: {{ nodeport_port }}
-      protocol: TCP
-      targetPort: 8052
-      name: http
-  type: NodePort
 {% endif %}
   selector:
-    app.kubernetes.io/name: '{{ meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
 {% if service_type | lower == "loadbalancer" %}
   type: LoadBalancer
+{% elif service_type | lower == "nodeport" %}
+  type: NodePort
 {% else %}
   type: ClusterIP
 {% endif %}

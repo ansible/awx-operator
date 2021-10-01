@@ -4,8 +4,8 @@
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
     kind: "{{ kind }}"
-    name: "{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       restoreComplete: true
   when: tower_restore_complete is defined

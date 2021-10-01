@@ -1,0 +1,40 @@
+apiVersion: operators.coreos.com/v1beta1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: awx-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions: {}
+  description: An operator for the AWX Project
+  displayName: AWX
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: true
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  keywords:
+  - automation
+  - ansible
+  links:
+  - name: Awx Operator
+    url: https://awx-operator.domain
+  maturity: alpha
+  provider:
+    name: Ansible
+    url: github.com/ansible/awx-operator
+  version: 0.0.0

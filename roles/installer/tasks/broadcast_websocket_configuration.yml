@@ -2,7 +2,7 @@
 - name: Check for specified broadcast websocket secret configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
+    namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ broadcast_websocket_secret }}'
   register: _custom_broadcast_websocket
   no_log: true
@@ -11,8 +11,8 @@
 - name: Check for default broadcast websocket secret configuration
   k8s_info:
     kind: Secret
-    namespace: '{{ meta.namespace }}'
-    name: '{{ meta.name }}-broadcast-websocket'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ ansible_operator_meta.name }}-broadcast-websocket'
   register: _default_broadcast_websocket
   no_log: true
 
@@ -32,8 +32,8 @@
     - name: Read broadcast websocket secret
       k8s_info:
         kind: Secret
-        namespace: '{{ meta.namespace }}'
-        name: '{{ meta.name }}-broadcast-websocket'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-broadcast-websocket'
       register: _generated_broadcast_websocket
       no_log: true
 
