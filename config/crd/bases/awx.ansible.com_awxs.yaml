@@ -292,6 +292,11 @@ spec:
                 redis_image_version:
                   description: Redis container image version to use
                   type: string
+                redis_capabilities:
+                  description: Redis container capabilities
+                  type: array
+                  items:
+                    type: string
                 init_container_image:
                   description: Registry path to the init container to use
                   type: string
