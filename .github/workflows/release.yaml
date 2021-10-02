@@ -14,16 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Operator-SDK
-        run: |
-          mkdir -p $GITHUB_WORKSPACE/bin
-          wget -O $GITHUB_WORKSPACE/bin/operator-sdk https://github.com/operator-framework/operator-sdk/releases/download/v0.19.4/operator-sdk-v0.19.4-x86_64-linux-gnu
-          chmod +x $GITHUB_WORKSPACE/bin/operator-sdk
-          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
-
       - name: Build Image
         run: |
-          operator-sdk build awx-operator:${{ github.event.release.tag_name }}
+          make docker-build
 
       - name: Push To Quay
         uses: redhat-actions/push-to-registry@v2.1.1
