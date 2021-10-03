@@ -16,7 +16,7 @@ jobs:
 
       - name: Build Image
         run: |
-          IMG=awx-operator make docker-build
+          IMG=awx-operator:${{ github.event.release.tag_name }} make docker-build
 
       - name: Push To Quay
         uses: redhat-actions/push-to-registry@v2.1.1
