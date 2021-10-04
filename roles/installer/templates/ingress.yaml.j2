@@ -20,7 +20,7 @@ spec:
     - http:
         paths:
           - path: '{{ ingress_path }}'
-            pathType: Prefix
+            pathType: '{{ ingress_path_type }}'
             backend:
               service:
                 name: '{{ ansible_operator_meta.name }}-service'
