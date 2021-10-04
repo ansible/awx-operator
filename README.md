@@ -320,6 +320,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | ingress_tls_secret         | Secret that contains the TLS information | Empty string                 |
 | hostname                   | Define the FQDN                          | {{ meta.name }}.example.com  |
 | ingress_path               | Define the ingress path to the service   | /                            |
+| ingress_path_type          | Define the type of the path (for LBs)    | Prefix                       |
 
 ```yaml
 ---

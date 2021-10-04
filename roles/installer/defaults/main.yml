@@ -10,6 +10,7 @@ task_privileged: false
 service_type: ClusterIP
 ingress_type: none
 ingress_path: '/'
+ingress_path_type: 'Prefix'
 # Add annotations to the service account. Specify as literal block. E.g.:
 # service_account_annotations: |
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>

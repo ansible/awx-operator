@@ -89,6 +89,9 @@ spec:
                 ingress_path:
                   description: The ingress path used to reach the deployed service
                   type: string
+                ingress_path_type:
+                  description: The ingress path type for the deployed service
+                  type: string
                 ingress_annotations:
                   description: Annotations to add to the Ingress Controller
                   type: string
