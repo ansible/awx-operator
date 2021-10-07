@@ -11,7 +11,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 * [Table of Contents](#table-of-contents)
    * [Purpose](#purpose)
    * [Usage](#usage)
-      * [Basic Install](#basic-install)
+      * [Basic Install on minikube for beginner or testing](#basic-install-on-minikube-for-beginner-or-testing)
       * [Basic Install on K8S Cluster](#basic-install-on-k8s-cluster)
       * [Admin user account configuration](#admin-user-account-configuration)
       * [Network and TLS Configuration](#network-and-tls-configuration)
@@ -49,7 +49,7 @@ This operator is meant to provide a more Kubernetes-native installation method f
 
 ## Usage
 
-### Basic Install
+### Basic Install on minikube for beginner or testing
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
