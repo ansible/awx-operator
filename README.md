@@ -835,6 +835,21 @@ delete your existing `awx-operator` service account, role and role binding.
 
 Starting with awx-operator 0.14.0, the project is now based on operator-sdk 1.x. You may need to manually delete your old operator Deployment to avoid issues.
 
+##### Steps to upgrade
+
+Delete your old AWX Operator and existing `awx-operator` service account, role and role binding in `default` namespace first:
+
+```
+$ kubectl -n default delete deployment awx-operator
+$ kubectl -n default delete serviceaccount awx-operator
+$ kubectl -n default delete clusterrolebinding awx-operator
+$ kubectl -n default delete clusterrole awx-operator
+```
+
+Then install the new AWX Operator by following the instructions in [Basic Install](#basic-install). The `NAMESPACE` environment variable have to be the name of the namespace in which your old AWX instance resides.
+
+Once the new AWX Operator is up and running, your AWX deployment will also be upgraded.
+
 ## Contributing
 
 Please visit [our contributing guidelines](https://github.com/ansible/awx-operator/blob/devel/CONTRIBUTING.md).
