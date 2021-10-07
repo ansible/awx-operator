@@ -12,6 +12,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
    * [Purpose](#purpose)
    * [Usage](#usage)
       * [Basic Install](#basic-install)
+      * [Basic Install on K8S Cluster](#basic-install-on-k8s-cluster)
       * [Admin user account configuration](#admin-user-account-configuration)
       * [Network and TLS Configuration](#network-and-tls-configuration)
          * [Service Type](#service-type)
@@ -198,6 +199,20 @@ You just completed the most basic install of an AWX instance via this operator. 
 For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
 
 [![asciicast](https://raw.githubusercontent.com/ansible/awx-operator/devel/docs/awx-demo.svg)](https://asciinema.org/a/416946)
+
+### Basic Install on K8S Cluster
+
+For those running a whole K8S Cluster the steps to set up the awx-operator are:
+```bash
+# Prepare required files
+git clone https://github.com/ansible/awx-operator.git
+cd awx-operator
+git checkout 0.14.0
+
+# Deploy new AWX Operator
+export NAMESPACE=<Name of the namespace where your AWX instanse exists>
+make deploy
+```
 
 ### Admin user account configuration
 
