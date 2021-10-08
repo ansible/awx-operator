@@ -18,11 +18,39 @@
     name: example-awx-admin-password
   register: admin_pw_secret
 
-- name: Launch Demo Job Template
-  awx.awx.job_launch:
-    name: Demo Job Template
-    wait: yes
-    validate_certs: no
-    controller_host: localhost
-    controller_username: admin
-    controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+- block:
+    - name: Launch Demo Job Template
+      awx.awx.job_launch:
+        name: Demo Job Template
+        wait: yes
+        validate_certs: no
+        controller_host: localhost
+        controller_username: admin
+        controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+  rescue:
+    - name: Get list of project updates and jobs
+      uri:
+        url: "http://localhost/api/v2/{{ item }}/"
+        user: admin
+        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+      register: job_lists
+      loop:
+        - project_updates
+        - jobs
+
+    - name: Get all job and project details
+      uri:
+        url: "http://localhost{{ item }}"
+        user: admin
+        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+      loop: |
+        {{ job_lists.results | map(attribute='json') | map(attribute='results') | flatten | map(attribute='url') }}
+
+    - name: Re-emit failure
+      vars:
+        failed_task:
+          result: '{{ ansible_failed_result }}'
+      fail:
+        msg: '{{ failed_task }}'
