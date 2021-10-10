@@ -41,6 +41,10 @@ spec:
         - image: '{{ postgres_image }}:{{ postgres_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
+{% if postgres_extra_args %}
+          command: postgres
+          args: {{ postgres_extra_args }}
+{% endif %}
           env:
             # For postgres_image based on rhel8/postgresql-12
             - name: POSTGRESQL_DATABASE
