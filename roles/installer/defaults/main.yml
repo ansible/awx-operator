@@ -113,6 +113,7 @@ redis_image: docker.io/redis
 redis_image_version: latest
 postgres_image: postgres
 postgres_image_version: 12
+postgres_extra_args: []
 init_container_image: quay.io/centos/centos
 init_container_image_version: 8
 image_pull_policy: IfNotPresent
