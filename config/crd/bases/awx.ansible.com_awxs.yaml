@@ -357,6 +357,10 @@ spec:
                 postgres_data_path:
                   description: Path where the PostgreSQL data are located
                   type: string
+                postgres_extra_args:
+                  type: array
+                  items:
+                    type: string
                 ca_trust_bundle:
                   description: Path where the trusted CA bundle is available
                   type: string
