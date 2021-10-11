@@ -16,9 +16,17 @@
         source: build
         force_source: yes
 
-    - name: Load image into kind cluster
+    - name: Load operator image into kind cluster
       command: kind load docker-image --name osdk-test '{{ operator_image }}'
       register: result
       changed_when: '"not yet present" in result.stdout'
+
+    - name: Load awx image into kind cluster
+      command: kind load docker-image --name osdk-test '{{ awx_image }}:{{ awx_version }}'
+      register: result
+      changed_when: '"not yet present" in result.stdout'
+      when:
+        - awx_image is defined
+        - awx_image != ''
 
 - import_playbook: ../default/converge.yml
