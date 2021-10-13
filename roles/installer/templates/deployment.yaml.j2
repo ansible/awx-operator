@@ -74,6 +74,11 @@ spec:
         - image: '{{ redis_image }}:{{ redis_image_version }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+{% if redis_capabilities is defined and redis_capabilities %}
+          securityContext:
+            capabilities:
+              add: {{ redis_capabilities }}
+{% endif %}
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
