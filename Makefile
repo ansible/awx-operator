@@ -120,6 +120,7 @@ endif
 endif
 
 .PHONY: bundle
+bundle: VERSION ?= $(shell git describe --tags)
 bundle: kustomize ## Generate bundle manifests and metadata, then validate generated files.
 	operator-sdk generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
@@ -127,10 +128,12 @@ bundle: kustomize ## Generate bundle manifests and metadata, then validate gener
 	operator-sdk bundle validate ./bundle
 
 .PHONY: bundle-build
+bundle-build: VERSION ?= $(shell git describe --tags)
 bundle-build: ## Build the bundle image.
 	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
+bundle-push: VERSION ?= $(shell git describe --tags)
 bundle-push: ## Push the bundle image.
 	$(MAKE) docker-push IMG=$(BUNDLE_IMG)
 
@@ -166,10 +169,12 @@ endif
 # This recipe invokes 'opm' in 'semver' bundle add mode. For more information on add modes, see:
 # https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
 .PHONY: catalog-build
+catalog-build: VERSION ?= $(shell git describe --tags)
 catalog-build: opm ## Build a catalog image.
 	$(OPM) index add --container-tool docker --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
 
 # Push the catalog image.
 .PHONY: catalog-push
+catalog-push: VERSION ?= $(shell git describe --tags)
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
