@@ -791,6 +791,24 @@ spec:
           topologyKey: topology.kubernetes.io/zone
 ```
 
+#### Adding custom labels to AWX pods
+
+You can add custom labels to the AWX pods.
+
+| Name                           | Description                 | Default |
+| -------------------------------| --------------------------- | ------- |
+| pod_labels                     | Add custom labels           | ''      |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  pod_labels: |
+    prometheus.io/scrape-awx: 'true'
+```
+
 #### Trusting a Custom Certificate Authority
 
 In cases which you need to trust a custom Certificate Authority, there are few variables you can customize for the `awx-operator`.

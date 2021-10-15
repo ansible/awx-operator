@@ -526,6 +526,9 @@ spec:
                         type: array
                     type: object
                 type: object
+              pod_labels:
+                description: Additional labels to apply to the pods
+                type: string
               service_labels:
                 description: Additional labels to apply to the service
                 type: string

@@ -20,6 +20,7 @@ spec:
       labels:
         {{ lookup("template", "labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "labels/version.yaml.j2") | indent(width=8) | trim }}
+        {{ pod_labels | indent(width=8) }}
 {% if annotations %}
       annotations:
         {{ annotations | indent(width=8) }}

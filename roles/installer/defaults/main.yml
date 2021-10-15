@@ -83,6 +83,11 @@ topology_spread_constraints: ''
 
 affinity: {}
 
+# Custom labels for the AWX pods. Specify as literal block. E.g.:
+# pod_labels: |
+#   prometheus.io/scrape: 'true'
+pod_labels: ''
+
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
 #   - key: "dedicated"
