@@ -63,7 +63,7 @@ run: ansible-operator ## Run against the configured Kubernetes cluster in ~/.kub
 	ANSIBLE_ROLES_PATH="$(ANSIBLE_ROLES_PATH):$(shell pwd)/roles" $(ANSIBLE_OPERATOR) run
 
 docker-build: ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	docker build $(BUILD_ARGS) -t ${IMG} .
 
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
