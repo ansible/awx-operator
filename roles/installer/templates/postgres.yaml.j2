@@ -42,7 +42,6 @@ spec:
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
 {% if postgres_extra_args %}
-          command: postgres
           args: {{ postgres_extra_args }}
 {% endif %}
           env:
