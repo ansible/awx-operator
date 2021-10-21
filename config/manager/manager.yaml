@@ -34,6 +34,8 @@ spec:
           env:
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: OPERATOR_VERSION
+              value: "0.13.0"
             - name: WATCH_NAMESPACE
               valueFrom:
                 fieldRef:
