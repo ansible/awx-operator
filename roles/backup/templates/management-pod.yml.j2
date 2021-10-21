@@ -13,7 +13,7 @@ metadata:
 spec:
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
-    image: "{{ postgres_image }}:{{ postgres_image_version }}"
+    image: "{{ _postgres_image }}"
     imagePullPolicy: Always
     command: ["sleep", "infinity"]
     volumeMounts:

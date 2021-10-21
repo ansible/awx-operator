@@ -38,7 +38,7 @@ spec:
         - name: {{ image_pull_secret }}
 {% endif %}
       containers:
-        - image: '{{ postgres_image }}:{{ postgres_image_version }}'
+        - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
           env:

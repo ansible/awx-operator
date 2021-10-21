@@ -36,7 +36,7 @@
           k8s_log:
             name: '{{ item.metadata.name }}'
             namespace: '{{ namespace }}'
-            container: manager
+            container: awx-manager
           loop: "{{ q('k8s', api_version='v1', kind='Pod', namespace=namespace, label_selector=ctrl_label) }}"
           register: debug_logs
 
