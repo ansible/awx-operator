@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: manager-role
+  name: awx-manager-role
 rules:
   - apiGroups:
       - route.openshift.io
