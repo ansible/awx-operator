@@ -21,7 +21,7 @@ spec:
             - containerPort: 8443
               protocol: TCP
               name: https
-        - name: manager
+        - name: awx-manager
           args:
             - "--health-probe-bind-address=:6789"
             - "--metrics-bind-address=127.0.0.1:8080"

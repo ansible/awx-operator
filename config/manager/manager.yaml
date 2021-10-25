@@ -30,7 +30,7 @@ spec:
             - --leader-elect
             - --leader-election-id=awx-operator
           image: controller:latest
-          name: manager
+          name: awx-manager
           env:
             - name: ANSIBLE_GATHERING
               value: explicit
