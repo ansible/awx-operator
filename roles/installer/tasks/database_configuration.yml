@@ -52,6 +52,17 @@
     _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
   no_log: true
 
+- name: Set user provided postgres image
+  set_fact:
+    _custom_postgres_image: "{{ postgres_image }}:{{ postgres_image_version }}"
+  when:
+    - postgres_image | default([]) | length
+    - postgres_image_version is defined and postgres_image_version != ''
+
+- name: Set Postgres image URL
+  set_fact:
+    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_POSTGRES')) }}"
+
 - block:
     - name: Create Database configuration
       k8s:

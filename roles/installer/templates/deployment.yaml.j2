@@ -36,7 +36,7 @@ spec:
 {% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
         - name: init
-          image: '{{ init_container_image }}:{{ init_container_image_version }}'
+          image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           command:
             - /bin/sh
@@ -71,7 +71,7 @@ spec:
 {% endif %}
 {% endif %}
       containers:
-        - image: '{{ redis_image }}:{{ redis_image_version }}'
+        - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
 {% if redis_capabilities is defined and redis_capabilities %}
@@ -89,7 +89,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
               mountPath: "/data"
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
 {% if web_command %}
           command: {{ web_command }}
@@ -177,7 +177,7 @@ spec:
             {{ web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ web_resource_requirements }}
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
 {% if task_privileged == true %}
@@ -267,7 +267,7 @@ spec:
             {{ task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ task_resource_requirements }}
-        - image: '{{ control_plane_ee_image }}'
+        - image: '{{ _control_plane_ee_image }}'
           name: '{{ ansible_operator_meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}

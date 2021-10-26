@@ -32,6 +32,49 @@
     - 'ingress'
   no_log: true
 
+- name: Set user provided awx app image
+  set_fact:
+    _custom_image: "{{ image }}:{{ image_version }}"
+  when:
+    - image | default([]) | length
+    - image_version is defined or image_version != ''
+
+- name: Set AWX App image URL
+  set_fact:
+    _image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_APP')) }}"
+
+- name: Set user provided controller init image
+  set_fact:
+    _custom_init_container_image: "{{ init_container_image }}:{{ init_container_image_version }}"
+  when:
+    - init_container_image | default([]) | length
+    - init_container_image_version is defined or init_container_image_version != ''
+
+- name: Set Init image URL
+  set_fact:
+    _init_container_image: "{{ _custom_init_container_image | default(lookup('env', 'RELATED_IMAGE_INIT_CONTAINER')) }}"
+
+- name: Set user provided redis image
+  set_fact:
+    _custom_redis_image: "{{ redis_image }}:{{ redis_image_version }}"
+  when:
+    - redis_image | default([]) | length
+    - redis_image_version is defined or redis_image_version != ''
+
+- name: Set Redis image URL
+  set_fact:
+    _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_REDIS')) }}"
+
+- name: Set user provided control plane ee image
+  set_fact:
+    _custom_control_plane_ee_image: "{{ control_plane_ee_image}}"
+  when:
+    - control_plane_ee_image | default([]) | length
+
+- name: Set Control Plane EE image URL
+  set_fact:
+    _control_plane_ee_image: "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) }}"
+
 - name: Apply deployment resources
   k8s:
     apply: yes
