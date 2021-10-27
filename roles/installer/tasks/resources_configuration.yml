@@ -41,7 +41,7 @@
 
 - name: Set AWX App image URL
   set_fact:
-    _image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_APP')) }}"
+    _image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_AWX')) }}"
 
 - name: Set user provided controller init image
   set_fact:
@@ -52,7 +52,7 @@
 
 - name: Set Init image URL
   set_fact:
-    _init_container_image: "{{ _custom_init_container_image | default(lookup('env', 'RELATED_IMAGE_INIT_CONTAINER')) }}"
+    _init_container_image: "{{ _custom_init_container_image | default(lookup('env', 'RELATED_IMAGE_AWX_INIT_CONTAINER')) }}"
 
 - name: Set user provided redis image
   set_fact:
@@ -63,7 +63,7 @@
 
 - name: Set Redis image URL
   set_fact:
-    _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_REDIS')) }}"
+    _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_AWX_REDIS')) }}"
 
 - name: Set user provided control plane ee image
   set_fact:
