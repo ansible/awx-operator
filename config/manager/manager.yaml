@@ -38,15 +38,15 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: RELATED_IMAGE_APP
+            - name: RELATED_IMAGE_AWX
               value: quay.io/ansible/awx:latest
-            - name: RELATED_IMAGE_INIT_CONTAINER
+            - name: RELATED_IMAGE_AWX_INIT_CONTAINER
               value: quay.io/centos/centos:8
-            - name: RELATED_IMAGE_REDIS
+            - name: RELATED_IMAGE_AWX_REDIS
               value: docker.io/redis:latest
             - name: RELATED_IMAGE_CONTROL_PLANE_EE
               value: quay.io/ansible/awx-ee:latest
-            - name: RELATED_IMAGE_POSTGRES
+            - name: RELATED_IMAGE_AWX_POSTGRES
               value: postgres:12
           securityContext:
             allowPrivilegeEscalation: false

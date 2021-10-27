@@ -61,7 +61,7 @@
 
 - name: Set Postgres image URL
   set_fact:
-    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_POSTGRES')) }}"
+    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) }}"
 
 - block:
     - name: Create Database configuration
