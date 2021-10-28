@@ -5,7 +5,7 @@
     postgres_configuration_secret: "{{ spec['postgres_configuration_secret'] | default(postgres_configuration_secret) }}"
 
 - name: Check for specified PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
@@ -28,7 +28,7 @@
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
@@ -45,7 +45,7 @@
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
 - name: Check for presence of AWX Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Deployment
     name: "{{ deployment_name }}"
@@ -53,7 +53,7 @@
   register: this_deployment
 
 - name: Scale down Deployment for migration
-  k8s_scale:
+  kubernetes.core.k8s_scale:
     api_version: v1
     kind: Deployment
     name: "{{ deployment_name }}"
@@ -80,7 +80,7 @@
   no_log: true
 
 - name: Restore database dump to the new postgresql container
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: |

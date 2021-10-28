@@ -1,6 +1,6 @@
 ---
 - name: Patching labels to {{ kind }} kind
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: '{{ api_version }}'
@@ -18,7 +18,7 @@
           app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 
 - name: Look up details for this restore object
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
     name: "{{ ansible_operator_meta.name }}"

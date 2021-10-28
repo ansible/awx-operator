@@ -5,7 +5,7 @@
     now: '{{ lookup("pipe", "date +%FT%TZ") }}'
 
 - name: Emit ocp event with error
-  k8s:
+  kubernetes.core.k8s:
     kind: Event
     namespace: "{{ ansible_operator_meta.namespace }}"
     definition: "{{ lookup('template', 'event.yml.j2') }}"

@@ -3,7 +3,7 @@
 - name: Set variables from awxbackup object statuses if provided
   block:
   - name: Look up details for the backup
-    k8s_info:
+    kubernetes.core.k8s_info:
       api_version: "{{ backup_api_version }}"
       kind: "{{ backup_kind }}"
       name: "{{ backup_name }}"
@@ -38,7 +38,7 @@
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
-  k8s_info:
+  kubernetes.core.k8s_info:
     name: "{{ backup_pvc }}"
     kind: PersistentVolumeClaim
     namespace: "{{ backup_pvc_namespace }}"
@@ -63,7 +63,7 @@
     - provided_pvc.resources | length == 0
 
 - name: Delete any existing management pod
-  k8s:
+  kubernetes.core.k8s:
     name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Pod
     namespace: "{{ backup_pvc_namespace }}"
@@ -83,7 +83,7 @@
     _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) }}"
 
 - name: Create management pod from templated deployment config
-  k8s:
+  kubernetes.core.k8s:
     name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Deployment
     state: present
@@ -91,7 +91,7 @@
     wait: true
 
 - name: Check to make sure backup directory exists on PVC
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-

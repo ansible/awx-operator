@@ -1,7 +1,7 @@
 ---
 
 - name: Check for presence of Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}"

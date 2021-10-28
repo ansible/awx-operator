@@ -1,6 +1,6 @@
 ---
 - name: Check for specified PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
@@ -9,7 +9,7 @@
   no_log: true
 
 - name: Check for default PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-postgres-configuration'
@@ -17,7 +17,7 @@
   no_log: true
 
 - name: Check for specified old PostgreSQL configuration secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ old_postgres_configuration_secret }}'
@@ -26,7 +26,7 @@
   no_log: true
 
 - name: Check for default old PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-old-postgres-configuration'
@@ -65,13 +65,13 @@
 
 - block:
     - name: Create Database configuration
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'postgres_secret.yaml.j2') }}"
       no_log: true
 
     - name: Read Database Configuration
-      k8s_info:
+      kubernetes.core.k8s_info:
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
         name: '{{ ansible_operator_meta.name }}-postgres-configuration'
@@ -90,7 +90,7 @@
 
 - block:
     - name: Create Database if no database is specified
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
       register: create_statefulset_result
@@ -109,7 +109,7 @@
         wait: yes
 
     - name: Remove PostgreSQL statefulset for upgrade
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         api_version: apps/v1
         kind: StatefulSet
@@ -119,7 +119,7 @@
       when: create_statefulset_result.error == 422
 
     - name: Recreate PostgreSQL statefulset with updated values
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
   when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
@@ -135,7 +135,7 @@
   no_log: true
 
 - name: Look up details for this deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
     name: "{{ ansible_operator_meta.name }}"

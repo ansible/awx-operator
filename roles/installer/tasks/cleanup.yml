@@ -10,7 +10,7 @@
         _postgres_configuration: '{{ postgres_configuration_secret | length | ternary(postgres_configuration_secret, ansible_operator_meta.name + "-postgres-configuration") }}'  # noqa 204
 
     - name: Remove ownerReferences reference
-      k8s:
+      kubernetes.core.k8s:
         definition:
           apiVersion: v1
           kind: Secret

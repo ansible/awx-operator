@@ -1,6 +1,6 @@
 ---
 - name: Check if there are any super users defined.
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -14,7 +14,7 @@
   changed_when: users_result.return_code > 0
 
 - name: Update super user password via Django if it does exist (same password is a noop)
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -26,7 +26,7 @@
   when: users_result.return_code == 0
 
 - name: Create super user via Django if it doesn't exist.
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -38,7 +38,7 @@
   when: users_result.return_code > 0
 
 - name: Create preload data if necessary.  # noqa 305
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -49,7 +49,7 @@
   when: create_preload_data | bool
 
 - name: Check if legacy queue is present
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -59,7 +59,7 @@
   changed_when: false
 
 - name: Unregister legacy queue
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -68,7 +68,7 @@
   when: "'[tower capacity=' in legacy_queue.stdout"
 
 - name: Check for specified default execution environment pull credentials
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ee_pull_credentials_secret }}'
@@ -83,7 +83,7 @@
   no_log: true
 
 - name: Register default execution environments (without authentication)
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -104,7 +104,7 @@
       no_log: true
 
     - name: Register default execution environments (with authentication)
-      k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
         pod: "{{ tower_pod_name }}"
         container: "{{ ansible_operator_meta.name }}-task"

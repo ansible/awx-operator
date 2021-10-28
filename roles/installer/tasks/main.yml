@@ -1,6 +1,6 @@
 ---
 - name: Patching labels to AWX kind
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: '{{ api_version }}'
@@ -49,7 +49,7 @@
   include_tasks: resources_configuration.yml
 
 - name: Check for pending migrations
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -59,7 +59,7 @@
   register: database_check
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"

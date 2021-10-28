@@ -19,7 +19,7 @@
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-postgres-0'  # using name to keep compatibility
@@ -59,7 +59,7 @@
   no_log: true
 
 - name: Stream backup from pg_dump to the new postgresql container
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |

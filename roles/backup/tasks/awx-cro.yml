@@ -1,7 +1,7 @@
 ---
 
 - name: Get AWX custom resource object
-  k8s_info:
+  kubernetes.core.k8s_info:
     version: v1beta1
     kind: AWX
     namespace: '{{ ansible_operator_meta.namespace }}'
@@ -27,7 +27,7 @@
       spec: "{{ _awx }}"
 
 - name: Write awx object to pvc
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
