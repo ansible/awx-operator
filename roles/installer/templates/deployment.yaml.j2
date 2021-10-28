@@ -7,7 +7,7 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/version: '{{ image_version }}'
+    app.kubernetes.io/version: '{{ _image_version }}'
     app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
@@ -23,7 +23,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-        app.kubernetes.io/version: '{{ image_version }}'
+        app.kubernetes.io/version: '{{ _image_version }}'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
         app.kubernetes.io/component: '{{ deployment_type }}'
