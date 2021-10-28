@@ -1,8 +1,8 @@
 ---
 
 deployment_type: "awx"
-postgres_image: postgres
-postgres_image_version: 12
+_postgres_image: postgres
+_postgres_image_version: 12
 
 backup_api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 backup_kind: 'AWXBackup'
