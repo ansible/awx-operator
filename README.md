@@ -203,13 +203,14 @@ For an example using the Nginx Controller in Minukube, don't miss our [demo vide
 ### Basic Install on existing cluster
 
 For those running a whole K8S Cluster the steps to set up the awx-operator are:
-```bash
-# Prepare required files
+
+```
+$ Prepare required files
 git clone https://github.com/ansible/awx-operator.git
 cd awx-operator
-git checkout 0.14.0
+git checkout {{ latest_released_version }} # replace variable by latest version number in releases
 
-# Deploy new AWX Operator
+$ Deploy new AWX Operator
 export NAMESPACE=<Name of the namespace where your AWX instanse exists>
 make deploy
 ```
