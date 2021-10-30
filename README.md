@@ -200,7 +200,7 @@ For an example using the Nginx Controller in Minukube, don't miss our [demo vide
 
 [![asciicast](https://raw.githubusercontent.com/ansible/awx-operator/devel/docs/awx-demo.svg)](https://asciinema.org/a/416946)
 
-### Basic Install on K8S Cluster
+### Basic Install on existing cluster
 
 For those running a whole K8S Cluster the steps to set up the awx-operator are:
 ```bash
