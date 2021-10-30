@@ -49,7 +49,7 @@ This operator is meant to provide a more Kubernetes-native installation method f
 
 ## Usage
 
-### Basic Install on minikube for beginner or testing
+### Basic Install on minikube (beginner or testing)
 
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
