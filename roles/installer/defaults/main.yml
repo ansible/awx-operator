@@ -138,7 +138,7 @@ ee_images:
   - name: AWX EE (latest)
     image: quay.io/ansible/awx-ee:latest
 
-control_plane_ee_image: quay.io/ansible/awx-ee:latest
+_control_plane_ee_image: quay.io/ansible/awx-ee:latest
 
 create_preload_data: true
 

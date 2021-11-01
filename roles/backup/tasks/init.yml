@@ -76,7 +76,7 @@
 
 - name: Set Postgres image URL
   set_fact:
-    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image) }}"
+    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
 - name: Create management pod from templated deployment config
   k8s:
