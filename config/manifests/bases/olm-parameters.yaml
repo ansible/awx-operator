@@ -172,6 +172,18 @@
         - urn:alm:descriptor:com.tectonic.ui:select:none
         - urn:alm:descriptor:com.tectonic.ui:select:Ingress
         - urn:alm:descriptor:com.tectonic.ui:select:Route
+    - displayName: Ingress Path
+      path: ingress_path
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+    - displayName: Ingress Path Type
+      path: ingress_path_type
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
     - displayName: Tower Ingress Annotations
       path: ingress_annotations
       x-descriptors:
@@ -318,6 +330,11 @@
         - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Redis Image Version
       path: redis_image_version
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Redis Capabilities
+      path: redis_capabilities
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
@@ -537,6 +554,11 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+    - displayName: Nodeport Port
+      path: nodeport_port
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
   statusDescriptors:
     - description: Route to access the instance deployed
       displayName: URL
