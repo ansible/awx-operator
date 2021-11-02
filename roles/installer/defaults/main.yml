@@ -107,14 +107,14 @@ extra_volumes: ''
 
 # Use these image versions for Ansible AWX.
 
-image: quay.io/ansible/awx
-image_version: "{{ lookup('env', 'DEFAULT_AWX_VERSION') or 'latest' }}"
-redis_image: docker.io/redis
-redis_image_version: latest
-postgres_image: postgres
-postgres_image_version: 12
-init_container_image: quay.io/centos/centos
-init_container_image_version: 8
+_image: quay.io/ansible/awx
+_image_version: "{{ lookup('env', 'DEFAULT_AWX_VERSION') or 'latest' }}"
+_redis_image: docker.io/redis
+_redis_image_version: latest
+_postgres_image: postgres
+_postgres_image_version: 12
+_init_container_image: quay.io/centos/centos
+_init_container_image_version: 8
 image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
@@ -138,7 +138,7 @@ ee_images:
   - name: AWX EE (latest)
     image: quay.io/ansible/awx-ee:latest
 
-control_plane_ee_image: quay.io/ansible/awx-ee:latest
+_control_plane_ee_image: quay.io/ansible/awx-ee:latest
 
 create_preload_data: true
 

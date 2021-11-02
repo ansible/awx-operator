@@ -47,6 +47,10 @@
     - old_pg_config['resources'] | length
   no_log: true
 
+- name: Set default postgres image
+  set_fact:
+    _default_postgres_image: "{{ _postgres_image }}:{{_postgres_image_version }}"
+
 - name: Set PostgreSQL configuration
   set_fact:
     _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
@@ -61,7 +65,7 @@
 
 - name: Set Postgres image URL
   set_fact:
-    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) }}"
+    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
 - block:
     - name: Create Database configuration

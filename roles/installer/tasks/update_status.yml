@@ -70,7 +70,7 @@
     name: "{{ ansible_operator_meta.name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
     status:
-      image: "{{ image }}"
+      image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_AWX')) | default(_default_image, true) }}"
 
 - block:
     - name: Retrieve route URL
