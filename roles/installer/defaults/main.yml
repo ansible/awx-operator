@@ -233,5 +233,7 @@ bundle_cacert_secret: ''
 # on teardown
 #
 garbage_collect_secrets: false
-
+# Variable added to ensure uniform UID across the task and controller-ee
+# mutually exclusive with task_privilege
+run_userid: ''
 development_mode: false

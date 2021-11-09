@@ -36,6 +36,9 @@ spec:
                   description: If a privileged security context should be enabled
                   type: boolean
                   default: false
+                run_userid: 
+                  description: A specific UID to be shared across task and controller-ee
+                  type: integer
                 admin_user:
                   description: Username to use for the admin account
                   type: string

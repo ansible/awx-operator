@@ -183,6 +183,11 @@ spec:
 {% if task_privileged == true %}
           securityContext:
             privileged: true
+{% elif run_userid %}
+          securityContext:
+            runAsUser: {{ run_userid }}
+{% else %}
+
 {% endif %}
 {% if task_command %}
           command: {{ task_command }}
@@ -271,6 +276,10 @@ spec:
           name: '{{ ansible_operator_meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}
+{% if run_userid %}
+          securityContext:
+            runAsUser: {{ run_userid }}
+{% endif %}
           args: ['receptor', '--config', '/etc/receptor/receptor.conf']
           volumeMounts:
 {% if bundle_ca_crt %}
