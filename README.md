@@ -23,6 +23,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
       * [Advanced Configuration](#advanced-configuration)
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
          * [Privileged Tasks](#privileged-tasks)
+         * [Passing in a runAsUser to task and controller-ee](#run-userid)
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
@@ -492,6 +493,15 @@ $ oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+#### Passing in a runAsUser to task and controller-ee
+In cases where the task container contains the projects on the file system and the controller-ee needs to access it, we need a uniform UID in order to avoid permission denied errors. It can be specified with the following variable:
+
+```yaml
+---
+spec:
+  ...
+  run_userid: 1000
+```
 
 #### Containers Resource Requirements
 
