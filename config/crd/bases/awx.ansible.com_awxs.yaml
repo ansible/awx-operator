@@ -36,7 +36,7 @@ spec:
                   description: If a privileged security context should be enabled
                   type: boolean
                   default: false
-                run_userid: 
+                run_userid:
                   description: A specific UID to be shared across task and controller-ee
                   type: integer
                 admin_user:
