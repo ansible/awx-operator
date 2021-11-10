@@ -310,9 +310,14 @@ spec:
       tolerations:
         {{ tolerations | indent(width=8) }}
 {% endif %}
-{% if projects_persistence|bool %}
+{% if projects_persistence|bool or (security_context_settings|length) %}
       securityContext:
+{% if projects_persistence|bool %}
         fsGroup: 1000
+{% endif %}
+{% if security_context_settings|length %}
+        {{ security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
 {% endif %}
       volumes:
 {% if bundle_ca_crt %}
