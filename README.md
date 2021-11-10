@@ -23,7 +23,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
       * [Advanced Configuration](#advanced-configuration)
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
          * [Privileged Tasks](#privileged-tasks)
-         * [Passing in a runAsUser to task and controller-ee](#run-userid)
+         * [Passing in a runAsUser to task and controller-ee](#passing-in-a-runasuser-to-task-and-controller-ee)
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)

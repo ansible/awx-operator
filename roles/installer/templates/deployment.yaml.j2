@@ -180,14 +180,14 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
-{% if task_privileged == true %}
+{% if (task_privileged|bool) or (run_userid is defined and run_userid != "") %}
           securityContext:
+{% if task_privileged|bool %}
             privileged: true
-{% elif run_userid %}
-          securityContext:
+{% endif %}
+{% if run_userid %}
             runAsUser: {{ run_userid }}
-{% else %}
-
+{% endif %}
 {% endif %}
 {% if task_command %}
           command: {{ task_command }}
