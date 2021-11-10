@@ -4,14 +4,17 @@
   group: awx.ansible.com
   kind: AWX
   role: installer
+  snakeCaseParameters: False
 
 - version: v1beta1
   group: awx.ansible.com
   kind: AWXBackup
   role: backup
+  snakeCaseParameters: False
 
 - version: v1beta1
   group: awx.ansible.com
   kind: AWXRestore
   role: restore
+  snakeCaseParameters: False
 # +kubebuilder:scaffold:watch

@@ -235,3 +235,5 @@ bundle_cacert_secret: ''
 garbage_collect_secrets: false
 
 development_mode: false
+
+security_context_settings: {}

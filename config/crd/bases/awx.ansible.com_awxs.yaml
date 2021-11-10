@@ -408,6 +408,10 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                   type: array
+                security_context_settings:
+                  description: Key/values that will be set under the pod-level securityContext field
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
               type: object
             status:
               properties:
