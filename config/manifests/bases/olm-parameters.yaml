@@ -107,7 +107,7 @@
       path: restoreComplete
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-- description: A AWX Instance
+- description: Deploy a new instance of AWX
   displayName: AWX
   kind: AWX
   name: awxs.awx.ansible.com
