@@ -525,6 +525,11 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Security Context Settings
+      path: security_context_settings
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
     - description: Registry path to the init container to use
       displayName: Init Container Image
       path: init_container_image
