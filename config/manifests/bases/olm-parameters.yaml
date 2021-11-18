@@ -1,5 +1,6 @@
 ---
 - displayName: AWX Backup
+  description: Back up a deployment of the awx, including jobs, inventories, and credentials
   kind: AWXBackup
   name: awxbackups.awx.ansible.com
   version: v1beta1
@@ -55,6 +56,7 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
 - displayName: AWX Restore
+  description: Restore a previous awx deployment into the namespace
   kind: AWXRestore
   name: awxrestores.awx.ansible.com
   version: v1beta1
