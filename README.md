@@ -163,7 +163,7 @@ awx.awx.ansible.com/awx-demo created
 After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
 
 ```
-$ kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager
+$ kubectl logs -f deployments/awx-operator-controller-manager -c manager
 ```
 
 After a few seconds, you should see the operator begin to create new resources:
