@@ -34,6 +34,8 @@ spec:
           env:
             - name: ANSIBLE_GATHERING
               value: explicit
+            - name: ANSIBLE_DEBUG_LOGS
+              value: 'false'
             - name: WATCH_NAMESPACE
               valueFrom:
                 fieldRef:
