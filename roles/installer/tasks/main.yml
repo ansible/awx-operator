@@ -25,6 +25,11 @@
   when:
     - ldap_cacert_secret != ''
 
+- name: Load ldap bind password
+  include_tasks: load_ldap_password_secret.yml
+  when:
+    - ldap_password_secret != ''
+
 - name: Load bundle certificate authority certificate
   include_tasks: load_bundle_cacert_secret.yml
   when:

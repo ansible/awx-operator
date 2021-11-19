@@ -18,6 +18,7 @@ data:
   settings: |
     import os
     import socket
+    from django_auth_ldap.config import LDAPSearch
     
     def get_secret():
         if os.path.exists("/etc/tower/SECRET_KEY"):
@@ -88,6 +89,11 @@ data:
     USE_X_FORWARDED_PORT = True
     BROADCAST_WEBSOCKET_PORT = 8052
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
+
+    # Load LDAP BIND password from Kubernetes secret if define
+    {% if ldap_password_secret -%}
+    AUTH_LDAP_BIND_PASSWORD = "{{ ldap_bind_password }}"
+    {% endif %}
 
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}

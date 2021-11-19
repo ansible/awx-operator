@@ -226,6 +226,9 @@ ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 #
 ldap_cacert_secret: ''
 
+# Secret to lookup that provides the LDAP bind password
+ldap_password_secret: ''
+
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
 

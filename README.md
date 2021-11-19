@@ -25,6 +25,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
          * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
+         * [Enabling LDAP Integration at AWX bootstrap](#enabling-ldap-integration-at-awx-bootstrap)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
@@ -584,8 +585,8 @@ Trusting a custom Certificate Authority allows the AWX to access network service
 | Name                             | Description                              | Default |
 | -------------------------------- | ---------------------------------------- | --------|
 | ldap_cacert_secret               | LDAP Certificate Authority secret name   |  ''     |
+| ldap_password_secret             | LDAP BIND DN Password secret name        |  ''     |
 | bundle_cacert_secret             | Certificate Authority secret name        |  ''     |
-
 Please note the `awx-operator` will look for the data field `ldap-ca.crt` in the specified secret when using the `ldap_cacert_secret`, whereas the data field `bundle-ca.crt` is required for `bundle_cacert_secret` parameter.
 
 Example of customization could be:
@@ -595,15 +596,79 @@ Example of customization could be:
 spec:
   ...
   ldap_cacert_secret: <resourcename>-custom-certs
+  ldap_password_secret: <resourcename>-ldap-password
   bundle_cacert_secret: <resourcename>-custom-certs
 ```
 
-To create the secret, you can use the command below:
+To create the secrets, you can use the commands below:
+
+* Certificate Authority secret
 
 ```
 # kubectl create secret generic <resourcename>-custom-certs \
     --from-file=ldap-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>  \
     --from-file=bundle-ca.crt=<PATH/TO/YOUR/CA/PEM/FILE>
+```
+
+* LDAP BIND DN Password secret
+
+```
+# kubectl create secret generic <resourcename>-ldap-password \
+    --from-literal=ldap-password=<your_ldap_dn_password>
+```
+
+#### Enabling LDAP Integration at AWX bootstrap
+
+A sample of extra settings can be found as below:
+
+```yaml
+    - setting: AUTH_LDAP_SERVER_URI
+      value: >-
+        "ldaps://ad01.abc.com:636 ldaps://ad02.abc.com:636"
+
+    - setting: AUTH_LDAP_BIND_DN
+      value: >-
+        "CN=LDAP User,OU=Service Accounts,DC=abc,DC=com"
+
+    - setting: AUTH_LDAP_USER_SEARCH
+      value: 'LDAPSearch("DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(sAMAccountName=%(user)s)",)'
+
+    - setting: AUTH_LDAP_GROUP_SEARCH
+      value: 'LDAPSearch("OU=Groups,DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(objectClass=group)",)'
+
+    - setting: AUTH_LDAP_USER_ATTR_MAP
+      value: '{"first_name": "givenName","last_name": "sn","email": "mail"}'
+
+    - setting: AUTH_LDAP_REQUIRE_GROUP
+      value: >-
+        "CN=operators,OU=Groups,DC=abc,DC=com"
+        
+    - setting: AUTH_LDAP_USER_FLAGS_BY_GROUP
+      value: {
+        "is_superuser": [
+          "CN=admin,OU=Groups,DC=abc,DC=com"
+        ]
+      }
+
+
+    - setting: AUTH_LDAP_ORGANIZATION_MAP
+      value: {
+        "abc": {
+          "admins": "CN=admin,OU=Groups,DC=abc,DC=com",
+          "remove_users": false,
+          "remove_admins": false,
+          "users": true
+        }
+      }
+
+    - setting: AUTH_LDAP_TEAM_MAP
+      value: {
+        "admin": {
+          "remove": true,
+          "users": "CN=admin,OU=Groups,DC=abc,DC=com",
+          "organization": "abc"
+        }
+      }
 ```
 
 #### Persisting Projects Directory
