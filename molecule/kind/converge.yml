@@ -10,6 +10,8 @@
         build:
           path: '{{ project_dir }}'
           pull: no
+          args:
+            DEFAULT_AWX_VERSION: '{{ default_awx_version }}'
         name: '{{ operator_image }}'
         tag: latest
         push: no
