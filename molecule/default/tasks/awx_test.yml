@@ -19,6 +19,31 @@
   register: admin_pw_secret
 
 - block:
+    - name: Get pod details
+      k8s_info:
+        namespace: '{{ namespace }}'
+        kind: Pod
+        label_selectors:
+          - app.kubernetes.io/name = example-awx
+      register: awx_pod
+      when: not awx_version
+
+    - name: Exract tags from images
+      set_fact:
+        image_tags: |
+          {{ awx_pod.resources[0].spec.containers |
+             map(attribute='image') |
+             map('regex_search', default_awx_version) }}
+      when: not awx_version
+
+    - fail:
+        msg: |
+          It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
+          This is an environment variable that is set via build arg when releasing awx-operator.
+      when:
+        - not awx_version
+        - default_awx_version not in image_tags
+
     - name: Launch Demo Job Template
       awx.awx.job_launch:
         name: Demo Job Template

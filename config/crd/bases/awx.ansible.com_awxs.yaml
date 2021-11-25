@@ -295,6 +295,11 @@ spec:
                 redis_image_version:
                   description: Redis container image version to use
                   type: string
+                redis_capabilities:
+                  description: Redis container capabilities
+                  type: array
+                  items:
+                    type: string
                 init_container_image:
                   description: Registry path to the init container to use
                   type: string
@@ -407,6 +412,10 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                   type: array
+                security_context_settings:
+                  description: Key/values that will be set under the pod-level securityContext field
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
               type: object
             status:
               properties:

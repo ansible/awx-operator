@@ -7,7 +7,7 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/version: '{{ image_version }}'
+    app.kubernetes.io/version: '{{ _image_version }}'
     app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
@@ -23,7 +23,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-        app.kubernetes.io/version: '{{ image_version }}'
+        app.kubernetes.io/version: '{{ _image_version }}'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
         app.kubernetes.io/component: '{{ deployment_type }}'
@@ -36,7 +36,7 @@ spec:
 {% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
         - name: init
-          image: '{{ init_container_image }}:{{ init_container_image_version }}'
+          image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           command:
             - /bin/sh
@@ -71,9 +71,14 @@ spec:
 {% endif %}
 {% endif %}
       containers:
-        - image: '{{ redis_image }}:{{ redis_image_version }}'
+        - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+{% if redis_capabilities is defined and redis_capabilities %}
+          securityContext:
+            capabilities:
+              add: {{ redis_capabilities }}
+{% endif %}
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
@@ -84,7 +89,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
               mountPath: "/data"
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
 {% if web_command %}
           command: {{ web_command }}
@@ -172,7 +177,7 @@ spec:
             {{ web_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ web_resource_requirements }}
-        - image: '{{ image }}:{{ image_version }}'
+        - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
 {% if task_privileged == true %}
@@ -262,7 +267,7 @@ spec:
             {{ task_extra_env | indent(width=12, indentfirst=True) }}
 {% endif %}
           resources: {{ task_resource_requirements }}
-        - image: '{{ control_plane_ee_image }}'
+        - image: '{{ _control_plane_ee_image }}'
           name: '{{ ansible_operator_meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}
@@ -305,9 +310,14 @@ spec:
       tolerations:
         {{ tolerations | indent(width=8) }}
 {% endif %}
-{% if projects_persistence|bool %}
+{% if projects_persistence|bool or (security_context_settings|length) %}
       securityContext:
+{% if projects_persistence|bool %}
         fsGroup: 1000
+{% endif %}
+{% if security_context_settings|length %}
+        {{ security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
 {% endif %}
       volumes:
 {% if bundle_ca_crt %}

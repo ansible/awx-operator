@@ -3,4 +3,4 @@ GLOBAL_JOB_EXECUTION_ENVIRONMENTS = [
     {'name': '{{ item.name }}' , 'image': '{{ item.image }}'},
 {% endfor %}
 ]
-CONTROL_PLANE_EXECUTION_ENVIRONMENT = '{{ control_plane_ee_image }}'
+CONTROL_PLANE_EXECUTION_ENVIRONMENT = "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) | default(_control_plane_ee_image, true) }}"
