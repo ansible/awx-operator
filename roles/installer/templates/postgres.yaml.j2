@@ -31,7 +31,7 @@ spec:
         app.kubernetes.io/instance: 'postgres-{{ ansible_operator_meta.name }}'
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     spec:
 {% if image_pull_secret %}
       imagePullSecrets:
@@ -100,6 +100,12 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: postgres
+{% if postgres_storage_annotations is defined %}
+        annotations:
+{% for item in postgres_storage_annotations %}
+          {{ item.name }}: {{ item.value }}
+{% endfor %}
+{% endif %}
       spec:
         accessModes:
           - ReadWriteOnce
