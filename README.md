@@ -316,6 +316,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 
 | Name                       | Description                              | Default                      |
 | -------------------------- | ---------------------------------------- | ---------------------------- |
+| ingress_apiversion         | Ingress apiVersion                       | networking.k8s.io/v1         |
 | ingress_annotations        | Ingress annotations                      | Empty string                 |
 | ingress_tls_secret         | Secret that contains the TLS information | Empty string                 |
 | hostname                   | Define the FQDN                          | {{ meta.name }}.example.com  |
