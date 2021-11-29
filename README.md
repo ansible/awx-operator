@@ -137,7 +137,7 @@ awx-operator-controller-manager-66ccd8f997-rhd4z   2/2     Running   0          
 So we don't have to keep repeating `-n $NAMESPACE`, let's set the current namespace for `kubectl`:
 
 ```
-$ kubectl config set-context --current --namespace=$NAMESPACE 
+$ kubectl config set-context --current --namespace=$NAMESPACE
 ```
 
 Next, create a file named `awx-demo.yml` with the suggested content below. The `metadata.name` you provide, will be the name of the resulting AWX deployment.
@@ -921,46 +921,11 @@ Please visit [our contributing guidelines](https://github.com/ansible/awx-operat
 
 ## Release Process
 
-### Update version and files
+The first step is to create a draft release. Typically this will happen in the [Stage Release](https://github.com/ansible/awx/blob/devel/.github/workflows/stage.yml) workflow for AWX and you dont need to do it as a separate step.
 
-Update the awx-operator version:
+If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
 
-  - `Makefile`
-
-### Verify Functionality
-
-Run the following command inside this directory:
-
-```
-$ IMAGE_TAG_BASE=quay.io/<user>/awx-operator make docker-build docker-push
-```
-
-After it is built, test it on a local cluster:
-
-```
-$ minikube start --memory 6g --cpus 4
-$ minikube addons enable ingress
-$ export NAMESPACE=example-awx
-$ make deploy
-$ ansible-playbook ansible/instantiate-awx-deployment.yml -e namespace=$NAMESPACE -e image=quay.io/<user>/awx -e service_type=nodeport
-$ # Verify that the awx-task and awx-web containers are launched
-$ # with the right version of the awx image
-$ # Launch a job at `minikube service awx-demo-service --url -n $NAMESPACE`
-$ minikube delete
-```
-
-### Update changelog
-
-Generate a list of commits between the versions and add it to the [changelog](./CHANGELOG.md).
-```
-$ git log --no-merges --pretty="- %s (%an) - %h " <old_tag>..<new_tag>
-```
-
-### Commit / Create Release
-
-If everything works, commit the updated version, then [publish a new release](https://github.com/ansible/awx-operator/releases/new) using the same version you used in `ansible/group_vars/all`.
-
-After creating the release, [this GitHub Workflow](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/release.yaml) will run and publish the new image to quay.io.
+After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, publishing the image to Quay.
 
 ## Author
 

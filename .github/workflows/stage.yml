@@ -1,0 +1,84 @@
+---
+name: Stage Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to stage'
+        required: true
+      default_awx_version:
+        description: 'Will be injected as the DEFAULT_AWX_VERSION build arg.'
+        required: true
+      confirm:
+        description: 'Are you sure? Set this to yes.'
+        required: true
+        default: 'no'
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    steps:
+      - name: Verify inputs
+        run: |
+          set -e
+
+          if [[ ${{ github.event.inputs.confirm }} != "yes" ]]; then
+            >&2 echo "Confirm must be 'yes'"
+            exit 1
+          fi
+
+          if [[ ${{ github.event.inputs.version }} == "" ]]; then
+            >&2 echo "Set version to continue."
+            exit 1
+          fi
+
+          exit 0
+
+      - name: Checkout awx
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/awx
+          path: awx
+
+      - name: Checkout awx-operator
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/awx-operator
+          path: awx-operator
+
+      - name: Install playbook dependencies
+        run: |
+          python3 -m pip install docker
+
+      - name: Log in to GHCR
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and stage awx-operator
+        working-directory: awx-operator
+        run: |
+          BUILD_ARGS="--build-arg DEFAULT_AWX_VERSION=${{ github.event.inputs.default_awx_version }}" \
+          IMAGE_TAG_BASE=ghcr.io/${{ github.repository_owner }}/awx-operator \
+          VERSION=${{ github.event.inputs.version }} make docker-build docker-push
+
+      - name: Run test deployment
+        working-directory: awx-operator
+        run: |
+          python3 -m pip install -r molecule/requirements.txt
+          ansible-galaxy collection install -r molecule/requirements.yml
+          sudo rm -f $(which kustomize)
+          make kustomize
+          KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind
+        env:
+          AWX_TEST_VERSION: ${{ github.event.inputs.default_awx_version }}
+
+      - name: Create draft release
+        working-directory: awx
+        run: |
+          ansible-playbook tools/ansible/stage.yml \
+            -e version=${{ github.event.inputs.version }} \
+            -e repo=${{ github.repository_owner }}/awx-operator \
+            -e github_token=${{ secrets.GITHUB_TOKEN }}
