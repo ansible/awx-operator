@@ -28,11 +28,12 @@ spec:
                   number: 80
 {% if hostname %}      
       host: {{ hostname }}
-{% endif %}      
-{% if ingress_tls_secret %}
   tls:
     - hosts:
-        - {{ hostname }}
+        - {{ hostname }}  
+{% endif %}
+    
+{% if ingress_tls_secret %}
       secretName: {{ ingress_tls_secret }}
 {% endif %}
 {% endif %}
