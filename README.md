@@ -219,6 +219,7 @@ To retrieve the admin password, run `kubectl get secret <resourcename>-admin-pas
 The secret that is expected to be passed should be formatted as follow:
 
 ```yaml
+#my-secret-awx-admin.yml
 ---
 apiVersion: v1
 kind: Secret
@@ -229,6 +230,9 @@ stringData:
   password: mysuperlongpassword
 ```
 
+```
+$ kubectl apply -f my-secret-awx-admin.yml
+```
 
 ### Network and TLS Configuration
 
@@ -245,6 +249,7 @@ The following variables are customizable for any `service_type`
 | service_labels                  | Add custom labels                             | Empty string                      |
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -264,6 +269,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | loadbalancer_port        | Port used for Loadbalancer ingress       | 80            |
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -289,6 +295,7 @@ The following variables are customizable only when `service_type=NodePort`
 | nodeport_port            | Port used for NodePort       | 30080            |
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -304,6 +311,7 @@ The `ingress_type` supported options are: `none`, `ingress` and `route`. To togg
   * None
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -323,6 +331,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | ingress_path_type          | Define the type of the path (for LBs)    | Prefix                       |
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -343,6 +352,7 @@ The following variables are customizable when `ingress_type=route`
 | route_tls_secret                | Secret that contains the TLS information      | Empty string                                            |
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -357,7 +367,6 @@ spec:
 #### External PostgreSQL Service
 
 In order for the AWX instance to rely on an external database, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and either specified as `postgres_configuration_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-postgres-configuration`.
-
 
 The secret should be formatted as follows:
 
@@ -406,6 +415,7 @@ The following variables are customizable for the managed PostgreSQL service
 Example of customization could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -445,6 +455,7 @@ There are a few variables that are customizable for awx the image management.
 Example of customization could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -464,6 +475,7 @@ spec:
 Depending on your kubernetes cluster and settings you might need to grant some capabilities to the redis container so it can start. Set the `redis_capabilities` option so the capabilities are added in the deployment.
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -478,6 +490,7 @@ spec:
 Depending on the type of tasks that you'll be running, you may find that you need the task pod to run as `privileged`. This can open yourself up to a variety of security concerns, so you should be aware (and verify that you have the privileges) to do this if necessary. In order to toggle this feature, you can add the following to your custom resource:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -506,6 +519,7 @@ The resource requirements for both, the task and the web containers are configur
 Example of customization could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -551,6 +565,7 @@ pods to be scheduled onto nodes with matching taints.
 Example of customization could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -591,6 +606,7 @@ Please note the `awx-operator` will look for the data field `ldap-ca.crt` in the
 Example of customization could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -621,6 +637,7 @@ In cases which you want to persist the `/var/lib/projects` directory, there are 
 Example of customization when the `awx-operator` automatically handles the persistent volume could be:
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
 spec:
   ...
@@ -667,6 +684,7 @@ data:
 Example spec file for volumes and volume mounts
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
 ---
     spec:
     ...
@@ -772,7 +790,9 @@ If you need to export custom environment variables to your containers.
 Example configuration of environment variables
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
   spec:
+  ...
     task_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
@@ -795,7 +815,9 @@ With`extra_settings`, you can pass multiple custom settings via the `awx-operato
 Example configuration of `extra_settings` parameter
 
 ```yaml
+# ansible/instantiate-awx-deployment.yml
   spec:
+  ...
     extra_settings:
       - setting: MAX_PAGE_SIZE
         value: "500"
@@ -815,7 +837,10 @@ If you need to modify some `ServiceAccount` proprieties
 Example configuration of environment variables
 
 ```yaml
+  # ansible/instantiate-awx-deployment.yml
+  ---
   spec:
+  ...
     service_account_annotations: |
       eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
 ```
