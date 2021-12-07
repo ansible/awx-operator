@@ -84,7 +84,9 @@ gen-resources: kustomize ## Generate resources for controller and print to stdou
 	@$(KUSTOMIZE) build config/default
 
 deploy: kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	$(MAKE) gen-resources | kubectl apply -f -
+	@cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
+	@$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
