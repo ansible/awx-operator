@@ -9,9 +9,10 @@
     awx_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
     awx_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
     awx_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_old_postgres_schema: "{{ old_pg_config['resources'][0]['data']['schema'] | default('') | b64decode }}"
     awx_old_postgres_port: "{{ old_pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
-  no_log: true
+  no_log: "{{ awx_no_log|default(true)|bool }}"
 
 - name: Default label selector to custom resource generated postgres
   set_fact:
@@ -45,10 +46,10 @@
       pg_dump
       -h {{ awx_old_postgres_host }}
       -U {{ awx_old_postgres_user }}
-      -d {{ awx_old_postgres_database }}
+      -d {{ awx_old_postgres_database }}{%if awx_old_postgres_schema != '' %} -n {{ awx_old_postgres_schema }} {% endif %}
       -p {{ awx_old_postgres_port }}
       -F custom
-  no_log: true
+  no_log: "{{ awx_no_log|default(true)|bool }}"
 
 - name: Set pg_restore command
   set_fact:
@@ -56,7 +57,7 @@
       pg_restore --clean --if-exists
       -U {{ database_username }}
       -d {{ database_name }}
-  no_log: true
+  no_log: "{{ awx_no_log|default(true)|bool }}"
 
 - name: Stream backup from pg_dump to the new postgresql container
   k8s_exec:
@@ -68,7 +69,7 @@
       PGPASSWORD={{ awx_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ pg_restore }}
       echo 'Successful'
       """
-  no_log: true
+  no_log: "{{ awx_no_log|default(true)|bool }}"
   register: data_migration
   failed_when: "'Successful' not in data_migration.stdout"
 

@@ -38,6 +38,7 @@ stringData:
   database: <desired database name>
   username: <username to connect as>
   password: <password to connect with>
+  schema: <optional external database schema - default is to use public schema - for migration purpose only>
 type: Opaque
 ```
 
