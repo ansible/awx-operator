@@ -412,6 +412,10 @@ spec:
                   description: Key/values that will be set under the pod-level securityContext field
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
+                awx_no_log:
+                  description: Weither to apply no_log or not to critical tasks during db migration phase
+                  type: boolean
+                  default: true
               type: object
             status:
               properties:
