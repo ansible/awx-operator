@@ -29,9 +29,14 @@ spec:
         app.kubernetes.io/component: '{{ deployment_type }}'
     spec:
       serviceAccountName: '{{ ansible_operator_meta.name }}'
-{% if image_pull_secret %}
+{% if image_pull_secret is defined %}
       imagePullSecrets:
         - name: {{ image_pull_secret }}
+{% elif image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
 {% endif %}
 {% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
