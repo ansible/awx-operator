@@ -21,6 +21,10 @@ spec:
       app.kubernetes.io/component: '{{ deployment_type }}'
   template:
     metadata:
+{% if awx_pods_annotations is defined and awx_pods_annotations | length != 0  %}
+      annotations:
+        {{ awx_pods_annotations | indent(width=8) }}
+{% endif %}
       labels:
         app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/version: '{{ _image_version }}'

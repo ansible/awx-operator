@@ -112,6 +112,9 @@ spec:
                   description: Port to use for the loadbalancer
                   type: integer
                   default: 80
+                awx_pods_annotations:
+                  description: Annotations to add to the awx pods
+                  type: string
                 route_host:
                   description: The DNS to use to points to the instance
                   type: string
