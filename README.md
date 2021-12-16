@@ -480,7 +480,7 @@ There are a few variables that are customizable for awx the image management.
 | image               | Path of the image to pull |
 | image_version       | Image version to pull     |
 | image_pull_policy   | The pull policy to adopt  |
-| image_pull_secret   | The pull secret to use    |
+| image_pull_secrets  | The pull secrets to use   |
 | ee_images           | A list of EEs to register |
 | redis_image         | Path of the image to pull |
 | redis_image_version | Image version to pull     |
@@ -494,7 +494,8 @@ spec:
   image: myorg/my-custom-awx
   image_version: latest
   image_pull_policy: Always
-  image_pull_secret: pull_secret_name
+  image_pull_secrets:
+    - pull_secret_name
   ee_images:
     - name: my-custom-awx-ee
       image: myorg/my-custom-awx-ee
@@ -788,7 +789,7 @@ type: Opaque
 ```
 
 ##### Control plane ee from private registry
-The images listed in "ee_images" will be added as globally available Execution Environments. The "control_plane_ee_image" will be used to run project updates. In order to use a private image for any of these you'll need to use `image_pull_secret` to provide a k8s pull secret to access it. Currently the same secret is used for any of these images supplied at install time.
+The images listed in "ee_images" will be added as globally available Execution Environments. The "control_plane_ee_image" will be used to run project updates. In order to use a private image for any of these you'll need to use `image_pull_secrets` to provide a list of k8s pull secrets to access it. Currently the same secret is used for any of these images supplied at install time.
 
 You can create `image_pull_secret`
 ```
