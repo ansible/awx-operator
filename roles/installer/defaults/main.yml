@@ -165,6 +165,13 @@ ee_resource_requirements:
     cpu: 500m
     memory: 1Gi
 
+# Custom annotations for awx pods.
+# Specify as literal block. E.g.:
+# awx_pods_annotations: |
+#   app.kubernetes.io/name: awx
+#   app.kubernetes.io/instance: test-1a
+awx_pods_annotations: ''
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
