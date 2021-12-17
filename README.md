@@ -105,9 +105,12 @@ Now you need to deploy AWX Operator into your cluster. Clone this repo and `git 
 
 ```
 $ export NAMESPACE=my-namespace
-$ make deploy
-cd config/manager && /home/user/awx-operator/bin/kustomize edit set image controller=quay.io/ansible/awx-operator:0.14.0
-/home/user/awx-operator/bin/kustomize build config/default | kubectl apply -f -
+$ #install kustomize
+$ curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | 
+$ cd config/manager && ./kustomize edit set image controller=quay.io/ansible/awx-operator:0.14.0
+$ cd ../..
+$ ./kustomize build config/default | kubectl apply -f -
+
 namespace/my-namespace created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
