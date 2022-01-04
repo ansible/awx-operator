@@ -87,7 +87,7 @@ spec:
           volumeMounts:
             - name: postgres
               mountPath: '{{ postgres_data_path | dirname }}'
-              subPath: '{{ postgres_data_path | dirname | basename }}'
+              subPath: '{{ postgres_data_path | dirname | dirname | basename }}'
           resources: {{ postgres_resource_requirements }}
 {% if postgres_selector %}
       nodeSelector:
