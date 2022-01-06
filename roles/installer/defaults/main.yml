@@ -188,6 +188,11 @@ session_cookie_secure: False
 
 # Assign a preexisting priority class to the control plane pods
 control_plane_priority_class: ''
+
+redis_resource_requirements:
+  requests:
+    cpu: 500m
+    memory: 250Mi
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |

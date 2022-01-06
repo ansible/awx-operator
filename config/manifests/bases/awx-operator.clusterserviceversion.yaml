@@ -278,6 +278,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Redis container resource requirements
+        path: redis_resource_requirements
+        x-descriptors:
+          - urn:alm:descriptor:com.tectonic.ui:advanced
+          - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: PostgreSQL container resource requirements (when using a managed
           instance)
         path: postgres_resource_requirements
