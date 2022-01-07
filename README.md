@@ -401,6 +401,7 @@ The following variables are customizable for the managed PostgreSQL service
 | postgres_resource_requirements       | PostgreSQL container resource requirements | Empty object                      |
 | postgres_storage_requirements        | PostgreSQL container storage requirements  | requests: {storage: 8Gi}          |
 | postgres_storage_class               | PostgreSQL PV storage class                | Empty string                      |
+| postgres_storage_annotations         | PostgreSQL PV storage annotations          | Empty array                      |
 | postgres_data_path                   | PostgreSQL data path                       | `/var/lib/postgresql/data/pgdata` |
 
 Example of customization could be:
@@ -422,6 +423,11 @@ spec:
     limits:
       storage: 50Gi
   postgres_storage_class: fast-ssd
+  postgres_storage_annotations:
+    - name: example.com/disk-volume-type
+      value: SSD
+    - name: volume.beta.kubernetes.io/storage-provisioner
+      value: example-provisioner
 ```
 
 **Note**: If `postgres_storage_class` is not defined, Postgres will store it's data on a volume using the default storage class for your cluster.
