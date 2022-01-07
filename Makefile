@@ -89,6 +89,7 @@ deploy: kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/c
 	@$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
+	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
 
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
