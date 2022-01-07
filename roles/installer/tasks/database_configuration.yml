@@ -99,6 +99,10 @@
         definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
       register: create_statefulset_result
 
+    - name: Scale down Deployment for migration
+      include_tasks: scale_down_deployment.yml
+      when: create_statefulset_result.changed
+
   rescue:
     - name: Scale down Deployment for migration
       include_tasks: scale_down_deployment.yml
