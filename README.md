@@ -394,6 +394,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | hostname            | Define the FQDN                          | {{ meta.name }}.example.com |
 | ingress_path        | Define the ingress path to the service   | /                           |
 | ingress_path_type   | Define the type of the path (for LBs)    | Prefix                      |
+| ingress_class_name  | Precreated ingress class to use          | Empty string                |
 
 ```yaml
 ---

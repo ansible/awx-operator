@@ -26,9 +26,12 @@ spec:
                 name: '{{ ansible_operator_meta.name }}-service'
                 port:
                   number: 80
-{% if hostname %}      
+{% if hostname %}
       host: {{ hostname }}
-{% endif %}      
+{% endif %}
+{% if ingress_class_name %}
+      ingressClassName: {{ ingress_class_name }}
+{% endif %}
 {% if ingress_tls_secret %}
   tls:
     - hosts:

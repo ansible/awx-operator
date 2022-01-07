@@ -98,6 +98,9 @@ spec:
                 ingress_annotations:
                   description: Annotations to add to the Ingress Controller
                   type: string
+                ingress_class_name:
+                  description: Precreated ingress class to associate to ingress
+                  type: string
                 ingress_tls_secret:
                   description: Secret where the Ingress TLS secret can be found
                   type: string
