@@ -64,6 +64,17 @@ hostname: ''
 #   kubernetes.io/os: linux
 node_selector: ''
 
+# Add a topologySpreadConstraints for the AWX pods.
+# Specify as literal block. E.g.:
+# topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+topology_spread_constraints: ''
+
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
 #   - key: "dedicated"

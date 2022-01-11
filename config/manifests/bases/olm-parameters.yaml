@@ -511,6 +511,11 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Topology Spread Constraints
+      path: topology_spread_constraints
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Service Labels
       path: service_labels
       x-descriptors:
