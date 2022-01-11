@@ -1,7 +1,0 @@
-molecule
-molecule-docker
-yamllint
-ansible-lint
-openshift
-jmespath
-ansible-core
