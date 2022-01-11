@@ -215,6 +215,9 @@ projects_persistence: false
 # Define an existing PersistentVolumeClaim to use
 projects_existing_claim: ''
 #
+# Define postgres configuration arguments to use
+postgres_extra_args: ''
+
 # Define the storage_class, size and access_mode
 # when not using an existing claim
 projects_storage_size: 8Gi
