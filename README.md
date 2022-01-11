@@ -422,6 +422,9 @@ spec:
     limits:
       storage: 50Gi
   postgres_storage_class: fast-ssd
+  postgres_extra_args:
+    - '-c'
+    - 'max_connections=1000'
 ```
 
 **Note**: If `postgres_storage_class` is not defined, Postgres will store it's data on a volume using the default storage class for your cluster.
