@@ -35,6 +35,22 @@ spec:
 {% endif %}
 {% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
+        - name: database-check
+          image: '{{ _init_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              [[ -d /check-db/pgsql/data ]] && rm -rf /check-db/data; mv /check-db/pgsql/data/ /check-db/data/ && rm -rf /check-db/pgsql
+          volumeMounts:
+            - name: check-db-pvc
+              mountPath: /check-db
+              subPath: ''
+            volumes:
+            - name: check-db-pvc
+            persistentVolumeClaim:
+              claimName: postgres-{{ ansible_operator_meta.name }}-postgres-0
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
