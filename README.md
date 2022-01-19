@@ -44,8 +44,6 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 
 This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
 
-> :warning: The operator is not supported by Red Hat, and is in **alpha** status. For now, use it at your own risk!
-
 ## Usage
 
 ### Basic Install
