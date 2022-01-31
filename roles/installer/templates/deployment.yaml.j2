@@ -33,7 +33,6 @@ spec:
       imagePullSecrets:
         - name: {{ image_pull_secret }}
 {% endif %}
-{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
       initContainers:
         - name: database-check
           image: '{{ _init_container_image }}'
@@ -51,6 +50,7 @@ spec:
             - name: check-db-pvc
             persistentVolumeClaim:
               claimName: postgres-{{ ansible_operator_meta.name }}-postgres-0
+{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
