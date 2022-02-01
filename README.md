@@ -241,12 +241,15 @@ The following variables are customizable for any `service_type`
 | Name                                  | Description                                   | Default                           |
 | ------------------------------------- | --------------------------------------------- | --------------------------------- |
 | service_labels                  | Add custom labels                             | Empty string                      |
+| service_annotations             | Add service annotations                 | Empty string  |
 
 ```yaml
 ---
 spec:
   ...
   service_type: ClusterIP
+  service_annotations: |
+    environment: testing
   service_labels: |
     environment: testing
 ```
@@ -257,7 +260,6 @@ The following variables are customizable only when `service_type=LoadBalancer`
 
 | Name                           | Description                              | Default       |
 | ------------------------------ | ---------------------------------------- | ------------- |
-| loadbalancer_annotations | LoadBalancer annotations                 | Empty string  |
 | loadbalancer_protocol    | Protocol to use for Loadbalancer ingress | http          |
 | loadbalancer_port        | Port used for Loadbalancer ingress       | 80            |
 
@@ -268,7 +270,7 @@ spec:
   service_type: LoadBalancer
   loadbalancer_protocol: https
   loadbalancer_port: 443
-  loadbalancer_annotations: |
+  service_annotations: |
     environment: testing
   service_labels: |
     environment: testing

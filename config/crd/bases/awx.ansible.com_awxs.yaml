@@ -67,6 +67,9 @@ spec:
                 extra_volumes:
                   description: Specify extra volumes to add to the application pod
                   type: string
+                service_annotations:
+                  description: Annotations to add to the service
+                  type: string
                 service_type:
                   description: The service type to be used on the deployed instance
                   type: string
@@ -97,9 +100,6 @@ spec:
                   type: string
                 ingress_tls_secret:
                   description: Secret where the Ingress TLS secret can be found
-                  type: string
-                loadbalancer_annotations:
-                  description: Annotations to add to the loadbalancer
                   type: string
                 loadbalancer_protocol:
                   description: Protocol to use for the loadbalancer
