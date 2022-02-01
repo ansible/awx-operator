@@ -34,6 +34,7 @@ spec:
         - name: {{ image_pull_secret }}
 {% endif %}
       initContainers:
+{% if managed_database %}
         - name: database-check
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -41,15 +42,12 @@ spec:
             - /bin/sh
             - -c
             - |
-              [[ -d /check-db/pgsql/data ]] && rm -rf /check-db/data; mv /check-db/pgsql/data/ /check-db/data/ && rm -rf /check-db/pgsql
+              [[ -d /check-db/pgsql/data ]] && rm -rf /check-db/data && mv /check-db/pgsql/data/ /check-db/data/ && rm -rf /check-db/pgsql || true
           volumeMounts:
             - name: check-db-pvc
               mountPath: /check-db
               subPath: ''
-            volumes:
-            - name: check-db-pvc
-            persistentVolumeClaim:
-              claimName: postgres-{{ ansible_operator_meta.name }}-postgres-0
+{% endif %}
 {% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
@@ -340,6 +338,11 @@ spec:
 {% endif %}
 {% endif %}
       volumes:
+{% if managed_database %}
+        - name: check-db-pvc
+          persistentVolumeClaim:
+            claimName: postgres-{{ ansible_operator_meta.name }}-postgres-0
+{% endif %}
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
           emptyDir: {}
