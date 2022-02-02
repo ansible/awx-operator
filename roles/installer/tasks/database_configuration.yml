@@ -157,6 +157,10 @@
   retries: 60
   when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
 
+- name: Set database as managed
+  set_fact:
+    managed_database: "{{ pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed' }}"
+
 - name: Look up details for this deployment
   k8s_info:
     api_version: "{{ api_version }}"
