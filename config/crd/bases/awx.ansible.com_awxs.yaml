@@ -298,6 +298,10 @@ spec:
                 redis_image_version:
                   description: Redis container image version to use
                   type: string
+                redis_security_contexts:
+                  description: Key/values that will be set under the Redis container security contexts
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
                 redis_capabilities:
                   description: Redis container capabilities
                   type: array
