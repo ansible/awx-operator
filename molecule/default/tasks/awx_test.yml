@@ -55,7 +55,7 @@
   rescue:
     - name: Get list of project updates and jobs
       uri:
-        url: "http://localhost/api/v2/{{ item }}/"
+        url: "http://localhost/api/v2/{{ resource }}/"
         user: admin
         password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
         force_basic_auth: yes
@@ -63,15 +63,19 @@
       loop:
         - project_updates
         - jobs
+      loop_control:
+        loop_var: resource
 
     - name: Get all job and project details
       uri:
-        url: "http://localhost{{ item }}"
+        url: "http://localhost{{ endpoint }}"
         user: admin
         password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
         force_basic_auth: yes
       loop: |
         {{ job_lists.results | map(attribute='json') | map(attribute='results') | flatten | map(attribute='url') }}
+      loop_control:
+        loop_var: endpoint
 
     - name: Re-emit failure
       vars:
