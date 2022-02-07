@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: awx-operator-metrics-service
+  labels:
+    control-plane: controller-manager
+    {{- include "awx-operator.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: https
+      protocol: TCP
+      name: https
+  selector:
+    control-plane: controller-manager

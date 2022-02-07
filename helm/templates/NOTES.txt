@@ -1,0 +1,4 @@
+The AWX Operator has been installed. Check its status by running:
+  kubectl logs -n {{ .Release.Namespace }} -f -l app.kubernetes.io/name=awx-operator -c awx-manager
+
+Visit https://github.com/ansible/awx-operator for instructions on how to create and configure AWX instances.
