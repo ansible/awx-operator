@@ -511,12 +511,6 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-    - displayName: Pod Labels
-      path: pod_labels
-      x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Service Labels
       path: service_labels
       x-descriptors:

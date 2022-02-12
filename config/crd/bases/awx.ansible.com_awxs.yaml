@@ -134,9 +134,6 @@ spec:
                 node_selector:
                   description: nodeSelector for the pods
                   type: string
-                pod_labels:
-                  description: Additional labels to apply to the pod
-                  type: string
                 service_labels:
                   description: Additional labels to apply to the service
                   type: string

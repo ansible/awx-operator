@@ -3,12 +3,6 @@ deployment_type: awx
 kind: '{{ deployment_type | upper }}'
 api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
-# Custom labels for the tower pod. Specify as literal block. E.g.:
-# pod_labels: |
-#   environment: non-production
-#   zone: internal
-pod_labels: ''
-
 database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
