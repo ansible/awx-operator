@@ -26,6 +26,7 @@ data:
     
     ADMINS = ()
     STATIC_ROOT = '/var/lib/awx/public/static'
+    STATIC_URL = '{{ (ingress_path + '/static/').replace('//', '/') }}'
     PROJECTS_ROOT = '/var/lib/awx/projects'
     JOBOUTPUT_ROOT = '/var/lib/awx/job_status'
 
@@ -89,11 +90,6 @@ data:
     USE_X_FORWARDED_PORT = True
     BROADCAST_WEBSOCKET_PORT = 8052
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
-
-    # Load LDAP BIND password from Kubernetes secret if define
-    {% if ldap_password_secret -%}
-    AUTH_LDAP_BIND_PASSWORD = "{{ ldap_bind_password }}"
-    {% endif %}
 
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
@@ -178,15 +174,15 @@ data:
                 deny all;
             }
     
-            location /static/ {
+            location {{ (ingress_path + '/static').replace('//', '/') }} {
                 alias /var/lib/awx/public/static/;
             }
     
-            location /favicon.ico {
+            location {{ (ingress_path + '/favicon.ico').replace('//', '/') }} {
                 alias /var/lib/awx/public/static/media/favicon.ico;
             }
     
-            location /websocket {
+            location {{ (ingress_path + '/websocket').replace('//', '/') }} {
                 # Pass request to the upstream alias
                 proxy_pass http://daphne;
                 # Require http version 1.1 to allow for upgrade requests
@@ -208,7 +204,7 @@ data:
                 proxy_set_header Connection $connection_upgrade;
             }
     
-            location / {
+            location {{ ingress_path }} {
                 # Add trailing / if missing
                 rewrite ^(.*)$http_host(.*[^/])$ $1$http_host$2/ permanent;
                 uwsgi_read_timeout 120s;
