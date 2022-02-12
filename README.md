@@ -11,8 +11,8 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 * [Table of Contents](#table-of-contents)
    * [Purpose](#purpose)
    * [Usage](#usage)
-      * [Basic Install on minikube for beginner or testing](#basic-install-on-minikube-for-beginner-or-testing)
-      * [Basic Install on K8S Cluster](#basic-install-on-k8s-cluster)
+      * [Basic Install on minikube (beginner or testing)](#basic-install-on-minikube-beginner-or-testing)
+      * [Basic Install on existing cluster](#basic-install-on-existing-cluster)
       * [Admin user account configuration](#admin-user-account-configuration)
       * [Network and TLS Configuration](#network-and-tls-configuration)
          * [Service Type](#service-type)
@@ -23,21 +23,22 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Managed PostgreSQL Service](#managed-postgresql-service)
       * [Advanced Configuration](#advanced-configuration)
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+         * [Redis container capabilities](#redis-container-capabilities)
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
+         * [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
          * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
+         * [Default execution environments from private registries](#default-execution-environments-from-private-registries)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
          * [Extra Settings](#extra-settings)
          * [Service Account](#service-account)
       * [Uninstall](#uninstall)
-   * [Upgrading](#upgrading)
+      * [Upgrading](#upgrading)
+         * [v0.14.0](#v0140)
    * [Contributing](#contributing)
    * [Release Process](#release-process)
-      * [Verifiy Functionality](#verify-functionality)
-      * [Update Version](#update-version)
-      * [Commit / Create Release](#commit--create-release)
    * [Author](#author)
 <!--te-->
 
@@ -888,7 +889,7 @@ $ kubectl -n default delete clusterrolebinding awx-operator
 $ kubectl -n default delete clusterrole awx-operator
 ```
 
-Then install the new AWX Operator by following the instructions in [Basic Install](#basic-install). The `NAMESPACE` environment variable have to be the name of the namespace in which your old AWX instance resides.
+Then install the new AWX Operator by following the instructions in [Basic Install](#basic-install-on-existing-cluster). The `NAMESPACE` environment variable have to be the name of the namespace in which your old AWX instance resides.
 
 Once the new AWX Operator is up and running, your AWX deployment will also be upgraded.
 
