@@ -2,6 +2,6 @@ molecule
 molecule-docker
 yamllint
 ansible-lint
-openshift
+openshift!=0.13.0
 jmespath
 ansible-core

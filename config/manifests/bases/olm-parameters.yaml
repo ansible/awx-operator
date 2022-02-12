@@ -199,7 +199,7 @@
         - urn:alm:descriptor:io.kubernetes:Secret
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
     - displayName: Tower LoadBalancer Annotations
-      path: loadbalancer_annotations
+      path: service_annotations
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
@@ -375,6 +375,11 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Postgres Extra Arguments
+      path: postgres_extra_args
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Certificate Authorirty Trust Bundle
       path: ca_trust_bundle
       x-descriptors:
@@ -508,6 +513,11 @@
         - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Node Selector
       path: node_selector
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Topology Spread Constraints
+      path: topology_spread_constraints
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

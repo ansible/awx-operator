@@ -60,7 +60,7 @@
 
 - name: Set Init image URL
   set_fact:
-    _init_container_image: |
+    _init_container_image: >-
       {{ _custom_init_container_image |
          default(lookup('env', 'RELATED_IMAGE_AWX_INIT_CONTAINER')) |
          default(_default_init_container_image, true) }}

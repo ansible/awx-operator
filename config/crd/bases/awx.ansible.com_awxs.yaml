@@ -67,6 +67,9 @@ spec:
                 extra_volumes:
                   description: Specify extra volumes to add to the application pod
                   type: string
+                service_annotations:
+                  description: Annotations to add to the service
+                  type: string
                 service_type:
                   description: The service type to be used on the deployed instance
                   type: string
@@ -97,9 +100,6 @@ spec:
                   type: string
                 ingress_tls_secret:
                   description: Secret where the Ingress TLS secret can be found
-                  type: string
-                loadbalancer_annotations:
-                  description: Annotations to add to the loadbalancer
                   type: string
                 loadbalancer_protocol:
                   description: Protocol to use for the loadbalancer
@@ -133,6 +133,9 @@ spec:
                   default: 30080
                 node_selector:
                   description: nodeSelector for the pods
+                  type: string
+                topology_spread_constraints:
+                  description: topology rule(s) for the pods
                   type: string
                 service_labels:
                   description: Additional labels to apply to the service
@@ -362,6 +365,10 @@ spec:
                 postgres_data_path:
                   description: Path where the PostgreSQL data are located
                   type: string
+                postgres_extra_args:
+                  type: array
+                  items:
+                    type: string
                 ca_trust_bundle:
                   description: Path where the trusted CA bundle is available
                   type: string

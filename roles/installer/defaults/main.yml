@@ -36,7 +36,7 @@ ingress_tls_secret: ''
 
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
-loadbalancer_annotations: ''
+service_annotations: ''
 
 nodeport_port: '30080'
 # The TLS termination mechanism to use to access
@@ -63,6 +63,17 @@ hostname: ''
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
 node_selector: ''
+
+# Add a topologySpreadConstraints for the AWX pods.
+# Specify as literal block. E.g.:
+# topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+topology_spread_constraints: ''
 
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
@@ -215,6 +226,9 @@ projects_persistence: false
 # Define an existing PersistentVolumeClaim to use
 projects_existing_claim: ''
 #
+# Define postgres configuration arguments to use
+postgres_extra_args: ''
+
 # Define the storage_class, size and access_mode
 # when not using an existing claim
 projects_storage_size: 8Gi
