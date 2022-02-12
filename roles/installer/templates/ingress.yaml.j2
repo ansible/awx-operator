@@ -31,9 +31,6 @@ spec:
   tls:
     - hosts:
         - {{ hostname }}  
-{% endif %}
-    
-{% if ingress_tls_secret %}
       secretName: {{ ingress_tls_secret }}
 {% endif %}
 {% endif %}
