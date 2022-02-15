@@ -34,13 +34,13 @@ data:
 
     # Set memory available based off of resource request/limit for the task pod
     memory_limit = '{{ task_resource_requirements["limits"]["memory"] if "limits" in task_resource_requirements and "memory" in task_resource_requirements["limits"] }}'
-    memory_request = '{{ task_resource_requirements["requests"]["memory"] if "requests" in task_resource_requirements and "memory" in task_resource_requirements["requests"] }}'
-    SYSTEM_TASK_ABS_MEM = memory_limit if memory_limit else memory_request
+    if memory_limit:
+        SYSTEM_TASK_ABS_MEM = memory_limit
 
     # Set cpu available based off of resource request/limit for the task pod
     cpu_limit = '{{ task_resource_requirements["limits"]["cpu"] if "limits" in task_resource_requirements and "cpu" in task_resource_requirements["limits"] }}'
-    cpu_request = '{{ task_resource_requirements["requests"]["cpu"] if "requests" in task_resource_requirements and "cpu" in task_resource_requirements["requests"] }}'
-    SYSTEM_TASK_ABS_CPU = cpu_limit if cpu_limit else cpu_request
+    if cpu_limit:
+        SYSTEM_TASK_ABS_CPU = cpu_limit
 
     SECRET_KEY = get_secret()
     
