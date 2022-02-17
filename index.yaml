@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  awx-operator:
+  - apiVersion: v2
+    appVersion: 0.20.2
+    created: "2022-05-02T14:25:02.895616213Z"
+    description: A Helm chart for the AWX Operator
+    digest: 642e25080364902f51fa225c54ecabcb6466ebbe6798ad1b6c70b73462911bec
+    name: awx-operator
+    type: application
+    urls:
+    - https://github.com/shanemcd/awx-operator/releases/download/0.20.2/awx-operator-0.20.2.tgz
+    version: 0.20.2
+generated: "2022-05-02T14:25:02.895628413Z"
