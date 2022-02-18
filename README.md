@@ -106,23 +106,22 @@ Now you need to deploy AWX Operator into your cluster. Clone this repo and `git 
 ```
 $ export NAMESPACE=my-namespace
 $ make deploy
-cd config/manager && /home/user/awx-operator/bin/kustomize edit set image controller=quay.io/ansible/awx-operator:0.14.0
-/home/user/awx-operator/bin/kustomize build config/default | kubectl apply -f -
-namespace/my-namespace created
-customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
-customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
-customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
-serviceaccount/awx-operator-controller-manager created
-role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
-role.rbac.authorization.k8s.io/awx-operator-manager-role created
-clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
-clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
-rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
-rolebinding.rbac.authorization.k8s.io/awx-operator-manager-rolebinding created
-clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
-configmap/awx-operator-manager-config created
-service/awx-operator-controller-manager-metrics-service created
-deployment.apps/awx-operator-controller-manager created
+  /home/user/awx-operator/bin/kustomize build config/default | kubectl apply -f -
+  namespace/my-namespace created
+  customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
+  customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
+  customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+  serviceaccount/awx-operator-controller-manager created
+  role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
+  role.rbac.authorization.k8s.io/awx-operator-manager-role created
+  clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
+  clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
+  rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
+  rolebinding.rbac.authorization.k8s.io/awx-operator-manager-rolebinding created
+  clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
+  configmap/awx-operator-manager-config created
+  service/awx-operator-controller-manager-metrics-service created
+  deployment.apps/awx-operator-controller-manager created
 ```
 
 Wait a bit and you should have the `awx-operator` running:
@@ -138,6 +137,8 @@ So we don't have to keep repeating `-n $NAMESPACE`, let's set the current namesp
 ```
 $ kubectl config set-context --current --namespace=$NAMESPACE
 ```
+
+It is important to know that when you do not set the default namespace to $NAMESPACE that the `awx-operator-controller-manager` might get confused.
 
 Next, create a file named `awx-demo.yml` with the suggested content below. The `metadata.name` you provide, will be the name of the resulting AWX deployment.
 
@@ -157,6 +158,12 @@ Finally, use `kubectl` to create the awx instance in your cluster:
 
 ```
 $ kubectl apply -f awx-demo.yml
+awx.awx.ansible.com/awx-demo created
+```
+Or, when you haven't set a default namespace
+
+```
+$ kubectl apply -f awx-demo.yml --namespace=$NAMESPACE
 awx.awx.ansible.com/awx-demo created
 ```
 
