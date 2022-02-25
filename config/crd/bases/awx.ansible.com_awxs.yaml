@@ -140,6 +140,9 @@ spec:
                 service_labels:
                   description: Additional labels to apply to the service
                   type: string
+                annotations:
+                  description: annotations for the pods
+                  type: string
                 tolerations:
                   description: node tolerations for the pods
                   type: string

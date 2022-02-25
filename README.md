@@ -574,6 +574,7 @@ The ability to specify topologySpreadConstraints is also allowed through `topolo
 | node_selector                  | AWX pods' nodeSelector                   | ''      |
 | topology_spread_constraints    | AWX pods' topologySpreadConstraints      | ''      |
 | tolerations                    | AWX pods' tolerations                    | ''      |
+| annotations                    | AWX pods' annotations                    | ''      |
 | postgres_selector              | Postgres pods' nodeSelector              | ''      |
 | postgres_tolerations           | Postgres pods' tolerations               | ''      |
 

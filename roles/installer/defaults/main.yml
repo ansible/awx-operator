@@ -83,6 +83,12 @@ topology_spread_constraints: ''
 #     effect: "NoSchedule"
 tolerations: ''
 
+# Add annotations to awx pods. Specify as literal block. E.g.:
+# annotations: |
+#   my.annotation/1: value
+#   my.annotation/2: value2
+annotations: ''
+
 admin_user: admin
 admin_email: test@example.com
 
