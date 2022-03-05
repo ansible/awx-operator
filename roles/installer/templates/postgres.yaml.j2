@@ -40,13 +40,7 @@ spec:
       initContainers:
         - name: database-check
           image: '{{ _init_container_image }}'
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "250m"
-            limits:
-              memory: "256Mi"
-              cpu: "1000m"
+          resources: {{ postgres_init_container_resource_requirements }}
           imagePullPolicy: '{{ image_pull_policy }}'
           command:
             - /bin/sh

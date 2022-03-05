@@ -245,6 +245,28 @@ spec:
                           type: string
                       type: object
                   type: object
+                postgres_init_container_resource_requirements:
+                  description: Resource requirements for the postgres init container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
                 service_account_annotations:
                   description: ServiceAccount annotations
                   type: string

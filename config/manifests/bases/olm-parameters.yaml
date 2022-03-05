@@ -261,14 +261,17 @@
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-    - displayName: PostgreSQL container resource requirements (when using a managed
-        instance)
+    - displayName: PostgreSQL init container resource requirements (when using a managed instance)
+      path: postgres_init_container_resource_requirements
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+    - displayName: PostgreSQL container resource requirements (when using a managed instance)
       path: postgres_resource_requirements
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-    - displayName: PostgreSQL container storage requirements (when using a managed
-        instance)
+    - displayName: PostgreSQL container storage requirements (when using a managed instance)
       path: postgres_storage_requirements
       x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced

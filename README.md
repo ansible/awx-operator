@@ -419,13 +419,14 @@ If you don't have access to an external PostgreSQL service, the AWX operator can
 
 The following variables are customizable for the managed PostgreSQL service
 
-| Name                                 | Description                                | Default                           |
-| ------------------------------------ | ------------------------------------------ | --------------------------------- |
-| postgres_image                       | Path of the image to pull                  | postgres:12                       |
-| postgres_resource_requirements       | PostgreSQL container resource requirements | Empty object                      |
-| postgres_storage_requirements        | PostgreSQL container storage requirements  | requests: {storage: 8Gi}          |
-| postgres_storage_class               | PostgreSQL PV storage class                | Empty string                      |
-| postgres_data_path                   | PostgreSQL data path                       | `/var/lib/postgresql/data/pgdata` |
+| Name                                          | Description                                   | Default                           |
+| --------------------------------------------- | --------------------------------------------- | --------------------------------- |
+| postgres_image                                | Path of the image to pull                     | postgres:12                       |
+| postgres_init_container_resource_requirements | Database init container resource requirements | requests: {}                      |
+| postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {}                      |
+| postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}          |
+| postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                      |
+| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata` |
 
 Example of customization could be:
 
