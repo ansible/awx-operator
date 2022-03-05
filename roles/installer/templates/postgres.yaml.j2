@@ -37,6 +37,20 @@ spec:
       imagePullSecrets:
         - name: {{ image_pull_secret }}
 {% endif %}
+      initContainers:
+        - name: database-check
+          image: '{{ _init_container_image }}'
+          resources: {{ postgres_init_container_resource_requirements }}
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              [[ -d /check-db/pgsql/data ]] && rm -rf /check-db/data && mv /check-db/pgsql/data/ /check-db/data/ && rm -rf /check-db/pgsql || exit 0
+          volumeMounts:
+            - name: postgres
+              mountPath: /check-db
+              subPath: ''
       containers:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'

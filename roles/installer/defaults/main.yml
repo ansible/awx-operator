@@ -222,6 +222,7 @@ postgres_tolerations: ''
 postgres_storage_requirements:
   requests:
     storage: 8Gi
+postgres_init_container_resource_requirements: {}
 postgres_resource_requirements: {}
 postgres_data_path: '/var/lib/postgresql/data/pgdata'
 

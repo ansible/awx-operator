@@ -1,0 +1,19 @@
+# For disconnected environments, images must be set based on the values of `RELATED_IMAGE_` variables
+---
+- name: Set default awx init container image
+  set_fact:
+    _default_init_container_image: "{{ _init_container_image }}:{{ _init_container_image_version }}"
+
+- name: Set user provided awx init image
+  set_fact:
+    _custom_init_container_image: "{{ init_container_image }}:{{ init_container_image_version }}"
+  when:
+    - init_container_image | default([]) | length
+    - init_container_image_version is defined or init_container_image_version != ''
+
+- name: Set Init image URL
+  set_fact:
+    _init_container_image: >-
+      {{ _custom_init_container_image |
+         default(lookup('env', 'RELATED_IMAGE_AWX_INIT_CONTAINER')) |
+         default(_default_init_container_image, true) }}
