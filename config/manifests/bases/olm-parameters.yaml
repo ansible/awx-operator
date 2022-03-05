@@ -527,6 +527,11 @@
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:hidden
+    - displayName: Annotations
+      path: annotations
+      x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
     - displayName: Tolerations
       path: tolerations
       x-descriptors:
