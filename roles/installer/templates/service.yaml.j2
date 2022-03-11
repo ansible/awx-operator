@@ -18,12 +18,14 @@ metadata:
 spec:
   ports:
 {% if service_type | lower == "nodeport" %}
+  type: NodePort
     - port: 80
       protocol: TCP
       targetPort: 8052
       name: http
       nodePort: {{ nodeport_port }}
 {% elif service_type | lower == 'loadbalancer' %}
+  type: LoadBalancer
 {% if loadbalancer_protocol | lower == 'https' %}
     - port: {{ loadbalancer_port }}
       name: https
@@ -33,6 +35,13 @@ spec:
 {% endif %}
       protocol: TCP
       targetPort: 8052
+{% endif %}
+{% elif service_type | lower == 'clusterip' %}
+  type: ClusterIP
+    - port: 80
+      protocol: TCP
+      targetPort: 8052
+      name: http
 {% endif %}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
     - port: 443
@@ -44,10 +53,3 @@ spec:
     app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
-{% if service_type | lower == "nodeport" %}
-  type: NodePort
-{% elif service_type | lower == "loadbalancer" %}
-  type: LoadBalancer
-{% else %}
-  type: ClusterIP
-{% endif %}
