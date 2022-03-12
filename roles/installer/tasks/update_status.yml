@@ -101,3 +101,13 @@
     status:
       migratedFromSecret: "{{ tower_migrated_from_secret }}"
   when: tower_migrated_from_secret is defined
+
+- name: Update upgradedPostgresVersion status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    status:
+      upgradedPostgresVersion: "{{ upgraded_postgres_version }}"
+  when: upgraded_postgres_version is defined

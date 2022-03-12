@@ -4,3 +4,4 @@ postgres_host_auth_method: 'scram-sha-256'
 ldap_cacert_ca_crt: ''
 bundle_ca_crt: ''
 projects_existing_claim: ''
+supported_pg_version: 13
