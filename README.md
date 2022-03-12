@@ -421,7 +421,7 @@ The following variables are customizable for the managed PostgreSQL service
 
 | Name                                          | Description                                   | Default                           |
 | --------------------------------------------- | --------------------------------------------- | --------------------------------- |
-| postgres_image                                | Path of the image to pull                     | postgres:12                       |
+| postgres_image                                | Path of the image to pull                     | postgres:13                       |
 | postgres_init_container_resource_requirements | Database init container resource requirements | requests: {}                      |
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {}                      |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}          |
@@ -570,8 +570,8 @@ The ability to specify topologySpreadConstraints is also allowed through `topolo
 
 | Name                        | Description                         | Default |
 | --------------------------- | ----------------------------------- | ------- |
-| postgres_image              | Path of the image to pull           | 12      |
-| postgres_image_version      | Image version to pull               | 12      |
+| postgres_image              | Path of the image to pull           | postgres      |
+| postgres_image_version      | Image version to pull               | 13      |
 | node_selector               | AWX pods' nodeSelector              | ''      |
 | topology_spread_constraints | AWX pods' topologySpreadConstraints | ''      |
 | tolerations                 | AWX pods' tolerations               | ''      |
