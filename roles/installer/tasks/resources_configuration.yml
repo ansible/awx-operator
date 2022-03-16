@@ -38,9 +38,8 @@
 
 - name: Set user provided awx app image
   set_fact:
-    _custom_image: "{{ image }}:{{ image_version }}"
+    _custom_image: "{{ image | default(_image) }}:{{ image_version }}"
   when:
-    - image | default([]) | length
     - image_version is defined or image_version != ''
 
 - name: Set AWX app image URL
