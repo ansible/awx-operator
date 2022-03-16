@@ -8,12 +8,628 @@ metadata:
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
-  customresourcedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Back up a deployment of the awx, including jobs, inventories, and
+        credentials
+      displayName: AWX Backup
+      kind: AWXBackup
+      name: awxbackups.awx.ansible.com
+      specDescriptors:
+      - displayName: Deployment name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup persistent volume claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup persistent volume claim namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup PVC storage requirements
+        path: backup_storage_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup PVC storage class
+        path: backup_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Database backup label selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - description: The persistent volume claim name used during backup
+        displayName: Backup claim
+        path: backupClaim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: The directory data is backed up to on the PVC
+        displayName: Backup directory
+        path: backupDirectory
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1beta1
+    - description: Restore a previous awx deployment into the namespace
+      displayName: AWX Restore
+      kind: AWXRestore
+      name: awxrestores.awx.ansible.com
+      specDescriptors:
+      - displayName: Backup source to restore ?
+        path: backup_source
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:CR
+        - urn:alm:descriptor:com.tectonic.ui:select:PVC
+      - displayName: Backup name
+        path: backup_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:CR
+      - displayName: Name of newly restored deployment
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup persistent volume claim
+        path: backup_pvc
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Backup namespace
+        path: backup_pvc_namespace
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Backup directory in the persistent volume claim
+        path: backup_dir
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:PVC
+      - displayName: Database restore label selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - description: The state of the restore
+        displayName: Restore status
+        path: restoreComplete
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1beta1
+    - description: Deploy a new instance of AWX
+      displayName: AWX
+      kind: AWX
+      name: awxs.awx.ansible.com
+      specDescriptors:
+      - displayName: Hostname
+        path: hostname
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Admin account username
+        path: admin_user
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Admin email address
+        path: admin_email
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Admin password secret
+        path: admin_password_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Database configuration secret
+        path: postgres_configuration_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Old Database configuration secret
+        path: old_postgres_configuration_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Secret key secret
+        path: secret_key_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Broadcast Websocket Secret
+        path: broadcast_websocket_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Service Account Annotations
+        path: service_account_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Tower Service Type
+        path: service_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:ClusterIP
+        - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
+        - urn:alm:descriptor:com.tectonic.ui:select:NodePort
+      - displayName: Tower Ingress Type
+        path: ingress_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:none
+        - urn:alm:descriptor:com.tectonic.ui:select:Ingress
+        - urn:alm:descriptor:com.tectonic.ui:select:Route
+      - displayName: Ingress Path
+        path: ingress_path
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress Path Type
+        path: ingress_path_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Tower Ingress Annotations
+        path: ingress_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Tower Ingress TLS Secret
+        path: ingress_tls_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Tower LoadBalancer Annotations
+        path: service_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Tower LoadBalancer Protocol
+        path: loadbalancer_protocol
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:http
+        - urn:alm:descriptor:com.tectonic.ui:select:https
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Tower LoadBalancer Port
+        path: loadbalancer_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: Route DNS host
+        path: route_host
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Route TLS termination mechanism
+        path: route_tls_termination_mechanism
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:Edge
+        - urn:alm:descriptor:com.tectonic.ui:select:Passthrough
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Route TLS credential secret
+        path: route_tls_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
+      - displayName: Image Pull Secret
+        path: image_pull_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Web container resource requirements
+        path: web_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Task container resource requirements
+        path: task_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: EE Control Plane container resource requirements
+        path: ee_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: PostgreSQL init container resource requirements (when using a
+          managed instance)
+        path: postgres_init_container_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: PostgreSQL container resource requirements (when using a managed
+          instance)
+        path: postgres_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: PostgreSQL container storage requirements (when using a managed
+          instance)
+        path: postgres_storage_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Replicas
+        path: replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: Remove used secrets on instance removal ?
+        path: garbage_collect_secrets
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Preload instance with data upon creation ?
+        path: create_preload_data
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Deploy the instance in development mode ?
+        path: development_mode
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Should the task container deployed with privileged level ?
+        path: task_privileged
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Deployment Type
+        path: deployment_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Deployment Kind
+        path: kind
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Deployment apiVersion
+        path: api_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image
+        path: image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image Version
+        path: image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Image
+        path: redis_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Image Version
+        path: redis_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Capabilities
+        path: redis_capabilities
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image
+        path: postgres_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Image Version
+        path: postgres_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Selector
+        path: postgres_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Label Selector
+        path: postgres_label_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Tolerations
+        path: postgres_tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Storage Class
+        path: postgres_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Datapath
+        path: postgres_data_path
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Extra Arguments
+        path: postgres_extra_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Certificate Authorirty Trust Bundle
+        path: ca_trust_bundle
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: LDAP Certificate Authority Trust Bundle
+        path: ldap_cacert_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Task Args
+        path: task_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Enable persistence for /var/lib/projects directory?
+        path: projects_persistence
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Use existing Persistent Claim?
+        path: projects_use_existing_claim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:select:_Yes_
+        - urn:alm:descriptor:com.tectonic.ui:select:_No_
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_persistence:true
+      - displayName: Projects Existing Persistent Claim
+        path: projects_existing_claim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_Yes_
+        - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
+      - description: Projects Storage Class Name. If not present, the default storage
+          class will be used.
+        displayName: Projects Storage Class Name
+        path: projects_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Projects Storage Size
+        displayName: Projects Storage Size
+        path: projects_storage_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Projects Storage Access Mode
+        displayName: Projects Storage Access Mode
+        path: projects_storage_access_mode
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Task Command
+        path: task_command
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to Task container
+        displayName: Task Extra Env
+        path: task_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Execution container
+        displayName: EE Extra Volume Mounts
+        path: ee_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Registry path to the Execution Environment container to use
+        displayName: EE Images
+        path: ee_images
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to EE container
+        displayName: EE Extra Env
+        path: ee_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Registry path to the Execution Environment container to use on
+          control plane pods
+        displayName: Control Plane EE Image
+        path: control_plane_ee_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: EE Images Pull Credentials Secret
+        displayName: EE Images Pull Credentials Secret
+        path: ee_pull_credentials_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Specify volume mounts to be added to Task container
+        displayName: Task Extra Volume Mounts
+        path: task_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Web Args
+        path: web_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Web Command
+        path: web_command
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to Web container
+        displayName: Web Extra Env
+        path: web_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Web container
+        displayName: Web Extra Volume Mounts
+        path: web_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify extra volumes to add to the application pod
+        displayName: Extra Volumes
+        path: extra_volumes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Node Selector
+        path: node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Topology Spread Constraints
+        path: topology_spread_constraints
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Service Labels
+        path: service_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Annotations
+        path: annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Tolerations
+        path: tolerations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: API Extra Settings
+        path: extra_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Security Context Settings
+        path: security_context_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Registry path to the init container to use
+        displayName: Init Container Image
+        path: init_container_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Init container image version to use
+        displayName: Init Container Image Version
+        path: init_container_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify Extra commands for the Init container
+        displayName: Init Container Extra Commands
+        path: init_container_extra_commands
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Init container
+        displayName: Init Container Extra Volume Mounts
+        path: init_container_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Secret where can be found the trusted Certificate Authority Bundle
+        path: bundle_cacert_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Nodeport Port
+        path: nodeport_port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      statusDescriptors:
+      - description: Route to access the instance deployed
+        displayName: URL
+        path: URL
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: Admin user for the instance deployed
+        displayName: Admin User
+        path: adminUser
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Admin password for the instance deployed
+        displayName: Admin Password
+        path: adminPasswordSecret
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Version of the instance deployed
+        displayName: Version
+        path: version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - description: Image of the instance deployed
+        displayName: Image
+        path: image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1beta1
   description: An operator for the AWX Project
   displayName: AWX
   icon:
-  - base64data: ""
-    mediatype: ""
+  - base64data: PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgNTQ3LjIxIDM4OS40NyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNTQ3LjIxIDM4OS40NzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtkaXNwbGF5Om5vbmU7fQoJLnN0MXtkaXNwbGF5OmlubGluZTtmaWxsOiNGQUVEQTE7fQoJLnN0MntkaXNwbGF5OmlubGluZTtmaWxsOiM1RDI4MTU7fQoJLnN0M3tmaWxsOiNGQUVEQTE7fQoJLnN0NHtmaWxsOiM1RDI4MTU7fQoJLnN0NXtmaWxsOiMyRDhDQ0U7fQoJLnN0NntmaWxsOiM3OTQ1MzI7fQoJLnN0N3tmaWxsOiMwMjZEQUU7fQoJLnN0OHtmaWxsOiNGRjRCNEI7fQoJLnN0OXtmaWxsOiNBQkRCRjc7fQoJLnN0MTB7ZmlsbDojQ0IyRDJGO30KCS5zdDExe2ZpbGw6I0ZDQTJBMzt9Cgkuc3QxMntmaWxsOm5vbmU7c3Ryb2tlOiM1RDI4MTU7c3Ryb2tlLXdpZHRoOjU7c3Ryb2tlLW1pdGVybGltaXQ6MTA7fQoJLnN0MTN7ZmlsbDojRkZGRkZGO30KCS5zdDE0e2ZpbGw6I0E0Q0UzOTt9Cjwvc3R5bGU+CjxnIGNsYXNzPSJzdDAiPgoJPHBvbHlnb24gY2xhc3M9InN0MSIgcG9pbnRzPSIxNzYuMTIsMzc3IDEzMC4xOCwzMDMuNSAxNzYuMTIsMjMwIDI0OS43OSwyMzAgMjk1LjcyLDMwMy41IDI0OS43OSwzNzcgCSIvPgoJPHBhdGggY2xhc3M9InN0MiIgZD0iTTI0OC45NSwyMzEuNWw0NSw3MmwtNDUsNzJoLTcybC00NS03Mmw0NS03MkgyNDguOTUgTTI1MC42MiwyMjguNWgtMS42NmgtNzJoLTEuNjZsLTAuODgsMS40MWwtNDUsNzIKCQlsLTAuOTksMS41OWwwLjk5LDEuNTlsNDUsNzJsMC44OCwxLjQxaDEuNjZoNzJoMS42NmwwLjg4LTEuNDFsNDUtNzJsMC45OS0xLjU5bC0wLjk5LTEuNTlsLTQ1LTcyTDI1MC42MiwyMjguNUwyNTAuNjIsMjI4LjV6Ii8+CjwvZz4KPGc+Cgk8cG9seWdvbiBjbGFzcz0ic3QzIiBwb2ludHM9IjQxNi41NywzNzggMzcwLjAxLDMwMy41IDQxNi41NywyMjkgNDkxLjM0LDIyOSA1MzcuOSwzMDMuNSA0OTEuMzQsMzc4IAkiLz4KCTxwYXRoIGNsYXNzPSJzdDQiIGQ9Ik00ODkuOTUsMjMxLjVsNDUsNzJsLTQ1LDcyaC03MmwtNDUtNzJsNDUtNzJINDg5Ljk1IE00OTIuNzMsMjI2LjVoLTIuNzdoLTcyaC0yLjc3bC0xLjQ3LDIuMzVsLTQ1LDcyCgkJbC0xLjY2LDIuNjVsMS42NiwyLjY1bDQ1LDcybDEuNDcsMi4zNWgyLjc3aDcyaDIuNzdsMS40Ny0yLjM1bDQ1LTcybDEuNjYtMi42NWwtMS42Ni0yLjY1bC00NS03Mkw0OTIuNzMsMjI2LjVMNDkyLjczLDIyNi41eiIvPgo8L2c+CjxnPgoJPHBvbHlnb24gY2xhc3M9InN0MyIgcG9pbnRzPSI0MTYuNTcsMjMxIDM3MC4wMSwxNTYuNSA0MTYuNTcsODIgNDkxLjM0LDgyIDUzNy45LDE1Ni41IDQ5MS4zNCwyMzEgCSIvPgoJPHBhdGggY2xhc3M9InN0NCIgZD0iTTQ4OS45NSw4NC41bDQ1LDcybC00NSw3MmgtNzJsLTQ1LTcybDQ1LTcySDQ4OS45NSBNNDkyLjczLDc5LjVoLTIuNzdoLTcyaC0yLjc3bC0xLjQ3LDIuMzVsLTQ1LDcyCgkJbC0xLjY2LDIuNjVsMS42NiwyLjY1bDQ1LDcybDEuNDcsMi4zNWgyLjc3aDcyaDIuNzdsMS40Ny0yLjM1bDQ1LTcybDEuNjYtMi42NWwtMS42Ni0yLjY1bC00NS03Mkw0OTIuNzMsNzkuNUw0OTIuNzMsNzkuNXoiLz4KPC9nPgo8ZyBjbGFzcz0ic3QwIj4KCTxwb2x5Z29uIGNsYXNzPSJzdDEiIHBvaW50cz0iNTcuMTIsNDUxIDExLjE4LDM3Ny41IDU3LjEyLDMwNCAxMzAuNzksMzA0IDE3Ni43MiwzNzcuNSAxMzAuNzksNDUxIAkiLz4KCTxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik0xMjkuOTUsMzA1LjVsNDUsNzJsLTQ1LDcyaC03MmwtNDUtNzJsNDUtNzJIMTI5Ljk1IE0xMzEuNjIsMzAyLjVoLTEuNjZoLTcyaC0xLjY2bC0wLjg4LDEuNDFsLTQ1LDcyCgkJbC0wLjk5LDEuNTlsMC45OSwxLjU5bDQ1LDcybDAuODgsMS40MWgxLjY2aDcyaDEuNjZsMC44OC0xLjQxbDQ1LTcybDAuOTktMS41OWwtMC45OS0xLjU5bC00NS03MkwxMzEuNjIsMzAyLjVMMTMxLjYyLDMwMi41eiIvPgo8L2c+CjxnPgoJPHBvbHlnb24gY2xhc3M9InN0MyIgcG9pbnRzPSIxNzYuNTcsMjMxIDEzMC4wMSwxNTYuNSAxNzYuNTcsODIgMjUxLjM0LDgyIDI5Ny45LDE1Ni41IDI1MS4zNCwyMzEgCSIvPgoJPHBhdGggY2xhc3M9InN0NCIgZD0iTTI0OS45NSw4NC41bDQ1LDcybC00NSw3MmgtNzJsLTQ1LTcybDQ1LTcySDI0OS45NSBNMjUyLjczLDc5LjVoLTIuNzdoLTcyaC0yLjc3bC0xLjQ3LDIuMzVsLTQ1LDcyCgkJbC0xLjY2LDIuNjVsMS42NiwyLjY1bDQ1LDcybDEuNDcsMi4zNWgyLjc3aDcyaDIuNzdsMS40Ny0yLjM1bDQ1LTcybDEuNjYtMi42NWwtMS42Ni0yLjY1bC00NS03MkwyNTIuNzMsNzkuNUwyNTIuNzMsNzkuNXoiLz4KPC9nPgo8Zz4KCTxwb2x5Z29uIGNsYXNzPSJzdDMiIHBvaW50cz0iNTYuNTcsMTU4IDEwLjAxLDgzLjUgNTYuNTcsOSAxMzEuMzQsOSAxNzcuOSw4My41IDEzMS4zNCwxNTggCSIvPgoJPHBhdGggY2xhc3M9InN0NCIgZD0iTTEyOS45NSwxMS41bDQ1LDcybC00NSw3MmgtNzJsLTQ1LTcybDQ1LTcySDEyOS45NSBNMTMyLjczLDYuNWgtMi43N2gtNzJoLTIuNzdsLTEuNDcsMi4zNWwtNDUsNzJMNy4wNiw4My41CgkJbDEuNjYsMi42NWw0NSw3MmwxLjQ3LDIuMzVoMi43N2g3MmgyLjc3bDEuNDctMi4zNWw0NS03MmwxLjY2LTIuNjVsLTEuNjYtMi42NWwtNDUtNzJMMTMyLjczLDYuNUwxMzIuNzMsNi41eiIvPgo8L2c+CjxyZWN0IHg9IjI1MC45NSIgeT0iMzIwLjUiIGNsYXNzPSJzdDQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI1NSIvPgo8cGF0aCBjbGFzcz0ic3Q1IiBkPSJNNDMwLjQ1LDM0MWgtMzIwYy04LjI1LDAtMTUtNi43NS0xNS0xNVYxMzZjMC04LjI1LDYuNzUtMTUsMTUtMTVoMzIwYzguMjUsMCwxNSw2Ljc1LDE1LDE1djE5MAoJQzQ0NS40NSwzMzQuMjUsNDM4LjcsMzQxLDQzMC40NSwzNDF6Ii8+CjxwYXRoIGNsYXNzPSJzdDQiIGQ9Ik0zMTguNDUsMzg0aC05NWMtNC4xMiwwLTcuNS0zLjM4LTcuNS03LjVsMCwwYzAtNC4xMiwzLjM4LTcuNSw3LjUtNy41aDk1YzQuMTIsMCw3LjUsMy4zOCw3LjUsNy41bDAsMAoJQzMyNS45NSwzODAuNjIsMzIyLjU4LDM4NCwzMTguNDUsMzg0eiIvPgo8cmVjdCB4PSIyODAuOTUiIHk9IjMyMC4wMiIgY2xhc3M9InN0NiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjQ5Ii8+CjxwYXRoIGNsYXNzPSJzdDciIGQ9Ik05NS45NSwyNzIuNXY1NGwzNDksMXYtNmMwLDAtMTMyLTQtMjQyLTEzUzk1Ljk1LDI3Mi41LDk1Ljk1LDI3Mi41eiIvPgo8cGF0aCBjbGFzcz0ic3Q4IiBkPSJNNDQ1LjQ1LDMyNmMwLDguMjUtNi43NSwxNS0xNSwxNWgtMzIwYy04LjI1LDAtMTUtNi43NS0xNS0xNSIvPgo8cGF0aCBjbGFzcz0ic3Q5IiBkPSJNNDQ0Ljk1LDE4NS41di01NGMtNS45OS0xMC0xMy45OS05LTI5Ljk5LTljLTQ2Ljg2LDAtOTcuMTQtMC44Ny0xNDQtMWMtNDUuNDEtMC4xMy05MC41OSwwLjEzLTEzNiwwCgljLTEzLTAuMDQtMzQsMC0zOS4wMSw5YzAsMiwwLDQsMCw2YzAsMCwxMzIsNCwyNDIsMTNTNDQ0Ljk1LDE4NS41LDQ0NC45NSwxODUuNXoiLz4KPHBvbHlnb24gY2xhc3M9InN0MTAiIHBvaW50cz0iOTUuNzcsMzI1Ljk1IDE0Ni42NiwzMjUuOTUgMTU0LjgzLDMzOS42NiAxMDcuNzcsMzM5Ljk1IDk4Ljc3LDMzNC45NSAiLz4KPHBvbHlnb24gY2xhc3M9InN0MTEiIHBvaW50cz0iNDQ1LjUzLDMyNi4xMyAzODUuMzIsMzI2LjEzIDM5NC41OCwzNDAuODQgNDMzLjU0LDM0MS4xMSA0NDEuOTgsMzM1LjY2ICIvPgo8cGF0aCBjbGFzcz0ic3QxMiIgZD0iTTQzMC40NSwzNDFoLTMyMGMtOC4yNSwwLTE1LTYuNzUtMTUtMTVWMTM2YzAtOC4yNSw2Ljc1LTE1LDE1LTE1aDMyMGM4LjI1LDAsMTUsNi43NSwxNSwxNXYxOTAKCUM0NDUuNDUsMzM0LjI1LDQzOC43LDM0MSw0MzAuNDUsMzQxeiIvPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDEzIiBkPSJNMjA3LjkzLDE4OC43MmgyNC4xNmw4LjcsNDYuMDhsMTIuNzMtNDYuMDhoMjQuMDdsMTIuNzYsNDYuMDJsOC43MS00Ni4wMmgyNC4wNGwtMTguMTUsODIuMzJoLTI0Ljk0CgkJbC0xNC40NC01MS44M2wtMTQuMzgsNTEuODNoLTI0Ljk1TDIwNy45MywxODguNzJ6Ii8+Cgk8cGF0aCBjbGFzcz0ic3QxMyIgZD0iTTMyNS43OSwxODguNzJoMjguMDJsMTQuNTcsMjUuMzJsMTQuMTgtMjUuMzJoMjcuNzRsLTI1LjYyLDM5Ljg3bDI4LjA0LDQyLjQ1aC0yOC41OGwtMTYuMjYtMjYuNDUKCQlsLTE2LjI2LDI2LjQ1aC0yOC40MWwyOC40LTQyLjlMMzI1Ljc5LDE4OC43MnoiLz4KPC9nPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDEzIiBkPSJNMTg3LjAyLDI1Ny40NWgtMjguODhsLTQuMDEsMTMuNTloLTI1Ljk3bDMwLjk0LTgyLjMyaDI3Ljc1bDMwLjkzLDgyLjMyaC0yNi42NEwxODcuMDIsMjU3LjQ1egoJCSBNMTgxLjc0LDIzOS42NWwtOS4wOS0yOS41OWwtOC45OSwyOS41OUgxODEuNzR6Ii8+CjwvZz4KPGc+Cgk8Y2lyY2xlIGNsYXNzPSJzdDE0IiBjeD0iNDkwLjQ1IiBjeT0iODMiIHI9IjExIi8+Cgk8cGF0aCBjbGFzcz0ic3Q0IiBkPSJNNDkwLjQ1LDc0LjVjNC42OSwwLDguNSwzLjgxLDguNSw4LjVzLTMuODEsOC41LTguNSw4LjVzLTguNS0zLjgxLTguNS04LjVTNDg1Ljc3LDc0LjUsNDkwLjQ1LDc0LjUKCQkgTTQ5MC40NSw2OS41Yy03LjQ2LDAtMTMuNSw2LjA0LTEzLjUsMTMuNXM2LjA0LDEzLjUsMTMuNSwxMy41czEzLjUtNi4wNCwxMy41LTEzLjVTNDk3LjkxLDY5LjUsNDkwLjQ1LDY5LjVMNDkwLjQ1LDY5LjV6Ii8+CjwvZz4KPGc+Cgk8Y2lyY2xlIGNsYXNzPSJzdDE0IiBjeD0iNTcuNDUiIGN5PSIxNTciIHI9IjExIi8+Cgk8cGF0aCBjbGFzcz0ic3Q0IiBkPSJNNTcuNDUsMTQ4LjVjNC42OSwwLDguNSwzLjgxLDguNSw4LjVzLTMuODEsOC41LTguNSw4LjVzLTguNS0zLjgxLTguNS04LjVTNTIuNzcsMTQ4LjUsNTcuNDUsMTQ4LjUKCQkgTTU3LjQ1LDE0My41Yy03LjQ2LDAtMTMuNSw2LjA0LTEzLjUsMTMuNXM2LjA0LDEzLjUsMTMuNSwxMy41czEzLjUtNi4wNCwxMy41LTEzLjVTNjQuOTEsMTQzLjUsNTcuNDUsMTQzLjVMNTcuNDUsMTQzLjV6Ii8+CjwvZz4KPGc+Cgk8Y2lyY2xlIGNsYXNzPSJzdDgiIGN4PSI0OTEuNDUiIGN5PSIyMzEiIHI9IjExIi8+Cgk8cGF0aCBjbGFzcz0ic3Q0IiBkPSJNNDkxLjQ1LDIyMi41YzQuNjksMCw4LjUsMy44MSw4LjUsOC41cy0zLjgxLDguNS04LjUsOC41cy04LjUtMy44MS04LjUtOC41UzQ4Ni43NywyMjIuNSw0OTEuNDUsMjIyLjUKCQkgTTQ5MS40NSwyMTcuNWMtNy40NiwwLTEzLjUsNi4wNC0xMy41LDEzLjVzNi4wNCwxMy41LDEzLjUsMTMuNXMxMy41LTYuMDQsMTMuNS0xMy41UzQ5OC45MSwyMTcuNSw0OTEuNDUsMjE3LjVMNDkxLjQ1LDIxNy41eiIvPgo8L2c+Cjwvc3ZnPgo=
+    mediatype: image/svg+xml
   install:
     spec:
       deployments: null
@@ -31,8 +647,8 @@ spec:
   - automation
   - ansible
   links:
-  - name: Awx Operator
-    url: https://awx-operator.domain
+  - name: AWX Operator
+    url: https://github.com/ansible/awx-operator
   maturity: alpha
   provider:
     name: Ansible

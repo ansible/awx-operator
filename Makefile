@@ -132,7 +132,6 @@ bundle: kustomize ## Generate bundle manifests and metadata, then validate gener
 	operator-sdk generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
 	$(KUSTOMIZE) build config/manifests | operator-sdk generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
-	cd config/manifests/bases && python inject-csv-config.py
 	operator-sdk bundle validate ./bundle
 
 .PHONY: bundle-build
