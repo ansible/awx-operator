@@ -92,6 +92,80 @@
   set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+  no_log: true
+
+- name: Set database as managed
+  set_fact:
+    managed_database: "{{ pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed' }}"
+
+- name: Check if postgres pod is running and version 12
+  block:
+    - name: Default label selector to custom resource generated postgres
+      set_fact:
+        postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ ansible_operator_meta.name }}"
+      when: postgres_label_selector is not defined
+
+    - name: Get the postgres pod information
+      k8s_info:
+        kind: Pod
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}-postgres-0"  # using name to keep compatibility
+        field_selectors:
+          - status.phase=Running
+      register: postgres_pod
+      until:
+        - "postgres_pod['resources'] | length"
+        - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+      delay: 5
+      retries: 60
+
+    - name: Set path to PG_VERSION file for given container image
+      set_fact:
+        path_to_pg_version: /var/lib/postgresql/data/pgdata/PG_VERSION
+      when: _postgres_image == 'postgres'
+
+    - name: Get old PostgreSQL version
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ ansible_operator_meta.name }}-postgres-0"
+        command: |
+          bash -c """
+          cat {{ path_to_pg_version }}
+          """
+      register: _old_pg_version
+      # failed_when: false # This may be necessary if the reconciliation loop doesn't converge.
+
+    - name: Upgrade data dir from Postgres 12 to 13 if applicable
+      include_tasks: upgrade_postgres.yml
+      when: _old_pg_version.stdout | trim == '12'
+  when: managed_database
+
+
+
+
+
+
+# if Postgres 12, and not external, then try to upgrade
+
+# Task to check if postgresql pod is running 
+
+# Task to check the postgresql version via psql 
+
+
+- name: Upgrade data dir from PostgreSQL 12 to 13 if needed
+  include_tasks: upgrade_postgres.yml
+  when:
+    - true # add a task earlier to check if postgres pod exists
+    - managed_database
+
 - block:
     - name: Create Database if no database is specified
       k8s:
@@ -130,17 +204,7 @@
       k8s:
         apply: true
         definition: "{{ lookup('template', 'postgres.yaml.j2') }}"
-  when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
-
-- name: Store Database Configuration
-  set_fact:
-    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
-    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
-    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
-    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
-    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
-  no_log: true
+  when: managed_database
 
 - name: Wait for Database to initialize if managed DB
   k8s_info:
@@ -155,11 +219,7 @@
     - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
   delay: 5
   retries: 60
-  when: pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed'
-
-- name: Set database as managed
-  set_fact:
-    managed_database: "{{ pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed' }}"
+  when: managed_database
 
 - name: Look up details for this deployment
   k8s_info:

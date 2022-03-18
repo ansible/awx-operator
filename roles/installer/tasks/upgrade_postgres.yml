@@ -1,0 +1,89 @@
+---
+
+# If postgres version is not 12, and not an external postgres instance (when pg_hostname is undefined), then run this playbook with include_tasks from database_configuration.yml
+
+# If postgres_image == 'postgres'. Use pg_upgrade.  Otherwise, use POSTGRESQL_UPGRADE=copy support
+
+
+# Upstream (postgres image)
+
+# Approach to take:
+#   1. check to see if we want to upgrade and set var accordingly
+#   2. check to make sure pod is already running.
+#   3. exec in and do a pg_dumpall to the already attached pvc and move the datadir
+#   4. start the new postres container (13) and have an init container that 
+# 
+# 
+#   > Note: since this could happen on an automatic upgrade, we should keep around a backup for them if it fails.
+
+
+# Option 1: <--
+#   pg_dumpall to existing & running postgres:12 container's volume.  Move datadir.  run postres:13 with same pvc and let it init, then have another task to exec into postgres:13 container and pipe backup.sql file to psql 
+# Option 2:
+#   Scale down everything, create a net-new migration pod (postgres:12) and mount the old volume and a new, temporary volume to back up to and run pg_dumpall.  Then start the postgres:13 pod and pipe through psql to it.  
+# Option 3: 
+#   Run both the 12 and 13 containers with services down and pipe a dumpall from 12 --> 13.  The problem with this is that that volume would need to be ReadWriteMany. 
+#   We could potentially accomplish this by using a net-new volume, but it would be annoying for the postgresql pvc name to change.
+
+# path/to/PG_VERSION = /var/lib/postgresql/data/pgdata/PG_VERSION
+
+
+- name: Print debug that we got here in the upgrade playbook
+  debug:
+    msg: "HERE IN THE UPGRADE_POSTGRES.YML PLAYBOOK"
+
+
+
+# - name: Default label selector to custom resource generated postgres
+#   set_fact:
+#     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ ansible_operator_meta.name }}"
+#   when: postgres_label_selector is not defined
+# 
+# - name: Get the postgres pod information
+#   k8s_info:
+#     kind: Pod
+#     namespace: '{{ ansible_operator_meta.namespace }}'
+#     name: '{{ ansible_operator_meta.name }}-postgres-0'  # using name to keep compatibility
+#     field_selectors:
+#       - status.phase=Running
+#   register: postgres_pod
+#   until:
+#     - "postgres_pod['resources'] | length"
+#     - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+#   delay: 5
+#   retries: 60
+# 
+# - name: Set the resource pod name as a variable.
+#   set_fact:
+#     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
+# 
+# - name: Scale down Deployment for migration
+#   include_tasks: scale_down_deployment.yml
+# 
+# - name: Set pg_dump command
+#   set_fact:
+#     pgdump: >-
+#       pg_dump
+#       -h {{ awx_postgres_host }}
+#       -U {{ awx_postgres_user }}
+#       -d {{ awx_postgres_database }}
+#       -p {{ awx_postgres_port }}
+#       -F custom
+#   no_log: true
+# 
+# 
+# 
+# 
+# - name: Write pg_dump to backup on PVC
+#   k8s_exec:
+#     namespace: "{{ backup_pvc_namespace }}"
+#     pod: "{{ ansible_operator_meta.name }}-db-management"
+#     command: |
+#       bash -c """
+#       set -e -o pipefail
+#       PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db
+#       echo 'Successful'
+#       """
+#   register: data_migration
+#   no_log: true
+#   failed_when: "'Successful' not in data_migration.stdout"
