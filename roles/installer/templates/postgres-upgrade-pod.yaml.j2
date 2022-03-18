@@ -1,0 +1,29 @@
+# stand up pod from https://github.com/tianon/docker-postgres-upgrade to migrate data in pvc 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ ansible_operator_meta.name }}-postgres-upgrade"
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-db-upgrade'
+    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/component: '{{ deployment_type }}-db-upgrade'
+    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+spec:
+  containers:
+  - name: "{{ ansible_operator_meta.name }}-postgres-upgrade"
+    image: "tianon/postgres-upgrade:12-to-13"
+    imagePullPolicy: Always
+    volumeMounts:
+    - name: postgres
+      mountPath: '{{ postgres_data_path | dirname }}'
+      subPath: '{{ postgres_data_path | dirname | basename }}'
+      readOnly: false
+  volumes:
+    - name: postgres
+      persistentVolumeClaim:
+        claimName: 'postgres-{{ ansible_operator_meta.name }}-postgres-0'
+        readOnly: false
+  restartPolicy: Never
+  resources: {{ postgres_resource_requirements }}
