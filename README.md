@@ -403,7 +403,7 @@ stringData:
 type: Opaque
 ```
 
-> Please ensure that the value for the variable "password" is wrapped in quotes if the password contains any special characters.
+> Please ensure that the value for the variable `password` should _not_ contain single or double quotes (`'`, `"`) or backslashes (`\`) to avoid any issues during deployment, backup or restoration.
 
 > It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 

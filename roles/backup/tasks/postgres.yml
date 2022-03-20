@@ -99,7 +99,7 @@
     command: |
       bash -c """
       set -e -o pipefail
-      PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} > {{ backup_dir }}/tower.db
+      PGPASSWORD='{{ awx_postgres_pass }}' {{ pgdump }} > {{ backup_dir }}/tower.db
       echo 'Successful'
       """
   register: data_migration

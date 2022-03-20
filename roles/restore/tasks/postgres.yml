@@ -86,7 +86,7 @@
     command: |
       bash -c """
       set -e -o pipefail
-      cat {{ backup_dir }}/tower.db | PGPASSWORD={{ awx_postgres_pass }} {{ pg_restore }}
+      cat {{ backup_dir }}/tower.db | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
       echo 'Successful'
       """
   register: data_migration
