@@ -65,7 +65,7 @@
     command: |
       bash -c """
       set -e -o pipefail
-      PGPASSWORD={{ awx_old_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ pg_restore }}
+      PGPASSWORD='{{ awx_old_postgres_pass }}' {{ pgdump }} | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
       echo 'Successful'
       """
   no_log: true
