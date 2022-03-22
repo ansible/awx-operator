@@ -131,7 +131,7 @@ _redis_image_version: latest
 _postgres_image: postgres
 _postgres_image_version: 12
 _init_container_image: quay.io/centos/centos
-_init_container_image_version: 8
+_init_container_image_version: stream8
 image_pull_policy: IfNotPresent
 image_pull_secret: ''
 
