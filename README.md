@@ -5,14 +5,15 @@
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
 # Table of Contents
-
+<!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
+<!-- gh-md-toc --insert README.md -->
 <!--ts-->
 * [AWX Operator](#awx-operator)
 * [Table of Contents](#table-of-contents)
    * [Purpose](#purpose)
    * [Usage](#usage)
-      * [Basic Install on minikube (beginner or testing)](#basic-install-on-minikube-beginner-or-testing)
-      * [Basic Install on existing cluster](#basic-install-on-existing-cluster)
+      * [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
+      * [Basic Install](#basic-install)
       * [Admin user account configuration](#admin-user-account-configuration)
       * [Network and TLS Configuration](#network-and-tls-configuration)
          * [Service Type](#service-type)
@@ -31,12 +32,16 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Persisting Projects Directory](#persisting-projects-directory)
          * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
          * [Default execution environments from private registries](#default-execution-environments-from-private-registries)
+            * [Control plane ee from private registry](#control-plane-ee-from-private-registry)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
          * [Extra Settings](#extra-settings)
          * [Service Account](#service-account)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
          * [v0.14.0](#v0140)
+            * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
+            * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
+            * [Steps to upgrade](#steps-to-upgrade)
    * [Contributing](#contributing)
    * [Release Process](#release-process)
    * [Author](#author)
@@ -48,11 +53,11 @@ This operator is meant to provide a more Kubernetes-native installation method f
 
 ## Usage
 
-### Basic Install on minikube (beginner or testing)
-
 This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can manage one or more AWX instances in any namespace.
 
-For testing purposes, the `awx-operator` can be deployed on a [Minikube](https://minikube.sigs.k8s.io/docs/) cluster. Due to different OS and hardware environments, please refer to the official Minikube documentation for further information.
+### Creating a minikube cluster for testing
+
+If you do not have an existing cluster, the `awx-operator` can be deployed on a [Minikube](https://minikube.sigs.k8s.io/docs/) cluster for testing purposes. Due to different OS and hardware environments, please refer to the official Minikube documentation for further information.
 
 ```
 $ minikube start --cpus=4 --memory=6g --addons=ingress
@@ -101,46 +106,66 @@ Let's create an alias for easier usage:
 $ alias kubectl="minikube kubectl --"
 ```
 
-Now you need to deploy AWX Operator into your cluster. Clone this repo and `git checkout` the latest version from https://github.com/ansible/awx-operator/releases, and then run the following command:
+### Basic Install
+
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/).
+
+First, create a file called `kustomization.yaml` with the following content:
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # Find the latest tag here: https://github.com/ansible/awx-operator/releases
+  - github.com/ansible/awx-operator/config/default?ref=0.18.0
+
+# Set the image tags to match the git version from above
+images:
+  - name: quay.io/ansible/awx-operator
+    newTag: 0.18.0
+
+# Specify a custom namespace in which to install AWX
+namespace: awx
+```
+
+> **TIP:** If you need to change any of the default settings for the operator (such as resources.limits), you can add [patches](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/) at the bottom of your kustomization.yaml file.
+
+Install the manifests by running this:
 
 ```
-$ export NAMESPACE=my-namespace
-$ make deploy
-  /home/user/awx-operator/bin/kustomize build config/default | kubectl apply -f -
-  namespace/my-namespace created
-  customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
-  customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
-  customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
-  serviceaccount/awx-operator-controller-manager created
-  role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
-  role.rbac.authorization.k8s.io/awx-operator-manager-role created
-  clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
-  clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
-  rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
-  rolebinding.rbac.authorization.k8s.io/awx-operator-manager-rolebinding created
-  clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
-  configmap/awx-operator-manager-config created
-  service/awx-operator-controller-manager-metrics-service created
-  deployment.apps/awx-operator-controller-manager created
+$ kustomize build . | kubectl apply -f -
+namespace/machaffe created
+customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
+customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
+serviceaccount/awx-operator-controller-manager created
+role.rbac.authorization.k8s.io/awx-operator-awx-manager-role created
+role.rbac.authorization.k8s.io/awx-operator-leader-election-role created
+clusterrole.rbac.authorization.k8s.io/awx-operator-metrics-reader created
+clusterrole.rbac.authorization.k8s.io/awx-operator-proxy-role created
+rolebinding.rbac.authorization.k8s.io/awx-operator-awx-manager-rolebinding created
+rolebinding.rbac.authorization.k8s.io/awx-operator-leader-election-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/awx-operator-proxy-rolebinding created
+configmap/awx-operator-awx-manager-config created
+service/awx-operator-controller-manager-metrics-service created
+deployment.apps/awx-operator-controller-manager created
 ```
 
 Wait a bit and you should have the `awx-operator` running:
 
 ```
-$ kubectl get pods -n $NAMESPACE
+$ kubectl get pods -n awx
 NAME                                               READY   STATUS    RESTARTS   AGE
 awx-operator-controller-manager-66ccd8f997-rhd4z   2/2     Running   0          11s
 ```
 
-So we don't have to keep repeating `-n $NAMESPACE`, let's set the current namespace for `kubectl`:
+So we don't have to keep repeating `-n awx`, let's set the current namespace for `kubectl`:
 
 ```
-$ kubectl config set-context --current --namespace=$NAMESPACE
+$ kubectl config set-context --current --namespace=awx
 ```
 
-It is important to know that when you do not set the default namespace to $NAMESPACE that the `awx-operator-controller-manager` might get confused.
-
-Next, create a file named `awx-demo.yml` with the suggested content below. The `metadata.name` you provide, will be the name of the resulting AWX deployment.
+Next, create a file named `awx-demo.yml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
 
 **Note:** If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
@@ -154,17 +179,21 @@ spec:
   service_type: nodeport
 ```
 
-Finally, use `kubectl` to create the awx instance in your cluster:
+Make sure to add this new file to the list of "resources" in your `kustomization.yaml` file:
+
+```yaml
+...
+resources:
+  - github.com/ansible/awx-operator/config/default?ref=0.18.0
+  # Add this extra line:
+  - awx-demo.yaml
+...
+```
+
+Finally, run `kustomize` again to create the AWX instance in your cluster:
 
 ```
-$ kubectl apply -f awx-demo.yml
-awx.awx.ansible.com/awx-demo created
-```
-Or, when you haven't set a default namespace
-
-```
-$ kubectl apply -f awx-demo.yml --namespace=$NAMESPACE
-awx.awx.ansible.com/awx-demo created
+kustomize build . | kubectl apply -f -
 ```
 
 After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
@@ -206,20 +235,6 @@ For an example using the Nginx Controller in Minukube, don't miss our [demo vide
 
 [![asciicast](https://raw.githubusercontent.com/ansible/awx-operator/devel/docs/awx-demo.svg)](https://asciinema.org/a/416946)
 
-### Basic Install on existing cluster
-
-For those running a whole K8S Cluster the steps to set up the awx-operator are:
-
-```
-$ Prepare required files
-git clone https://github.com/ansible/awx-operator.git
-cd awx-operator
-git checkout {{ latest_released_version }} # replace variable by latest version number in releases
-
-$ Deploy new AWX Operator
-export NAMESPACE=<Name of the namespace where your AWX instanse exists>
-make deploy
-```
 
 ### Admin user account configuration
 
@@ -565,7 +580,7 @@ spec:
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
 the AWX pods to run only on the nodes that match all the specified key/value pairs. `tolerations` and `postgres_tolerations` allow the AWX
 pods to be scheduled onto nodes with matching taints.
-The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`  
+The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 
 
 | Name                        | Description                         | Default |
