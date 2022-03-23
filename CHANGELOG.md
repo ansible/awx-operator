@@ -2,7 +2,14 @@
 
 This is a list of high-level changes for each release of `awx-operator`. A full list of commits can be found at `https://github.com/ansible/awx-operator/releases/tag/<version>`.
 
-# 0.14.0 (TBA)
+# 0.19.0 (Mar 23, 2022)
+
+- Fix corrupted spec for the service with nodeport type (kurokobo) - dbaf64e
+- Add ability to deploy with OLM & added logo (Christian Adams) - 86c31a4
+- Fix backup & restore issues with special characters in the postgres password (kurokobo) - 589a375
+- Use centos:stream8 container where applicable (Shane McDonald)- 12a58d7
+
+# 0.14.0 (Oct 03, 2021)
 
 - Starting with awx-operator 0.14.0, the project is now based on operator-sdk 1.x.
   - To avoid a headache, you probably want to delete your existing operator Deployment and follow the README.
