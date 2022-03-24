@@ -117,12 +117,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   # Find the latest tag here: https://github.com/ansible/awx-operator/releases
-  - github.com/ansible/awx-operator/config/default?ref=0.18.0
+  - github.com/ansible/awx-operator/config/default?ref=<tag>
 
 # Set the image tags to match the git version from above
 images:
   - name: quay.io/ansible/awx-operator
-    newTag: 0.18.0
+    newTag: <tag>
 
 # Specify a custom namespace in which to install AWX
 namespace: awx
@@ -184,7 +184,7 @@ Make sure to add this new file to the list of "resources" in your `kustomization
 ```yaml
 ...
 resources:
-  - github.com/ansible/awx-operator/config/default?ref=0.18.0
+  - github.com/ansible/awx-operator/config/default?ref=<tag>
   # Add this extra line:
   - awx-demo.yaml
 ...
