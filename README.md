@@ -108,7 +108,7 @@ $ alias kubectl="minikube kubectl --"
 
 ### Basic Install
 
-Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/).
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/
 
 First, create a file called `kustomization.yaml` with the following content:
 
@@ -165,7 +165,7 @@ So we don't have to keep repeating `-n awx`, let's set the current namespace for
 $ kubectl config set-context --current --namespace=awx
 ```
 
-Next, create a file named `awx-demo.yml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
+Next, create a file named `awx-demo.yaml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
 
 **Note:** If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
