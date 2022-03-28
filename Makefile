@@ -199,13 +199,14 @@ catalog-push: ## Push a catalog image.
 
 .PHONY: kubectl-slice
 KUBECTL_SLICE = $(shell pwd)/bin/kubectl-slice
+KUBECTL_SLICE_ARCH := $(shell uname -m | sed -e 's/amd64/x86_64/' -e 's/aarch64/arm64/')
 kubectl-slice: ## Download kubectl-slice locally if necessary.
 ifeq (,$(wildcard $(KUBECTL_SLICE)))
 ifeq (,$(shell which kubectl-slice 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUBECTL_SLICE)) ;\
-	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(ARCH).tar.gz | \
+	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(KUBECTL_SLICE_ARCH).tar.gz | \
 	tar xzf - -C bin/ kubectl-slice ;\
 	}
 else
