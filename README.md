@@ -8,46 +8,51 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
-- [AWX Operator](#awx-operator)
-- [Table of Contents](#table-of-contents)
-  - [Purpose](#purpose)
-  - [Usage](#usage)
-    - [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
-    - [Basic Install](#basic-install)
-    - [Admin user account configuration](#admin-user-account-configuration)
-    - [Network and TLS Configuration](#network-and-tls-configuration)
-      - [Service Type](#service-type)
-      - [Ingress Type](#ingress-type)
-    - [Database Configuration](#database-configuration)
-      - [External PostgreSQL Service](#external-postgresql-service)
-      - [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
-      - [Managed PostgreSQL Service](#managed-postgresql-service)
-    - [Advanced Configuration](#advanced-configuration)
-      - [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
-      - [Redis container capabilities](#redis-container-capabilities)
-      - [Privileged Tasks](#privileged-tasks)
-      - [Containers Resource Requirements](#containers-resource-requirements)
-      - [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
-      - [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
-      - [Enabling LDAP Integration at AWX bootstrap](#enabling-ldap-integration-at-awx-bootstrap)
-      - [Persisting Projects Directory](#persisting-projects-directory)
-      - [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
-      - [Default execution environments from private registries](#default-execution-environments-from-private-registries)
-        - [Control plane ee from private registry](#control-plane-ee-from-private-registry)
-      - [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
-      - [Extra Settings](#extra-settings)
-      - [Service Account](#service-account)
-    - [Uninstall](#uninstall)
-    - [Upgrading](#upgrading)
-      - [v0.14.0](#v0140)
-        - [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
-        - [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
-        - [Steps to upgrade](#steps-to-upgrade)
-  - [Contributing](#contributing)
-  - [Release Process](#release-process)
-  - [Author](#author)
+* [AWX Operator](#awx-operator)
+* [Table of Contents](#table-of-contents)
+   * [Purpose](#purpose)
+   * [Usage](#usage)
+      * [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
+      * [Basic Install](#basic-install)
+      * [Helm Install on existing cluster](#helm-install-on-existing-cluster)
+      * [Admin user account configuration](#admin-user-account-configuration)
+      * [Network and TLS Configuration](#network-and-tls-configuration)
+         * [Service Type](#service-type)
+         * [Ingress Type](#ingress-type)
+      * [Database Configuration](#database-configuration)
+         * [External PostgreSQL Service](#external-postgresql-service)
+         * [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
+         * [Managed PostgreSQL Service](#managed-postgresql-service)
+      * [Advanced Configuration](#advanced-configuration)
+         * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+         * [Redis container capabilities](#redis-container-capabilities)
+         * [Privileged Tasks](#privileged-tasks)
+         * [Containers Resource Requirements](#containers-resource-requirements)
+         * [Priority Classes](#priority-classes)
+         * [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
+         * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
+         * [Enabling LDAP Integration at AWX bootstrap](#enabling-ldap-integration-at-awx-bootstrap)
+         * [Persisting Projects Directory](#persisting-projects-directory)
+         * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
+         * [Default execution environments from private registries](#default-execution-environments-from-private-registries)
+            * [Control plane ee from private registry](#control-plane-ee-from-private-registry)
+         * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
+         * [CSRF Cookie Secure Setting](#csrf-cookie-secure-setting)
+         * [Session Cookie Secure Setting](#session-cookie-secure-setting)
+         * [Extra Settings](#extra-settings)
+         * [Service Account](#service-account)
+      * [Uninstall](#uninstall)
+      * [Upgrading](#upgrading)
+         * [v0.14.0](#v0140)
+            * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
+            * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
+            * [Steps to upgrade](#steps-to-upgrade)
+   * [Contributing](#contributing)
+   * [Release Process](#release-process)
+   * [Author](#author)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+
 <!--te-->
 
 ## Purpose
@@ -236,6 +241,34 @@ You just completed the most basic install of an AWX instance via this operator. 
 
 For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
 
+
+### Helm Install on existing cluster
+
+For those that wish to use [Helm](https://helm.sh/) to install the awx-operator to an existing K8s cluster:
+
+```bash
+$ helm repo add awx-operator https://ansible.github.io/awx-operator/
+"awx-operator" has been added to your repositories
+
+$ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "awx-operator" chart repository
+Update Complete. ⎈Happy Helming!⎈
+
+$ helm search repo awx-operator
+NAME                            CHART VERSION   APP VERSION     DESCRIPTION
+awx-operator/awx-operator       0.17.1          0.17.1          A Helm chart for the AWX Operator
+
+$ helm install my-awx-operator awx-operator/awx-operator
+NAME: my-awx-operator
+LAST DEPLOYED: Thu Feb 17 22:09:05 2022
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Helm Chart 0.17.1
+```
 
 ### Admin user account configuration
 
@@ -591,7 +624,7 @@ spec:
 
 The AWX and Postgres pods can be assigned a custom PriorityClass to rank their importance compared to other pods in your cluster, which determines which pods get evicted first if resources are running low.
 First, [create your PriorityClass](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) if needed.
-Then set the name of your priority class to the control plane and postgres pods as shown below.  
+Then set the name of your priority class to the control plane and postgres pods as shown below.
 
 ```yaml
 ---
@@ -1052,6 +1085,8 @@ The first step is to create a draft release. Typically this will happen in the [
 If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
 
 After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, publishing the image to Quay.
+
+The [Helm release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/helm-release.yaml) workflow will create and publish a release for every tag.
 
 ## Author
 

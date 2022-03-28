@@ -7,6 +7,13 @@ VERSION ?= $(shell git describe --tags)
 
 CONTAINER_CMD ?= docker
 
+# GNU vs BSD in-place sed
+ifeq ($(shell sed --version 2>/dev/null | grep -q GNU && echo gnu),gnu)
+	SED_I := sed -i
+else
+	SED_I := sed -i ''
+endif
+
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
 # To re-generate a bundle for other specific channels without changing the standard setup, you can:
@@ -40,6 +47,14 @@ BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 # Image URL to use all building/pushing image targets
 IMG ?= $(IMAGE_TAG_BASE):$(VERSION)
 NAMESPACE ?= awx
+
+# Helm variables
+CHART_NAME ?= awx-operator
+CHART_DESCRIPTION ?= A Helm chart for the AWX Operator
+CHART_OWNER ?= ansible
+CHART_REPO ?= awx-operator
+CHART_BRANCH ?= gh-pages
+CHART_INDEX ?= index.yaml
 
 all: docker-build
 
@@ -103,7 +118,7 @@ ifeq (,$(shell which kustomize 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUSTOMIZE)) ;\
-	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.8.7/kustomize_v3.8.7_$(OS)_$(ARCH).tar.gz | \
+	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.2/kustomize_v4.5.2_$(OS)_$(ARCH).tar.gz | \
 	tar xzf - -C bin/ ;\
 	}
 else
@@ -181,3 +196,123 @@ catalog-build: opm ## Build a catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+
+.PHONY: kubectl-slice
+KUBECTL_SLICE = $(shell pwd)/bin/kubectl-slice
+kubectl-slice: ## Download kubectl-slice locally if necessary.
+ifeq (,$(wildcard $(KUBECTL_SLICE)))
+ifeq (,$(shell which kubectl-slice 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(KUBECTL_SLICE)) ;\
+	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(ARCH).tar.gz | \
+	tar xzf - -C bin/ kubectl-slice ;\
+	}
+else
+KUBECTL_SLICE = $(shell which kubectl-slice)
+endif
+endif
+
+.PHONY: helm
+HELM = $(shell pwd)/bin/helm
+helm: ## Download helm locally if necessary.
+ifeq (,$(wildcard $(HELM)))
+ifeq (,$(shell which helm 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(HELM)) ;\
+	curl -sSLo - https://get.helm.sh/helm-v3.8.0-$(OS)-$(ARCH).tar.gz | \
+	tar xzf - -C bin/ $(OS)-$(ARCH)/helm ;\
+	mv bin/$(OS)-$(ARCH)/helm bin/helm ;\
+	rmdir bin/$(OS)-$(ARCH) ;\
+	}
+else
+HELM = $(shell which helm)
+endif
+endif
+
+.PHONY: yq
+YQ = $(shell pwd)/bin/yq
+yq: ## Download yq locally if necessary.
+ifeq (,$(wildcard $(YQ)))
+ifeq (,$(shell which yq 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(HELM)) ;\
+	curl -sSLo - https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_$(OS)_$(ARCH).tar.gz | \
+	tar xzf - -C bin/ yq_$(OS)_$(ARCH) ;\
+	mv bin/yq_$(OS)_$(ARCH) bin/yq ;\
+	}
+else
+YQ = $(shell which yq)
+endif
+endif
+
+PHONY: cr
+CR = $(shell pwd)/bin/cr
+cr: ## Download cr locally if necessary.
+ifeq (,$(wildcard $(CR)))
+ifeq (,$(shell which cr 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(CR)) ;\
+	curl -sSLo - https://github.com/helm/chart-releaser/releases/download/v1.3.0/chart-releaser_1.3.0_$(OS)_$(ARCH).tar.gz | \
+	tar xzf - -C bin/ cr ;\
+	}
+else
+CR = $(shell which cr)
+endif
+endif
+
+.PHONY: helm-chart
+helm-chart: kustomize helm kubectl-slice yq
+	@echo "== KUSTOMIZE (image and namespace) =="
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
+
+	@echo "== HELM =="
+	cd charts && \
+		$(HELM) create awx-operator --starter $(shell pwd)/.helm/starter ;\
+		$(YQ) -i '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
+		$(YQ) -i '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
+		$(YQ) -i '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
+
+	@cat charts/$(CHART_NAME)/Chart.yaml
+
+	@echo "== KUSTOMIZE (annotation) =="
+	cd config/manager && $(KUSTOMIZE) edit set annotation helm.sh/chart:$(CHART_NAME)-$(VERSION)
+	cd config/default && $(KUSTOMIZE) edit set annotation helm.sh/chart:$(CHART_NAME)-$(VERSION)
+
+	@echo "== SLICE =="
+	$(KUSTOMIZE) build config/default | \
+		$(KUBECTL_SLICE) --input-file=- \
+			--output-dir=charts/$(CHART_NAME)/templates \
+			--sort-by-kind
+	@echo "Helm Chart $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+
+.PHONY: helm-release
+helm-release: cr helm-chart
+	$(CR) version
+	@echo "== CHART RELEASER (package) =="
+	$(CR) package ./charts/awx-operator
+	@echo "== CHART RELEASER (upload) =="
+	$(CR) upload \
+		--owner "$(CHART_OWNER)" \
+		--git-repo "$(CHART_REPO)" \
+		--token "$(CR_TOKEN)" \
+		--skip-existing
+
+	@echo "== CHART RELEASER (httpsorigin) =="
+	git remote add httpsorigin "https://github.com/$(CHART_OWNER)/$(CHART_REPO).git"
+	git fetch --all
+
+	@echo "== CHART RELEASER (index) =="
+	$(CR) index \
+		--owner "$(CHART_OWNER)" \
+		--git-repo "$(CHART_REPO)" \
+		--token "$(CR_TOKEN)" \
+		--pages-branch "$(CHART_BRANCH)" \
+		--index-path "./charts/$(CHART_INDEX)" \
+		--charts-repo "https://$(CHART_OWNER).github.io/$(CHART_REPO)/$(CHART_INDEX)" \
+		--remote httpsorigin \
+		--push
