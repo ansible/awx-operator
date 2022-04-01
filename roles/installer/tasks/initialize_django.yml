@@ -37,17 +37,6 @@
   no_log: true
   when: users_result.return_code > 0
 
-- name: Create preload data if necessary.  # noqa 305
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "awx-manage create_preload_data"
-  register: cdo
-  changed_when: "'added' in cdo.stdout"
-  when: create_preload_data | bool
-
 - name: Check if legacy queue is present
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -118,3 +107,14 @@
       changed_when: "'changed: True' in ree.stdout"
       no_log: true
   when: _execution_environments_pull_credentials['resources'] | default([]) | length
+
+- name: Create preload data if necessary.  # noqa 305
+  k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-task"
+    command: >-
+      bash -c "awx-manage create_preload_data"
+  register: cdo
+  changed_when: "'added' in cdo.stdout"
+  when: create_preload_data | bool
