@@ -108,7 +108,8 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
 
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
-ARCH := $(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
+ARCHA := $(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
+ARCHX := $(shell uname -m | sed -e 's/amd64/x86_64/' -e 's/aarch64/arm64/')
 
 .PHONY: kustomize
 KUSTOMIZE = $(shell pwd)/bin/kustomize
@@ -118,7 +119,7 @@ ifeq (,$(shell which kustomize 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUSTOMIZE)) ;\
-	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.2/kustomize_v4.5.2_$(OS)_$(ARCH).tar.gz | \
+	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.2/kustomize_v4.5.2_$(OS)_$(ARCHA).tar.gz | \
 	tar xzf - -C bin/ ;\
 	}
 else
@@ -134,7 +135,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.12.0/ansible-operator_$(OS)_$(ARCH) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.12.0/ansible-operator_$(OS)_$(ARCHA) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else
@@ -165,7 +166,7 @@ ifeq (,$(shell which opm 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.15.1/$(OS)-$(ARCH)-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.15.1/$(OS)-$(ARCHA)-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
@@ -199,14 +200,13 @@ catalog-push: ## Push a catalog image.
 
 .PHONY: kubectl-slice
 KUBECTL_SLICE = $(shell pwd)/bin/kubectl-slice
-KUBECTL_SLICE_ARCH := $(shell uname -m | sed -e 's/amd64/x86_64/' -e 's/aarch64/arm64/')
 kubectl-slice: ## Download kubectl-slice locally if necessary.
 ifeq (,$(wildcard $(KUBECTL_SLICE)))
 ifeq (,$(shell which kubectl-slice 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUBECTL_SLICE)) ;\
-	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(KUBECTL_SLICE_ARCH).tar.gz | \
+	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(ARCHX).tar.gz | \
 	tar xzf - -C bin/ kubectl-slice ;\
 	}
 else
@@ -222,10 +222,10 @@ ifeq (,$(shell which helm 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(HELM)) ;\
-	curl -sSLo - https://get.helm.sh/helm-v3.8.0-$(OS)-$(ARCH).tar.gz | \
-	tar xzf - -C bin/ $(OS)-$(ARCH)/helm ;\
-	mv bin/$(OS)-$(ARCH)/helm bin/helm ;\
-	rmdir bin/$(OS)-$(ARCH) ;\
+	curl -sSLo - https://get.helm.sh/helm-v3.8.0-$(OS)-$(ARCHA).tar.gz | \
+	tar xzf - -C bin/ $(OS)-$(ARCHA)/helm ;\
+	mv bin/$(OS)-$(ARCHA)/helm bin/helm ;\
+	rmdir bin/$(OS)-$(ARCHA) ;\
 	}
 else
 HELM = $(shell which helm)
@@ -240,9 +240,9 @@ ifeq (,$(shell which yq 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(HELM)) ;\
-	curl -sSLo - https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_$(OS)_$(ARCH).tar.gz | \
-	tar xzf - -C bin/ yq_$(OS)_$(ARCH) ;\
-	mv bin/yq_$(OS)_$(ARCH) bin/yq ;\
+	curl -sSLo - https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_$(OS)_$(ARCHA).tar.gz | \
+	tar xzf - -C bin/ yq_$(OS)_$(ARCHA) ;\
+	mv bin/yq_$(OS)_$(ARCHA) bin/yq ;\
 	}
 else
 YQ = $(shell which yq)
@@ -257,7 +257,7 @@ ifeq (,$(shell which cr 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(CR)) ;\
-	curl -sSLo - https://github.com/helm/chart-releaser/releases/download/v1.3.0/chart-releaser_1.3.0_$(OS)_$(ARCH).tar.gz | \
+	curl -sSLo - https://github.com/helm/chart-releaser/releases/download/v1.3.0/chart-releaser_1.3.0_$(OS)_$(ARCHA).tar.gz | \
 	tar xzf - -C bin/ cr ;\
 	}
 else
