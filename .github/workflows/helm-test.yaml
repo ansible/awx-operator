@@ -1,0 +1,22 @@
+name: helm-test
+
+on:
+  pull_request:
+    branches: [devel]
+
+  push:
+    branches: [devel]
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Test make helm-chart
+        run: |
+          make helm-chart
