@@ -133,7 +133,7 @@ _postgres_image_version: 12
 _init_container_image: quay.io/centos/centos
 _init_container_image_version: stream8
 image_pull_policy: IfNotPresent
-image_pull_secret: ''
+image_pull_secrets: []
 
 # Extra commands which will be appended to the initContainer
 # Make sure that each command entered return an exit code 0
