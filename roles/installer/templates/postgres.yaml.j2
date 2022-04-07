@@ -42,6 +42,9 @@ spec:
         - name: {{ secret }}
 {% endfor %}
 {% endif %}
+{% if postgres_priority_class is defined %}
+      priorityClassName: '{{ postgres_priority_class }}'
+{% endif %}
       initContainers:
         - name: database-check
           image: '{{ _init_container_image }}'

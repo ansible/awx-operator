@@ -186,6 +186,8 @@ ee_resource_requirements:
 csrf_cookie_secure: False
 session_cookie_secure: False
 
+# Assign a preexisting priority class to the control plane pods
+control_plane_priority_class: ''
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
@@ -227,7 +229,12 @@ postgres_storage_requirements:
   requests:
     storage: 8Gi
 postgres_init_container_resource_requirements: {}
-postgres_resource_requirements: {}
+postgres_resource_requirements:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+# Assign a preexisting priority class to the postgres pod
+postgres_priority_class: ''
 postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
 # Persistence to the AWX project data folder
