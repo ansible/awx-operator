@@ -34,6 +34,8 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Default execution environments from private registries](#default-execution-environments-from-private-registries)
             * [Control plane ee from private registry](#control-plane-ee-from-private-registry)
          * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
+         * [CSRF Cookie Secure](#csrf-cookie-secure-setting)
+         * [Session Cookie Secure](#session-cookie-secure-setting)
          * [Extra Settings](#extra-settings)
          * [Service Account](#service-account)
       * [Uninstall](#uninstall)
@@ -834,6 +836,36 @@ Example configuration of environment variables
     ee_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
+```
+
+#### CSRF Cookie Secure Setting
+
+With `csrf_cookie_secure`, you can pass the value for `CSRF_COOKIE_SECURE` to `/etc/tower/settings.py`
+
+| Name               | Description        | Default |
+| ------------------ | ------------------ | ------- |
+| csrf_cookie_secure | CSRF Cookie Secure | ''      |
+
+Example configuration of the `csrf_cookie_secure` setting:
+
+```yaml
+  spec:
+    csrf_cookie_secure: 'False'
+```
+
+#### Session Cookie Secure Setting
+
+With `session_cookie_secure`, you can pass the value for `SESSION_COOKIE_SECURE` to `/etc/tower/settings.py`
+
+| Name                  | Description           | Default |
+| --------------------- | --------------------- | ------- |
+| session_cookie_secure | Session Cookie Secure | ''      |
+
+Example configuration of the `session_cookie_secure` setting:
+
+```yaml
+  spec:
+    session_cookie_secure: 'False'
 ```
 
 #### Extra Settings

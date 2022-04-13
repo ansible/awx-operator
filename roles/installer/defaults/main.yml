@@ -182,6 +182,10 @@ ee_resource_requirements:
     cpu: 500m
     memory: 1Gi
 
+# Customize CSRF options
+csrf_cookie_secure: False
+session_cookie_secure: False
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |

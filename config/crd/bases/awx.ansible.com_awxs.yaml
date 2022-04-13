@@ -432,6 +432,12 @@ spec:
                   description: AccessMode for the /var/lib/projects PersistentVolumeClaim
                   default: ReadWriteMany
                   type: string
+                csrf_cookie_secure:
+                  description: Set csrf cookie secure mode for web
+                  type: string
+                session_cookie_secure:
+                  description: Set session cookie secure mode for web
+                  type: string
                 extra_settings:
                   description: Extra settings to specify for the API
                   items:
