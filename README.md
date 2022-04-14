@@ -48,8 +48,6 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
   - [Author](#author)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: i540222, at: Wed Apr 13 13:17:50 CEST 2022 -->
-
 <!--te-->
 
 ## Purpose
@@ -902,6 +900,36 @@ Example configuration of environment variables
     ee_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
+```
+
+#### CSRF Cookie Secure Setting
+
+With `csrf_cookie_secure`, you can pass the value for `CSRF_COOKIE_SECURE` to `/etc/tower/settings.py`
+
+| Name               | Description        | Default |
+| ------------------ | ------------------ | ------- |
+| csrf_cookie_secure | CSRF Cookie Secure | ''      |
+
+Example configuration of the `csrf_cookie_secure` setting:
+
+```yaml
+  spec:
+    csrf_cookie_secure: 'False'
+```
+
+#### Session Cookie Secure Setting
+
+With `session_cookie_secure`, you can pass the value for `SESSION_COOKIE_SECURE` to `/etc/tower/settings.py`
+
+| Name                  | Description           | Default |
+| --------------------- | --------------------- | ------- |
+| session_cookie_secure | Session Cookie Secure | ''      |
+
+Example configuration of the `session_cookie_secure` setting:
+
+```yaml
+  spec:
+    session_cookie_secure: 'False'
 ```
 
 #### Extra Settings
