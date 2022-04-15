@@ -17,6 +17,16 @@
   set_fact:
     tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
 
+- name: Set user provided control plane ee image
+  set_fact:
+    _custom_control_plane_ee_image: "{{ control_plane_ee_image }}"
+  when:
+    - control_plane_ee_image | default([]) | length
+
+- name: Set Control Plane EE image URL
+  set_fact:
+    _control_plane_ee_image: "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) | default(_control_plane_ee_image, true) }}"
+
 - name: Apply Resources
   k8s:
     apply: yes
@@ -61,16 +71,6 @@
 - name: Set Redis image URL
   set_fact:
     _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_AWX_REDIS')) | default(_default_redis_image, true) }}"
-
-- name: Set user provided control plane ee image
-  set_fact:
-    _custom_control_plane_ee_image: "{{ control_plane_ee_image }}"
-  when:
-    - control_plane_ee_image | default([]) | length
-
-- name: Set Control Plane EE image URL
-  set_fact:
-    _control_plane_ee_image: "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) | default(_control_plane_ee_image, true) }}"
 
 - name: Apply deployment resources
   k8s:
