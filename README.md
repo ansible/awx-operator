@@ -136,7 +136,7 @@ Install the manifests by running this:
 
 ```
 $ kustomize build . | kubectl apply -f -
-namespace/machaffe created
+namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxs.awx.ansible.com created
