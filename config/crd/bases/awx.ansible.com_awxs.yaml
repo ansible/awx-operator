@@ -187,7 +187,7 @@ spec:
                   type: array
                   items:
                     type: string
-                image_pull_secret: # deprecated
+                image_pull_secret:  # deprecated
                   description: (Deprecated) Image pull secret for app and database containers
                   type: string
                 task_resource_requirements:

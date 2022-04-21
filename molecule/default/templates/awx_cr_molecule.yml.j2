@@ -15,14 +15,15 @@ spec:
     kubernetes.io/ingress.class: nginx
   web_resource_requirements:
     requests:
-      cpu: 250m
-      memory: 128M
+      cpu: 100m
+      memory: 32M
   task_resource_requirements:
     requests:
-      cpu: 250m
-      memory: 128M
+      cpu: 100m
+      memory: 32M
   ee_resource_requirements:
     requests:
       cpu: 200m
-      memory: 64M
+      memory: 32M
   postgres_resource_requirements: {}
+  postgres_init_container_resource_requirements: {}
