@@ -442,6 +442,7 @@ The following variables are customizable for the managed PostgreSQL service
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}           |
 | postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                       |
 | postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata`  |
+| postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                       |
 
 Example of customization could be:
 
@@ -574,6 +575,24 @@ spec:
     limits:
       cpu: 500m
       memory: 2Gi
+```
+
+#### Priority Classes
+
+The AWX and Postgres pods can be assigned a custom PriorityClass to rank their importance compared to other pods in your cluster, which determines which pods get evicted first if resources are running low.
+First, [create your PriorityClass](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) if needed.
+Then set the name of your priority class to the control plane and postgres pods as shown below.  
+
+```yaml
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-demo
+spec:
+  ...
+  control_plane_priority_class: awx-demo-high-priority
+  postgres_priority_class: awx-demo-medium-priority
 ```
 
 #### Assigning AWX pods to specific nodes

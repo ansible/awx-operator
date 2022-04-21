@@ -42,7 +42,7 @@ spec:
         - name: {{ secret }}
 {% endfor %}
 {% endif %}
-{% if control_plane_priorityclass is defined %}
+{% if control_plane_priority_class is defined %}
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
