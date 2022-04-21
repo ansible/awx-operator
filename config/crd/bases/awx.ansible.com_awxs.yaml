@@ -165,6 +165,9 @@ spec:
                 control_plane_ee_image:
                   description: Registry path to the Execution Environment container image to use on control plane pods
                   type: string
+                control_plane_priority_class:
+                  description: Assign a preexisting priority class to the control plane pods
+                  type: string
                 ee_pull_credentials_secret:
                   description: Secret where pull credentials for registered ees can be found
                   type: string
@@ -184,7 +187,7 @@ spec:
                   type: array
                   items:
                     type: string
-                image_pull_secret: # deprecated
+                image_pull_secret:  # deprecated
                   description: (Deprecated) Image pull secret for app and database containers
                   type: string
                 task_resource_requirements:
@@ -391,6 +394,9 @@ spec:
                   type: object
                 postgres_storage_class:
                   description: Storage class to use for the PostgreSQL PVC
+                  type: string
+                postgres_priority_class:
+                  description: Assign a preexisting priority class to the postgres pod
                   type: string
                 postgres_data_path:
                   description: Path where the PostgreSQL data are located

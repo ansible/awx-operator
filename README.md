@@ -434,14 +434,15 @@ If you don't have access to an external PostgreSQL service, the AWX operator can
 
 The following variables are customizable for the managed PostgreSQL service
 
-| Name                                          | Description                                   | Default                           |
-| --------------------------------------------- | --------------------------------------------- | --------------------------------- |
-| postgres_image                                | Path of the image to pull                     | postgres:12                       |
-| postgres_init_container_resource_requirements | Database init container resource requirements | requests: {}                      |
-| postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {}                      |
-| postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}          |
-| postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                      |
-| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata` |
+| Name                                          | Description                                   | Default                            |
+| --------------------------------------------- | --------------------------------------------- | ---------------------------------- |
+| postgres_image                                | Path of the image to pull                     | postgres:12                        |
+| postgres_init_container_resource_requirements | Database init container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
+| postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi} |
+| postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}           |
+| postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                       |
+| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata`  |
+| postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                       |
 
 Example of customization could be:
 
@@ -541,11 +542,11 @@ Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to
 
 The resource requirements for both, the task and the web containers are configurable - both the lower end (requests) and the upper end (limits).
 
-| Name                       | Description                                      | Default                             |
-| -------------------------- | ------------------------------------------------ | ----------------------------------- |
-| web_resource_requirements  | Web container resource requirements              | requests: {cpu: 1000m, memory: 2Gi} |
-| task_resource_requirements | Task container resource requirements             | requests: {cpu: 500m, memory: 1Gi}  |
-| ee_resource_requirements   | EE control plane container resource requirements | requests: {cpu: 500m, memory: 1Gi}  |
+| Name                       | Description                                      | Default                              |
+| -------------------------- | ------------------------------------------------ | ------------------------------------ |
+| web_resource_requirements  | Web container resource requirements              | requests: {cpu: 100m, memory: 128Mi} |
+| task_resource_requirements | Task container resource requirements             | requests: {cpu: 100m, memory: 128Mi} |
+| ee_resource_requirements   | EE control plane container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
 
 Example of customization could be:
 
@@ -555,25 +556,43 @@ spec:
   ...
   web_resource_requirements:
     requests:
-      cpu: 1000m
+      cpu: 250m
       memory: 2Gi
     limits:
-      cpu: 2000m
+      cpu: 1000m
       memory: 4Gi
   task_resource_requirements:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 1Gi
     limits:
-      cpu: 1000m
+      cpu: 2000m
       memory: 2Gi
   ee_resource_requirements:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 250m
+      memory: 100Mi
     limits:
-      cpu: 1000m
+      cpu: 500m
       memory: 2Gi
+```
+
+#### Priority Classes
+
+The AWX and Postgres pods can be assigned a custom PriorityClass to rank their importance compared to other pods in your cluster, which determines which pods get evicted first if resources are running low.
+First, [create your PriorityClass](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/#priorityclass) if needed.
+Then set the name of your priority class to the control plane and postgres pods as shown below.  
+
+```yaml
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-demo
+spec:
+  ...
+  control_plane_priority_class: awx-demo-high-priority
+  postgres_priority_class: awx-demo-medium-priority
 ```
 
 #### Assigning AWX pods to specific nodes
