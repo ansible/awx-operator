@@ -60,8 +60,8 @@ data:
     CLUSTER_HOST_ID = socket.gethostname()
     SYSTEM_UUID = os.environ.get('MY_POD_UID', '00000000-0000-0000-0000-000000000000')
     
-    CSRF_COOKIE_SECURE = '{{ csrf_cookie_secure }}'
-    SESSION_COOKIE_SECURE = '{{ session_cookie_secure }}'
+    CSRF_COOKIE_SECURE = {{ csrf_cookie_secure | bool }}
+    SESSION_COOKIE_SECURE = {{ session_cookie_secure | bool }}
     
     SERVER_EMAIL = 'root@localhost'
     DEFAULT_FROM_EMAIL = 'webmaster@localhost'
