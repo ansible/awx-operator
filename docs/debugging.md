@@ -33,7 +33,7 @@ Create a vars file:
 ansible_operator_meta:
   name: awx
   namespace: awx
-ingress_type: ingress
+service_type: nodeport
 ```
 
 Run the installer:
