@@ -16,8 +16,7 @@ metadata:
     {{ service_annotations | indent(width=4) }}
 {% endif %}
 spec:
-  ports:
-  
+  ports:  
 {% if service_type | lower == "nodeport" %}
     - port: 80
       protocol: TCP
@@ -46,6 +45,12 @@ spec:
       protocol: TCP
       targetPort: 8052
       name: http
+{% endif %}
+{% if websocket_listener_enable %}
+    - port: {{ websocket_listener_port }}
+      protocol: TCP
+      targetPort: {{ websocket_listener_port }}
+      name: ws-listener
 {% endif %}
   selector:
     app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'

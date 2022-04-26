@@ -194,6 +194,10 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
+{% if websocket_listener_enable %}
+          ports:
+            - containerPort: {{ websocket_listener_port }}
+{% endif %}
 {% if task_privileged == true %}
           securityContext:
             privileged: true

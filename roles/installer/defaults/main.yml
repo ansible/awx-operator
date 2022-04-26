@@ -275,3 +275,8 @@ garbage_collect_secrets: false
 development_mode: false
 
 security_context_settings: {}
+
+# Enable a websocket listener on the awx-task container
+websocket_listener_enable: false
+# Websocket listener port
+websocket_listener_port: 8080

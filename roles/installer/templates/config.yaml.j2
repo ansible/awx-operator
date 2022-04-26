@@ -249,7 +249,12 @@ data:
         filename: /var/run/receptor/receptor.sock
         permissions: 0660
 
+    {% if websocket_listener_enable %}    
+    - ws-listener:
+        port: {{ websocket_listener_port }}
+    {% else %}
     - local-only:
+    {% endif %}
 
     - work-command:
         worktype: local
