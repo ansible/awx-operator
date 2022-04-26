@@ -17,6 +17,9 @@
           app.kubernetes.io/component: '{{ deployment_type }}'
           app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
 
+- name: Patch default pull secret to operator ServiceAccount (Upstream)
+  include_tasks: patch_service_account.yml
+
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 
