@@ -51,7 +51,7 @@ NAMESPACE ?= awx
 # Helm variables
 CHART_NAME ?= awx-operator
 CHART_DESCRIPTION ?= A Helm chart for the AWX Operator
-CHART_OWNER ?= ansible
+CHART_OWNER ?= $(GH_REPO_OWNER)
 CHART_REPO ?= awx-operator
 CHART_BRANCH ?= gh-pages
 CHART_INDEX ?= index.yaml
