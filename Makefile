@@ -241,7 +241,7 @@ ifeq (,$(shell which yq 2>/dev/null))
 	set -e ;\
 	mkdir -p $(dir $(HELM)) ;\
 	curl -sSLo - https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_$(OS)_$(ARCHA).tar.gz | \
-	tar xzf - -C bin/ yq_$(OS)_$(ARCHA) ;\
+	tar xzf - -C bin/ ;\
 	mv bin/yq_$(OS)_$(ARCHA) bin/yq ;\
 	}
 else
