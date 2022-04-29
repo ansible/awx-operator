@@ -396,7 +396,7 @@ spec:
 
 #### External PostgreSQL Service
 
-In order for the AWX instance to rely on an external database, the Custom Resource needs to know about the connection details. Those connection details should be stored as a secret and either specified as `postgres_configuration_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-postgres-configuration`.
+To configure AWX to use an external database, the Custom Resource needs to know about the connection details. To do this, create a k8s secret with those connection details and specify the name of the secret as `postgres_configuration_secret` at the CR spec level.
 
 
 The secret should be formatted as follows:
@@ -424,6 +424,15 @@ type: Opaque
 > It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 
 **Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
+
+Once the secret is created, you can specify it on your spec:
+
+```yaml
+---
+spec:
+  ...
+  postgres_configuration_secret: <name-of-your-secret>
+```
 
 #### Migrating data from an old AWX instance
 
