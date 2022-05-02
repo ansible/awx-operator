@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  vars:
+    chart_repo: awx-operator
+  tasks:
+    - name: Look up release
+      uri:
+        url: "https://api.github.com/repos/{{ chart_owner }}/{{ chart_repo }}/releases/tags/{{ tag }}"
+      register: release
+      ignore_errors: yes
+
+    - fail:
+        msg: |
+          Release must exist before running this playbook
+      when: release is not success
+
+    - name: Build and package helm chart
+      command: |
+        make helm-chart helm-package
+      environment:
+        VERSION: "{{ tag }}"
+        IMAGE_TAG_BASE: "{{ operator_image }}"
+      args:
+        chdir: "{{ playbook_dir }}/../"
+
+    # Move to chart releaser after https://github.com/helm/chart-releaser/issues/122 exists
+    - name: Upload helm chart
+      uri:
+        url: "https://uploads.github.com/repos/{{ chart_owner }}/{{ chart_repo }}/releases/{{ release.json.id }}/assets?name=awx-operator-{{ tag }}.tgz"
+        src: "{{ playbook_dir }}/../.cr-release-packages/awx-operator-{{ tag }}.tgz"
+        headers:
+          Authorization: "token {{ gh_token }}"
+          Content-Type: "application/octet-stream"
+        status_code:
+          - 200
+          - 201
+      register: asset_upload
+      changed_when: asset_upload.json.state == "uploaded"
+
+    - name: Publish helm index
+      command: |
+        make helm-index
+      environment:
+        CHART_OWNER: "{{ chart_owner }}"
+        CR_TOKEN: "{{ gh_token }}"
+      args:
+        chdir: "{{ playbook_dir }}/../"
