@@ -176,6 +176,8 @@ data:
     
             # Protect against click-jacking https://www.owasp.org/index.php/Testing_for_Clickjacking_(OTG-CLIENT-009)
             add_header X-Frame-Options "DENY";
+            # Protect against MIME content sniffing https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+            add_header X-Content-Type-Options nosniff;
     
             location /nginx_status {
                 stub_status on;
@@ -229,6 +231,7 @@ data:
                 add_header Strict-Transport-Security max-age=15768000;
                 # Protect against click-jacking https://www.owasp.org/index.php/Testing_for_Clickjacking_(OTG-CLIENT-009)
                 add_header X-Frame-Options "DENY";
+                add_header X-Content-Type-Options nosniff;
                 add_header Cache-Control "no-cache, no-store, must-revalidate";
                 add_header Expires "0";
                 add_header Pragma "no-cache";
