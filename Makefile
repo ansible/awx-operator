@@ -265,8 +265,11 @@ CR = $(shell which cr)
 endif
 endif
 
+charts:
+	mkdir -p $@
+
 .PHONY: helm-chart
-helm-chart: kustomize helm kubectl-slice yq
+helm-chart: kustomize helm kubectl-slice yq charts
 	@echo "== KUSTOMIZE (image and namespace) =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
@@ -285,27 +288,25 @@ helm-chart: kustomize helm kubectl-slice yq
 	cd config/default && $(KUSTOMIZE) edit set annotation helm.sh/chart:$(CHART_NAME)-$(VERSION)
 
 	@echo "== SLICE =="
-	$(KUSTOMIZE) build config/default | \
+	$(KUSTOMIZE) build --load-restrictor LoadRestrictionsNone config/default | \
 		$(KUBECTL_SLICE) --input-file=- \
 			--output-dir=charts/$(CHART_NAME)/templates \
 			--sort-by-kind
 	@echo "Helm Chart $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
 
-.PHONY: helm-release
-helm-release: cr helm-chart
-	$(CR) version
+
+.PHONY: helm-package
+helm-package: cr helm-chart
 	@echo "== CHART RELEASER (package) =="
 	$(CR) package ./charts/awx-operator
-	@echo "== CHART RELEASER (upload) =="
-	$(CR) upload \
-		--owner "$(CHART_OWNER)" \
-		--git-repo "$(CHART_REPO)" \
-		--token "$(CR_TOKEN)" \
-		--skip-existing
 
+# The actual release happens in ansible/helm-release.yml
+# until https://github.com/helm/chart-releaser/issues/122 happens
+.PHONY: helm-index
+helm-index: cr helm-chart
 	@echo "== CHART RELEASER (httpsorigin) =="
 	git remote add httpsorigin "https://github.com/$(CHART_OWNER)/$(CHART_REPO).git"
-	git fetch --all
+	git fetch httpsorigin
 
 	@echo "== CHART RELEASER (index) =="
 	$(CR) index \
@@ -316,4 +317,5 @@ helm-release: cr helm-chart
 		--index-path "./charts/$(CHART_INDEX)" \
 		--charts-repo "https://$(CHART_OWNER).github.io/$(CHART_REPO)/$(CHART_INDEX)" \
 		--remote httpsorigin \
+		--release-name-template="{{ .Version }}" \
 		--push

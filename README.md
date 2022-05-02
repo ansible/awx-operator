@@ -1084,9 +1084,10 @@ The first step is to create a draft release. Typically this will happen in the [
 
 If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
 
-After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, publishing the image to Quay.
+After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, which will:
 
-The [Helm release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/helm-release.yaml) workflow will create and publish a release for every tag.
+- Publish image to Quay
+- Release Helm chart
 
 ## Author
 
