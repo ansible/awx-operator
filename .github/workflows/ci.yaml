@@ -10,9 +10,9 @@ on:
     branches: [devel]
 
 jobs:
-  pull_request:
+  molecule:
     runs-on: ubuntu-18.04
-    name: pull_request
+    name: molecule
     env:
       DOCKER_API_VERSION: "1.38"
     steps:
@@ -39,3 +39,28 @@ jobs:
           sudo rm -f $(which kustomize)
           make kustomize
           KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind
+  helm:
+    runs-on: ubuntu-18.04
+    name: helm
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.2.0
+
+      - name: Build operator image and load into kind
+        run: |
+          IMG=awx-operator-ci make docker-build
+          kind load docker-image --name chart-testing awx-operator-ci
+
+      - name: Patch pull policy for tests
+        run: |
+          kustomize edit add patch --path ../testing/pull_policy/Never.yaml
+        working-directory: config/default
+
+      - name: Build and install helm chart
+        run: |
+          IMG=awx-operator-ci make helm-chart
+          helm install --wait my-awx-operator ./charts/awx-operator
