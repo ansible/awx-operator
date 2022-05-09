@@ -519,15 +519,15 @@ spec:
 
 There are a few variables that are customizable for awx the image management.
 
-| Name                | Description               |
-| ------------------- | ------------------------- |
-| image               | Path of the image to pull |
-| image_version       | Image version to pull     |
-| image_pull_policy   | The pull policy to adopt  |
-| image_pull_secrets  | The pull secrets to use   |
-| ee_images           | A list of EEs to register |
-| redis_image         | Path of the image to pull |
-| redis_image_version | Image version to pull     |
+| Name                | Description               | Default                             |
+| ------------------- | ------------------------- | ----------------------------------  |
+| image               | Path of the image to pull | quay.io/ansible/awx                 |
+| image_version       | Image version to pull     | DEFAULT_AWX_VERSION or latest       |
+| image_pull_policy   | The pull policy to adopt  | IfNotPresent                        |
+| image_pull_secrets  | The pull secrets to use   | None                                |
+| ee_images           | A list of EEs to register | quay.io/ansible/awx-ee:latest       |
+| redis_image         | Path of the image to pull | docker.io/redis                     |
+| redis_image_version | Image version to pull     | latest                              |
 
 Example of customization could be:
 
