@@ -40,6 +40,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [CSRF Cookie Secure Setting](#csrf-cookie-secure-setting)
          * [Session Cookie Secure Setting](#session-cookie-secure-setting)
          * [Extra Settings](#extra-settings)
+         * [Configure no_log](#no-log)
          * [Service Account](#service-account)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
@@ -1012,6 +1013,21 @@ Example configuration of `extra_settings` parameter
       - setting: AUTH_LDAP_BIND_DN
         value: "cn=admin,dc=example,dc=com"
 ```
+
+#### No Log
+Configure no_log for tasks with no_log
+
+| Name   | Description          | Default |
+| ------ | -------------------- | ------- |
+| no_log | No log configuration | 'true'  |
+
+Example configuration of `no_log` parameter
+
+```yaml
+  spec:
+    no_log: 'true'
+```
+
 
 #### Service Account
 

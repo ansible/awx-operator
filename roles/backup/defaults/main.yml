@@ -10,3 +10,6 @@ backup_pvc_namespace: "{{ ansible_operator_meta.namespace }}"
 
 # Size of backup PVC if created dynamically
 backup_storage_requirements: ''
+
+# Set no_log settings on certain tasks
+no_log: 'true'

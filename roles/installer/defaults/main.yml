@@ -280,3 +280,6 @@ garbage_collect_secrets: false
 development_mode: false
 
 security_context_settings: {}
+
+# Set no_log settings on certain tasks
+no_log: 'true'

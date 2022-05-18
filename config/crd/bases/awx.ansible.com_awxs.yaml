@@ -482,6 +482,9 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                   type: array
+                no_log:
+                  description: Configure no_log for no_log tasks
+                  type: string
                 security_context_settings:
                   description: Key/values that will be set under the pod-level securityContext field
                   type: object

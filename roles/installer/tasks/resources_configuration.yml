@@ -40,7 +40,7 @@
     - 'persistent'
     - 'service'
     - 'ingress'
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Set default awx app image
   set_fact:
