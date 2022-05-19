@@ -24,7 +24,7 @@
 
 - name: Set Default label selector for custom resource generated postgres
   set_fact:
-    postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
+    postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ deployment_name }}"
   when: postgres_label_selector is not defined
 
 - block:
