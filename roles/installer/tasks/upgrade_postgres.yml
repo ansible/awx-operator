@@ -23,12 +23,12 @@
   k8s:
     apply: true
     definition: "{{ lookup('template', 'postgres_upgrade_secret.yaml.j2') }}"
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Set new database var to be used when configuring app credentials (resources_configuration.yml)
   set_fact:
     awx_postgres_host: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Create Database if no database is specified
   k8s:
@@ -65,7 +65,7 @@
 - name: Set full resolvable host name for postgres pod
   set_fact:
     resolvable_db_host: "{{ ansible_operator_meta.name }}-postgres.{{ ansible_operator_meta.namespace }}.svc.cluster.local"  # yamllint disable-line rule:line-length
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Set pg_dump command
   set_fact:
@@ -76,7 +76,7 @@
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
       -F custom
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Set pg_restore command
   set_fact:
@@ -84,7 +84,7 @@
       pg_restore
       -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
-  no_log: true
+  no_log: "{{ no_log }}"
 
 - name: Stream backup from pg_dump to the new postgresql container
   k8s_exec:
@@ -96,7 +96,7 @@
       PGPASSWORD={{ awx_postgres_pass }} {{ pgdump }} | PGPASSWORD={{ awx_postgres_pass }} {{ pg_restore }}
       echo 'Successful'
       """
-  no_log: true
+  no_log: "{{ no_log }}"
   register: data_migration
   failed_when: "'Successful' not in data_migration.stdout"
 

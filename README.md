@@ -1164,11 +1164,9 @@ after a successful upgrade by setting the following variable on the AWX spec.
 
 ```yaml
   spec:
-    postgres_keep_pvc_after_upgrade: True
+    postgres_keep_pvc_after_upgrade: False
 ```
 
-# Specify whether or not to keep the old PVC after PostgreSQL upgrades
-postgres_keep_pvc_after_upgrade: True
 
 #### v0.14.0
 
