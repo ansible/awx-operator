@@ -12,3 +12,4 @@ secret_key_secret: '{{ deployment_name }}-secret-key'
 admin_password_secret: '{{ deployment_name }}-admin-password'
 broadcast_websocket_secret: '{{ deployment_name }}-broadcast-websocket'
 postgres_configuration_secret: '{{ deployment_name }}-postgres-configuration'
+supported_pg_version: 13
