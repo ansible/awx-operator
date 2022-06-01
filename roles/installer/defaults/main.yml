@@ -164,7 +164,8 @@ replicas: "1"
 task_args:
   - /usr/bin/launch_awx_task.sh
 task_command: []
-web_args: []
+web_args:
+  - /usr/bin/launch_awx.sh
 web_command: []
 
 task_resource_requirements:

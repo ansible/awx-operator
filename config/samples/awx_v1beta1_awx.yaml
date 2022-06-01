@@ -6,13 +6,13 @@ metadata:
 spec:
   web_resource_requirements:
     requests:
-      cpu: 250m
+      cpu: 50m
       memory: 128M
   task_resource_requirements:
     requests:
-      cpu: 250m
+      cpu: 50m
       memory: 128M
   ee_resource_requirements:
     requests:
-      cpu: 200m
+      cpu: 50m
       memory: 64M
