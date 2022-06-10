@@ -43,6 +43,9 @@ spec:
                 backup_storage_class:
                   description: Storage class to use when creating PVC for backup
                   type: string
+                clean_backup_on_delete:
+                  description: Flag to indicate if backup should be deleted on PVC if AWXBackup object is deleted
+                  type: boolean
                 postgres_label_selector:
                   description: Label selector used to identify postgres pod for backing up data
                   type: string

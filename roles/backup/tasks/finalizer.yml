@@ -1,0 +1,19 @@
+---
+- name: Look up details for this backup object
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: this_backup
+
+- block:
+    - include_tasks: init.yml
+
+    - include_tasks: delete_backup.yml
+
+    - include_tasks: cleanup.yml
+  vars:
+    backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] }}"
+  when:
+    - clean_backup_on_delete and backup_dir is defined
