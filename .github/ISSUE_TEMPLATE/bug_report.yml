@@ -44,14 +44,6 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: kube-version
-    attributes:
-      label: Kubernetes version
-      description: What version of kuberneties are you using?
-    validations:
-      required: true
-
   - type: dropdown
     id: platform
     attributes:
@@ -65,6 +57,14 @@ body:
         - minishift
         - docker development environment
         - other (please specify in additional information)
+    validations:
+      required: true
+
+  - type: input
+    id: kube-version
+    attributes:
+      label: Kubernetes/Platform version
+      description: What version of your platform/kuberneties are you using?
     validations:
       required: true
 
@@ -112,7 +112,7 @@ body:
     id: additional-information
     attributes:
       label: Additional information
-      description: Include any relevant log output, links to sosreport, database dumps, screenshots, or other information.
+      description: Include any relevant log output, links to sosreport, database dumps, screenshots, AWX spec yaml, or other information.
     validations:
       required: false
 
