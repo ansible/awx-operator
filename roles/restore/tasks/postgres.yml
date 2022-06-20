@@ -45,7 +45,7 @@
       set_fact:
         postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
   when: awx_postgres_type == 'managed'
- 
+
 - name: Check for presence of AWX Deployment
   k8s_info:
     api_version: v1
