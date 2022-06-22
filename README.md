@@ -442,6 +442,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | ------------------- | ---------------------------------------- | --------------------------- |
 | ingress_annotations | Ingress annotations                      | Empty string                |
 | ingress_tls_secret  | Secret that contains the TLS information | Empty string                |
+| ingress_class_name  | Define the ingress class name            | Cluster default             |
 | hostname            | Define the FQDN                          | {{ meta.name }}.example.com |
 | ingress_path        | Define the ingress path to the service   | /                           |
 | ingress_path_type   | Define the type of the path (for LBs)    | Prefix                      |
