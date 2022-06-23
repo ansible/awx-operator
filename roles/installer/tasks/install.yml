@@ -1,0 +1,88 @@
+---
+- name: Patching labels to AWX kind
+  k8s:
+    state: present
+    definition:
+      apiVersion: '{{ api_version }}'
+      kind: '{{ kind }}'
+      name: '{{ ansible_operator_meta.name }}'
+      namespace: '{{ ansible_operator_meta.namespace }}'
+      metadata:
+        name: '{{ ansible_operator_meta.name }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        labels:
+          app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+          app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
+          app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+          app.kubernetes.io/component: '{{ deployment_type }}'
+          app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+
+- name: Include secret key configuration tasks
+  include_tasks: secret_key_configuration.yml
+
+- name: Load LDAP CAcert certificate
+  include_tasks: load_ldap_cacert_secret.yml
+  when:
+    - ldap_cacert_secret != ''
+
+- name: Load ldap bind password
+  include_tasks: load_ldap_password_secret.yml
+  when:
+    - ldap_password_secret != ''
+
+- name: Load bundle certificate authority certificate
+  include_tasks: load_bundle_cacert_secret.yml
+  when:
+    - bundle_cacert_secret != ''
+
+- name: Include admin password configuration tasks
+  include_tasks: admin_password_configuration.yml
+
+- name: Include broadcast websocket configuration tasks
+  include_tasks: broadcast_websocket_configuration.yml
+
+- name: Include set_images tasks
+  include_tasks: set_images.yml
+
+- name: Include database configuration tasks
+  include_tasks: database_configuration.yml
+
+- name: Load Route TLS certificate
+  include_tasks: load_route_tls_secret.yml
+  when:
+    - ingress_type | lower == 'route'
+    - route_tls_secret != ''
+
+- name: Include resources configuration tasks
+  include_tasks: resources_configuration.yml
+
+- name: Check for pending migrations
+  k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-task"
+    command: >-
+      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
+  changed_when: false
+  register: database_check
+
+- name: Migrate the database if the K8s resources were updated.  # noqa 305
+  k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-task"
+    command: >-
+      bash -c "awx-manage migrate --noinput"
+  register: migrate_result
+  when:
+    - database_check is defined
+    - (database_check.stdout|trim) != '0'
+
+- name: Initialize Django
+  include_tasks: initialize_django.yml
+
+- name: Update status variables
+  include_tasks: update_status.yml
+
+- name: Cleanup & Set garbage collection refs
+  include_tasks: cleanup.yml
