@@ -6,3 +6,4 @@
 /bundle.Dockerfile
 /charts
 /.cr-release-packages
+.vscode/

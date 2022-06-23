@@ -291,7 +291,7 @@ helm-chart: kustomize helm kubectl-slice yq charts
 		$(KUBECTL_SLICE) --input-file=- \
 			--output-dir=charts/$(CHART_NAME)/templates \
 			--sort-by-kind
-	@echo "Helm Chart $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+	@echo "AWX Operator installed with Helm Chart version $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
 	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*),$(YQ) -i 'del(.. | select(has("namespace")).namespace)' $(file);)
 	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*rolebinding*),$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $(file);)
 	rm -f charts/$(CHART_NAME)/templates/namespace*.yaml

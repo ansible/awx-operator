@@ -1,0 +1,24 @@
+{{- if $.Values.AWX.enabled }}
+{{- with .Values.AWX }}
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+{{- /* Include raw map from the values file spec */}}
+{{ .spec | toYaml | indent 2 }}
+{{- /* Provide security context defaults */}}
+  {{- if not (hasKey .spec "security_context_settings") }}
+  security_context_settings:
+    runAsGroup: 0
+    runAsUser: 0
+    fsGroup: 0
+    fsGroupChangePolicy: OnRootMismatch
+  {{- end }}
+{{- /* Postgres configs if enabled and not already present */}}
+  {{- if and .postgres.enabled (not (hasKey .spec "postgres_configuration_secret")) }}
+  postgres_configuration_secret: {{ include "postgres.secretName" $ }}
+  {{- end }}
+{{- end }}
+{{- end }}
