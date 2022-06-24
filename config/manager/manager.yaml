@@ -54,6 +54,13 @@ spec:
               port: 6789
             initialDelaySeconds: 5
             periodSeconds: 10
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "4096Mi"
+              cpu: "2000m"
       serviceAccountName: controller-manager
       imagePullSecrets:
         - name: redhat-operators-pull-secret
