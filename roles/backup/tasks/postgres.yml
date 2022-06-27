@@ -24,6 +24,39 @@
   no_log: "{{ no_log }}"
 
 - block:
+    - name: Get the controller pod information
+      k8s_info:
+        kind: Pod
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        label_selectors:
+          - "app.kubernetes.io/name = {{ deployment_name }}"
+      register: controller_pod
+      until:
+        - "controller_pod['resources'] | length"
+        - "controller_pod['resources'][0]['status']['phase'] == 'Running'"
+        - "controller_pod['resources'][0]['status']['containerStatuses'][0]['ready'] == true"
+      delay: 5
+      retries: 60
+
+    - name: Get decrypted variable
+      k8s_exec:
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        pod: "{{ controller_pod.resources[0].metadata.name }}"
+        container: "{{ deployment_name }}-task"
+        command: |
+          awx-manage shell_plus -c """
+          from awx.main.utils import decrypt_value, get_encryption_key
+          decrypted_value = decrypt_value(get_encryption_key('value'),'{{postgresql_password}}')
+          print(decrypted_value)
+          """
+      register: decrypt_postgres_pass
+
+    - name: Set decrypted postgres pass as awx_postgres_pass
+      set_fact: 
+        awx_postgres_pass: "{{ decrypt_postgres_pass.stdout_lines[1] }}"
+  when: "'encrypted' in awx_postgres_pass"
+
+- block:
     - name: Delete pod to reload a resource configuration
       set_fact:
         postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ deployment_name }}"
