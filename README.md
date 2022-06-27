@@ -192,6 +192,8 @@ metadata:
   name: awx-demo
 spec:
   service_type: nodeport
+  # default nodeport_port is 30080
+  nodeport_port: <nodeport_port>
 ```
 
 Make sure to add this new file to the list of "resources" in your `kustomization.yaml` file:
