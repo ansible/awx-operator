@@ -11,6 +11,11 @@
   kind: AWXBackup
   role: backup
   snakeCaseParameters: False
+  finalizer:
+    name: awx.ansible.com/finalizer
+    role: backup
+    vars:
+      finalizer_run: true
 
 - version: v1beta1
   group: awx.ansible.com

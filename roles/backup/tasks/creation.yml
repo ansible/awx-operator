@@ -1,0 +1,47 @@
+---
+- name: Patching labels to {{ kind }} kind
+  k8s:
+    state: present
+    definition:
+      apiVersion: "{{ api_version }}"
+      kind: "{{ kind }}"
+      name: "{{ ansible_operator_meta.name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
+      metadata:
+        name: "{{ ansible_operator_meta.name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        labels:
+          app.kubernetes.io/name: "{{ ansible_operator_meta.name }}"
+          app.kubernetes.io/part-of: "{{ ansible_operator_meta.name }}"
+          app.kubernetes.io/managed-by: "{{ deployment_type }}-operator"
+          app.kubernetes.io/component: "{{ deployment_type }}"
+          app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+
+- name: Look up details for this backup object
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: this_backup
+
+- block:
+    - include_tasks: init.yml
+
+    - include_tasks: postgres.yml
+
+    - include_tasks: awx-cro.yml
+
+    - include_tasks: secrets.yml
+
+    - name: Set flag signifying this backup was successful
+      set_fact:
+        backup_complete: true
+
+    - include_tasks: cleanup.yml
+
+  when:
+    - this_backup['resources'][0]['status']['backupDirectory'] is not defined
+
+- name: Update status variables
+  include_tasks: update_status.yml

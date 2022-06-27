@@ -74,7 +74,12 @@ To check the name of this secret, look at the postgresConfigurationSecret status
 The postgresql pod for the old deployment is used when backing up data to the new postgresql pod.  If your postgresql pod has a custom label,
 you can pass that via the `postgres_label_selector` variable to make sure the postgresql pod can be found.
 
+It is also possible to tie the lifetime of the backup files to that of the AWXBackup resource object. To do that you can set the
+`clean_backup_on_delete` value to true. This will delete the `backupDirectory` on the pvc associated with the AWXBackup object deleted.
 
+```
+clean_backup_on_delete: true
+```
 Testing
 ----------------
 
