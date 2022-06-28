@@ -198,6 +198,8 @@ spec:
   nodeport_port: <nodeport_port>
 ```
 
+> It may make sense to create and specify your own secret key for your deployment so that if the k8s secret gets deleted, it can be re-created if needed.  If it is not provided, one will be auto-generated, but cannot be recovered if lost. Read more [here](#secret-key-configuration).
+
 Make sure to add this new file to the list of "resources" in your `kustomization.yaml` file:
 
 ```yaml
@@ -311,6 +313,41 @@ stringData:
   password: mysuperlongpassword
 ```
 
+
+### Secret Key Configuration
+
+This key is used to encrypt sensitive data in the database.
+
+| Name              | Description                                           | Default          |
+| ----------------- | ----------------------------------------------------- | ---------------- |
+| secret_key_secret | Secret that contains the symmetric key for encryption | Generated     |
+
+
+> :warning: **secret_key_secret must be a Kubernetes secret and not your text clear secret value**.
+
+If `secret_key_secret` is not provided, the operator will look for a secret named `<resourcename>-secret-key` for the secret key. If it is not present, the operator will generate a password and create a Secret from it named `<resourcename>-secret-key`. It is important to not delete this secret as it will be needed for upgrades and if the pods get scaled down at any point. If you are using a GitOps flow, you will want to pass a secret key secret.
+
+The secret should be formatted as follow:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: custom-awx-secret-key
+  namespace: <target namespace>
+stringData:
+  secret_key: supersecuresecretkey
+```
+
+Then specify the secret name on the AWX spec:
+
+```yaml
+---
+spec:
+  ...
+  secret_key_secret: custom-awx-secret-key
+```
 
 ### Network and TLS Configuration
 
@@ -1165,4 +1202,3 @@ We welcome your feedback and ideas. The AWX operator uses the same mailing list 
 
 - Join the `#ansible-awx` channel on irc.libera.chat
 - Join the [mailing list](https://groups.google.com/forum/#!forum/awx-project)
-
