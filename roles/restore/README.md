@@ -95,6 +95,17 @@ backup_pvc: myoldtower-backup-claim
 backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
+Variable to define resources limits and request for restore CR.
+
+```
+restore_resource_requirements:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+```
 
 Testing
 ----------------
