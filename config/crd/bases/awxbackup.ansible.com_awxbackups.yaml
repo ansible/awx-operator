@@ -28,6 +28,24 @@ spec:
               required:
                 - deployment_name
               properties:
+                backup_resource_requirements:
+                  description: Resource requirements for the task container
+                  properties:
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                  type: object
                 deployment_name:
                   description: Name of the deployment to be backed up
                   type: string
