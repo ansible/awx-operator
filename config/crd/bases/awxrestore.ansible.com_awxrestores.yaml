@@ -49,7 +49,7 @@ spec:
                         memory:
                           type: string
                       type: object
-                  type: object                      
+                  type: object
                 deployment_name:
                   description: Name of the restored deployment. This should be different from the original deployment name
                     if the original deployment still exists.

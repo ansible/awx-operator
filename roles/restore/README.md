@@ -35,9 +35,9 @@ spec:
   backup_name: awxbackup-2021-04-22
 ```
 
-Note that the `deployment_name` above is the name of the AWX deployment you intend to create and restore to.  
+Note that the `deployment_name` above is the name of the AWX deployment you intend to create and restore to.
 
-The namespace specified is the namespace the resulting AWX deployment will be in.  The namespace you specified must be pre-created.  
+The namespace specified is the namespace the resulting AWX deployment will be in.  The namespace you specified must be pre-created.
 
 ```
 kubectl create ns my-namespace
@@ -57,7 +57,7 @@ This will create a new deployment and restore your backup to it.
 Role Variables
 --------------
 
-The name of the backup directory can be found as a status on your AWXBackup object.  This can be found in your cluster's console, or with the client as shown below.  
+The name of the backup directory can be found as a status on your AWXBackup object.  This can be found in your cluster's console, or with the client as shown below.
 
 ```bash
 $ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.backupDirectory}"
@@ -69,7 +69,7 @@ backup_dir: '/backups/tower-openshift-backup-2021-04-02-03:25:08'
 ```
 
 
-The name of the PVC can also be found by looking at the backup object.  
+The name of the PVC can also be found by looking at the backup object.
 
 ```bash
 $ kubectl get awxbackup awxbackup1 -o jsonpath="{.items[0].status.backupClaim}"
