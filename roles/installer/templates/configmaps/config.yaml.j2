@@ -42,10 +42,19 @@ data:
     SYSTEM_TASK_ABS_CPU = '{{ task_resource_requirements["limits"]["cpu"] }}'
 {% endif %}
 
+{%- set cpu_limit = task_resource_requirements["limits"]["cpu"] if "limits" in task_resource_requirements and "cpu" in task_resource_requirements["limits"] -%}
+{%- if cpu_limit is defined -%}
+{%- set callback_receiver_cpu = cpu_limit | cpu_string_to_decimal -%}
+{%- if callback_receiver_cpu |int > 4 -%}
+# Set callback receiver workers based off cpu limit, default workers are 4, but if we have more than 4 cpu we can set higher value for workers
+    JOB_EVENT_WORKERS = {{ callback_receiver_cpu }}
+{%- endif -%}
+{%- endif %}
+
     SECRET_KEY = get_secret()
-    
+
     ALLOWED_HOSTS = ['*']
-    
+
     INTERNAL_API_URL = 'http://127.0.0.1:8052'
 
     # Sets Ansible Collection path
