@@ -77,6 +77,7 @@
     apply: yes
     definition: "{{ lookup('template', 'deployment.yaml.j2') }}"
     wait: yes
+    wait_timeout: 600
   register: tower_deployment_result
 
 - block:

@@ -56,28 +56,6 @@
 - name: Include resources configuration tasks
   include_tasks: resources_configuration.yml
 
-- name: Check for pending migrations
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
-  changed_when: false
-  register: database_check
-
-- name: Migrate the database if the K8s resources were updated.  # noqa 305
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "awx-manage migrate --noinput"
-  register: migrate_result
-  when:
-    - database_check is defined
-    - (database_check.stdout|trim) != '0'
-
 - name: Initialize Django
   include_tasks: initialize_django.yml
 
