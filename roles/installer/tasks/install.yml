@@ -16,6 +16,7 @@
           app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
           app.kubernetes.io/component: '{{ deployment_type }}'
           app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+  when: set_self_labels | bool
 
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml

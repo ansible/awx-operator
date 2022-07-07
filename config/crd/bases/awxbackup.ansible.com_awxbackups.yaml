@@ -58,6 +58,10 @@ spec:
                 no_log:
                   description: Configure no_log for no_log tasks
                   type: string
+                set_self_labels:
+                  description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
+                  type: boolean
+                  default: true
             status:
               type: object
               properties:
