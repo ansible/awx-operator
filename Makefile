@@ -272,7 +272,6 @@ charts:
 helm-chart: kustomize helm kubectl-slice yq charts
 	@echo "== KUSTOMIZE (image and namespace) =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
 
 	@echo "== HELM =="
 	cd charts && \
@@ -293,6 +292,9 @@ helm-chart: kustomize helm kubectl-slice yq charts
 			--output-dir=charts/$(CHART_NAME)/templates \
 			--sort-by-kind
 	@echo "Helm Chart $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*),$(YQ) -i 'del(.. | select(has("namespace")).namespace)' $(file);)
+	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*rolebinding*),$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $(file);)
+	rm -f charts/$(CHART_NAME)/templates/namespace*.yaml
 
 
 .PHONY: helm-package
