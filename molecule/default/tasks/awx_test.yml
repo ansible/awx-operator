@@ -49,13 +49,13 @@
         name: Demo Job Template
         wait: yes
         validate_certs: no
-        controller_host: localhost
+        controller_host: localhost/awx/
         controller_username: admin
         controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
   rescue:
     - name: Get list of project updates and jobs
       uri:
-        url: "http://localhost/api/v2/{{ resource }}/"
+        url: "http://localhost/awx/api/v2/{{ resource }}/"
         user: admin
         password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
         force_basic_auth: yes
