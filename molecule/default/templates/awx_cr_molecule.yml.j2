@@ -11,6 +11,7 @@ spec:
   image_version: {{ awx_version }}
 {% endif %}
   ingress_type: ingress
+  ingress_path: /awx
   ingress_annotations: |
     kubernetes.io/ingress.class: nginx
   web_resource_requirements:
