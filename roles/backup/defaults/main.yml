@@ -19,3 +19,6 @@ clean_backup_on_delete: false
 
 # Variable to signal that this role is being run as a finalizer
 finalizer_run: false
+
+# Allow additional parameters to be added to the pg_dump backup command
+pg_dump_suffix: ''

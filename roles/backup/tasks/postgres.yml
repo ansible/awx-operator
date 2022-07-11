@@ -91,6 +91,7 @@
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
       -F custom
+      {{ pg_dump_suffix }}
   no_log: "{{ no_log }}"
 
 - name: Write pg_dump to backup on PVC
