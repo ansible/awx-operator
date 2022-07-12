@@ -60,7 +60,25 @@ jobs:
           kustomize edit add patch --path ../testing/pull_policy/Never.yaml
         working-directory: config/default
 
-      - name: Build and install helm chart
+      - name: Build and lint helm chart
         run: |
           IMG=awx-operator-ci make helm-chart
+          helm lint ./charts/awx-operator
+
+      - name: Install kubeval
+        run: |
+          mkdir tmp && cd tmp
+          wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+          tar xf kubeval-linux-amd64.tar.gz
+          sudo cp kubeval /usr/local/bin
+        working-directory: ./charts
+
+      - name: Run kubeval
+        run: |
+          helm template -n awx awx-operator > tmp/test.yaml
+          kubeval --strict --force-color --ignore-missing-schemas tmp/test.yaml
+        working-directory: ./charts
+
+      - name: Install helm chart
+        run: |
           helm install --wait my-awx-operator --namespace awx --create-namespace ./charts/awx-operator
