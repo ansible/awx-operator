@@ -269,7 +269,10 @@ charts:
 	mkdir -p $@
 
 .PHONY: helm-chart
-helm-chart: kustomize helm kubectl-slice yq charts
+helm-chart: helm-chart-generate helm-chart-slice
+
+.PHONY: helm-chart-generate
+helm-chart-generate: kustomize helm kubectl-slice yq charts
 	@echo "== KUSTOMIZE (image and namespace) =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 
@@ -292,6 +295,10 @@ helm-chart: kustomize helm kubectl-slice yq charts
 			--output-dir=charts/$(CHART_NAME)/templates \
 			--sort-by-kind
 	@echo "AWX Operator installed with Helm Chart version $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+
+.PHONY: helm-chart-edit
+helm-chart-slice:
+	@echo "== EDIT =="
 	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*),$(YQ) -i 'del(.. | select(has("namespace")).namespace)' $(file);)
 	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*rolebinding*),$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $(file);)
 	rm -f charts/$(CHART_NAME)/templates/namespace*.yaml
