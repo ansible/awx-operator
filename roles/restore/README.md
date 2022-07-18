@@ -33,7 +33,6 @@ metadata:
 spec:
   deployment_name: mytower
   backup_name: awxbackup-2021-04-22
-  backup_pvc_namespace: 'old-awx-namespace'
 ```
 
 Note that the `deployment_name` above is the name of the AWX deployment you intend to create and restore to.  
@@ -81,11 +80,7 @@ awx-backup-volume-claim
 backup_pvc: 'awx-backup-volume-claim'
 ```
 
-By default, the backup pvc will be created in the same namespace the awxbackup object is created in. This namespace must be specified using the `backup_pvc_namespace` variable.
-
-```
-backup_pvc_namespace: 'custom-namespace'
-```
+The backup pvc will be created in the same namespace the awxbackup object is created in.
 
 If a custom postgres configuration secret was used when deploying AWX, it must be set:
 

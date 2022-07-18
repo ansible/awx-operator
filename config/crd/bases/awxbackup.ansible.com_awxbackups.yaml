@@ -32,13 +32,13 @@ spec:
                   description: Name of the deployment to be backed up
                   type: string
                 backup_pvc:
-                  description: Name of the PVC to be used for storing the backup
+                  description: Name of the backup PVC
                   type: string
                 backup_pvc_namespace:
-                  description: Namespace the PVC is in
+                  description: (Deprecated) Namespace the PVC is in
                   type: string
                 backup_storage_requirements:
-                  description: Storage requirements for the PostgreSQL container
+                  description: Storage requirements for backup PVC (may be similar to existing postgres PVC backing up from)
                   type: string
                 backup_storage_class:
                   description: Storage class to use when creating PVC for backup
