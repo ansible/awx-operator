@@ -60,13 +60,7 @@ backup_storage_class: 'standard'
 backup_storage_requirements: '20Gi'
 ```
 
-By default, the backup pvc will be created in the same namespace the awxbackup object is created in.  If you want your backup to be stored
-in a specific namespace, you can do so by specifying `backup_pvc_namespace`.  Keep in mind that you will
-need to provide the same namespace when restoring.  
-
-```
-backup_pvc_namespace: 'custom-namespace'
-```
+The backup pvc will be created in the same namespace the awxbackup object is created in.
 
 If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.  
 To check the name of this secret, look at the postgresConfigurationSecret status on your AWX object.  

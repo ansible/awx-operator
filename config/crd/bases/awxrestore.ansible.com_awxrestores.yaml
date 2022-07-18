@@ -33,7 +33,8 @@ spec:
                     - CR
                     - PVC
                 deployment_name:
-                  description: Name of the deployment to be restored to
+                  description: Name of the restored deployment. This should be different from the original deployment name
+                    if the original deployment still exists.
                   type: string
                 backup_name:
                   description: AWXBackup object name
@@ -42,7 +43,7 @@ spec:
                   description: Name of the PVC to be restored from, set as a status found on the awxbackup object (backupClaim)
                   type: string
                 backup_pvc_namespace:
-                  description: Namespace the PVC is in
+                  description: (Deprecated) Namespace the PVC is in
                   type: string
                 backup_dir:
                   description: Backup directory name, set as a status found on the awxbackup object (backupDirectory)

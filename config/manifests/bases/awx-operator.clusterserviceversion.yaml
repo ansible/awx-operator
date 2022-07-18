@@ -28,8 +28,7 @@ spec:
       - displayName: Backup persistent volume claim namespace
         path: backup_pvc_namespace
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Backup PVC storage requirements
         path: backup_storage_requirements
         x-descriptors:
@@ -67,12 +66,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       version: v1beta1
-    - description: Restore a previous awx deployment into the namespace
+    - description: Restore a previous awx deployment from an AWXBackup. The 
+        deployment name you provide will be the name of the new AWX CR that will be created.
       displayName: AWX Restore
       kind: AWXRestore
       name: awxrestores.awx.ansible.com
       specDescriptors:
-      - displayName: Backup source to restore ?
+      - displayName: Backup source to restore from
         path: backup_source
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:select:CR
@@ -94,7 +94,7 @@ spec:
       - displayName: Backup namespace
         path: backup_pvc_namespace
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Backup directory in the persistent volume claim
         path: backup_dir
         x-descriptors:
@@ -107,12 +107,10 @@ spec:
       - displayName: PostgreSQL Image
         path: postgres_image
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: PostgreSQL Image Version
         path: postgres_image_version
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: The state of the restore
