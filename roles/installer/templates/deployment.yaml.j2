@@ -86,10 +86,15 @@ spec:
         - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
-{% if redis_capabilities is defined and redis_capabilities %}
+{% if redis_capabilities is defined or redis_security_contexts is defined %}
           securityContext:
+{% if redis_security_contexts|length %}
+            {{ redis_security_contexts | to_nice_yaml | indent(12) }}
+{% endif %}
+{% if redis_capabilities is defined %}
             capabilities:
               add: {{ redis_capabilities }}
+{% endif %}
 {% endif %}
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:

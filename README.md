@@ -597,6 +597,19 @@ spec:
 
 **Note**: The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
 
+#### Redis container security contexts
+
+Depending on your kubernetes cluster and settings you might need to set the security contexts to the redis container so it can start. Set the `redis_security_contexts` option so the security contexts are added in the deployment.
+
+```yaml
+---
+spec:
+  ...
+  redis_security_contexts:
+    runAsUser: 999
+    runAsGroup: 999
+```
+
 #### Redis container capabilities
 
 Depending on your kubernetes cluster and settings you might need to grant some capabilities to the redis container so it can start. Set the `redis_capabilities` option so the capabilities are added in the deployment.
