@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v1.12.0
+FROM quay.io/operator-framework/ansible-operator:v1.16.0
 
 ARG DEFAULT_AWX_VERSION
 ARG OPERATOR_VERSION

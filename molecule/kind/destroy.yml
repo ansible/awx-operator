@@ -11,6 +11,6 @@
       command: kind delete cluster --name osdk-test --kubeconfig {{ kubeconfig }}
 
     - name: Unset pull policy
-      command: '{{ kustomize }} edit remove patch pull_policy/{{ operator_pull_policy }}.yaml'
+      command: '{{ kustomize }} edit remove patch --path pull_policy/{{ operator_pull_policy }}.yaml'
       args:
         chdir: '{{ config_dir }}/testing'

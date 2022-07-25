@@ -1,0 +1,24 @@
+# permissions for end users to edit awxbackups.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: awxbackup-editor-role
+rules:
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxbackups
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxbackups/status
+  verbs:
+  - get

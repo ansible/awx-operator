@@ -1,0 +1,24 @@
+# permissions for end users to edit awxrestores.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: awxrestore-editor-role
+rules:
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxrestores
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxrestores/status
+  verbs:
+  - get

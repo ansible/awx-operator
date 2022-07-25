@@ -12,3 +12,8 @@ rules:
   truthy: disable
   line-length:
     max: 170
+  document-start: disable
+  comments-indentation: disable
+  indentation:
+    level: warning
+    indent-sequences: consistent
