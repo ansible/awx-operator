@@ -1,104 +1,98 @@
 ---
-- name: get awx-operator git repo
-  ansible.builtin.git:
-    repo: "https://github.com/ansible/awx-operator.git"
-    dest: "~/awx-operator"
-    version: "{{ awx_operator_version }}"
-    force: true
+- hosts: localhost
+  vars:
+    awx_namespace: awx
+    service_type: ClusterIP
+    ingress_type: Ingress
+    admin_user: admin
+    admin_email: "your_email@here"
+  tasks:
+    - name: Look up release
+        uri:
+          url: "https://api.github.com/repos/ansible/awx-operator/releases/latest"
+        register: release
 
-- name: deploy kustomization file
-  copy:
-    content: |
-      ---
-      apiVersion: kustomize.config.k8s.io/v1beta1
-      kind: Kustomization
-      resources:
-        # Find the latest tag here: https://github.com/ansible/awx-operator/releases
-        - github.com/ansible/awx-operator/config/default?ref={{ awx_operator_version }}
-      
-      # Set the image tags to match the git version from above
-      images:
-        - name: quay.io/ansible/awx-operator
-          newTag: {{ awx_operator_version }}
-      
-      # Specify a custom namespace in which to install AWX
-      namespace: {{ awx_namespace }}
-    dest: "~/awx-operator/kustomization.yaml"
-    mode: 0640
+    - name: deploy kustomization file
+      copy:
+        content: |
+          ---
+          apiVersion: kustomize.config.k8s.io/v1beta1
+          kind: Kustomization
+          resources:
+            # Find the latest tag here: https://github.com/ansible/awx-operator/releases
+            - github.com/ansible/awx-operator/config/default?ref={{ release.json.tag_name }}
+          
+          # Set the image tags to match the git version from above
+          images:
+            - name: quay.io/ansible/awx-operator
+              newTag: {{ release.json.tag_name }}
+          
+          # Specify a custom namespace in which to install AWX
+          namespace: {{ awx_namespace }}
+        dest: "./kustomization.yaml"
+        mode: 0640
 
-- name: Deploy controller to the K8s cluster specified in ~/.kube/config.
-  shell: kustomize build . | kubectl apply -f -
-  environment:
-    PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/snap/bin"
-  args:
-    chdir: "~/awx-operator"
-  changed_when: true
+    - name: Create kubernetes resources for lookup output
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='.') }}"
 
-- name: wait for deployment
-  pause:
-    seconds: 60
+    - name: wait for deployment
+      pause:
+        seconds: 60
 
-- name: Deploy AWX
-  kubernetes.core.k8s:
-    state: "{{ state | default('present') }}"
-    namespace: "{{ awx_namespace | default('default') }}"
-    apply: true
-    wait: true
-    definition:
-      apiVersion: awx.ansible.com/v1beta1
-      kind: AWX
-      metadata:
-        name: awx
-      spec:
-        admin_user: admin
-        admin_email: "your_email@here"
-        service_type: "ClusterIP" # Either clusterIP, Loadbalancer or NodePort
-        ingress_type: "Ingress" # Either none, Ingress, Route
-        hostname: "{{ awx_hostname }}"
-        image: "{{ image | default(omit) }}"
-        image_version: "{{ image_version | default(omit) }}"
-        ingress_tls_secret: "{{ tls_secret }}"
-        postgres_resource_requirements:
-          requests:
-            cpu: "2000m"
-            memory: "4Gi"
-          limits:
-            cpu: "4000m"
-            memory: "8Gi"
-        postgres_storage_class: "nfs-client"
-        postgres_extra_args:
-          - "-c"
-          - "max_locks_per_transaction=1024"
-        projects_storage_class: "nfs-client"
-        web_resource_requirements:
-          requests:
-            cpu: "2000m"
-            memory: "4Gi"
-          limits:
-            cpu: "4000m"
-            memory: "8Gi"
-        task_resource_requirements:
-          requests:
-            cpu: "2000m"
-            memory: "2Gi"
-          limits:
-            cpu: "4000m"
-            memory: "4Gi"
-        ee_resource_requirements:
-          requests:
-            cpu: "2000m"
-            memory: "2Gi"
-          limits:
-            cpu: "4000m"
-            memory: "4Gi"
-        extra_settings:
-          - setting: create_preload_data # this does not work apparently
-            value: false
-
-- name: wait for pods to come up
-  command: kubectl get pods -o json -n {{ awx_namespace }}
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  changed_when: false
-  retries: 10
-  delay: 30
+    - name: Deploy AWX
+      kubernetes.core.k8s:
+        state: "{{ state | default('present') }}"
+        namespace: "{{ awx_namespace | default('default') }}"
+        apply: true
+        wait: true
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: awx
+          spec:
+            admin_user: "{{ admin_user }}"
+            admin_email: "{{ admin_email }}"
+            service_type: "{{ service_type }}"
+            ingress_type: "{{ ingress_type }}"
+            hostname: "{{ awx_hostname }}"
+            image: "{{ image | default(omit) }}"
+            image_version: "{{ image_version | default(omit) }}"
+            ingress_tls_secret: "{{ tls_secret }}"
+            postgres_resource_requirements:
+              requests:
+                cpu: "2000m"
+                memory: "4Gi"
+              limits:
+                cpu: "4000m"
+                memory: "8Gi"
+            postgres_storage_class: "nfs-client"
+            postgres_extra_args:
+              - "-c"
+              - "max_locks_per_transaction=1024"
+            projects_storage_class: "nfs-client"
+            web_resource_requirements:
+              requests:
+                cpu: "2000m"
+                memory: "4Gi"
+              limits:
+                cpu: "4000m"
+                memory: "8Gi"
+            task_resource_requirements:
+              requests:
+                cpu: "2000m"
+                memory: "2Gi"
+              limits:
+                cpu: "4000m"
+                memory: "4Gi"
+            ee_resource_requirements:
+              requests:
+                cpu: "2000m"
+                memory: "2Gi"
+              limits:
+                cpu: "4000m"
+                memory: "4Gi"
+            extra_settings:
+              - setting: create_preload_data # this does not work apparently
+                value: false
