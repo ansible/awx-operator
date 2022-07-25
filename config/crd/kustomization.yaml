@@ -4,6 +4,6 @@
 # It should be run by config/default
 resources:
   - bases/awx.ansible.com_awxs.yaml
-  - bases/awxbackup.ansible.com_awxbackups.yaml
-  - bases/awxrestore.ansible.com_awxrestores.yaml
+  - bases/awx.ansible.com_awxbackups.yaml
+  - bases/awx.ansible.com_awxrestores.yaml
 # +kubebuilder:scaffold:crdkustomizeresource

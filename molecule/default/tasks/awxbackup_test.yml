@@ -1,0 +1,18 @@
+---
+# - name: Create the awx.ansible.com/v1beta1.AWXBackup
+#   k8s:
+#     state: present
+#     namespace: '{{ namespace }}'
+#     definition: "{{ lookup('template', '/'.join([samples_dir, cr_file])) | from_yaml }}"
+#     wait: yes
+#     wait_timeout: 300
+#     wait_condition:
+#       type: Successful
+#       status: "True"
+#   vars:
+#     cr_file: 'awx_v1beta1_awxbackup.yaml'
+#
+# - name: Add assertions here
+#   assert:
+#     that: false
+#     fail_msg: FIXME Add real assertions for your operator

@@ -1,0 +1,20 @@
+# permissions for end users to view awxrestores.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: awxrestore-viewer-role
+rules:
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxrestores
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - awx.ansible.com
+  resources:
+  - awxrestores/status
+  verbs:
+  - get
