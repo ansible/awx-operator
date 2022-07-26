@@ -7,7 +7,7 @@ metadata:
 {{- with $.Values.AWX.postgres }}
 stringData:
   host: {{ .host }}
-  port: {{ .port }}
+  port: {{ .port | quote }}
   database: {{ .dbName }}
   username: {{ .username }}
   password: {{ .password }}
