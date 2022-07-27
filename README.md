@@ -50,6 +50,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Service Account](#service-account)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
+         * [Backup](#backup)
          * [v0.14.0](#v0140)
             * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
             * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
@@ -502,7 +503,7 @@ stringData:
 type: Opaque
 ```
 
-> Please ensure that the value for the variable `password` should _not_ contain single or double quotes (`'`, `"`) or backslashes (`\`) to avoid any issues during deployment, backup or restoration.
+> Please ensure that the value for the variable `password` should _not_ contain single or double quotes (`'`, `"`) or backslashes (`\`) to avoid any issues during deployment, [backup](https://github.com/ansible/awx-operator/tree/devel/roles/backup) or [restoration](https://github.com/ansible/awx-operator/tree/devel/roles/restore).
 
 > It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 
@@ -946,7 +947,7 @@ Example spec file for volumes and volume mounts
 
 In order to register default execution environments from private registries, the Custom Resource needs to know about the pull credentials. Those credentials should be stored as a secret and either specified as `ee_pull_credentials_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-ee-pull-credentials` . Instance initialization will register a `Container registry` type credential on the deployed instance and assign it to the registered default execution environments.
 
-The secret should be formated as follows:
+The secret should be formatted as follows:
 
 ```yaml
 ---
@@ -970,7 +971,7 @@ You can create `image_pull_secret`
 ```
 kubectl create secret <resoucename>-cp-pull-credentials regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
-If you need more control (for example, to set a namespace or a label on the new secret) then you can customise the Secret before storing it
+If you need more control (for example, to set a namespace or a label on the new secret) then you can customize the Secret before storing it
 
 Example spec file extra-config
 
@@ -1078,7 +1079,7 @@ Example configuration of `no_log` parameter
 ```
 
 #### Auto upgrade
-With this parameter you can influence the behaviour during an operator upgrade.  
+With this parameter you can influence the behavior during an operator upgrade.  
 If set to `true`, the operator will upgrade the specific instance directly.  
 When the value is set to `false`, and we have a running deployment, the operator will not update the AWX instance.  
 This can be useful when you have multiple AWX instances which you want to upgrade step by step instead of all at once.  
@@ -1142,11 +1143,17 @@ awx.awx.ansible.com "awx-demo" deleted
 
 Deleting an AWX instance will remove all related deployments and statefulsets, however, persistent volumes and secrets will remain. To enforce secrets also getting removed, you can use `garbage_collect_secrets: true`.
 
+**Note**: If you ever intend to recover an AWX from an existing database you will need a copy of the secrets in order to perform a successful recovery.
+
 ### Upgrading
 
 To upgrade AWX, it is recommended to upgrade the awx-operator to the version that maps to the desired version of AWX.  To find the version of AWX that will be installed by the awx-operator by default, check the version specified in the `image_version` variable in `roles/installer/defaults/main.yml` for that particular release.
 
 Apply the awx-operator.yml for that release to upgrade the operator, and in turn also upgrade your AWX deployment.
+
+#### Backup
+
+The first part of any upgrade should be a backup. Note, there are secrets in the pod which work in conjunction with the database. Having just a database backup without the required secrets will not be sufficient for recovering from an issue when upgrading to a new version. See the [backup role documentation](https://github.com/ansible/awx-operator/tree/devel/roles/backup) for information on how to backup your database and secrets. In the event you need to recover the backup see the [restore role documentation](https://github.com/ansible/awx-operator/tree/devel/roles/restore).
 
 #### v0.14.0
 
@@ -1181,7 +1188,7 @@ Please visit [our contributing guidelines](https://github.com/ansible/awx-operat
 
 ## Release Process
 
-The first step is to create a draft release. Typically this will happen in the [Stage Release](https://github.com/ansible/awx/blob/devel/.github/workflows/stage.yml) workflow for AWX and you dont need to do it as a separate step.
+The first step is to create a draft release. Typically this will happen in the [Stage Release](https://github.com/ansible/awx/blob/devel/.github/workflows/stage.yml) workflow for AWX and you don't need to do it as a separate step.
 
 If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
 
@@ -1200,7 +1207,7 @@ We ask all of our community members and contributors to adhere to the [Ansible c
 
 ## Get Involved
 
-We welcome your feedback and ideas. The AWX operator uses the same mailing list and IRC chanel as AWX itself. Here's how to reach us with feedback and questions:
+We welcome your feedback and ideas. The AWX operator uses the same mailing list and IRC channel as AWX itself. Here's how to reach us with feedback and questions:
 
 - Join the `#ansible-awx` channel on irc.libera.chat
 - Join the [mailing list](https://groups.google.com/forum/#!forum/awx-project)
