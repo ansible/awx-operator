@@ -3,5 +3,5 @@ kind: AWXRestore
 metadata:
   name: awxrestore-sample
 spec:
-  deployment_name: my-awx-2
-  backup_name: my-awx-backup
+  deployment_name: example-awx-2
+  backup_name: example-awx-backup

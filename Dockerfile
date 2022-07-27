@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/ansible-operator:v1.16.0
+FROM quay.io/operator-framework/ansible-operator:v1.22.2
 
 ARG DEFAULT_AWX_VERSION
 ARG OPERATOR_VERSION
@@ -12,3 +12,8 @@ RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
 COPY watches.yaml ${HOME}/watches.yaml
 COPY roles/ ${HOME}/roles/
 COPY playbooks/ ${HOME}/playbooks/
+
+ENTRYPOINT ["/tini", "--", "/usr/local/bin/ansible-operator", "run", \
+    "--watches-file=./watches.yaml", \
+    "--reconcile-period=0s" \
+    ]
