@@ -5,6 +5,10 @@
   collections:
     - kubernetes.core
 
+  vars:
+    admin_user: admin
+    admin_email: "admin@localhost"
+
   tasks:
     - name: Deploy AWX
       k8s:
@@ -18,10 +22,12 @@
           metadata:
             name: awx
           spec:
-            admin_user: admin
-            admin_email: admin@localhost
+            admin_user: "{{ admin_user }}"
+            admin_email: "{{ admin_email }}"
             service_type: "{{ service_type | default(omit) }}"  # Either clusterIP, Loadbalancer or NodePort
             ingress_type: "{{ ingress_type | default(omit) }}"  # Either none, Ingress, Route
+            # ingress_tls_secret: "{{ tls_secret }}"
+            hostname: "{{ awx_hostname | default(omit) }}"
             image: "{{ image | default(omit) }}"
             image_version: "{{ image_version | default(omit) }}"
             development_mode: "{{ development_mode | default(omit) | bool }}"
@@ -29,3 +35,39 @@
             # ee_images:
             #   - name: test-ee
             #     image: quay.io/<user>/awx-ee
+            # postgres_resource_requirements:
+            #   requests:
+            #     cpu: "2000m"
+            #     memory: "4Gi"
+            #   limits:
+            #     cpu: "4000m"
+            #     memory: "8Gi"
+            # postgres_storage_class: "nfs-client"
+            # postgres_extra_args:
+            #   - "-c"
+            #   - "max_locks_per_transaction=1024"
+            # projects_storage_class: "nfs-client"
+            # web_resource_requirements:
+            #   requests:
+            #     cpu: "2000m"
+            #     memory: "4Gi"
+            #   limits:
+            #     cpu: "4000m"
+            #     memory: "8Gi"
+            # task_resource_requirements:
+            #   requests:
+            #     cpu: "2000m"
+            #     memory: "2Gi"
+            #   limits:
+            #     cpu: "4000m"
+            #     memory: "4Gi"
+            # ee_resource_requirements:
+            #   requests:
+            #     cpu: "2000m"
+            #     memory: "2Gi"
+            #   limits:
+            #     cpu: "4000m"
+            #     memory: "4Gi"
+            # extra_settings:
+            #   - setting: create_preload_data # this does not work apparently
+            #     value: false

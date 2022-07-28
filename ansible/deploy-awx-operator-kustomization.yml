@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Look up release
+        uri:
+          url: "https://api.github.com/repos/ansible/awx-operator/releases/latest"
+        register: release
+
+    - name: deploy kustomization file
+      copy:
+        content: |
+          ---
+          apiVersion: kustomize.config.k8s.io/v1beta1
+          kind: Kustomization
+          resources:
+            # Find the latest tag here: https://github.com/ansible/awx-operator/releases
+            - github.com/ansible/awx-operator/config/default?ref={{ release.json.tag_name }}
+          
+          # Set the image tags to match the git version from above
+          images:
+            - name: quay.io/ansible/awx-operator
+              newTag: {{ release.json.tag_name }}
+          
+          # Specify a custom namespace in which to install AWX
+          namespace: {{ awx_namespace }}
+        dest: "./kustomization.yaml"
+        mode: 0640
+
+    - name: Create kubernetes resources for lookup output
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='.') }}"
+
+    - name: wait for deployment
+      pause:
+        seconds: 60

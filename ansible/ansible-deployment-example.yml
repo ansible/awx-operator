@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+
+  collections:
+    - kubernetes.core
+
+  vars:
+    awx_namespace: awx
+    service_type: ClusterIP
+    ingress_type: Ingress
+    admin_user: admin
+    admin_email: "admin@localhost"
+
+  tasks:
+    - name: Deploy AWX Operator
+      include_tasks: deploy-awx-operator-kustomization.yml
+
+    - name: Deploy AWX Instance
+      include_tasks: instantiate-awx-deployment.yml
