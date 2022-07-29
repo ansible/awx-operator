@@ -21,17 +21,12 @@
 - name: Get the postgres pod information
   k8s_info:
     kind: Pod
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: '{{ ansible_operator_meta.name }}-postgres-0'  # using name to keep compatibility
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - "{{ postgres_label_selector }}"
     field_selectors:
       - status.phase=Running
   register: postgres_pod
-  until:
-    - "postgres_pod['resources'] | length"
-    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
-    - "postgres_pod['resources'][0]['status']['containerStatuses'][0]['ready'] == true"
-  delay: 5
-  retries: 60
 
 - name: Set the resource pod name as a variable.
   set_fact:
