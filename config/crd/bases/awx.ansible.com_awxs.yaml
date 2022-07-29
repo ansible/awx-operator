@@ -379,6 +379,9 @@ spec:
                 postgres_selector:
                   description: nodeSelector for the Postgres pods
                   type: string
+                postgres_keep_pvc_after_upgrade:
+                  description: Specify whether or not to keep the old PVC after PostgreSQL upgrades
+                  type: boolean
                 postgres_tolerations:
                   description: node tolerations for the Postgres pods
                   type: string
@@ -519,7 +522,10 @@ spec:
                   description: Secret key secret name of the deployed instance
                   type: string
                 migratedFromSecret:
-                  description: The secret used for migrating an old instance.
+                  description: The secret used for migrating an old instance
+                  type: string
+                upgradedPostgresVersion:
+                  description: Status to indicate that the database has been upgraded to the version in the status
                   type: string
                 version:
                   description: Version of the deployed instance

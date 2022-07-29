@@ -6,7 +6,7 @@
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
-  register: tower_deployment
+  register: this_deployment
 
 - name: Scale down Deployment for migration
   kubernetes.core.k8s_scale:
@@ -16,4 +16,4 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     replicas: 0
     wait: yes
-  when: tower_deployment['resources'] | length
+  when: this_deployment['resources'] | length

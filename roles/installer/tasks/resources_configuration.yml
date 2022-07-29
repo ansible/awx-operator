@@ -11,11 +11,11 @@
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
       - status.phase=Running
-  register: tower_pods
+  register: tower_pod
 
 - name: Set the resource pod name as a variable.
   set_fact:
-    tower_pod_name: "{{ tower_pods['resources'][0]['metadata']['name'] | default('') }}"
+    tower_pod_name: "{{ tower_pod['resources'][0]['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
   set_fact:
@@ -77,7 +77,7 @@
     apply: yes
     definition: "{{ lookup('template', 'deployment.yaml.j2') }}"
     wait: yes
-  register: tower_deployment_result
+  register: this_deployment_result
 
 - block:
     - name: Delete pod to reload a resource configuration
@@ -113,7 +113,7 @@
       set_fact:
         tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
   when:
-    - tower_resources_result.changed or tower_deployment_result.changed
+    - tower_resources_result.changed or this_deployment_result.changed
 
 - name: Verify the resource pod name is populated.
   assert:

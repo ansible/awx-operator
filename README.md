@@ -699,8 +699,8 @@ The ability to specify topologySpreadConstraints is also allowed through `topolo
 
 | Name                        | Description                         | Default |
 | --------------------------- | ----------------------------------- | ------- |
-| postgres_image              | Path of the image to pull           | 12      |
-| postgres_image_version      | Image version to pull               | 12      |
+| postgres_image              | Path of the image to pull           | postgres      |
+| postgres_image_version      | Image version to pull               | 13      |
 | node_selector               | AWX pods' nodeSelector              | ''      |
 | topology_spread_constraints | AWX pods' topologySpreadConstraints | ''      |
 | tolerations                 | AWX pods' tolerations               | ''      |
@@ -1154,6 +1154,19 @@ Apply the awx-operator.yml for that release to upgrade the operator, and in turn
 #### Backup
 
 The first part of any upgrade should be a backup. Note, there are secrets in the pod which work in conjunction with the database. Having just a database backup without the required secrets will not be sufficient for recovering from an issue when upgrading to a new version. See the [backup role documentation](https://github.com/ansible/awx-operator/tree/devel/roles/backup) for information on how to backup your database and secrets. In the event you need to recover the backup see the [restore role documentation](https://github.com/ansible/awx-operator/tree/devel/roles/restore).
+
+#### PostgreSQL Upgrade Considerations
+
+If there is a PostgreSQL major version upgrade, after the data directory on the PVC is migrated to the new version, the old PVC is kept by default.
+This provides the ability to roll back if needed, but can take up extra storage space in your cluster unnecessarily. You can configure it to be deleted automatically
+after a successful upgrade by setting the following variable on the AWX spec. 
+
+
+```yaml
+  spec:
+    postgres_keep_pvc_after_upgrade: False
+```
+
 
 #### v0.14.0
 

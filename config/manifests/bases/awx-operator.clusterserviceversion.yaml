@@ -380,6 +380,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keep Old Data PVC After Upgrade
+        path: postgres_keep_pvc_after_upgrade
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Tolerations
         path: postgres_tolerations
         x-descriptors:
