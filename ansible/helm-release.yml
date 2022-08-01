@@ -16,7 +16,7 @@
 
     - name: Build and package helm chart
       command: |
-        make helm-chart helm-package
+        make helm-package
       environment:
         VERSION: "{{ tag }}"
         IMAGE_TAG_BASE: "{{ operator_image }}"
