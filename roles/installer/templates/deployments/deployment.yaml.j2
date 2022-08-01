@@ -39,7 +39,6 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -47,6 +46,9 @@ spec:
             - /bin/sh
             - -c
             - |
+              hostname=$MY_POD_NAME
+              receptor --cert-makereq bits=2048 commonname=$hostname dnsname=$hostname nodeid=$hostname outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
+              receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/receptor-ca.crt cakey=/etc/receptor/tls/ca/receptor-ca.key outcert=/etc/receptor/tls/receptor.crt verify=yes
 {% if bundle_ca_crt  %}
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
@@ -58,7 +60,17 @@ spec:
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+              mountPath: "/etc/receptor/tls/"
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
@@ -73,7 +85,6 @@ spec:
 {% endif %}
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
-{% endif %}
 {% endif %}
       containers:
         - image: '{{ _redis_image }}'
@@ -163,6 +174,13 @@ spec:
               mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-public-key.pem"
+              subPath: "work-public-key.pem"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca"
+              readOnly: true
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -236,8 +254,10 @@ spec:
             - name: rsyslog-dir
               mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
-              mountPath: "/etc/receptor/receptor.conf"
-              subPath: receptor.conf
+              mountPath: "/etc/receptor/"
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              subPath: "work-private-key.pem"
               readOnly: true
             - name: receptor-socket
               mountPath: "/var/run/receptor"
@@ -279,7 +299,15 @@ spec:
           name: '{{ ansible_operator_meta.name }}-ee'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ ee_resource_requirements }}
-          args: ['receptor', '--config', '/etc/receptor/receptor.conf']
+          args:
+            - /bin/sh
+            - -c
+            - |
+              if [ ! -f /etc/receptor/receptor.conf ]; then
+                cp /etc/receptor/receptor-default.conf /etc/receptor/receptor.conf
+                sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.conf
+              fi
+              exec receptor --config /etc/receptor/receptor.conf
           volumeMounts:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
@@ -289,10 +317,21 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
-            - name: "{{ ansible_operator_meta.name }}-receptor-config"
-              mountPath: "/etc/receptor/receptor.conf"
+            - name: "{{ ansible_operator_meta.name }}-default-receptor-config"
+              mountPath: "/etc/receptor/receptor-default.conf"
               subPath: receptor.conf
+            - name: "{{ ansible_operator_meta.name }}-receptor-config"
+              mountPath: "/etc/receptor/"
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              subPath: "receptor-ca.crt"
               readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              subPath: "work-private-key.pem"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+              mountPath: "/etc/receptor/tls/"
             - name: receptor-socket
               mountPath: "/var/run/receptor"
             - name: "{{ ansible_operator_meta.name }}-projects"
@@ -370,6 +409,14 @@ spec:
                 path: 'ldap.py'
               - key: execution_environments.py
                 path: 'execution_environments.py'
+        - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+          emptyDir: {}
+        - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-ca"
+        - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-work-signing"
         - name: "{{ secret_key_secret_name }}"
           secret:
             secretName: '{{ secret_key_secret_name }}'
@@ -407,6 +454,8 @@ spec:
         - name: rsyslog-dir
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-receptor-config
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-default-receptor-config
           configMap:
             name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
             items:

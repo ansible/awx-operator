@@ -236,30 +236,38 @@ data:
   receptor_conf: |
     ---
     - log-level: debug
-
+    - local-only: null
+    - node:
+       firewallrules:
+        - action: reject
+          tonode: HOSTNAME
+          toservice: control
     - control-service:
         service: control
         filename: /var/run/receptor/receptor.sock
-        permissions: 0660
-
-    - local-only:
-
+        permissions: '0660'
     - work-command:
         worktype: local
         command: ansible-runner
         params: worker
         allowruntimeparams: true
-
     - work-kubernetes:
         worktype: kubernetes-runtime-auth
         authmethod: runtime
         allowruntimeauth: true
         allowruntimepod: true
         allowruntimeparams: true
-
     - work-kubernetes:
         worktype: kubernetes-incluster-auth
         authmethod: incluster
         allowruntimeauth: true
         allowruntimepod: true
         allowruntimeparams: true
+    - tls-client:
+        cert: /etc/receptor/tls/receptor.crt
+        key: /etc/receptor/tls/receptor.key
+        name: tlsclient
+        rootcas: /etc/receptor/tls/ca/receptor-ca.crt
+    - work-signing:
+        privatekey: /etc/receptor/signing/work-private-key.pem
+        tokenexpiration: 1m

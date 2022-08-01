@@ -1,5 +1,11 @@
 FROM quay.io/operator-framework/ansible-operator:v1.22.2
 
+USER 0
+
+RUN dnf install -y openssl
+
+USER 1001
+
 ARG DEFAULT_AWX_VERSION
 ARG OPERATOR_VERSION
 ENV DEFAULT_AWX_VERSION=${DEFAULT_AWX_VERSION}
