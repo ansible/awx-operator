@@ -295,6 +295,8 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 			--output-dir=charts/$(CHART_NAME)/templates \
 			--sort-by-kind
 	@echo "AWX Operator installed with Helm Chart version $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+	# clean old crds dir before copying in newly generated CRDs
+	rm -rf charts/$(CHART_NAME)/crds
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/templates/customresourcedefinition* charts/$(CHART_NAME)/crds
 
