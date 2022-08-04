@@ -14,6 +14,7 @@
 
     - include_tasks: cleanup.yml
   vars:
-    backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] }}"
+    backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] | default() }}"
   when:
-    - clean_backup_on_delete and backup_dir is defined
+    - clean_backup_on_delete
+    - backup_dir | length > 0
