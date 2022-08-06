@@ -14,5 +14,8 @@ backup_dir: ''
 # Set no_log settings on certain tasks
 no_log: 'true'
 
-# Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
+# Maintain some of the recommended `app.kubernetes.io/*` labels on the custom resource object
 set_self_labels: true
+
+# Set some helpful status indicators on the custom resource object
+set_self_status: true

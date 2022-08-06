@@ -46,3 +46,4 @@
 
 - name: Update status variables
   include_tasks: update_status.yml
+  when: set_self_status | bool
