@@ -6,6 +6,9 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 database_name: "{{ deployment_type }}"
 database_username: "{{ deployment_type }}"
 
+# Enable nginx IPv6 binding on default
+ipv6_disabled: no
+
 task_privileged: false
 service_type: ClusterIP
 ingress_type: none
