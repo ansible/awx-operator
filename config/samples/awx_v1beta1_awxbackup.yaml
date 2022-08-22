@@ -1,0 +1,6 @@
+apiVersion: awx.ansible.com/v1beta1
+kind: AWXBackup
+metadata:
+  name: example-awx-backup
+spec:
+  deployment_name: example-awx

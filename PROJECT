@@ -13,4 +13,18 @@ resources:
   group: awx
   kind: AWX
   version: v1beta1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: ansible.com
+  group: awx
+  kind: AWXBackup
+  version: v1beta1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: ansible.com
+  group: awx
+  kind: AWXRestore
+  version: v1beta1
 version: "3"

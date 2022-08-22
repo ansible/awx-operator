@@ -20,48 +20,62 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
       labels:
         control-plane: controller-manager
     spec:
       securityContext:
         runAsNonRoot: true
+        # For common cases that do not require escalating privileges
+        # it is recommended to ensure that all your Pods/Containers are restrictive.
+        # More info: https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
+        # Please uncomment the following code if your project does NOT have to work on old Kubernetes
+        # versions < 1.19 or on vendors versions which do NOT support this field by default (i.e. Openshift < 4.11 ).
+        # seccompProfile:
+        #   type: RuntimeDefault
       containers:
-        - args:
-            - --leader-elect
-            - --leader-election-id=awx-operator
-          image: controller:latest
-          name: awx-manager
-          env:
-            - name: ANSIBLE_GATHERING
-              value: explicit
-            - name: ANSIBLE_DEBUG_LOGS
-              value: 'false'
-            - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          securityContext:
-            allowPrivilegeEscalation: false
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 6789
-            initialDelaySeconds: 15
-            periodSeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: 6789
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          resources:
-            requests:
-              memory: "32Mi"
-              cpu: "50m"
-            limits:
-              memory: "4096Mi"
-              cpu: "2000m"
+      - args:
+        - --leader-elect
+        - --leader-election-id=awx-operator
+        image: controller:latest
+        name: awx-manager
+        env:
+        - name: ANSIBLE_GATHERING
+          value: explicit
+        - name: ANSIBLE_DEBUG_LOGS
+          value: 'false'
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        securityContext:
+          allowPrivilegeEscalation: false
+        # TODO(user): uncomment for common cases that do not require escalating privileges
+          capabilities:
+            drop:
+            - "ALL"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 6789
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 6789
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "50m"
+          limits:
+            memory: "4096Mi"
+            cpu: "2000m"
       serviceAccountName: controller-manager
       imagePullSecrets:
-        - name: redhat-operators-pull-secret
+      - name: redhat-operators-pull-secret
       terminationGracePeriodSeconds: 10

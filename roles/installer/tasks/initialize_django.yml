@@ -34,6 +34,7 @@
       bash -c "awx-manage list_instances | grep '^\[tower capacity=[0-9]*\]'"
   register: legacy_queue
   changed_when: false
+  ignore_errors: true
 
 - name: Unregister legacy queue
   k8s_exec:
