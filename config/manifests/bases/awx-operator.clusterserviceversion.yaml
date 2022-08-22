@@ -34,6 +34,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Backup management pod resource requirements
+        path: backup_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Backup PVC storage class
         path: backup_storage_class
         x-descriptors:
@@ -112,6 +117,11 @@ spec:
         path: postgres_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Restore management pod resource requirements
+        path: restore_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore status

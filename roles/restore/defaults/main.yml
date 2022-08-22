@@ -14,5 +14,15 @@ backup_dir: ''
 # Set no_log settings on certain tasks
 no_log: 'true'
 
+# Default resource requirements
+restore_resource_requirements:
+  limits:
+    cpu: "1000m"
+    memory: "4096Mi"
+  requests:
+    cpu: "25m"
+    memory: "32Mi"
+
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
+...

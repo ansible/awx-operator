@@ -20,6 +20,10 @@ spec:
     - name: {{ ansible_operator_meta.name }}-backup
       mountPath: /backups
       readOnly: false
+{% if restore_resource_requirements is defined %}
+    resources:
+      {{ restore_resource_requirements | to_nice_yaml(indent=2) | indent(width=6, indentfirst=False) }}
+{%- endif %}
   volumes:
     - name: {{ ansible_operator_meta.name }}-backup
       persistentVolumeClaim:

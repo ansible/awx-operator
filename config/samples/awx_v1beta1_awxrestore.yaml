@@ -5,3 +5,10 @@ metadata:
 spec:
   deployment_name: example-awx-2
   backup_name: example-awx-backup
+  restore_resource_requirements:
+    limits:
+      cpu: "1000m"
+      memory: "4096Mi"
+    requests:
+      cpu: "25m"
+      memory: "32Mi"
