@@ -86,28 +86,6 @@ data:
     BROADCAST_WEBSOCKET_PORT = 8052
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
-    # LOGGING in defaults.py is oriented towards VM installs where we write to files under
-    # /var/log/tower. This ensures everything is logged to stdout.
-    for handler in LOGGING['handlers']:
-        if handler == 'external_logger':
-            continue
-
-        if handler == 'console':
-            LOGGING['handlers'][handler]['filters'].remove('require_debug_true_or_test')
-
-            continue
-
-        filename = LOGGING['handlers'][handler].get('filename')
-        if filename:
-            del LOGGING['handlers'][handler]['filename']
-
-        LOGGING['handlers'][handler]['class'] = 'logging.NullHandler'
-
-    for logger in LOGGING['loggers']:
-        handlers = LOGGING['loggers'][logger].get('handlers')
-        if handlers and 'file' in handlers:
-            handlers.remove('file')
-
 
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
