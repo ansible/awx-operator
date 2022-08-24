@@ -79,7 +79,7 @@ spec:
               mountPath: "/var/lib/awx/projects"
 {% endif %}
 {% if init_container_extra_volume_mounts -%}
-            {{ init_container_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+            {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
 {% endif %}
       containers:
@@ -175,7 +175,7 @@ spec:
               mountPath: "/awx_devel"
 {% endif %}
 {% if web_extra_volume_mounts -%}
-            {{ web_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+            {{ web_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           env:
             - name: MY_POD_NAMESPACE
@@ -189,7 +189,7 @@ spec:
               value: "1"
 {% endif %}
 {% if web_extra_env -%}
-            {{ web_extra_env | indent(width=12, indentfirst=True) }}
+            {{ web_extra_env | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ web_resource_requirements }}
         - image: '{{ _image }}'
@@ -255,7 +255,7 @@ spec:
               mountPath: "/awx_devel"
 {% endif %}
 {% if task_extra_volume_mounts -%}
-            {{ task_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+            {{ task_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
@@ -279,7 +279,7 @@ spec:
               value: "1"
 {% endif %}
 {% if task_extra_env -%}
-            {{ task_extra_env | indent(width=12, indentfirst=True) }}
+            {{ task_extra_env | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ task_resource_requirements }}
         - image: '{{ _control_plane_ee_image }}'
@@ -305,7 +305,7 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
 {% if ee_extra_volume_mounts -%}
-            {{ ee_extra_volume_mounts | indent(width=12, indentfirst=True) }}
+            {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           env:
 {% if development_mode | bool %}
@@ -315,7 +315,7 @@ spec:
                   fieldPath: status.podIP
 {% endif %}
 {% if ee_extra_env -%}
-            {{ ee_extra_env | indent(width=12, indentfirst=True) }}
+            {{ ee_extra_env | indent(width=12, first=True) }}
 {% endif %}
 {% if node_selector %}
       nodeSelector:
@@ -436,5 +436,5 @@ spec:
             path: /awx_devel
 {% endif %}
 {% if extra_volumes -%}
-        {{ extra_volumes | indent(width=8, indentfirst=True) }}
+        {{ extra_volumes | indent(width=8, first=True) }}
 {% endif %}

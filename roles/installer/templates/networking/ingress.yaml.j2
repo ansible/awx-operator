@@ -61,12 +61,12 @@ spec:
     termination: {{ route_tls_termination_mechanism | lower }}
 {% if route_tls_termination_mechanism | lower == 'edge' and route_tls_secret != '' %}
     key: |-
-{{ route_tls_key | indent(width=6, indentfirst=True) }}
+{{ route_tls_key | indent(width=6, first=True) }}
     certificate: |-
-{{ route_tls_crt | indent(width=6, indentfirst=True) }}
+{{ route_tls_crt | indent(width=6, first=True) }}
 {% if route_ca_crt is defined %}
     caCertificate: |-
-{{ route_ca_crt | indent(width=6, indentfirst=True) }}
+{{ route_ca_crt | indent(width=6, first=True) }}
 {% endif %}
 {% endif %}
   to:
