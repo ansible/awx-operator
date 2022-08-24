@@ -4,3 +4,10 @@ metadata:
   name: example-awx-backup
 spec:
   deployment_name: example-awx
+  backup_resource_requirements:
+    limits:
+      cpu: "1000m"
+      memory: "4096Mi"
+    requests:
+      cpu: "25m"
+      memory: "32Mi"

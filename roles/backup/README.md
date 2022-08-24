@@ -45,7 +45,7 @@ The resulting pvc will contain a backup tar that can be used to restore to a new
 Role Variables
 --------------
 
-A custom, pre-created pvc can be used by setting the following variables.  
+A custom, pre-created pvc can be used by setting the following variables.
 
 ```
 backup_pvc: 'awx-backup-volume-claim'
@@ -60,10 +60,17 @@ backup_storage_class: 'standard'
 backup_storage_requirements: '20Gi'
 ```
 
+By default, the backup pvc will be created in the same namespace the awxbackup object is created in.  If you want your backup to be stored
+in a specific namespace, you can do so by specifying `backup_pvc_namespace`.  Keep in mind that you will
+need to provide the same namespace when restoring.
+
+```
+backup_pvc_namespace: 'custom-namespace'
+```
 The backup pvc will be created in the same namespace the awxbackup object is created in.
 
-If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.  
-To check the name of this secret, look at the postgresConfigurationSecret status on your AWX object.  
+If a custom postgres configuration secret was used when deploying AWX, it will automatically be used by the backup role.
+To check the name of this secret, look at the postgresConfigurationSecret status on your AWX object.
 
 The postgresql pod for the old deployment is used when backing up data to the new postgresql pod.  If your postgresql pod has a custom label,
 you can pass that via the `postgres_label_selector` variable to make sure the postgresql pod can be found.
@@ -74,6 +81,18 @@ It is also possible to tie the lifetime of the backup files to that of the AWXBa
 ```
 clean_backup_on_delete: true
 ```
+
+Variable to define resources limits and request for backup CR.
+```
+backup_resource_requirements:
+  limits:
+    cpu: "1000m"
+    memory: "4096Mi"
+  requests:
+    cpu: "25m"
+    memory: "32Mi"
+```
+
 Testing
 ----------------
 

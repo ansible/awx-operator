@@ -54,6 +54,24 @@ spec:
               backup_storage_requirements:
                 description: Storage requirements for backup PVC (may be similar to existing postgres PVC backing up from)
                 type: string
+              backup_resource_requirements:
+                description: Resource requirements for the task container
+                properties:
+                  requests:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    type: object
+                type: object
               backup_storage_class:
                 description: Storage class to use when creating PVC for backup
                 type: string
