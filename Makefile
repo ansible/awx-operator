@@ -290,43 +290,63 @@ charts:
 	mkdir -p $@
 
 .PHONY: helm-chart
-helm-chart: helm-chart-generate helm-chart-slice
+helm-chart: helm-chart-generate
 
 .PHONY: helm-chart-generate
 helm-chart-generate: kustomize helm kubectl-slice yq charts
-	@echo "== KUSTOMIZE (image and namespace) =="
+	@echo "== KUSTOMIZE: Set image and chart label =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)-$(VERSION)
+	cd config/default && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)-$(VERSION)
 
-	@echo "== HELM =="
+	@echo "== Gather Helm Chart Metadata =="
+	# remove the existing chart if it exists
+	rm -rf charts/$(CHART_NAME)
+	# create new chart metadata in Chart.yaml
 	cd charts && \
 		$(HELM) create awx-operator --starter $(shell pwd)/.helm/starter ;\
 		$(YQ) -i '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
 
+	@echo "Generated chart metadata:"
 	@cat charts/$(CHART_NAME)/Chart.yaml
 
-	@echo "== KUSTOMIZE (annotation) =="
-	cd config/manager && $(KUSTOMIZE) edit set annotation helm.sh/chart:$(CHART_NAME)-$(VERSION)
-	cd config/default && $(KUSTOMIZE) edit set annotation helm.sh/chart:$(CHART_NAME)-$(VERSION)
-
-	@echo "== SLICE =="
+	@echo "== KUSTOMIZE: Generate resources and slice into templates =="
+	# place in raw-files directory so they can be modified while they are valid yaml - as soon as they are in templates/,
+	# wild cards pick up the actual templates, which are not real yaml and can't have yq run on them.
 	$(KUSTOMIZE) build --load-restrictor LoadRestrictionsNone config/default | \
 		$(KUBECTL_SLICE) --input-file=- \
-			--output-dir=charts/$(CHART_NAME)/templates \
+			--output-dir=charts/$(CHART_NAME)/raw-files \
 			--sort-by-kind
-	@echo "AWX Operator installed with Helm Chart version $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
-	# clean old crds dir before copying in newly generated CRDs
-	rm -rf charts/$(CHART_NAME)/crds
-	mkdir charts/$(CHART_NAME)/crds
-	mv charts/$(CHART_NAME)/templates/customresourcedefinition* charts/$(CHART_NAME)/crds
 
-.PHONY: helm-chart-edit
-helm-chart-slice:
-	@echo "== EDIT =="
-	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*),$(YQ) -i 'del(.. | select(has("namespace")).namespace)' $(file);)
-	$(foreach file, $(wildcard charts/$(CHART_NAME)/templates/*rolebinding*),$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $(file);)
-	rm -f charts/$(CHART_NAME)/templates/namespace*.yaml
+	@echo "== GIT: Reset kustomize configs =="
+	# reset kustomize configs following kustomize build
+	git checkout -f config/.
+
+	@echo "== Build Templates and CRDS =="
+	# Delete metadata.namespace, release namespace will be automatically inserted by helm
+	for file in charts/$(CHART_NAME)/raw-files/*; do\
+		$(YQ) -i 'del(.metadata.namespace)' $${file};\
+	done
+	# Correct namespace for rolebinding to be release namespace, this must be explicit
+	for file in charts/$(CHART_NAME)/raw-files/*rolebinding*; do\
+		$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $${file};\
+	done
+	# move all custom resource definitions to crds folder
+	mkdir charts/$(CHART_NAME)/crds
+	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
+	# remove any namespace definitions
+	rm -f charts/$(CHART_NAME)/raw-files/namespace*.yaml
+	# move remaining resources to helm templates
+	mv charts/$(CHART_NAME)/raw-files/* charts/$(CHART_NAME)/templates/.
+	# remove the raw-files folder
+	rm -rf charts/$(CHART_NAME)/raw-files
+
+	# create and populate NOTES.txt
+	@echo "AWX Operator installed with Helm Chart version $(VERSION)" > charts/$(CHART_NAME)/templates/NOTES.txt
+
+	@echo "Helm chart successfully configured for $(CHART_NAME) version $(VERSION)"
 
 
 .PHONY: helm-package
