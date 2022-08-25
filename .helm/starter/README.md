@@ -5,7 +5,7 @@ This chart installs the AWX Operator resources configured in [this](https://gith
 ## Getting Started
 To configure your AWX resource using this chart, create your own `yaml` values file. The name is up to personal preference since it will explicitly be passed into the helm chart. Helm will merge whatever values you specify in your file with the default `values.yaml`, overriding any settings you've changed while allowing you to fall back on defaults. Because of this functionality, `values.yaml` should not be edited directly.
 
-In your values config, enable `AWX.enable` and add `AWX.spec` values based on the awx operator's [documentation](https://github.com/ansible/awx-operator/blob/devel/README.md). Consult the docs below for additional functionality.
+In your values config, enable `AWX.enabled` and add `AWX.spec` values based on the awx operator's [documentation](https://github.com/ansible/awx-operator/blob/devel/README.md). Consult the docs below for additional functionality.
 
 ### Installing
 The operator's [helm install](https://github.com/ansible/awx-operator/blob/devel/README.md#helm-install-on-existing-cluster) guide provides key installation instructions. 
