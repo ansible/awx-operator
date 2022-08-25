@@ -22,7 +22,7 @@ spec:
       readOnly: false
 {% if backup_resource_requirements is defined %}
     resources:
-      {{ backup_resource_requirements | to_nice_yaml(indent=2) | indent(width=6, indentfirst=False) }}
+      {{ backup_resource_requirements | to_nice_yaml(indent=2) | indent(width=6, first=False) }}
 {%- endif %}
   volumes:
     - name: {{ ansible_operator_meta.name }}-backup
