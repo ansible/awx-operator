@@ -64,7 +64,7 @@
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: "{{ ansible_operator_meta.name }}-postgres.{{ ansible_operator_meta.namespace }}.svc.cluster.local"  # yamllint disable-line rule:line-length
+    resolvable_db_host: "{{ ansible_operator_meta.name }}-postgres.{{ ansible_operator_meta.namespace }}.svc"  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
 
 - name: Set pg_dump command
