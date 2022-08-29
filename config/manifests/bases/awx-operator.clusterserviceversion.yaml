@@ -193,6 +193,12 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:select:none
         - urn:alm:descriptor:com.tectonic.ui:select:Ingress
         - urn:alm:descriptor:com.tectonic.ui:select:Route
+      - displayName: Ingress Class Name
+        path: ingress_class_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
       - displayName: Ingress Path
         path: ingress_path
         x-descriptors:

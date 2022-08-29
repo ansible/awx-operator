@@ -9,6 +9,7 @@ database_username: "{{ deployment_type }}"
 task_privileged: false
 service_type: ClusterIP
 ingress_type: none
+ingress_class_name: ''
 ingress_path: '/'
 ingress_path_type: 'Prefix'
 # Add annotations to the service account. Specify as literal block. E.g.:

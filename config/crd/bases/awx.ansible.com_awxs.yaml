@@ -115,6 +115,9 @@ spec:
               ingress_tls_secret:
                 description: Secret where the Ingress TLS secret can be found
                 type: string
+              ingress_class_name:
+                description: The name of ingress class to use instead of the cluster default.
+                type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string
