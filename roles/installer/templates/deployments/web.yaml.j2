@@ -1,0 +1,288 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ ansible_operator_meta.name }}-web'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
+    {{ lookup("template", "labels/common.yaml.j2")  | indent(width=4) | trim }}
+    {{ lookup("template", "labels/version.yaml.j2") | indent(width=4) | trim }}
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: '{{ deployment_type }}'
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
+        {{ lookup("template", "labels/common.yaml.j2")  | indent(width=8) | trim }}
+        {{ lookup("template", "labels/version.yaml.j2") | indent(width=8) | trim }}
+{% if annotations %}
+      annotations:
+        {{ annotations | indent(width=8) }}
+{% endif %}
+    spec:
+      serviceAccountName: '{{ ansible_operator_meta.name }}'
+{% if image_pull_secret is defined %}
+      imagePullSecrets:
+        - name: {{ image_pull_secret }}
+{% elif image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
+{% endif %}
+{% if control_plane_priority_class is defined %}
+      priorityClassName: '{{ control_plane_priority_class }}'
+{% endif %}
+      initContainers:
+{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
+        - name: init
+          image: '{{ _init_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+{% if bundle_ca_crt  %}
+              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
+              update-ca-trust
+{% endif %}
+{% if projects_persistence|bool %}
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+{% endif %}
+{% if init_container_extra_commands %}
+              {{ init_container_extra_commands | indent(width=14) }}
+{% endif %}
+          volumeMounts:
+{% if bundle_ca_crt  %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+{% if projects_persistence|bool %}
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% endif %}
+{% if init_container_extra_volume_mounts -%}
+            {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% endif %}
+      containers:
+        - image: '{{ _redis_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          name: redis
+{% if redis_capabilities is defined and redis_capabilities %}
+          securityContext:
+            capabilities:
+              add: {{ redis_capabilities }}
+{% endif %}
+          args: ["redis-server", "/etc/redis.conf"]
+          volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-redis-config
+              mountPath: "/etc/redis.conf"
+              subPath: redis.conf
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: "{{ ansible_operator_meta.name }}-redis-data"
+              mountPath: "/data"
+          resources: {{ redis_resource_requirements }}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-web'
+{% if web_command %}
+          command: {{ web_command }}
+{% endif %}
+{% if web_args %}
+          args: {{ web_args }}
+{% endif %}
+          imagePullPolicy: '{{ image_pull_policy }}'
+          ports:
+            - containerPort: 8052
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+            - containerPort: 8053
+{% endif %}
+          volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
+              readOnly: true
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+            - name: "{{ ansible_operator_meta.name }}-nginx-certs"
+              mountPath: "/etc/nginx/pki"
+              readOnly: true
+{% endif %}
+{% if ldap_cacert_ca_crt %}
+            - name: "{{ ansible_operator_meta.name }}-ldap-cacert"
+              mountPath: /etc/openldap/certs/ldap-ca.crt
+              subPath: ldap-ca.crt
+              readOnly: true
+{% endif %}
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: supervisor-socket
+              mountPath: "/var/run/supervisor"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+            - name: rsyslog-dir
+              mountPath: "/var/lib/awx/rsyslog"
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+{% if web_extra_volume_mounts -%}
+            {{ web_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+          env:
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: UWSGI_MOUNT_PATH
+              value: "{{ ingress_path }}"
+{% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
+{% endif %}
+{% if web_extra_env -%}
+            {{ web_extra_env | indent(width=12, first=True) }}
+{% endif %}
+          resources: {{ web_resource_requirements }}
+      volumes:
+{% if bundle_ca_crt %}
+        - name: "ca-trust-extracted"
+          emptyDir: {}
+        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+          secret:
+            secretName: "{{ bundle_cacert_secret }}"
+            items:
+              - key: bundle-ca.crt
+                path: 'bundle-ca.crt'
+{% endif %}
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+        - name: "{{ ansible_operator_meta.name }}-nginx-certs"
+          secret:
+            secretName: "{{ route_tls_secret }}"
+            items:
+              - key: tls.key
+                path: 'web.key'
+              - key: tls.crt
+                path: 'web.crt'
+{% endif %}
+{% if ldap_cacert_ca_crt %}
+        - name: "{{ ansible_operator_meta.name }}-ldap-cacert"
+          secret:
+            secretName: "{{ ldap_cacert_secret }}"
+            items:
+              - key: ldap-ca.crt
+                path: 'ldap-ca.crt'
+{% endif %}
+        - name: "{{ ansible_operator_meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+            items:
+              - key: credentials.py
+                path: 'credentials.py'
+              - key: ldap.py
+                path: 'ldap.py'
+              - key: execution_environments.py
+                path: 'execution_environments.py'
+        - name: "{{ secret_key_secret_name }}"
+          secret:
+            secretName: '{{ secret_key_secret_name }}'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: {{ ansible_operator_meta.name }}-settings
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: settings
+                path: settings.py
+        - name: {{ ansible_operator_meta.name }}-nginx-conf
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: nginx_conf
+                path: nginx.conf
+        - name: {{ ansible_operator_meta.name }}-redis-config
+          configMap:
+            name: {{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap
+            items:
+              - key: redis_conf
+                path: redis.conf
+        - name: {{ ansible_operator_meta.name }}-redis-socket
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-redis-data
+          emptyDir: {}
+        - name: supervisor-socket
+          emptyDir: {}
+        - name: rsyslog-socket
+          emptyDir: {}
+        - name: receptor-socket
+          emptyDir: {}
+        - name: rsyslog-dir
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-receptor-config
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: receptor_conf
+                path: receptor.conf
+        - name: "{{ ansible_operator_meta.name }}-projects"
+{% if projects_persistence|bool %}
+          persistentVolumeClaim:
+{% if projects_existing_claim %}
+            claimName: {{ projects_existing_claim }}
+{% else %}
+            claimName: '{{ ansible_operator_meta.name }}-projects-claim'
+{% endif %}
+{% else %}
+          emptyDir: {}
+{% endif %}
+{% if development_mode | bool %}
+        - name: awx-devel
+          hostPath:
+            path: /awx_devel
+{% endif %}
+{% if extra_volumes -%}
+        {{ extra_volumes | indent(width=8, first=True) }}
+{% endif %}

@@ -1,9 +1,8 @@
-# AWX Deployment.
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ ansible_operator_meta.name }}'
+  name: '{{ ansible_operator_meta.name }}-task'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
@@ -12,7 +11,7 @@ spec:
   replicas: {{ replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
       app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
       app.kubernetes.io/component: '{{ deployment_type }}'
   template:
