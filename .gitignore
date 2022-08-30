@@ -7,3 +7,4 @@
 /charts
 /.cr-release-packages
 .vscode/
+__pycache__
