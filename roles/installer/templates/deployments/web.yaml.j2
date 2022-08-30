@@ -1,23 +1,24 @@
-# AWX Deployment.
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ ansible_operator_meta.name }}'
+  name: '{{ ansible_operator_meta.name }}-web'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
     {{ lookup("template", "labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
   replicas: {{ replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
       app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
       app.kubernetes.io/component: '{{ deployment_type }}'
   template:
     metadata:
       labels:
+        app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
         {{ lookup("template", "labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "labels/version.yaml.j2") | indent(width=8) | trim }}
 {% if annotations %}
@@ -39,40 +40,26 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
+{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ task_resource_requirements }}
           command:
             - /bin/sh
             - -c
             - |
-              hostname=$MY_POD_NAME
-              receptor --cert-makereq bits=2048 commonname=$hostname dnsname=$hostname nodeid=$hostname outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
-              receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/receptor-ca.crt cakey=/etc/receptor/tls/ca/receptor-ca.key outcert=/etc/receptor/tls/receptor.crt verify=yes
 {% if bundle_ca_crt  %}
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
 {% endif %}
+{% if projects_persistence|bool %}
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+{% endif %}
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
-          env:
-            - name: MY_POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
           volumeMounts:
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
-              subPath: "tls.crt"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
-              subPath: "tls.key"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
-              mountPath: "/etc/receptor/tls/"
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
@@ -81,27 +68,13 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
+{% if projects_persistence|bool %}
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% endif %}
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
-{% if projects_persistence|bool and is_k8s|bool %}
-        - name: init-projects
-          image: '{{ _init_projects_container_image }}'
-          imagePullPolicy: '{{ image_pull_policy }}'
-          command:
-            - /bin/sh
-            - -c
-            - |
-              chmod 775 /var/lib/awx/projects
-              chgrp 1000 /var/lib/awx/projects
-          env:
-            - name: MY_POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-          volumeMounts:
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
 {% endif %}
       containers:
         - image: '{{ _redis_image }}'
@@ -191,18 +164,6 @@ spec:
               mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
-            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-public-key.pem"
-              subPath: "work-public-key.pem"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
-              subPath: "tls.crt"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
-              subPath: "tls.key"
-              readOnly: true
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -225,173 +186,6 @@ spec:
             {{ web_extra_env | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ web_resource_requirements }}
-        - image: '{{ _image }}'
-          name: '{{ ansible_operator_meta.name }}-task'
-          imagePullPolicy: '{{ image_pull_policy }}'
-{% if task_privileged == true %}
-          securityContext:
-            privileged: true
-{% endif %}
-{% if task_command %}
-          command: {{ task_command }}
-{% endif %}
-{% if task_args %}
-          args: {{ task_args }}
-{% endif %}
-          volumeMounts:
-{% if bundle_ca_crt %}
-            - name: "ca-trust-extracted"
-              mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
-{% endif %}
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/execution_environments.py"
-              subPath: execution_environments.py
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/credentials.py"
-              subPath: credentials.py
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/ldap.py"
-              subPath: ldap.py
-              readOnly: true
-            - name: "{{ secret_key_secret_name }}"
-              mountPath: /etc/tower/SECRET_KEY
-              subPath: SECRET_KEY
-              readOnly: true
-            - name: {{ ansible_operator_meta.name }}-settings
-              mountPath: /etc/tower/settings.py
-              subPath: settings.py
-              readOnly: true
-            - name: {{ ansible_operator_meta.name }}-redis-socket
-              mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
-            - name: rsyslog-socket
-              mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
-            - name: "{{ ansible_operator_meta.name }}-receptor-config"
-              mountPath: "/etc/receptor/"
-            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-private-key.pem"
-              subPath: "work-private-key.pem"
-              readOnly: true
-            - name: receptor-socket
-              mountPath: "/var/run/receptor"
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
-{% if development_mode | bool %}
-            - name: awx-devel
-              mountPath: "/awx_devel"
-{% endif %}
-{% if task_extra_volume_mounts -%}
-            {{ task_extra_volume_mounts | indent(width=12, first=True) }}
-{% endif %}
-          env:
-            - name: SUPERVISOR_WEB_CONFIG_PATH
-              value: "/etc/supervisord.conf"
-            - name: AWX_SKIP_MIGRATIONS
-              value: "1"
-            - name: MY_POD_UID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.uid
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-{% if development_mode | bool %}
-            - name: AWX_KUBE_DEVEL
-              value: "1"
-{% endif %}
-{% if task_extra_env -%}
-            {{ task_extra_env | indent(width=12, first=True) }}
-{% endif %}
-          resources: {{ task_resource_requirements }}
-        - image: '{{ _control_plane_ee_image }}'
-          name: '{{ ansible_operator_meta.name }}-ee'
-          imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ ee_resource_requirements }}
-          args:
-            - /bin/sh
-            - -c
-            - |
-              if [ ! -f /etc/receptor/receptor.conf ]; then
-                cp /etc/receptor/receptor-default.conf /etc/receptor/receptor.conf
-                sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.conf
-              fi
-              exec receptor --config /etc/receptor/receptor.conf
-          volumeMounts:
-{% if bundle_ca_crt %}
-            - name: "ca-trust-extracted"
-              mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
-{% endif %}
-            - name: "{{ ansible_operator_meta.name }}-default-receptor-config"
-              mountPath: "/etc/receptor/receptor-default.conf"
-              subPath: receptor.conf
-            - name: "{{ ansible_operator_meta.name }}-receptor-config"
-              mountPath: "/etc/receptor/"
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
-              subPath: "tls.crt"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-private-key.pem"
-              subPath: "work-private-key.pem"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
-              mountPath: "/etc/receptor/tls/"
-            - name: receptor-socket
-              mountPath: "/var/run/receptor"
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
-{% if ee_extra_volume_mounts -%}
-            {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
-{% endif %}
-          env:
-{% if development_mode | bool %}
-            - name: SDB_NOTIFY_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-{% endif %}
-{% if ee_extra_env -%}
-            {{ ee_extra_env | indent(width=12, first=True) }}
-{% endif %}
-{% if node_selector %}
-      nodeSelector:
-        {{ node_selector | indent(width=8) }}
-{% endif %}
-{% if topology_spread_constraints %}
-      topologySpreadConstraints:
-        {{ topology_spread_constraints | indent(width=8) }}
-{% endif %}
-{% if tolerations %}
-      tolerations:
-        {{ tolerations | indent(width=8) }}
-{% endif %}
-{% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
-      securityContext:
-{% if projects_persistence|bool and is_k8s|bool %}
-        fsGroup: 1000
-{% endif %}
-{% if security_context_settings|length %}
-        {{ security_context_settings | to_nice_yaml | indent(8) }}
-{% endif %}
-{% endif %}
       volumes:
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
@@ -431,14 +225,6 @@ spec:
                 path: 'ldap.py'
               - key: execution_environments.py
                 path: 'execution_environments.py'
-        - name: "{{ ansible_operator_meta.name }}-receptor-tls"
-          emptyDir: {}
-        - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-          secret:
-            secretName: "{{ ansible_operator_meta.name }}-receptor-ca"
-        - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-          secret:
-            secretName: "{{ ansible_operator_meta.name }}-receptor-work-signing"
         - name: "{{ secret_key_secret_name }}"
           secret:
             secretName: '{{ secret_key_secret_name }}'
@@ -476,8 +262,6 @@ spec:
         - name: rsyslog-dir
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-receptor-config
-          emptyDir: {}
-        - name: {{ ansible_operator_meta.name }}-default-receptor-config
           configMap:
             name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
             items:

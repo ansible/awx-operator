@@ -208,8 +208,11 @@
 - name: Apply deployment resources
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'deployments/deployment.yaml.j2') }}"
+    definition: "{{ lookup('template', 'deployments/{{ item }}.yaml.j2') }}"
     wait: yes
+  loop:
+    - web
+    - task
   register: this_deployment_result
 
 - block:
@@ -230,7 +233,7 @@
         kind: Pod
         namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
-          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}"
+          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
           - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
           - "app.kubernetes.io/component={{ deployment_type }}"
         field_selectors:

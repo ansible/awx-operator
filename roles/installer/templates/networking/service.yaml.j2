@@ -17,7 +17,7 @@ metadata:
 {% endif %}
 spec:
   ports:
-  
+
 {% if service_type | lower == "nodeport" %}
     - port: 80
       protocol: TCP
@@ -48,7 +48,7 @@ spec:
       name: http
 {% endif %}
   selector:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
 {% if service_type | lower == "nodeport" %}
