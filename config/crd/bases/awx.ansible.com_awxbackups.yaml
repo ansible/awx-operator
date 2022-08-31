@@ -55,7 +55,7 @@ spec:
                 description: Storage requirements for backup PVC (may be similar to existing postgres PVC backing up from)
                 type: string
               backup_resource_requirements:
-                description: Resource requirements for the task container
+                description: Resource requirements for the management pod used to create a backup
                 properties:
                   requests:
                     properties:

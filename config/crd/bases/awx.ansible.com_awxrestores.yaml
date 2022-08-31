@@ -62,8 +62,8 @@ spec:
               backup_dir:
                 description: Backup directory name, set as a status found on the awxbackup object (backupDirectory)
                 type: string
-              backup_resource_requirements:
-                description: Resource requirements for the management pod that backs up AWX
+              restore_resource_requirements:
+                description: Resource requirements for the management pod that restores AWX from a backup
                 properties:
                   requests:
                     properties:
