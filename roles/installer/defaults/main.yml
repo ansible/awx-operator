@@ -131,8 +131,6 @@ _redis_image: docker.io/redis
 _redis_image_version: 7
 _postgres_image: postgres
 _postgres_image_version: 13
-_init_container_image: quay.io/centos/centos
-_init_container_image_version: stream8
 image_pull_policy: IfNotPresent
 image_pull_secrets: []
 
@@ -157,6 +155,9 @@ ee_images:
     image: quay.io/ansible/awx-ee:latest
 
 _control_plane_ee_image: quay.io/ansible/awx-ee:latest
+
+_init_container_image: "{{ _control_plane_ee_image.split(':')[0] }}"
+_init_container_image_version: "{{ _control_plane_ee_image.split(':')[1] }}"
 
 create_preload_data: true
 
