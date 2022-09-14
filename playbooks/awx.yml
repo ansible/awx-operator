@@ -1,0 +1,31 @@
+---
+- hosts: localhost
+  gather_facts: no
+  collections:
+    - kubernetes.core
+    - operator_sdk.util
+  vars:
+    no_log: true
+  pre_tasks:
+    - name: Verify imagePullSecrets
+      k8s_info:
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: redhat-operators-pull-secret
+      register: _rh_ops_secret
+      no_log: "{{ no_log }}"
+    - name: Create imagePullSecret
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: redhat-operators-pull-secret
+            namespace: '{{ ansible_operator_meta.namespace }}'
+          stringData:
+            operator: awx
+      when:
+        - (_rh_ops_secret is not defined) or not (_rh_ops_secret['resources'] | length)
+  roles:
+    - installer

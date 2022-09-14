@@ -3,7 +3,7 @@
 - version: v1beta1
   group: awx.ansible.com
   kind: AWX
-  role: installer
+  playbook: playbooks/awx.yml
   snakeCaseParameters: False
 
 - version: v1beta1
