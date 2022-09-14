@@ -1,9 +1,10 @@
-AWX: 
-  # enable use of awx-deploy template
+AWX:
+  # enable use these custom configs
   enabled: false
   name: awx
   spec:
     admin_user: admin
+    ingress_type: none
 
   # configurations for external postgres instance
   postgres:
@@ -17,3 +18,24 @@ AWX:
     password: Unset
     sslmode: prefer
     type: unmanaged
+
+  # configurations for kubernetes ingress resource
+  ingress:
+    enabled: false
+    name: "awx-ingress"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    spec:
+      ingressClassName: nginx-example
+      rules:
+      - http:
+          paths:
+          - path: /testpath
+            pathType: Prefix
+            backend:
+              service:
+                name: test
+                port:
+                  number: 80
+
+

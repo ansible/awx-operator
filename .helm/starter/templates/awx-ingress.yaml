@@ -1,0 +1,12 @@
+{{- if and $.Values.AWX.enabled $.Values.AWX.ingress.enabled (eq $.Values.AWX.spec.ingress_type "none") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $.Values.AWX.ingress.name }}
+{{- if $.Values.AWX.ingress.annotations }}
+  annotations:
+    {{- $.Values.AWX.ingress.annotations | toYaml | nindent 4 }}
+{{- end }}
+spec:
+  {{- $.Values.AWX.ingress.spec | toYaml | nindent 2 }}
+{{- end }}
