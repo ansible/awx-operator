@@ -1,6 +1,6 @@
 ---
 deployment_type: awx
-kind: '{{ deployment_type | upper }}'
+kind: 'AWX'
 api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
 database_name: "{{ deployment_type }}"
