@@ -1,0 +1,20 @@
+---
+
+- name: Get information about the cluster
+  set_fact:
+    api_groups: "{{ lookup('k8s', cluster_info='api_groups') }}"
+  when:
+  - not is_openshift | bool
+  - not is_k8s | bool
+
+- name: Determine the cluster type
+  set_fact:
+    is_openshift: "{{ True if 'route.openshift.io' in api_groups else False }}"
+    is_k8s: "{{ False if 'route.openshift.io' in api_groups else True }}"
+  when:
+  - not is_openshift | bool
+  - not is_k8s | bool
+
+# Indicate what kind of cluster we are in (OpenShift or Kubernetes).
+- debug:
+    msg: "CLUSTER TYPE: is_openshift={{ is_openshift }}; is_k8s={{ is_k8s }}"
