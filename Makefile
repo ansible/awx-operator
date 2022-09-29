@@ -354,6 +354,9 @@ helm-package: cr helm-chart
 	@echo "== CHART RELEASER (package) =="
 	$(CR) package ./charts/awx-operator
 
+# List all tags oldest to newest.
+TAGS := $(shell git tag -l  --sort=creatordate)
+
 # The actual release happens in ansible/helm-release.yml
 # until https://github.com/helm/chart-releaser/issues/122 happens
 .PHONY: helm-index
@@ -361,6 +364,20 @@ helm-index: cr helm-chart
 	@echo "== CHART RELEASER (httpsorigin) =="
 	git remote add httpsorigin "https://github.com/$(CHART_OWNER)/$(CHART_REPO).git"
 	git fetch httpsorigin
+
+	# This step to workaround issues with old releases being dropped.
+	# Until https://github.com/helm/chart-releaser/issues/133 happens
+	@echo "== CHART FETCH previous releases =="
+	# Download all old releases
+	cd .cr-release-packages;\
+	for tag in $(TAGS); do\
+		dl_url="https://github.com/$${CHART_OWNER}/$${CHART_REPO}/releases/download/$${tag}/$${CHART_REPO}-$${tag}.tgz";\
+		curl -RLOs -z "$${CHART_REPO}-$${tag}.tgz" --fail $${dl_url};\
+		result=$$?;\
+		if [ $${result} -eq 0 ]; then\
+			echo "Downloaded $$dl_url";\
+		fi;\
+	done
 
 	@echo "== CHART RELEASER (index) =="
 	$(CR) index \
