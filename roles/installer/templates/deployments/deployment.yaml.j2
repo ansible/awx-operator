@@ -67,7 +67,12 @@ spec:
                   fieldPath: metadata.name
           volumeMounts:
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              subPath: "tls.crt"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
+              subPath: "tls.key"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
               mountPath: "/etc/receptor/tls/"
@@ -179,7 +184,12 @@ spec:
               subPath: "work-public-key.pem"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              subPath: "tls.crt"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
+              subPath: "tls.key"
               readOnly: true
 {% if development_mode | bool %}
             - name: awx-devel
@@ -324,7 +334,7 @@ spec:
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
               mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
-              subPath: "receptor-ca.crt"
+              subPath: "tls.crt"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
               mountPath: "/etc/receptor/signing/work-private-key.pem"
