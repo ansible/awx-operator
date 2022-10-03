@@ -34,7 +34,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
    * [Contributing](#contributing)
    * [Release Process](#release-process)
       * [Verifiy Functionality](#verify-functionality)
-      * [Update Version](#update-version)
+      * [Update changelog](#update-changelog)
       * [Commit / Create Release](#commit--create-release)
    * [Author](#author)
 <!--te-->
