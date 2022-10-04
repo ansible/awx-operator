@@ -59,6 +59,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: No Log Configuration
+        path: no_log
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: The persistent volume claim name used during backup
         displayName: Backup claim
@@ -122,6 +127,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: No Log Configuration
+        path: no_log
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore status
