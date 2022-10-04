@@ -1083,7 +1083,7 @@ Example configuration of `no_log` parameter
 
 ```yaml
   spec:
-    no_log: 'true'
+    no_log: true
 ```
 
 #### Auto upgrade

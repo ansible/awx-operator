@@ -288,7 +288,7 @@ development_mode: false
 security_context_settings: {}
 
 # Set no_log settings on certain tasks
-no_log: 'true'
+no_log: true
 
 # Should AWX instances be automatically upgraded when operator gets upgraded
 #

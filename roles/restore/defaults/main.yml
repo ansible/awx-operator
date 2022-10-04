@@ -12,7 +12,7 @@ backup_pvc_namespace: '{{ ansible_operator_meta.namespace }}'
 backup_dir: ''
 
 # Set no_log settings on certain tasks
-no_log: 'true'
+no_log: true
 
 # Default resource requirements
 restore_resource_requirements:
