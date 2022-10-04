@@ -12,7 +12,7 @@ backup_pvc_namespace: "{{ ansible_operator_meta.namespace }}"
 backup_storage_requirements: ''
 
 # Set no_log settings on certain tasks
-no_log: 'true'
+no_log: true
 
 # Variable to set when you want backups to be cleaned up when the CRD object is deleted
 clean_backup_on_delete: false
