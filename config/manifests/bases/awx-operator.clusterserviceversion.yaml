@@ -63,7 +63,7 @@ spec:
         path: no_log
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: The persistent volume claim name used during backup
         displayName: Backup claim
@@ -131,7 +131,7 @@ spec:
         path: no_log
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore status
@@ -606,7 +606,7 @@ spec:
         path: no_log
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Security Context Settings
         path: security_context_settings
         x-descriptors:
