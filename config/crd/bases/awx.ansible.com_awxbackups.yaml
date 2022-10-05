@@ -78,6 +78,9 @@ spec:
               clean_backup_on_delete:
                 description: Flag to indicate if backup should be deleted on PVC if AWXBackup object is deleted
                 type: boolean
+              pg_dump_suffix:
+                description: Additional parameters for the pg_dump command
+                type: string
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for backing up data
                 type: string
