@@ -85,14 +85,15 @@ spec:
       - displayName: Backup source to restore from
         path: backup_source
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:select:CR
+        - urn:alm:descriptor:com.tectonic.ui:select:Backup CR
         - urn:alm:descriptor:com.tectonic.ui:select:PVC
       - displayName: Backup name
         path: backup_name
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:CR
-      - displayName: Name of newly restored deployment
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:backup_source:Backup
+          CR
+      - displayName: New Deployment name
         path: deployment_name
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
@@ -113,6 +114,7 @@ spec:
       - displayName: Database restore label selector
         path: postgres_label_selector
         x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: PostgreSQL Image
         path: postgres_image
@@ -189,14 +191,14 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Tower Service Type
+      - displayName: Service Type
         path: service_type
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:select:ClusterIP
         - urn:alm:descriptor:com.tectonic.ui:select:LoadBalancer
         - urn:alm:descriptor:com.tectonic.ui:select:NodePort
-      - displayName: Tower Ingress Type
+      - displayName: Ingress Type
         path: ingress_type
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -221,32 +223,32 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Tower Ingress Annotations
+      - displayName: Ingress Annotations
         path: ingress_annotations
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Tower Ingress TLS Secret
+      - displayName: Ingress TLS Secret
         path: ingress_tls_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Tower LoadBalancer Annotations
+      - displayName: LoadBalancer Annotations
         path: service_annotations
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
-      - displayName: Tower LoadBalancer Protocol
+      - displayName: LoadBalancer Protocol
         path: loadbalancer_protocol
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:select:http
         - urn:alm:descriptor:com.tectonic.ui:select:https
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
-      - displayName: Tower LoadBalancer Port
+      - displayName: LoadBalancer Port
         path: loadbalancer_port
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -281,6 +283,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Image Pull Secret (Deprecated)
+        path: image_pull_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Web container resource requirements
         path: web_resource_requirements
         x-descriptors:
@@ -440,6 +446,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: LDAP Password Secret
+        path: ldap_password_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       - displayName: Task Args
         path: task_args
         x-descriptors:
@@ -571,6 +582,16 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Control Plane Priority Class
+        path: control_plane_priority_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Priority Class
+        path: postgres_priority_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Service Labels
         path: service_labels
         x-descriptors:
@@ -646,6 +667,16 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Automatically upgrade AWX instances when Operator is upgraded ?
+        path: auto_upgrade
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on AWX resource ?
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: Route to access the instance deployed
         displayName: URL
