@@ -505,6 +505,7 @@ spec:
               no_log:
                 description: Configure no_log for no_log tasks
                 type: boolean
+                default: true
               security_context_settings:
                 description: Key/values that will be set under the pod-level securityContext field
                 type: object
