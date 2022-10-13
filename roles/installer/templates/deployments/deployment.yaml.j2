@@ -42,6 +42,7 @@ spec:
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ task_resource_requirements }}
           command:
             - /bin/sh
             - -c
