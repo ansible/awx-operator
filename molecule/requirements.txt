@@ -1,4 +1,4 @@
-molecule
+molecule!=4.0.2
 molecule-docker
 yamllint
 ansible-lint
