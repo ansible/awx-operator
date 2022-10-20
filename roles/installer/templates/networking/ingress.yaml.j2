@@ -1,6 +1,8 @@
 {% if ingress_type|lower == "ingress" %}
 ---
-apiVersion: networking.k8s.io/v1
+{% if ingress_api_version is defined %}
+apiVersion: '{{ ingress_api_version }}'
+{% endif %}
 kind: Ingress
 metadata:
   name: '{{ ansible_operator_meta.name }}-ingress'
@@ -42,7 +44,9 @@ spec:
 
 {% if ingress_type|lower == "route" %}
 ---
-apiVersion: route.openshift.io/v1
+{% if route_api_version is defined %}
+apiVersion: '{{ route_api_version }}'
+{% endif %}
 kind: Route
 metadata:
   name: '{{ ansible_operator_meta.name }}'

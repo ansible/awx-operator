@@ -103,6 +103,9 @@ spec:
                 - ingress
                 - Route
                 - route
+              ingress_api_version:
+                description: The Ingress API version to use
+                type: string
               ingress_path:
                 description: The ingress path used to reach the deployed service
                 type: string
@@ -141,6 +144,9 @@ spec:
                 - edge
                 - Passthrough
                 - passthrough
+              route_api_version:
+                description: The route API version to use
+                type: string
               route_tls_secret:
                 description: Secret where the TLS related credentials are stored
                 type: string

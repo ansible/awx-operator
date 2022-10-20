@@ -12,6 +12,7 @@ ingress_type: none
 ingress_class_name: ''
 ingress_path: '/'
 ingress_path_type: 'Prefix'
+ingress_api_version: 'networking.k8s.io/v1'
 # Add annotations to the service account. Specify as literal block. E.g.:
 # service_account_annotations: |
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
@@ -49,6 +50,9 @@ route_tls_termination_mechanism: edge
 # credentials to deploy
 #
 route_tls_secret: ''
+
+# Route API Version to use
+route_api_version: 'route.openshift.io/v1'
 
 # Host to create the root with.
 # If not specific will default to <instance-name>-<namespace>-<routerCanonicalHostname>
