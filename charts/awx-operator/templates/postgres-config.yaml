@@ -1,0 +1,18 @@
+{{- if and $.Values.AWX.enabled $.Values.AWX.postgres.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "postgres.secretName" . }}
+  namespace: {{ $.Release.Namespace }}
+{{- with $.Values.AWX.postgres }}
+stringData:
+  host: {{ .host }}
+  port: {{ .port | quote }}
+  database: {{ .dbName }}
+  username: {{ .username }}
+  password: {{ .password }}
+  sslmode: {{ .sslmode }}
+  type: {{ .type }}
+type: Opaque
+{{- end }}
+{{- end }}

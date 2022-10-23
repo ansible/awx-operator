@@ -1,0 +1,563 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    helm.sh/chart: awx-operator-0.30.0
+  name: awxs.awx.ansible.com
+spec:
+  group: awx.ansible.com
+  names:
+    kind: AWX
+    listKind: AWXList
+    plural: awxs
+    singular: awx
+  scope: Namespaced
+  versions:
+    - name: v1beta1
+      schema:
+        openAPIV3Schema:
+          description: Schema validation for the AWX CRD
+          properties:
+            apiVersion:
+              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              type: string
+            kind:
+              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              type: string
+            metadata:
+              type: object
+            spec:
+              properties:
+                admin_email:
+                  description: The admin user email
+                  type: string
+                admin_password_secret:
+                  description: Secret where the admin password can be found
+                  type: string
+                admin_user:
+                  default: admin
+                  description: Username to use for the admin account
+                  type: string
+                annotations:
+                  description: annotations for the pods
+                  type: string
+                api_version:
+                  description: apiVersion of the deployment type
+                  type: string
+                auto_upgrade:
+                  default: true
+                  description: Should AWX instances be automatically upgraded when operator gets upgraded
+                  type: boolean
+                broadcast_websocket_secret:
+                  description: Secret where the broadcast websocket secret can be found
+                  type: string
+                bundle_cacert_secret:
+                  description: Secret where can be found the trusted Certificate Authority Bundle
+                  type: string
+                ca_trust_bundle:
+                  description: Path where the trusted CA bundle is available
+                  type: string
+                control_plane_ee_image:
+                  description: Registry path to the Execution Environment container image to use on control plane pods
+                  type: string
+                control_plane_priority_class:
+                  description: Assign a preexisting priority class to the control plane pods
+                  type: string
+                create_preload_data:
+                  default: true
+                  description: Whether or not to preload data upon instance creation
+                  type: boolean
+                csrf_cookie_secure:
+                  description: Set csrf cookie secure mode for web
+                  type: string
+                deployment_type:
+                  description: Name of the deployment type
+                  type: string
+                development_mode:
+                  description: If the deployment should be done in development mode
+                  type: boolean
+                ee_extra_env:
+                  type: string
+                ee_extra_volume_mounts:
+                  description: Specify volume mounts to be added to Execution container
+                  type: string
+                ee_images:
+                  description: Registry path to the Execution Environment container to use
+                  items:
+                    properties:
+                      image:
+                        type: string
+                      name:
+                        type: string
+                    type: object
+                  type: array
+                ee_pull_credentials_secret:
+                  description: Secret where pull credentials for registered ees can be found
+                  type: string
+                ee_resource_requirements:
+                  description: Resource requirements for the ee container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                extra_settings:
+                  description: Extra settings to specify for the API
+                  items:
+                    properties:
+                      setting:
+                        type: string
+                      value:
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                  type: array
+                extra_volumes:
+                  description: Specify extra volumes to add to the application pod
+                  type: string
+                garbage_collect_secrets:
+                  default: false
+                  description: Whether or not to remove secrets upon instance removal
+                  type: boolean
+                hostname:
+                  description: The hostname of the instance
+                  type: string
+                image:
+                  description: Registry path to the application container to use
+                  type: string
+                image_pull_policy:
+                  default: IfNotPresent
+                  description: The image pull policy
+                  enum:
+                    - Always
+                    - always
+                    - Never
+                    - never
+                    - IfNotPresent
+                    - ifnotpresent
+                  type: string
+                image_pull_secret:
+                  description: (Deprecated) Image pull secret for app and database containers
+                  type: string
+                image_pull_secrets:
+                  description: Image pull secrets for app and database containers
+                  items:
+                    type: string
+                  type: array
+                image_version:
+                  description: Application container image version to use
+                  type: string
+                ingress_annotations:
+                  description: Annotations to add to the Ingress Controller
+                  type: string
+                ingress_class_name:
+                  description: The name of ingress class to use instead of the cluster default.
+                  type: string
+                ingress_path:
+                  description: The ingress path used to reach the deployed service
+                  type: string
+                ingress_path_type:
+                  description: The ingress path type for the deployed service
+                  type: string
+                ingress_tls_secret:
+                  description: Secret where the Ingress TLS secret can be found
+                  type: string
+                ingress_type:
+                  description: The ingress type to use to reach the deployed instance
+                  enum:
+                    - none
+                    - Ingress
+                    - ingress
+                    - Route
+                    - route
+                  type: string
+                init_container_extra_commands:
+                  description: Extra commands for the init container
+                  type: string
+                init_container_extra_volume_mounts:
+                  description: Specify volume mounts to be added to the init container
+                  type: string
+                init_container_image:
+                  description: Registry path to the init container to use
+                  type: string
+                init_container_image_version:
+                  description: Init container image version to use
+                  type: string
+                kind:
+                  description: Kind of the deployment type
+                  type: string
+                ldap_cacert_secret:
+                  description: Secret where can be found the LDAP trusted Certificate Authority Bundle
+                  type: string
+                ldap_password_secret:
+                  description: Secret where can be found the LDAP bind password
+                  type: string
+                loadbalancer_port:
+                  default: 80
+                  description: Port to use for the loadbalancer
+                  type: integer
+                loadbalancer_protocol:
+                  default: http
+                  description: Protocol to use for the loadbalancer
+                  enum:
+                    - http
+                    - https
+                  type: string
+                no_log:
+                  description: Configure no_log for no_log tasks
+                  type: string
+                node_selector:
+                  description: nodeSelector for the pods
+                  type: string
+                nodeport_port:
+                  default: 30080
+                  description: Port to use for the nodeport
+                  type: integer
+                old_postgres_configuration_secret:
+                  description: Secret where the old database configuration can be found for data migration
+                  type: string
+                postgres_configuration_secret:
+                  description: Secret where the database configuration can be found
+                  type: string
+                postgres_data_path:
+                  description: Path where the PostgreSQL data are located
+                  type: string
+                postgres_extra_args:
+                  items:
+                    type: string
+                  type: array
+                postgres_image:
+                  description: Registry path to the PostgreSQL container to use
+                  type: string
+                postgres_image_version:
+                  description: PostgreSQL container image version to use
+                  type: string
+                postgres_init_container_resource_requirements:
+                  description: Resource requirements for the postgres init container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                postgres_keep_pvc_after_upgrade:
+                  description: Specify whether or not to keep the old PVC after PostgreSQL upgrades
+                  type: boolean
+                postgres_label_selector:
+                  description: Label selector used to identify postgres pod for data migration
+                  type: string
+                postgres_priority_class:
+                  description: Assign a preexisting priority class to the postgres pod
+                  type: string
+                postgres_resource_requirements:
+                  description: Resource requirements for the PostgreSQL container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                      type: object
+                  type: object
+                postgres_selector:
+                  description: nodeSelector for the Postgres pods
+                  type: string
+                postgres_storage_class:
+                  description: Storage class to use for the PostgreSQL PVC
+                  type: string
+                postgres_storage_requirements:
+                  description: Storage requirements for the PostgreSQL container
+                  properties:
+                    limits:
+                      properties:
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                postgres_tolerations:
+                  description: node tolerations for the Postgres pods
+                  type: string
+                projects_existing_claim:
+                  description: PersistentVolumeClaim to mount /var/lib/projects directory
+                  type: string
+                projects_persistence:
+                  default: false
+                  description: Whether or not the /var/lib/projects directory will be persistent
+                  type: boolean
+                projects_storage_access_mode:
+                  default: ReadWriteMany
+                  description: AccessMode for the /var/lib/projects PersistentVolumeClaim
+                  type: string
+                projects_storage_class:
+                  description: Storage class for the /var/lib/projects PersistentVolumeClaim
+                  type: string
+                projects_storage_size:
+                  default: 8Gi
+                  description: Size for the /var/lib/projects PersistentVolumeClaim
+                  type: string
+                projects_use_existing_claim:
+                  description: Using existing PersistentVolumeClaim
+                  enum:
+                    - _Yes_
+                    - _No_
+                  type: string
+                redis_capabilities:
+                  description: Redis container capabilities
+                  items:
+                    type: string
+                  type: array
+                redis_image:
+                  description: Registry path to the redis container to use
+                  type: string
+                redis_image_version:
+                  description: Redis container image version to use
+                  type: string
+                redis_resource_requirements:
+                  description: Resource requirements for the redis container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                replicas:
+                  default: 1
+                  description: Number of instance replicas
+                  format: int32
+                  type: integer
+                route_host:
+                  description: The DNS to use to points to the instance
+                  type: string
+                route_tls_secret:
+                  description: Secret where the TLS related credentials are stored
+                  type: string
+                route_tls_termination_mechanism:
+                  default: Edge
+                  description: The secure TLS termination mechanism to use
+                  enum:
+                    - Edge
+                    - edge
+                    - Passthrough
+                    - passthrough
+                  type: string
+                secret_key_secret:
+                  description: Secret where the secret key can be found
+                  type: string
+                security_context_settings:
+                  description: Key/values that will be set under the pod-level securityContext field
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                service_account_annotations:
+                  description: ServiceAccount annotations
+                  type: string
+                service_annotations:
+                  description: Annotations to add to the service
+                  type: string
+                service_labels:
+                  description: Additional labels to apply to the service
+                  type: string
+                service_type:
+                  description: The service type to be used on the deployed instance
+                  enum:
+                    - LoadBalancer
+                    - loadbalancer
+                    - ClusterIP
+                    - clusterip
+                    - NodePort
+                    - nodeport
+                  type: string
+                session_cookie_secure:
+                  description: Set session cookie secure mode for web
+                  type: string
+                set_self_labels:
+                  default: true
+                  description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
+                  type: boolean
+                task_args:
+                  items:
+                    type: string
+                  type: array
+                task_command:
+                  items:
+                    type: string
+                  type: array
+                task_extra_env:
+                  type: string
+                task_extra_volume_mounts:
+                  description: Specify volume mounts to be added to Task container
+                  type: string
+                task_privileged:
+                  default: false
+                  description: If a privileged security context should be enabled
+                  type: boolean
+                task_resource_requirements:
+                  description: Resource requirements for the task container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+                tolerations:
+                  description: node tolerations for the pods
+                  type: string
+                topology_spread_constraints:
+                  description: topology rule(s) for the pods
+                  type: string
+                web_args:
+                  items:
+                    type: string
+                  type: array
+                web_command:
+                  items:
+                    type: string
+                  type: array
+                web_extra_env:
+                  type: string
+                web_extra_volume_mounts:
+                  description: Specify volume mounts to be added to the Web container
+                  type: string
+                web_resource_requirements:
+                  description: Resource requirements for the web container
+                  properties:
+                    limits:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                    requests:
+                      properties:
+                        cpu:
+                          type: string
+                        memory:
+                          type: string
+                        storage:
+                          type: string
+                      type: object
+                  type: object
+              type: object
+            status:
+              properties:
+                URL:
+                  description: URL to access the deployed instance
+                  type: string
+                adminPasswordSecret:
+                  description: Admin password secret name of the deployed instance
+                  type: string
+                adminUser:
+                  description: Admin user of the deployed instance
+                  type: string
+                broadcastWebsocketSecret:
+                  description: Broadcast websocket secret name of the deployed instance
+                  type: string
+                conditions:
+                  description: The resulting conditions when a Service Telemetry is instantiated
+                  items:
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+                    type: object
+                  type: array
+                image:
+                  description: URL of the image used for the deployed instance
+                  type: string
+                migratedFromSecret:
+                  description: The secret used for migrating an old instance
+                  type: string
+                postgresConfigurationSecret:
+                  description: Postgres Configuration secret name of the deployed instance
+                  type: string
+                secretKeySecret:
+                  description: Secret key secret name of the deployed instance
+                  type: string
+                upgradedPostgresVersion:
+                  description: Status to indicate that the database has been upgraded to the version in the status
+                  type: string
+                version:
+                  description: Version of the deployed instance
+                  type: string
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

@@ -4,7 +4,6 @@
 /bundle
 /bundle_tmp*
 /bundle.Dockerfile
-/charts
 /.cr-release-packages
 .vscode/
 __pycache__

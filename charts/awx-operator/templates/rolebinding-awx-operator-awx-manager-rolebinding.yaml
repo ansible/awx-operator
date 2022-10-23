@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    helm.sh/chart: awx-operator-0.30.0
+  name: awx-operator-awx-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: awx-operator-awx-manager-role
+subjects:
+  - kind: ServiceAccount
+    name: awx-operator-controller-manager
+    namespace: '{{ .Release.Namespace }}'
