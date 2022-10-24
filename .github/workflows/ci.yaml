@@ -82,3 +82,18 @@ jobs:
       - name: Install helm chart
         run: |
           helm install --wait my-awx-operator --namespace awx --create-namespace ./charts/awx-operator
+  no-log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Check no_log statements
+        run: |
+          set +e
+          no_log=$(grep -nr ' no_log:' roles | grep -v '"{{ no_log }}"')
+          if [ -n "${no_log}" ]; then
+            echo 'Please update the following no_log statement(s) with the "{{ no_log }}" value'
+            echo "${no_log}"
+            exit 1
+          fi
