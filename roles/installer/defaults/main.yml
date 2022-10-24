@@ -51,7 +51,8 @@ route_tls_termination_mechanism: edge
 #
 route_tls_secret: ''
 
-# Route API Version to use
+# Route API Version to support older version
+# of the kubernetes services
 route_api_version: 'route.openshift.io/v1'
 
 # Host to create the root with.
