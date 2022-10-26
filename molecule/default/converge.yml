@@ -13,6 +13,6 @@
         kind: Namespace
         name: '{{ namespace }}'
 
-    - import_tasks: kustomize.yml
+    - import_tasks: tasks/kustomize.yml
       vars:
         state: present
