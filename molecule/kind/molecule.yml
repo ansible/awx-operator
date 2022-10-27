@@ -6,6 +6,7 @@ driver:
 lint: |
   set -e
   yamllint .
+  ansible-lint
 platforms:
   - name: cluster
     groups:
