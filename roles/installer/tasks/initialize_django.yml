@@ -97,7 +97,7 @@
       no_log: "{{ no_log }}"
   when: _execution_environments_pull_credentials['resources'] | default([]) | length
 
-- name: Create preload data if necessary.  # noqa 305
+- name: Create preload data if necessary.
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"

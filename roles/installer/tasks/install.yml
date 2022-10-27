@@ -62,7 +62,7 @@
   changed_when: false
   register: database_check
 
-- name: Migrate the database if the K8s resources were updated.  # noqa 305
+- name: Migrate the database if the K8s resources were updated.
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"

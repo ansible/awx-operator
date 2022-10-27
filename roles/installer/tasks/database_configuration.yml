@@ -36,7 +36,7 @@
 - name: Set old PostgreSQL configuration
   set_fact:
     # yamllint disable-line rule:line-length
-    old_pg_config: '{{ _custom_old_pg_config_resources["resources"] | default([]) | length | ternary(_custom_old_pg_config_resources, _default_old_pg_config_resources) }}'  # noqa 204
+    old_pg_config: '{{ _custom_old_pg_config_resources["resources"] | default([]) | length | ternary(_custom_old_pg_config_resources, _default_old_pg_config_resources) }}'
 
 - name: Set proper database name when migrating from old deployment
   set_fact:

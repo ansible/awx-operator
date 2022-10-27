@@ -1,8 +1,8 @@
 ---
 skip_list:
-  - '306'
-  - '602'
-  - '503'
+  - risky-shell-pipe
+  - empty-string-compare
+  - no-handler
 
 exclude_paths:
   - deploy/
