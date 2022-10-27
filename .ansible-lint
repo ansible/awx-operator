@@ -4,6 +4,7 @@ skip_list:
   - empty-string-compare
   - no-handler
   - name[template]
+  - experimental
 
 exclude_paths:
   - deploy/
