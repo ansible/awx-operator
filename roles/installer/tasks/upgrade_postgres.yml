@@ -8,10 +8,10 @@
 
 
 - name: Scale down Deployment for migration
-  include_tasks: scale_down_deployment.yml
+  ansible.builtin.include_tasks: scale_down_deployment.yml
 
 - name: Delete existing postgres configuration secret
-  k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Secret
     name: "{{ ansible_operator_meta.name }}-postgres-configuration"
@@ -20,30 +20,30 @@
     wait: yes
 
 - name: Create Database configuration with new -postgres-{{ supported_pg_version }} hostname
-  k8s:
+  kubernetes.core.k8s:
     apply: true
     definition: "{{ lookup('template', 'secrets/postgres_upgrade_secret.yaml.j2') }}"
   no_log: "{{ no_log }}"
 
 - name: Set new database var to be used when configuring app credentials (resources_configuration.yml)
-  set_fact:
+  ansible.builtin.set_fact:
     awx_postgres_host: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
   no_log: "{{ no_log }}"
 
 - name: Create Database if no database is specified
-  k8s:
+  kubernetes.core.k8s:
     apply: true
     definition: "{{ lookup('template', 'statefulsets/postgres.yaml.j2') }}"
     wait: true
   register: create_statefulset_result
 
 - name: Set postgres label if not defined by user
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
   when: postgres_label_selector is not defined
 
 - name: Get new postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ ansible_operator_meta.namespace }}"
     label_selectors:
@@ -59,16 +59,16 @@
   retries: 60
 
 - name: Set the resource pod name as a variable.
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
 - name: Set full resolvable host name for postgres pod
-  set_fact:
+  ansible.builtin.set_fact:
     resolvable_db_host: "{{ ansible_operator_meta.name }}-postgres.{{ ansible_operator_meta.namespace }}.svc"  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
 
 - name: Set pg_dump command
-  set_fact:
+  ansible.builtin.set_fact:
     pgdump: >-
       pg_dump
       -h {{ resolvable_db_host }}
@@ -79,7 +79,7 @@
   no_log: "{{ no_log }}"
 
 - name: Set pg_restore command
-  set_fact:
+  ansible.builtin.set_fact:
     pg_restore: >-
       pg_restore
       -U {{ awx_postgres_user }}
@@ -87,7 +87,7 @@
   no_log: "{{ no_log }}"
 
 - name: Stream backup from pg_dump to the new postgresql container
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |
@@ -101,12 +101,12 @@
   failed_when: "'Successful' not in data_migration.stdout"
 
 - name: Set flag signifying that this instance has been migrated
-  set_fact:
+  ansible.builtin.set_fact:
     upgraded_postgres_version: '13'
 
 # Cleanup old Postgres resources
 - name: Remove old Postgres StatefulSet
-  k8s:
+  kubernetes.core.k8s:
     kind: StatefulSet
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -115,7 +115,7 @@
     wait: true
 
 - name: Remove old Postgres Service
-  k8s:
+  kubernetes.core.k8s:
     kind: Service
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -123,7 +123,7 @@
     state: absent
 
 - name: Remove old persistent volume claim
-  k8s:
+  kubernetes.core.k8s:
     kind: PersistentVolumeClaim
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"

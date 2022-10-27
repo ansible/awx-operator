@@ -1,6 +1,6 @@
 ---
 - name: Check for specified PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
@@ -9,7 +9,7 @@
   no_log: "{{ no_log }}"
 
 - name: Check for default PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-postgres-configuration'
@@ -17,7 +17,7 @@
   no_log: "{{ no_log }}"
 
 - name: Check for specified old PostgreSQL configuration secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ old_postgres_configuration_secret }}'
@@ -26,7 +26,7 @@
   no_log: "{{ no_log }}"
 
 - name: Check for default old PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-old-postgres-configuration'
@@ -34,12 +34,12 @@
   no_log: "{{ no_log }}"
 
 - name: Set old PostgreSQL configuration
-  set_fact:
+  ansible.builtin.set_fact:
     # yamllint disable-line rule:line-length
     old_pg_config: '{{ _custom_old_pg_config_resources["resources"] | default([]) | length | ternary(_custom_old_pg_config_resources, _default_old_pg_config_resources) }}'
 
 - name: Set proper database name when migrating from old deployment
-  set_fact:
+  ansible.builtin.set_fact:
     database_name: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
     database_username: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
   when:
@@ -48,34 +48,34 @@
   no_log: "{{ no_log }}"
 
 - name: Set default postgres image
-  set_fact:
+  ansible.builtin.set_fact:
     _default_postgres_image: "{{ _postgres_image }}:{{_postgres_image_version }}"
 
 - name: Set PostgreSQL configuration
-  set_fact:
+  ansible.builtin.set_fact:
     _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
   no_log: "{{ no_log }}"
 
 - name: Set user provided postgres image
-  set_fact:
+  ansible.builtin.set_fact:
     _custom_postgres_image: "{{ postgres_image }}:{{ postgres_image_version }}"
   when:
     - postgres_image | default([]) | length
     - postgres_image_version is defined and postgres_image_version != ''
 
 - name: Set Postgres image URL
-  set_fact:
+  ansible.builtin.set_fact:
     _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
 - block:
     - name: Create Database configuration
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'secrets/postgres_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
 
     - name: Read Database Configuration
-      k8s_info:
+      kubernetes.core.k8s_info:
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
         name: '{{ ansible_operator_meta.name }}-postgres-configuration'
@@ -84,16 +84,16 @@
   when: not _pg_config['resources'] | default([]) | length
 
 - name: Set PostgreSQL Configuration
-  set_fact:
+  ansible.builtin.set_fact:
     pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
   no_log: "{{ no_log }}"
 
 - name: Set actual postgres configuration secret used
-  set_fact:
+  ansible.builtin.set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
 - name: Store Database Configuration
-  set_fact:
+  ansible.builtin.set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
     awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
@@ -103,11 +103,11 @@
   no_log: "{{ no_log }}"
 
 - name: Set database as managed
-  set_fact:
+  ansible.builtin.set_fact:
     managed_database: "{{ pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed' }}"
 
 - name: Get the old postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ ansible_operator_meta.namespace }}"
     name: "{{ ansible_operator_meta.name }}-postgres-0"
@@ -116,7 +116,7 @@
   register: old_postgres_pod
 
 - name: Look up details for this deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
     name: "{{ ansible_operator_meta.name }}"
@@ -126,11 +126,11 @@
 - name: Check if postgres pod is running and version 12
   block:
     - name: Set path to PG_VERSION file for given container image
-      set_fact:
+      ansible.builtin.set_fact:
         path_to_pg_version: '{{ postgres_data_path }}/PG_VERSION'
 
     - name: Get old PostgreSQL version
-      k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
         pod: "{{ ansible_operator_meta.name }}-postgres-0"
         command: |
@@ -140,7 +140,7 @@
       register: _old_pg_version
 
     - name: Upgrade data dir from Postgres 12 to 13 if applicable
-      include_tasks: upgrade_postgres.yml
+      ansible.builtin.include_tasks: upgrade_postgres.yml
       when:
         - _old_pg_version.stdout | default('0') | trim == '12'
   when:
@@ -150,18 +150,18 @@
 
 - block:
     - name: Create Database if no database is specified
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'statefulsets/postgres.yaml.j2') }}"
       register: create_statefulset_result
 
     - name: Scale down Deployment for migration
-      include_tasks: scale_down_deployment.yml
+      ansible.builtin.include_tasks: scale_down_deployment.yml
       when: create_statefulset_result.changed
 
   rescue:
     - name: Scale down Deployment for migration
-      include_tasks: scale_down_deployment.yml
+      ansible.builtin.include_tasks: scale_down_deployment.yml
 
     - name: Scale down PostgreSQL statefulset for migration
       kubernetes.core.k8s_scale:
@@ -173,7 +173,7 @@
         wait: yes
 
     - name: Remove PostgreSQL statefulset for upgrade
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         api_version: apps/v1
         kind: StatefulSet
@@ -183,18 +183,18 @@
       when: create_statefulset_result.error == 422
 
     - name: Recreate PostgreSQL statefulset with updated values
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'statefulsets/postgres.yaml.j2') }}"
   when: managed_database
 
 - name: Set Default label selector for custom resource generated postgres
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ ansible_operator_meta.namespace }}"
     label_selectors:
@@ -204,7 +204,7 @@
   register: postgres_pod
 
 - name: Wait for Database to initialize if managed DB
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
@@ -221,7 +221,7 @@
   when: managed_database
 
 - name: Look up details for this deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
     name: "{{ ansible_operator_meta.name }}"
@@ -229,7 +229,7 @@
   register: this_awx
 
 - name: Migrate data from old Openshift instance
-  import_tasks: migrate_data.yml
+  ansible.builtin.import_tasks: migrate_data.yml
   when:
     - old_pg_config['resources'] is defined
     - old_pg_config['resources'] | length

@@ -1,6 +1,6 @@
 ---
 # - name: Create the awx.ansible.com/v1beta1.AWXRestore
-#   k8s:
+#   kubernetes.core.k8s:
 #     state: present
 #     namespace: '{{ namespace }}'
 #     definition: "{{ lookup('template', '/'.join([samples_dir, cr_file])) | from_yaml }}"
@@ -13,6 +13,6 @@
 #     cr_file: 'awx_v1beta1_awxrestore.yaml'
 #
 # - name: Add assertions here
-#   assert:
+#   ansible.builtin.assert:
 #     that: false
 #     fail_msg: FIXME Add real assertions for your operator

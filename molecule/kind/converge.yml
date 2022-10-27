@@ -6,7 +6,7 @@
 
   tasks:
     - name: Build operator image
-      docker_image:
+      community.docker.docker_image:
         build:
           path: '{{ project_dir }}'
           pull: no
@@ -19,12 +19,12 @@
         force_source: yes
 
     - name: Load operator image into kind cluster
-      command: kind load docker-image --name osdk-test '{{ operator_image }}'
+      ansible.builtin.command: kind load docker-image --name osdk-test '{{ operator_image }}'
       register: result
       changed_when: '"not yet present" in result.stdout'
 
     - name: Load awx image into kind cluster
-      command: kind load docker-image --name osdk-test '{{ awx_image }}:{{ awx_version }}'
+      ansible.builtin.command: kind load docker-image --name osdk-test '{{ awx_image }}:{{ awx_version }}'
       register: result
       changed_when: '"not yet present" in result.stdout'
       when:

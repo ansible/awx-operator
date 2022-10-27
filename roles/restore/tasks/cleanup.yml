@@ -1,7 +1,7 @@
 ---
 
 - name: Delete any existing management pod
-  k8s:
+  kubernetes.core.k8s:
     name: "{{ ansible_operator_meta.name }}-db-management"
     kind: Pod
     namespace: "{{ backup_pvc_namespace }}"
@@ -9,7 +9,7 @@
     force: true
 
 - name: Remove ownerReferences from secrets to avoid garbage collection
-  k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: v1
       kind: Secret
@@ -25,13 +25,13 @@
   no_log: "{{ no_log }}"
 
 - name: Cleanup temp spec file
-  file:
+  ansible.builtin.file:
     path: "{{ tmp_spec.path }}"
     state: absent
   when: tmp_spec.path is defined
 
 - name: Cleanup temp secret vars file
-  file:
+  ansible.builtin.file:
     path: "{{ secret_vars.path }}"
     state: absent
   when: secret_vars.path is defined

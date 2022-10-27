@@ -1,6 +1,6 @@
 ---
 - name: Patching labels to {{ kind }} kind
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: '{{ api_version }}'
@@ -19,7 +19,7 @@
   when: set_self_labels | bool
 
 - name: Look up details for this restore object
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: "{{ api_version }}"
     kind: "{{ kind }}"
     name: "{{ ansible_operator_meta.name }}"
@@ -27,24 +27,24 @@
   register: this_restore
 
 - block:
-    - include_tasks: init.yml
+    - ansible.builtin.include_tasks: init.yml
 
-    - include_tasks: import_vars.yml
+    - ansible.builtin.include_tasks: import_vars.yml
 
-    - include_tasks: secrets.yml
+    - ansible.builtin.include_tasks: secrets.yml
 
-    - include_tasks: deploy_awx.yml
+    - ansible.builtin.include_tasks: deploy_awx.yml
 
-    - include_tasks: postgres.yml
+    - ansible.builtin.include_tasks: postgres.yml
 
     - name: Set flag signifying this restore was successful
-      set_fact:
+      ansible.builtin.set_fact:
         tower_restore_complete: True
 
-    - include_tasks: cleanup.yml
+    - ansible.builtin.include_tasks: cleanup.yml
 
   when:
     - this_restore['resources'][0]['status']['restoreComplete'] is not defined
 
 - name: Update status variables
-  include_tasks: update_status.yml
+  ansible.builtin.include_tasks: update_status.yml

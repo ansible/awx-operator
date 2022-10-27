@@ -12,12 +12,12 @@
   tasks:
     - block:
         - name: Import all test files from tasks/
-          include_tasks: '{{ item }}'
+          ansible.builtin.include_tasks: '{{ item }}'
           with_fileglob:
             - tasks/*_test.yml
       rescue:
         - name: Retrieve relevant resources
-          k8s_info:
+          kubernetes.core.k8s_info:
             api_version: '{{ item.api_version }}'
             kind: '{{ item.kind }}'
             namespace: '{{ namespace }}'
@@ -33,7 +33,7 @@
           register: debug_resources
 
         - name: Retrieve Pod logs
-          k8s_log:
+          kubernetes.core.k8s_log:
             name: '{{ item.metadata.name }}'
             namespace: '{{ namespace }}'
             container: awx-manager
@@ -41,11 +41,11 @@
           register: debug_logs
 
         - name: Output gathered resources
-          debug:
+          ansible.builtin.debug:
             var: debug_resources
 
         - name: Output gathered logs
-          debug:
+          ansible.builtin.debug:
             var: item.log_lines
           loop: '{{ debug_logs.results }}'
 
@@ -53,5 +53,5 @@
           vars:
             failed_task:
               result: '{{ ansible_failed_result }}'
-          fail:
+          ansible.builtin.fail:
             msg: '{{ failed_task }}'

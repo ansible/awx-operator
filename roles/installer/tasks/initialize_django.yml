@@ -1,6 +1,6 @@
 ---
 - name: Check if there are any super users defined.
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -14,7 +14,7 @@
   changed_when: users_result.return_code > 0
 
 - name: Create super user via Django if it doesn't exist.
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -26,7 +26,7 @@
   when: users_result.return_code > 0
 
 - name: Check if legacy queue is present
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -37,7 +37,7 @@
   ignore_errors: true
 
 - name: Unregister legacy queue
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -46,7 +46,7 @@
   when: "'[tower capacity=' in legacy_queue.stdout"
 
 - name: Check for specified default execution environment pull credentials
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ee_pull_credentials_secret }}'
@@ -54,14 +54,14 @@
   when: ee_pull_credentials_secret | length
 
 - name: Set execution environment pull credential secret
-  set_fact:
+  ansible.builtin.set_fact:
     _execution_environments_pull_credentials: >-
       {{ _custom_execution_environments_pull_credentials["resources"] | default([]) | length
       | ternary(_custom_execution_environments_pull_credentials, []) }}
   no_log: "{{ no_log }}"
 
 - name: Register default execution environments (without authentication)
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -73,7 +73,7 @@
 
 - block:
     - name: Store default execution environment pull credentials
-      set_fact:
+      ansible.builtin.set_fact:
         default_execution_environment_pull_credentials_user: "{{ _execution_environments_pull_credentials['resources'][0]['data']['username'] | b64decode }}"
         default_execution_environment_pull_credentials_pass: "{{ _execution_environments_pull_credentials['resources'][0]['data']['password'] | b64decode }}"
         default_execution_environment_pull_credentials_url: "{{ _execution_environments_pull_credentials['resources'][0]['data']['url'] | b64decode }}"
@@ -82,7 +82,7 @@
       no_log: "{{ no_log }}"
 
     - name: Register default execution environments (with authentication)
-      k8s_exec:
+      kubernetes.core.k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
         pod: "{{ tower_pod_name }}"
         container: "{{ ansible_operator_meta.name }}-task"
@@ -98,7 +98,7 @@
   when: _execution_environments_pull_credentials['resources'] | default([]) | length
 
 - name: Create preload data if necessary.
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"

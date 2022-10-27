@@ -5,7 +5,7 @@
   gather_facts: false
   tasks:
     - name: Create test kind cluster
-      shell: |
+      ansible.builtin.shell: |
         cat <<EOF | kind create cluster --name osdk-test --kubeconfig {{ kubeconfig }} --config=-
         kind: Cluster
         apiVersion: kind.x-k8s.io/v1alpha4

@@ -1,7 +1,7 @@
 ---
 
 - name: Get AWX custom resource object
-  k8s_info:
+  kubernetes.core.k8s_info:
     version: v1beta1
     kind: AWX
     namespace: '{{ ansible_operator_meta.namespace }}'
@@ -9,11 +9,11 @@
   register: _awx_cro
 
 - name: Set AWX object
-  set_fact:
+  ansible.builtin.set_fact:
     _awx: "{{ this_awx['resources'][0]['spec'] }}"
 
 - name: Set names of backed up secrets in the CR spec
-  set_fact:
+  ansible.builtin.set_fact:
     _awx: "{{ _awx | combine ({ item.key : item.value }) }}"
   with_items:
     - {"key": "secret_key_secret", "value": "{{ this_awx['resources'][0]['status']['secretKeySecret'] }}"}
@@ -22,13 +22,13 @@
     - {"key": "postgres_configuration_secret", "value": "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"}
 
 - name: Set AWX object
-  set_fact:
+  ansible.builtin.set_fact:
     awx_spec:
       spec: "{{ _awx }}"
       previous_deployment_name: "{{ this_awx['resources'][0]['metadata']['name'] }}"
 
 - name: Write awx object to pvc
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
