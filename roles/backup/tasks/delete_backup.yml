@@ -4,4 +4,4 @@
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
-      bash -c 'rm -rf {{ backup_dir  }}'
+      bash -c 'rm -rf {{ backup_dir }}'

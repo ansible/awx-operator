@@ -14,7 +14,7 @@
       block:
         - name: Set error message
           ansible.builtin.set_fact:
-            error_msg: "Cannot read the backup status variables for {{ backup_kind }} {{ backup_name  }}."
+            error_msg: "Cannot read the backup status variables for {{ backup_kind }} {{ backup_name }}."
 
         - name: Handle error
           ansible.builtin.import_tasks: error_handling.yml
@@ -73,7 +73,7 @@
 
 - name: Set default postgres image
   ansible.builtin.set_fact:
-    _default_postgres_image: "{{ _postgres_image }}:{{_postgres_image_version }}"
+    _default_postgres_image: "{{ _postgres_image }}:{{ _postgres_image_version }}"
 
 - name: Set user provided postgres image
   ansible.builtin.set_fact:
@@ -84,7 +84,7 @@
 
 - name: Set Postgres image URL
   ansible.builtin.set_fact:
-    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES'))  | default(_default_postgres_image, true) }}"
+    _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
 - name: Create management pod from templated deployment config
   kubernetes.core.k8s:

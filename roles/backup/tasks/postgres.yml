@@ -20,7 +20,7 @@
     awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged'|b64encode) | b64decode }}"
+    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged' | b64encode) | b64decode }}"
   no_log: "{{ no_log }}"
 
 - name: Get managed postgresql pod information

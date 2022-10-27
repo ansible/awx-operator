@@ -79,7 +79,7 @@
         default_execution_environment_pull_credentials_pass: "{{ _execution_environments_pull_credentials['resources'][0]['data']['password'] | b64decode }}"
         default_execution_environment_pull_credentials_url: "{{ _execution_environments_pull_credentials['resources'][0]['data']['url'] | b64decode }}"
         default_execution_environment_pull_credentials_url_verify: >-
-          {{ _execution_environments_pull_credentials['resources'][0]['data']['ssl_verify'] | default("True"|b64encode) | b64decode }}
+          {{ _execution_environments_pull_credentials['resources'][0]['data']['ssl_verify'] | default("True" | b64encode) | b64decode }}
       no_log: "{{ no_log }}"
 
     - name: Register default execution environments (with authentication)

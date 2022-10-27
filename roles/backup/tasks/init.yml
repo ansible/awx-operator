@@ -65,7 +65,7 @@
 
 - name: Set default postgres image
   ansible.builtin.set_fact:
-    _default_postgres_image: "{{ _postgres_image }}:{{_postgres_image_version }}"
+    _default_postgres_image: "{{ _postgres_image }}:{{ _postgres_image_version }}"
 
 - name: Set user provided postgres image
   ansible.builtin.set_fact:

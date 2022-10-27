@@ -43,7 +43,7 @@
 - name: Set broadcast websocket secret
   ansible.builtin.set_fact:
     # yamllint disable-line rule:line-length
-    __broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'
+    __broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret) }}'
   no_log: "{{ no_log }}"
 
 - name: Store broadcast websocket secret name

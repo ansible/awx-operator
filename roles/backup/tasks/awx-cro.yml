@@ -14,7 +14,7 @@
 
 - name: Set names of backed up secrets in the CR spec
   ansible.builtin.set_fact:
-    _awx: "{{ _awx | combine ({ item.key : item.value }) }}"
+    _awx: "{{ _awx | combine({item.key: item.value}) }}"
   with_items:
     - {"key": "secret_key_secret", "value": "{{ this_awx['resources'][0]['status']['secretKeySecret'] }}"}
     - {"key": "admin_password_secret", "value": "{{ this_awx['resources'][0]['status']['adminPasswordSecret'] }}"}
@@ -32,4 +32,4 @@
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
-      bash -c 'echo "$0" > {{ backup_dir  }}/awx_object' {{ awx_spec | to_yaml | quote  }}
+      bash -c 'echo "$0" > {{ backup_dir }}/awx_object' {{ awx_spec | to_yaml | quote }}
