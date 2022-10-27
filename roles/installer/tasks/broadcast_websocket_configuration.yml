@@ -22,7 +22,8 @@
     _broadcast_websocket_secret: '{{ _custom_broadcast_websocket["resources"] | default([]) | length | ternary(_custom_broadcast_websocket, _default_broadcast_websocket) }}'
   no_log: "{{ no_log }}"
 
-- block:
+- name: Run k8s broadcast websocket secret tasks
+  block:
     - name: Create broadcast websocket secret
       kubernetes.core.k8s:
         apply: true

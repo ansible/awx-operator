@@ -26,20 +26,26 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_backup
 
-- block:
-    - ansible.builtin.include_tasks: init.yml
+- name: Run backup tasks
+  block:
+    - name: Run init tasks
+      ansible.builtin.include_tasks: init.yml
 
-    - ansible.builtin.include_tasks: postgres.yml
+    - name: Run postgres tasks
+      ansible.builtin.include_tasks: postgres.yml
 
-    - ansible.builtin.include_tasks: awx-cro.yml
+    - name: Run awx-cro tasks
+      ansible.builtin.include_tasks: awx-cro.yml
 
-    - ansible.builtin.include_tasks: secrets.yml
+    - name: Run secrets tasks
+      ansible.builtin.include_tasks: secrets.yml
 
     - name: Set flag signifying this backup was successful
       ansible.builtin.set_fact:
         backup_complete: true
 
-    - ansible.builtin.include_tasks: cleanup.yml
+    - name: Run cleanup tasks
+      ansible.builtin.include_tasks: cleanup.yml
 
   when:
     - this_backup['resources'][0]['status']['backupDirectory'] is not defined

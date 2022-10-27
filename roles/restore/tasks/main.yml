@@ -26,22 +26,29 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_restore
 
-- block:
-    - ansible.builtin.include_tasks: init.yml
+- name: Run restore tasks
+  block:
+    - name: Include init tasks
+      ansible.builtin.include_tasks: init.yml
 
-    - ansible.builtin.include_tasks: import_vars.yml
+    - name: Include import_vars tasks
+      ansible.builtin.include_tasks: import_vars.yml
 
-    - ansible.builtin.include_tasks: secrets.yml
+    - name: Include secrets tasks
+      ansible.builtin.include_tasks: secrets.yml
 
-    - ansible.builtin.include_tasks: deploy_awx.yml
+    - name: Include deploy_awx tasks
+      ansible.builtin.include_tasks: deploy_awx.yml
 
-    - ansible.builtin.include_tasks: postgres.yml
+    - name: Include postgres tasks
+      ansible.builtin.include_tasks: postgres.yml
 
     - name: Set flag signifying this restore was successful
       ansible.builtin.set_fact:
         tower_restore_complete: True
 
-    - ansible.builtin.include_tasks: cleanup.yml
+    - name: Include cleanup tasks
+      ansible.builtin.include_tasks: cleanup.yml
 
   when:
     - this_restore['resources'][0]['status']['restoreComplete'] is not defined

@@ -31,4 +31,5 @@
         - awx_image is defined
         - awx_image != ''
 
-- import_playbook: ../default/converge.yml
+- name: Import converge playbook
+  import_playbook: ../default/converge.yml

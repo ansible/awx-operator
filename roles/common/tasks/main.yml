@@ -15,6 +15,6 @@
   - not is_openshift | bool
   - not is_k8s | bool
 
-# Indicate what kind of cluster we are in (OpenShift or Kubernetes).
-- ansible.builtin.debug:
+- name: Indicate what kind of cluster we are in (OpenShift or Kubernetes)
+  ansible.builtin.debug:
     msg: "CLUSTER TYPE: is_openshift={{ is_openshift }}; is_k8s={{ is_k8s }}"

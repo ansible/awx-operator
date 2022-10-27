@@ -3,6 +3,7 @@ skip_list:
   - risky-shell-pipe
   - empty-string-compare
   - no-handler
+  - name[template]
 
 exclude_paths:
   - deploy/

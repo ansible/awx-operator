@@ -212,7 +212,8 @@
     wait: yes
   register: this_deployment_result
 
-- block:
+- name: Run k8s tower tasks
+  block:
     - name: Delete pod to reload a resource configuration
       kubernetes.core.k8s:
         api_version: v1

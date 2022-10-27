@@ -23,7 +23,8 @@
     awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged'|b64encode) | b64decode }}"
   no_log: "{{ no_log }}"
 
-- block:
+- name: Get managed postgresql pod information
+  block:
     - name: Delete pod to reload a resource configuration
       ansible.builtin.set_fact:
         postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ deployment_name }}"

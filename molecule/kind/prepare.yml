@@ -26,4 +26,5 @@
       register: result  # For some reason, this task always fails on the first try...
       until: result is not failed
 
-- import_playbook: ../default/prepare.yml
+- name: Import prepare playbook
+  import_playbook: ../default/prepare.yml

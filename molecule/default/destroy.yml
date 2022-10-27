@@ -7,7 +7,8 @@
     - kubernetes.core
 
   tasks:
-    - ansible.builtin.import_tasks: tasks/kustomize.yml
+    - name: Run kustomize tasks
+      ansible.builtin.import_tasks: tasks/kustomize.yml
       vars:
         state: absent
 

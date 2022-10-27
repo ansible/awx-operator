@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Run non garbage_collect_secrets tasks
+  block:
     - name: Define secrets name
       ansible.builtin.set_fact:
         _admin_password: '{{ admin_password_secret | length | ternary(admin_password_secret, ansible_operator_meta.name + "-admin-password") }}'

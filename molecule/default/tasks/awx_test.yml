@@ -18,7 +18,8 @@
     name: example-awx-admin-password
   register: admin_pw_secret
 
-- block:
+- name: Run Demo Job Template
+  block:
     - name: Get pod details
       kubernetes.core.k8s_info:
         namespace: '{{ namespace }}'
@@ -36,7 +37,8 @@
              map('regex_search', default_awx_version) }}
       when: not awx_version
 
-    - ansible.builtin.fail:
+    - name: Fail on missing awx_version
+      ansible.builtin.fail:
         msg: |
           It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
           This is an environment variable that is set via build arg when releasing awx-operator.

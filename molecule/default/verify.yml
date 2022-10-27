@@ -10,7 +10,8 @@
     ctrl_label: control-plane=controller-manager
 
   tasks:
-    - block:
+    - name: Run tests tasks
+      block:
         - name: Import all test files from tasks/
           ansible.builtin.include_tasks: '{{ item }}'
           with_fileglob:

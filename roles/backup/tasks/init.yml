@@ -44,7 +44,8 @@
   ansible.builtin.set_fact:
     backup_claim: "{{ backup_pvc | default(_default_backup_pvc, true) }}"
 
-- block:
+- name: Run backup PVC tasks
+  block:
     - name: Create PVC for backup
       kubernetes.core.k8s:
         kind: PersistentVolumeClaim

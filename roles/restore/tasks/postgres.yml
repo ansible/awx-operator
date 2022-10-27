@@ -27,7 +27,8 @@
     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ deployment_name }}"
   when: postgres_label_selector is not defined
 
-- block:
+- name: Run managed postgresql information tasks
+  block:
     - name: Get the postgres pod information
       kubernetes.core.k8s_info:
         kind: Pod

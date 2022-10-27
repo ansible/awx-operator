@@ -67,7 +67,8 @@
   ansible.builtin.set_fact:
     _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
-- block:
+- name: Run k8s database secret tasks
+  block:
     - name: Create Database configuration
       kubernetes.core.k8s:
         apply: true
@@ -148,7 +149,8 @@
     - this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default('none') != '12'
     - old_postgres_pod['resources'] | length  # upgrade is complete and old pg pod has been removed
 
-- block:
+- name: Run k8s database creation tasks
+  block:
     - name: Create Database if no database is specified
       kubernetes.core.k8s:
         apply: true
