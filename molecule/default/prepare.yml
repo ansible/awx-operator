@@ -14,15 +14,18 @@
 
     - name: Set testing image
       ansible.builtin.command: '{{ kustomize }} edit set image testing={{ operator_image }}'
+      changed_when: true
       args:
         chdir: '{{ config_dir }}/testing'
 
     - name: Set pull policy
       ansible.builtin.command: '{{ kustomize }} edit add patch --path pull_policy/{{ operator_pull_policy }}.yaml'
+      changed_when: true
       args:
         chdir: '{{ config_dir }}/testing'
 
     - name: Set testing namespace
       ansible.builtin.command: '{{ kustomize }} edit set namespace {{ namespace }}'
+      changed_when: true
       args:
         chdir: '{{ config_dir }}/testing'

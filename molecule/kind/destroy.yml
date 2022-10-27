@@ -9,8 +9,10 @@
   tasks:
     - name: Destroy test kind cluster
       ansible.builtin.command: kind delete cluster --name osdk-test --kubeconfig {{ kubeconfig }}
+      changed_when: true
 
     - name: Unset pull policy
       ansible.builtin.command: '{{ kustomize }} edit remove patch --path pull_policy/{{ operator_pull_policy }}.yaml'
+      changed_when: true
       args:
         chdir: '{{ config_dir }}/testing'

@@ -89,6 +89,7 @@
     - name: Generate Receptor CA key
       ansible.builtin.command: |
         openssl genrsa -out {{ _receptor_ca_key_file.path }} 4096
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor-ca.crt
       ansible.builtin.tempfile:
@@ -100,6 +101,7 @@
         openssl req -x509 -new -nodes -key {{ _receptor_ca_key_file.path }} \
           -subj "/CN={{ ansible_operator_meta.name }} Receptor Root CA" \
           -sha256 -days 3650 -out {{ _receptor_ca_crt_file.path }}
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create Receptor CA secret
       kubernetes.core.k8s:
@@ -133,6 +135,7 @@
     - name: Generate Receptor work signing private key
       ansible.builtin.command: |
         openssl genrsa -out {{ _receptor_work_signing_private_key_file.path }} 4096
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor work signing public key
       ansible.builtin.tempfile:
@@ -145,6 +148,7 @@
           -in {{ _receptor_work_signing_private_key_file.path }} \
           -out {{ _receptor_work_signing_public_key_file.path }} \
           -outform PEM -pubout
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create Receptor work signing Secret
       kubernetes.core.k8s:
