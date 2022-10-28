@@ -481,6 +481,12 @@ spec:
 
 ### Database Configuration
 
+#### Postgres Version
+
+The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 13. You can find this default for a given version by at the default value for [_postgres_image_version](./roles/installer/defaults/main.yml#L138).
+
+We only have coverage for the default version of Postgres. Newer versions of Postgres (14+) will likely work, but should only be configured as an external database. If your database is managed by the awx-operator (default if you don't specify a `postgres_configuration_secret`), then you should not override the default version as this may cause issues when awx-operator tries to upgrade your postgresql pod.
+
 #### External PostgreSQL Service
 
 To configure AWX to use an external database, the Custom Resource needs to know about the connection details. To do this, create a k8s secret with those connection details and specify the name of the secret as `postgres_configuration_secret` at the CR spec level.
