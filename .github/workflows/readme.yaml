@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
-      - name: Adding License
-        uses: dephraiim/translate-readme@v1
+
+      - name: Adding README
+        uses: dephraiim/translate-readme@main
         with:
           LANG: fr #French
