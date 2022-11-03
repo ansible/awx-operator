@@ -317,6 +317,7 @@ spec:
               if [ ! -f /etc/receptor/receptor.conf ]; then
                 cp /etc/receptor/receptor-default.conf /etc/receptor/receptor.conf
                 sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.conf
+                chmod 666 /etc/receptor/receptor.conf
               fi
               exec receptor --config /etc/receptor/receptor.conf
           volumeMounts:
