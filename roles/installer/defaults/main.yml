@@ -164,6 +164,8 @@ _control_plane_ee_image: quay.io/ansible/awx-ee:latest
 _init_container_image: "{{ _control_plane_ee_image.split(':')[0] }}"
 _init_container_image_version: "{{ _control_plane_ee_image.split(':')[1] }}"
 
+_init_projects_container_image: quay.io/centos/centos:stream9
+
 create_preload_data: true
 
 replicas: "1"

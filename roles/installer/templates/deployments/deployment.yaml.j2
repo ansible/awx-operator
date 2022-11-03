@@ -54,10 +54,6 @@ spec:
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
 {% endif %}
-{% if projects_persistence|bool and is_k8s|bool %}
-              chmod 775 /var/lib/awx/projects
-              chgrp 1000 /var/lib/awx/projects
-{% endif %}
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
@@ -85,12 +81,27 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
-{% if projects_persistence|bool and is_k8s|bool %}
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
-{% endif %}
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if projects_persistence|bool and is_k8s|bool %}
+        - name: init-projects
+          image: '{{ _init_projects_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
 {% endif %}
       containers:
         - image: '{{ _redis_image }}'
