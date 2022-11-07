@@ -25,6 +25,7 @@
   set_fact:
     awx_spec:
       spec: "{{ _awx }}"
+      previous_deployment_name: "{{ this_awx['resources'][0]['metadata']['name'] }}"
 
 - name: Write awx object to pvc
   k8s_exec:

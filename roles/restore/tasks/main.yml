@@ -29,6 +29,8 @@
 - block:
     - include_tasks: init.yml
 
+    - include_tasks: import_vars.yml
+
     - include_tasks: secrets.yml
 
     - include_tasks: deploy_awx.yml
