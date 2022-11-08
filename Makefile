@@ -296,8 +296,8 @@ helm-chart: helm-chart-generate
 helm-chart-generate: kustomize helm kubectl-slice yq charts
 	@echo "== KUSTOMIZE: Set image and chart label =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)-$(VERSION)
-	cd config/default && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)-$(VERSION)
+	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
+	cd config/default && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
 
 	@echo "== Gather Helm Chart Metadata =="
 	# remove the existing chart if it exists
