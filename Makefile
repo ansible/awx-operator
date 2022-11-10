@@ -355,7 +355,7 @@ helm-package: cr helm-chart
 	$(CR) package ./charts/awx-operator
 
 # List all tags oldest to newest.
-TAGS := $(shell git tag -l  --sort=creatordate)
+TAGS := $(shell git ls-remote --tags --sort=version:refname --refs -q | cut -d/ -f3)
 
 # The actual release happens in ansible/helm-release.yml
 # until https://github.com/helm/chart-releaser/issues/122 happens
