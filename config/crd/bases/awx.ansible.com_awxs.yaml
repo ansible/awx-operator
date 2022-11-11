@@ -160,6 +160,9 @@ spec:
               topology_spread_constraints:
                 description: topology rule(s) for the pods
                 type: string
+              affinity:
+                description: affinity rule(s) for the pods
+                type: string
               service_labels:
                 description: Additional labels to apply to the service
                 type: string

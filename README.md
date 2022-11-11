@@ -712,6 +712,7 @@ The ability to specify topologySpreadConstraints is also allowed through `topolo
 | postgres_image_version      | Image version to pull               | 13      |
 | node_selector               | AWX pods' nodeSelector              | ''      |
 | topology_spread_constraints | AWX pods' topologySpreadConstraints | ''      |
+| affinity                    | AWX pods' affinity rules            | ''      |
 | tolerations                 | AWX pods' tolerations               | ''      |
 | annotations                 | AWX pods' annotations               | ''      |
 | postgres_selector           | Postgres pods' nodeSelector         | ''      |
@@ -734,6 +735,27 @@ spec:
       labelSelector:
         matchLabels:
           app.kubernetes.io/name: "<resourcename>"
+  affinity: |
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: security
+              operator: In
+              values:
+              - S2
+          topologyKey: topology.kubernetes.io/zone
   tolerations: |
     - key: "dedicated"
       operator: "Equal"
