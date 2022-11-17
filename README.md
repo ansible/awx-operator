@@ -1076,8 +1076,14 @@ Example configuration of `extra_settings` parameter
 
       - setting: AUTH_LDAP_BIND_DN
         value: "cn=admin,dc=example,dc=com"
+
+      - setting: LOG_AGGREGATOR_LEVEL
+        value: "'DEBUG'"
 ```
 
+Note for some settings, such as `LOG_AGGREGATOR_LEVEL`, the value may need double quotes.
+
+```yaml
 #### No Log
 Configure no_log for tasks with no_log
 
