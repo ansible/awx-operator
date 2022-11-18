@@ -777,6 +777,7 @@ spec:
   - email: awx-project@googlegroups.com
     name: AWX Team
   maturity: alpha
+  MinKubeVersion: 1.22.15
   provider:
     name: Ansible
     url: github.com/ansible/awx-operator
