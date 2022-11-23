@@ -50,6 +50,9 @@ spec:
                 description: Name of the restored deployment. This should be different from the original deployment name
                   if the original deployment still exists.
                 type: string
+              cluster_name:
+                description: Cluster name
+                type: string
               backup_name:
                 description: AWXBackup object name
                 type: string
