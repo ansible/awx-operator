@@ -1,6 +1,6 @@
 ---
 - name: Check for presence of Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}"
@@ -9,5 +9,5 @@
 
 # Just execute deployment steps when auto_upgrade is true or when no deployment exists
 - name: Start installation
-  include_tasks: install.yml
+  ansible.builtin.include_tasks: install.yml
   when: (tower_deployment['resources'] | length > 0 and auto_upgrade | bool ) or (tower_deployment['resources'] | length == 0)

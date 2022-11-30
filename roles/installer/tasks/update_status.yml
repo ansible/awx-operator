@@ -45,7 +45,7 @@
       secretKeySecret: "{{ secret_key_secret_name }}"
 
 - name: Retrieve instance version
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
@@ -72,9 +72,10 @@
     status:
       image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_AWX')) | default(_default_image, true) }}"
 
-- block:
+- name: Run route URL tasks
+  block:
     - name: Retrieve route URL
-      k8s_info:
+      kubernetes.core.k8s_info:
         api_version: 'route.openshift.io/v1'
         kind: Route
         namespace: '{{ ansible_operator_meta.namespace }}'

@@ -1,14 +1,14 @@
 ---
 - name: Build kustomize testing overlay
   # load-restrictor must be set to none so we can load patch files from the default overlay
-  command: '{{ kustomize }} build  --load-restrictor LoadRestrictionsNone .'
+  ansible.builtin.command: '{{ kustomize }} build  --load-restrictor LoadRestrictionsNone .'
   args:
     chdir: '{{ config_dir }}/testing'
   register: resources
   changed_when: false
 
 - name: Set resources to {{ state }}
-  k8s:
+  kubernetes.core.k8s:
     definition: '{{ item }}'
     state: '{{ state }}'
     wait: yes

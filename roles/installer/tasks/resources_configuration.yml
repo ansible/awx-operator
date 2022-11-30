@@ -1,7 +1,7 @@
 ---
 
 - name: Get the current resource pod information.
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
@@ -14,21 +14,21 @@
   register: tower_pod
 
 - name: Set the resource pod name as a variable.
-  set_fact:
+  ansible.builtin.set_fact:
     tower_pod_name: "{{ tower_pod['resources'][0]['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
-  set_fact:
+  ansible.builtin.set_fact:
     _custom_control_plane_ee_image: "{{ control_plane_ee_image }}"
   when:
     - control_plane_ee_image | default([]) | length
 
 - name: Set Control Plane EE image URL
-  set_fact:
+  ansible.builtin.set_fact:
     _control_plane_ee_image: "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) | default(_control_plane_ee_image, true) }}"
 
 - name: Check for Receptor CA Secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-receptor-ca'
@@ -41,38 +41,38 @@
     - _receptor_ca['resources'][0]['type'] != "kubernetes.io/tls"
   block:
     - name: Delete old Receptor CA Secret
-      k8s:
+      kubernetes.core.k8s:
         state: absent
         kind: Secret
         namespace: '{{ ansible_operator_meta.namespace }}'
         name: '{{ ansible_operator_meta.name }}-receptor-ca'
     - name: Create tempfile for receptor-ca.key
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .key
       register: _receptor_ca_key_file
     - name: Copy Receptor CA key from old secret to tempfile
-      copy:
+      ansible.builtin.copy:
         content: "{{ _receptor_ca['resources'][0]['data']['receptor-ca.key'] | b64decode }}"
         dest: "{{ _receptor_ca_key_file.path }}"
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor-ca.crt
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .crt
       register: _receptor_ca_crt_file
     - name: Copy Receptor CA cert from old secret to tempfile
-      copy:
+      ansible.builtin.copy:
         content: "{{ _receptor_ca['resources'][0]['data']['receptor-ca.crt'] | b64decode }}"
         dest: "{{ _receptor_ca_crt_file.path }}"
       no_log: "{{ no_log }}"
     - name: Create New Receptor CA secret
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_ca_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
     - name: Remove tempfiles
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
@@ -82,32 +82,34 @@
 - name: Create Receptor Mesh CA
   block:
     - name: Create tempfile for receptor-ca.key
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .key
       register: _receptor_ca_key_file
     - name: Generate Receptor CA key
-      command: |
+      ansible.builtin.command: |
         openssl genrsa -out {{ _receptor_ca_key_file.path }} 4096
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor-ca.crt
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .crt
       register: _receptor_ca_crt_file
     - name: Generate Receptor CA cert
-      command: |
+      ansible.builtin.command: |
         openssl req -x509 -new -nodes -key {{ _receptor_ca_key_file.path }} \
           -subj "/CN={{ ansible_operator_meta.name }} Receptor Root CA" \
           -sha256 -days 3650 -out {{ _receptor_ca_crt_file.path }}
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create Receptor CA secret
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_ca_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
     - name: Remove tempfiles
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
@@ -116,7 +118,7 @@
   when: not _receptor_ca['resources'] | default([]) | length
 
 - name: Check for Receptor work signing Secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-receptor-work-signing'
@@ -126,33 +128,35 @@
 - name: Generate Receptor work signing RSA key pair
   block:
     - name: Create tempfile for receptor work signing private key
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .pem
       register: _receptor_work_signing_private_key_file
     - name: Generate Receptor work signing private key
-      command: |
+      ansible.builtin.command: |
         openssl genrsa -out {{ _receptor_work_signing_private_key_file.path }} 4096
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor work signing public key
-      tempfile:
+      ansible.builtin.tempfile:
         state: file
         suffix: .pem
       register: _receptor_work_signing_public_key_file
     - name: Generate Receptor work signing public key
-      command: |
+      ansible.builtin.command: |
         openssl rsa \
           -in {{ _receptor_work_signing_private_key_file.path }} \
           -out {{ _receptor_work_signing_public_key_file.path }} \
           -outform PEM -pubout
+      changed_when: true
       no_log: "{{ no_log }}"
     - name: Create Receptor work signing Secret
-      k8s:
+      kubernetes.core.k8s:
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_work_signing_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
     - name: Remove tempfiles
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
@@ -161,7 +165,7 @@
   when: not _receptor_work_signing['resources'] | default([]) | length
 
 - name: Apply Resources
-  k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', item + '.yaml.j2') }}"
     wait: yes
@@ -176,45 +180,46 @@
   no_log: "{{ no_log }}"
 
 - name: Set default awx app image
-  set_fact:
+  ansible.builtin.set_fact:
     _default_image: "{{ _image }}:{{ _image_version }}"
 
 - name: Set user provided awx app image
-  set_fact:
+  ansible.builtin.set_fact:
     _custom_image: "{{ image }}:{{ image_version }}"
   when:
     - image | default([]) | length
     - image_version is defined or image_version != ''
 
 - name: Set AWX app image URL
-  set_fact:
+  ansible.builtin.set_fact:
     _image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_AWX')) | default(_default_image, true) }}"
 
 - name: Set default redis image
-  set_fact:
+  ansible.builtin.set_fact:
     _default_redis_image: "{{ _redis_image }}:{{ _redis_image_version }}"
 
 - name: Set user provided redis image
-  set_fact:
+  ansible.builtin.set_fact:
     _custom_redis_image: "{{ redis_image }}:{{ redis_image_version }}"
   when:
     - redis_image | default([]) | length
     - redis_image_version is defined or redis_image_version != ''
 
 - name: Set Redis image URL
-  set_fact:
+  ansible.builtin.set_fact:
     _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_AWX_REDIS')) | default(_default_redis_image, true) }}"
 
 - name: Apply deployment resources
-  k8s:
+  kubernetes.core.k8s:
     apply: yes
     definition: "{{ lookup('template', 'deployments/deployment.yaml.j2') }}"
     wait: yes
   register: this_deployment_result
 
-- block:
+- name: Run k8s tower tasks
+  block:
     - name: Delete pod to reload a resource configuration
-      k8s:
+      kubernetes.core.k8s:
         api_version: v1
         state: absent
         kind: Pod
@@ -226,7 +231,7 @@
         - tower_pod_name | length
 
     - name: Get the new resource pod information after updating resource.
-      k8s_info:
+      kubernetes.core.k8s_info:
         kind: Pod
         namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
@@ -243,12 +248,12 @@
       retries: 60
 
     - name: Update new resource pod name as a variable.
-      set_fact:
+      ansible.builtin.set_fact:
         tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
   when:
     - tower_resources_result.changed or this_deployment_result.changed
 
 - name: Verify the resource pod name is populated.
-  assert:
+  ansible.builtin.assert:
     that: tower_pod_name != ''
     fail_msg: "Could not find the tower pod's name."

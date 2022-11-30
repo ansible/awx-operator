@@ -1,11 +1,11 @@
 ---
 
 - name: Set actual old postgres configuration secret name
-  set_fact:
+  ansible.builtin.set_fact:
     old_postgres_configuration_name: "{{ old_pg_config['resources'][0]['metadata']['name'] }}"
 
 - name: Store Database Configuration
-  set_fact:
+  ansible.builtin.set_fact:
     awx_old_postgres_user: "{{ old_pg_config['resources'][0]['data']['username'] | b64decode }}"
     awx_old_postgres_pass: "{{ old_pg_config['resources'][0]['data']['password'] | b64decode }}"
     awx_old_postgres_database: "{{ old_pg_config['resources'][0]['data']['database'] | b64decode }}"
@@ -14,12 +14,12 @@
   no_log: "{{ no_log }}"
 
 - name: Set Default label selector for custom resource generated postgres
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
   when: postgres_label_selector is not defined
 
 - name: Get the postgres pod information
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Pod
     namespace: "{{ ansible_operator_meta.namespace }}"
     label_selectors:
@@ -29,14 +29,14 @@
   register: postgres_pod
 
 - name: Set the resource pod name as a variable.
-  set_fact:
+  ansible.builtin.set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
 - name: Scale down Deployment for migration
-  include_tasks: scale_down_deployment.yml
+  ansible.builtin.include_tasks: scale_down_deployment.yml
 
 - name: Set pg_dump command
-  set_fact:
+  ansible.builtin.set_fact:
     pgdump: >-
       pg_dump
       -h {{ awx_old_postgres_host }}
@@ -47,7 +47,7 @@
   no_log: "{{ no_log }}"
 
 - name: Set pg_restore command
-  set_fact:
+  ansible.builtin.set_fact:
     pg_restore: >-
       pg_restore --clean --if-exists
       -U {{ database_username }}
@@ -55,7 +55,7 @@
   no_log: "{{ no_log }}"
 
 - name: Stream backup from pg_dump to the new postgresql container
-  k8s_exec:
+  kubernetes.core.k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |
@@ -69,5 +69,5 @@
   failed_when: "'Successful' not in data_migration.stdout"
 
 - name: Set flag signifying that this instance has been migrated
-  set_fact:
+  ansible.builtin.set_fact:
     tower_migrated_from_secret: "{{ old_postgres_configuration_name }}"

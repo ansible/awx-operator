@@ -1,7 +1,7 @@
 ---
 
 - name: Deploy AWX
-  k8s:
+  kubernetes.core.k8s:
     state: "{{ state | default('present') }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
     apply: yes
@@ -12,7 +12,7 @@
       status: "True"
 
 - name: Remove ownerReferences to prevent garbage collection of new AWX CRO
-  k8s:
+  kubernetes.core.k8s:
     definition:
       apiVersion: '{{ api_version }}'
       kind: AWX
