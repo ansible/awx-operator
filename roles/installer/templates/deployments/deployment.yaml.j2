@@ -379,9 +379,9 @@ spec:
       topologySpreadConstraints:
         {{ topology_spread_constraints | indent(width=8) }}
 {% endif %}
-{% if affinity %}
+{% if affinity | length %}
       affinity:
-        {{ affinity | to_yaml | indent(width=8) }}
+        {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
 {% if tolerations %}
       tolerations:
