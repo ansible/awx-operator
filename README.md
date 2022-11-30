@@ -249,7 +249,7 @@ $ minikube service awx-demo-service --url
 By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run:
 
 ```
-$ kubectl get secret awx-demo-admin-password -o jsonpath="{.data.password}" | base64 --decode
+$ kubectl get secret awx-demo-admin-password -o jsonpath="{.data.password}" | base64 --decode ; echo
 yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
 ```
 
@@ -303,7 +303,7 @@ There are three variables that are customizable for the admin user account creat
 
 If `admin_password_secret` is not provided, the operator will look for a secret named `<resourcename>-admin-password` for the admin password. If it is not present, the operator will generate a password and create a Secret from it named `<resourcename>-admin-password`.
 
-To retrieve the admin password, run `kubectl get secret <resourcename>-admin-password -o jsonpath="{.data.password}" | base64 --decode`
+To retrieve the admin password, run `kubectl get secret <resourcename>-admin-password -o jsonpath="{.data.password}" | base64 --decode ; echo`
 
 The secret that is expected to be passed should be formatted as follow:
 
