@@ -11,6 +11,9 @@ backup_pvc_namespace: '{{ ansible_operator_meta.namespace }}'
 # Required: backup name, found on the awxbackup object
 backup_dir: ''
 
+# Default cluster name
+cluster_name: 'cluster.local'
+
 # Set no_log settings on certain tasks
 no_log: true
 

@@ -66,7 +66,7 @@
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: "{{ awx_postgres_host }}.{{ ansible_operator_meta.namespace }}.svc.cluster.local"
+    resolvable_db_host: "{{ awx_postgres_host }}.{{ ansible_operator_meta.namespace }}.svc.{{ cluster_name }}"
   no_log: "{{ no_log }}"
   when: awx_postgres_type == 'managed'
 
@@ -76,7 +76,6 @@
       pg_restore --clean --if-exists
       -U {{ awx_postgres_user }}
       -h {{ resolvable_db_host }}
-      -U {{ awx_postgres_user }}
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
   no_log: "{{ no_log }}"
