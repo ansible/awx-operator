@@ -45,6 +45,10 @@ spec:
           value: explicit
         - name: ANSIBLE_DEBUG_LOGS
           value: 'false'
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         - name: WATCH_NAMESPACE
           valueFrom:
             fieldRef:

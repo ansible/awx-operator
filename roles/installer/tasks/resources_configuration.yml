@@ -1,4 +1,11 @@
 ---
+- name: Get operator pod name
+  set_fact:
+    operator_pod_name: "{{ lookup('ansible.builtin.env', 'MY_POD_NAME') }}"
+
+- name: Get operator name prefix
+  set_fact:
+    operator_name_prefix: "{{ operator_pod_name.split('controller-manager') | first }}"
 
 - name: Get the current resource pod information.
   k8s_info:
