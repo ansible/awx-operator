@@ -281,6 +281,10 @@ spec:
               mountPath: "/etc/receptor/signing/work-private-key.pem"
               subPath: "work-private-key.pem"
               readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-public-key.pem"
+              subPath: "work-public-key.pem"
+              readOnly: true
             - name: receptor-socket
               mountPath: "/var/run/receptor"
             - name: "{{ ansible_operator_meta.name }}-projects"
@@ -351,6 +355,10 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
               mountPath: "/etc/receptor/signing/work-private-key.pem"
               subPath: "work-private-key.pem"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-public-key.pem"
+              subPath: "work-public-key.pem"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
               mountPath: "/etc/receptor/tls/"
