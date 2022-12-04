@@ -957,6 +957,17 @@ Example spec file for volumes and volume mounts
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
 
+##### Custom Nginx Configuration
+
+Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it is possible to extend the nginx.conf.
+
+1. Create a ConfigMap with the extra settings you want to include in the nginx.conf
+2. Create an extra_volumes entry in the AWX spec for this ConfigMap
+3. Create an web_extra_volume_mounts entry in the AWX spec to mount this volume
+
+The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
+
+
 #### Default execution environments from private registries
 
 In order to register default execution environments from private registries, the Custom Resource needs to know about the pull credentials. Those credentials should be stored as a secret and either specified as `ee_pull_credentials_secret` at the CR spec level, or simply be present on the namespace under the name `<resourcename>-ee-pull-credentials` . Instance initialization will register a `Container registry` type credential on the deployed instance and assign it to the registered default execution environments.
@@ -1083,7 +1094,7 @@ Example configuration of `extra_settings` parameter
 
 Note for some settings, such as `LOG_AGGREGATOR_LEVEL`, the value may need double quotes.
 
-```yaml
+
 #### No Log
 Configure no_log for tasks with no_log
 
