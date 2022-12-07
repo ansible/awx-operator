@@ -257,7 +257,7 @@ awx-demo-service    NodePort    10.109.40.38   <none>        80:31006/TCP   3m56
 Once deployed, the AWX instance will be accessible by running:
 
 ```
-$ minikube service awx-demo-service --url
+$ minikube service -n awx awx-demo-service --url
 ```
 
 By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run:
