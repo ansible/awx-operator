@@ -303,3 +303,6 @@ auto_upgrade: true
 
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
+
+# Disable web container's nginx ipv6 listener
+ipv6_disabled: false
