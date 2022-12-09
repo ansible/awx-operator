@@ -183,12 +183,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
@@ -269,12 +265,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
@@ -472,8 +464,6 @@ spec:
         - name: rsyslog-socket
           emptyDir: {}
         - name: receptor-socket
-          emptyDir: {}
-        - name: rsyslog-dir
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-receptor-config
           emptyDir: {}
