@@ -406,8 +406,6 @@ spec:
         env:
           - name: SUPERVISOR_WEB_CONFIG_PATH
             value: "/etc/supervisord_rsyslog.conf"
-          - name: AWX_SKIP_MIGRATIONS
-            value: "1"
           - name: MY_POD_UID
             valueFrom:
               fieldRef:
