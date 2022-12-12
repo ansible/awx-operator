@@ -86,12 +86,12 @@
 - name: Set PostgreSQL Configuration
   set_fact:
     pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
-    pg_config_username: '{{ _generated_pg_config_resources['resources'][0]['data']['username'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['username'], _pg_config['resources'][0]['data']['username']) }}'
-    pg_config_password: '{{ _generated_pg_config_resources['resources'][0]['data']['password'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['password'], _pg_config['resources'][0]['data']['password']) }}'
-    pg_config_database: '{{ _generated_pg_config_resources['resources'][0]['data']['database'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['database'], _pg_config['resources'][0]['data']['database']) }}'
-    pg_config_port: '{{ _generated_pg_config_resources['resources'][0]['data']['port'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['port'], _pg_config['resources'][0]['data']['port']) }}'
-    pg_config_host: '{{ _generated_pg_config_resources['resources'][0]['data']['host'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['host'], _pg_config['resources'][0]['data']['host']) }}'
-    pg_config_sslmode: '{{ _generated_pg_config_resources['resources'][0]['data']['sslmode'] | default([]) | length | ternary(_generated_pg_config_resources['resources'][0]['data']['sslmode'], _pg_config['resources'][0]['data']['sslmode']) }}'
+    pg_config_username: '{{ _generated_pg_config_resources["resources"][0]["data"]["username"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["username"], _pg_config["resources"][0]["data"]["username"]) }}'
+    pg_config_password: '{{ _generated_pg_config_resources["resources"][0]["data"]["password"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["password"], _pg_config["resources"][0]["data"]["password"]) }}'
+    pg_config_database: '{{ _generated_pg_config_resources["resources"][0]["data"]["database"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["database"], _pg_config["resources"][0]["data"]["database"]) }}'
+    pg_config_port: '{{ _generated_pg_config_resources["resources"][0]["data"]["port"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["port"], _pg_config["resources"][0]["data"]["port"]) }}'
+    pg_config_host: '{{ _generated_pg_config_resources["resources"][0]["data"]["host"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["host"], _pg_config["resources"][0]["data"]["host"]) }}'
+    pg_config_sslmode: '{{ _generated_pg_config_resources["resources"][0]["data"]["sslmode"] | default([]) | length | ternary(_generated_pg_config_resources["resources"][0]["data"]["sslmode"], _pg_config["resources"][0]["data"]["sslmode"]) }}'
   no_log: "{{ no_log }}"
 
 - name: Set actual postgres configuration secret used
