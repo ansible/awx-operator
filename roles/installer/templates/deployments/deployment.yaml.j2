@@ -353,85 +353,63 @@ spec:
 {% if ee_extra_volume_mounts -%}
             {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
-        - image: '{{ _image }}'
-        name: '{{ ansible_operator_meta.name }}-rsyslog'
-        imagePullPolicy: '{{ image_pull_policy }}'
-        {% if task_privileged == true %}
-        securityContext:
-          privileged: true
-        {% endif %}
-        {% if task_command %}
-        command: {{ task_command }}
-        {% endif %}
-        {% if task_args %}
-        args: {{ task_args }}
-        {% endif %}
-        volumeMounts:
-        {% if bundle_ca_crt %}
-          - name: "ca-trust-extracted"
-            mountPath: "/etc/pki/ca-trust/extracted"
-          - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-            mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-            subPath: bundle-ca.crt
-            readOnly: true
-        {% endif %}
-          - name: "{{ ansible_operator_meta.name }}-application-credentials"
-            mountPath: "/etc/tower/conf.d/execution_environments.py"
-            subPath: execution_environments.py
-            readOnly: true
-          - name: "{{ ansible_operator_meta.name }}-application-credentials"
-            mountPath: "/etc/tower/conf.d/credentials.py"
-            subPath: credentials.py
-            readOnly: true
-          - name: "{{ ansible_operator_meta.name }}-application-credentials"
-            mountPath: "/etc/tower/conf.d/ldap.py"
-            subPath: ldap.py
-            readOnly: true
-          - name: "{{ secret_key_secret_name }}"
-            mountPath: /etc/tower/SECRET_KEY
-            subPath: SECRET_KEY
-            readOnly: true
-          - name: {{ ansible_operator_meta.name }}-settings
-            mountPath: /etc/tower/settings.py
-            subPath: settings.py
-            readOnly: true
-          - name: {{ ansible_operator_meta.name }}-redis-socket
-            mountPath: "/var/run/redis"
-          - name: rsyslog-socket
-            mountPath: "/var/run/awx-rsyslog"
-        {% if development_mode | bool %}
-          - name: awx-devel
-            mountPath: "/awx_devel"
-        {% endif %}
-        env:
-          - name: SUPERVISOR_WEB_CONFIG_PATH
-            value: "/etc/supervisord_rsyslog.conf"
-          - name: MY_POD_UID
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.uid
-          - name: MY_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: MY_POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-        {% if development_mode | bool %}
-          - name: AWX_KUBE_DEVEL
-            value: "1"
-        {% endif %}
           env:
 {% if development_mode | bool %}
-            - name: SDB_NOTIFY_HOST
+              - name: SDB_NOTIFY_HOST
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.podIP
+{% endif %}
+{% if ee_extra_env -%}
+              {{ ee_extra_env | indent(width=12, first=True) }}
+{% endif %}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-rsyslog'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          {% if task_privileged == true %}
+          securityContext:
+            privileged: true
+          {% endif %}
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+          {% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+          {% endif %}
+          env:
+            - name: SUPERVISOR_WEB_CONFIG_PATH
+              value: "/etc/supervisord_rsyslog.conf"
+            - name: MY_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: MY_POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-{% endif %}
-{% if ee_extra_env -%}
-            {{ ee_extra_env | indent(width=12, first=True) }}
-{% endif %}
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
+          {% endif %}
 {% if node_selector %}
       nodeSelector:
         {{ node_selector | indent(width=8) }}
