@@ -93,14 +93,48 @@
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
 - name: Store Database Configuration
-  set_fact:
-    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
-    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
-    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
-    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
-    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+  block:
+    - set_fact:
+        awx_postgres_user: "{{ database_username }}"
+    - set_fact:
+        awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+      when: pg_config['resources'][0]['data']['username'] is defined
+
+    - set_fact:
+        awx_postgres_host: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
+    - set_fact:
+        awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+      when: pg_config['resources'][0]['data']['host'] is defined
+
+    - set_fact:
+        awx_postgres_database: "{{ database_name }}"
+    - set_fact:
+        awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+      when: pg_config['resources'][0]['data']['database'] is defined
+
+    - set_fact:
+        awx_postgres_port: "5432"
+    - set_fact:
+        awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+      when: pg_config['resources'][0]['data']['port'] is defined
+
+    - set_fact:
+        awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] | default('prefer'|b64encode) | b64decode }}"
+
+    - set_fact:
+        awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+      when: pg_config['resources'][0]['data']['password'] is defined
   no_log: "{{ no_log }}"
+
+# - name: Debug Vars - Store Database Configuration
+#   debug:
+#     msg:
+#       - awx_postgres_user: "{{ awx_postgres_user }}"
+#       - awx_postgres_host: "{{ awx_postgres_host }}"
+#       - awx_postgres_database: "{{ awx_postgres_database }}"
+#       - awx_postgres_database: "{{ awx_postgres_database }}"
+#       - awx_postgres_port: "{{ awx_postgres_port }}"
+#       - awx_postgres_sslmode: "{{ awx_postgres_sslmode }}"
 
 - name: Set database as managed
   set_fact:
