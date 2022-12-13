@@ -355,13 +355,13 @@ spec:
 {% endif %}
           env:
 {% if development_mode | bool %}
-              - name: SDB_NOTIFY_HOST
-                valueFrom:
-                  fieldRef:
-                    fieldPath: status.podIP
+            - name: SDB_NOTIFY_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
 {% endif %}
 {% if ee_extra_env -%}
-              {{ ee_extra_env | indent(width=12, first=True) }}
+            {{ ee_extra_env | indent(width=12, first=True) }}
 {% endif %}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-rsyslog'
@@ -371,10 +371,6 @@ spec:
             privileged: true
           {% endif %}
           volumeMounts:
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/execution_environments.py"
-              subPath: execution_environments.py
-              readOnly: true
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/credentials.py"
               subPath: credentials.py
@@ -394,18 +390,6 @@ spec:
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
               value: "/etc/supervisord_rsyslog.conf"
-            - name: MY_POD_UID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.uid
-            - name: MY_POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
           {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
