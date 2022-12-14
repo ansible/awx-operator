@@ -718,18 +718,20 @@ You can constrain the AWX pods created by the operator to run on a certain subse
 the AWX pods to run only on the nodes that match all the specified key/value pairs. `tolerations` and `postgres_tolerations` allow the AWX
 pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
+If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
 
-| Name                        | Description                         | Default |
-| --------------------------- | ----------------------------------- | ------- |
-| postgres_image              | Path of the image to pull           | postgres      |
-| postgres_image_version      | Image version to pull               | 13      |
-| node_selector               | AWX pods' nodeSelector              | ''      |
-| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''      |
-| tolerations                 | AWX pods' tolerations               | ''      |
-| annotations                 | AWX pods' annotations               | ''      |
-| postgres_selector           | Postgres pods' nodeSelector         | ''      |
-| postgres_tolerations        | Postgres pods' tolerations          | ''      |
+| Name                        | Description                         | Default  |
+| --------------------------- | ----------------------------------- | -------  |
+| postgres_image              | Path of the image to pull           | postgres |
+| postgres_image_version      | Image version to pull               | 13       |
+| node_selector               | AWX pods' nodeSelector              | ''       |
+| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''       |
+| affinity                    | AWX pods' affinity rules            | ''       |
+| tolerations                 | AWX pods' tolerations               | ''       |
+| annotations                 | AWX pods' annotations               | ''       |
+| postgres_selector           | Postgres pods' nodeSelector         | ''       |
+| postgres_tolerations        | Postgres pods' tolerations          | ''       |
 
 Example of customization could be:
 
@@ -762,6 +764,28 @@ spec:
       operator: "Equal"
       value: "AWX"
       effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+            - another-node-label-value
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: security
+              operator: In
+              values:
+              - S2
+          topologyKey: topology.kubernetes.io/zone
 ```
 
 #### Trusting a Custom Certificate Authority
