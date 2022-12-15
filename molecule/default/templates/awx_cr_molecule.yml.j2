@@ -27,6 +27,12 @@ spec:
       cpu: 50m
       memory: 16M
   no_log: false
+{% if awx_ee_image %}
+  ee_images:
+    - name: AWX EE (latest)
+      image: {{ awx_ee_image }}
+  control_plane_ee_image: {{ awx_ee_image }}
+{% endif %}
   postgres_resource_requirements: {}
   postgres_init_container_resource_requirements: {}
   redis_resource_requirements: {}
