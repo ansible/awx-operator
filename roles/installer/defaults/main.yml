@@ -176,6 +176,9 @@ task_command: []
 web_args:
   - /usr/bin/launch_awx.sh
 web_command: []
+ryslog_args:
+  - /usr/bin/some_script.sh #still needs to be written, this is just a place holder until I can get back to this
+rsyslog_command: []
 
 task_resource_requirements:
   requests:
