@@ -6,11 +6,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+    {{ lookup("template", "roles/common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 data:
   environment: |
     AWX_SKIP_MIGRATIONS=true
