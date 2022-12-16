@@ -13,6 +13,25 @@
         labels: '{{ lookup("template", "roles/common/templates/labels/common.yaml.j2") | from_yaml }}'
   when: set_self_labels | bool
 
+- name: Build `inherited_labels_items` labels from `inherited_labels`
+  block:
+  - name: Look up details for this deployment
+    k8s_info:
+      api_version: "{{ api_version }}"
+      kind: "{{ kind }}"
+      name: "{{ ansible_operator_meta.name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
+    register: this_awx
+
+  - name: Select resource labels which are in `inherited_labels`
+    set_fact:
+      inherited_labels_items: >-
+        {{ this_awx['resources'][0]['metadata']['labels']
+           | dict2items | selectattr('key', 'in', inherited_labels)
+        }}
+    when: this_awx['resources'][0]['metadata']['labels']
+  when: inherited_labels | length
+
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 

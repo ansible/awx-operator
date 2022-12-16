@@ -303,6 +303,9 @@ no_log: true
 #
 auto_upgrade: true
 
+# Labels defined on the resource, which should be propagated to child resources
+inherited_labels: []
+
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
 

@@ -21,6 +21,16 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_restore
 
+- name: Build `inherited_labels_items` labels from `inherited_labels`
+  set_fact:
+    inherited_labels_items: >-
+      {{ this_restore['resources'][0]['metadata']['labels']
+         | dict2items | selectattr('key', 'in', inherited_labels)
+      }}
+  when:
+  - inherited_labels | length
+  - this_restore['resources'][0]['metadata']['labels']
+
 - block:
     - include_tasks: init.yml
 
