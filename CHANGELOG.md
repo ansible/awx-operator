@@ -4,6 +4,8 @@ This is a list of high-level changes for each release of `awx-operator`. A full 
 
 # 0.19.0 (Mar 23, 2022)
 
+trest
+
 - Fix corrupted spec for the service with nodeport type (kurokobo) - dbaf64e
 - Add ability to deploy with OLM & added logo (Christian Adams) - 86c31a4
 - Fix backup & restore issues with special characters in the postgres password (kurokobo) - 589a375
