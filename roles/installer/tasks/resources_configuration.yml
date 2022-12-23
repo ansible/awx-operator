@@ -208,6 +208,7 @@
     wait: yes
   loop:
     - 'configmaps/config'
+    - 'configmaps/pre_stop_scripts'
     - 'secrets/app_credentials'
     - 'rbac/service_account'
     - 'storage/persistent'

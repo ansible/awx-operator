@@ -23,6 +23,7 @@ spec:
       annotations:
 {% for template in [
     "configmaps/config",
+    "configmaps/pre_stop_scripts",
     "secrets/app_credentials",
     "storage/persistent",
   ] %}
@@ -139,6 +140,23 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
               mountPath: "/data"
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - -c
+                # redis image doesn't support writing to `/proc/1/fd/*`
+                - >
+                  PRE_STOP_STDOUT=/dev/stdout
+                  PRE_STOP_STDERR=/dev/stderr
+                  /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
           resources: {{ redis_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
@@ -227,6 +245,18 @@ spec:
 {% if web_extra_volume_mounts -%}
             {{ web_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
           env:
             - name: MY_POD_NAMESPACE
               valueFrom:
@@ -309,6 +339,18 @@ spec:
 {% if task_extra_volume_mounts -%}
             {{ task_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-master
+{% endif %}
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
               value: "/etc/supervisord.conf"
@@ -378,6 +420,18 @@ spec:
 {% if ee_extra_volume_mounts -%}
             {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
           env:
 {% if development_mode | bool %}
             - name: SDB_NOTIFY_HOST
@@ -413,6 +467,9 @@ spec:
         {{ security_context_settings | to_nice_yaml | indent(8) }}
 {% endif %}
 {% endif %}
+{% if termination_grace_period_seconds is defined %}
+      terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
+{% endif %}
       volumes:
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
@@ -441,6 +498,14 @@ spec:
             items:
               - key: ldap-ca.crt
                 path: 'ldap-ca.crt'
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+        - name: pre-stop-data
+          emptyDir: {}
+        - name: pre-stop-scripts
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-pre-stop-scripts'
+            defaultMode: 0775
 {% endif %}
         - name: "{{ ansible_operator_meta.name }}-application-credentials"
           secret:

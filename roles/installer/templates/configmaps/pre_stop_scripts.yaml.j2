@@ -1,0 +1,16 @@
+{% if termination_grace_period_seconds is defined %}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-pre-stop-scripts'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+data:
+  termination-master: |
+    {{ lookup("file", "files/pre-stop/termination-master") | indent(width=4) | trim }}
+  termination-waiter: |
+    {{ lookup("file", "files/pre-stop/termination-waiter") | indent(width=4) | trim }}
+  termination-env: |
+    {{ lookup("file", "files/pre-stop/termination-env") | indent(width=4) | trim }}
+{% endif %}

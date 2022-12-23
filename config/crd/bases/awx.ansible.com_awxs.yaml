@@ -526,6 +526,10 @@ spec:
                         type: array
                     type: object
                 type: object
+              termination_grace_period_seconds:
+                description: Optional duration in seconds pods needs to terminate gracefully
+                type: integer
+                format: int32
               service_labels:
                 description: Additional labels to apply to the service
                 type: string
