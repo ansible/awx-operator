@@ -372,20 +372,20 @@ spec:
               subPath: credentials.py
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-settings
-              mountPath: /etc/tower/settings.py
+              mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-{% if development_mode | bool -%}
+{% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
           env:
             - name: SUPERVISOR_WEB_CONFIG_PATH
-              value: "/etc/supervisord_rsyslog.conf"
+              value: "/etc/supervisor_rsyslog.conf"
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"

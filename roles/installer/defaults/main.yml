@@ -177,7 +177,7 @@ web_args:
   - /usr/bin/launch_awx.sh
 web_command: []
 ryslog_args:
-  - /usr/bin/some_script.sh #still needs to be written, this is just a place holder until I can get back to this
+  - /usr/bin/launch_awx_rsyslog.sh
 rsyslog_command: []
 
 task_resource_requirements:
@@ -194,6 +194,11 @@ ee_resource_requirements:
   requests:
     cpu: 100m
     memory: 64Mi
+
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 # Customize CSRF options
 csrf_cookie_secure: False
