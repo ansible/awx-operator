@@ -365,6 +365,12 @@ spec:
 {% endif %}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-rsyslog'
+{% if rsyslog_command %}
+          command: {{ rsyslog_command }}
+{% endif %}
+{% if ryslog_args %}
+          args: {{ ryslog_args }}
+{% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
           volumeMounts:
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
