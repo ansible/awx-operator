@@ -194,7 +194,7 @@ ee_resource_requirements:
   requests:
     cpu: 100m
     memory: 64Mi
-
+# TODO: validate defaul resource requirements
 rsyslog_resource_requirements:
   requests:
     cpu: 100m
