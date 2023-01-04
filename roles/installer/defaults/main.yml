@@ -178,6 +178,9 @@ task_command: []
 web_args:
   - /usr/bin/launch_awx.sh
 web_command: []
+ryslog_args:
+  - /usr/bin/launch_awx_rsyslog.sh
+rsyslog_command: []
 
 task_resource_requirements:
   requests:
@@ -193,6 +196,11 @@ ee_resource_requirements:
   requests:
     cpu: 100m
     memory: 64Mi
+# TODO: validate defaul resource requirements
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 # Customize CSRF options
 csrf_cookie_secure: False

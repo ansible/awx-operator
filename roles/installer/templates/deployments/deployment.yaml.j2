@@ -183,12 +183,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
@@ -269,12 +265,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
@@ -370,6 +362,39 @@ spec:
 {% endif %}
 {% if ee_extra_env -%}
             {{ ee_extra_env | indent(width=12, first=True) }}
+{% endif %}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-rsyslog'
+{% if rsyslog_command %}
+          command: {{ rsyslog_command }}
+{% endif %}
+{% if ryslog_args %}
+          args: {{ ryslog_args }}
+{% endif %}
+          imagePullPolicy: '{{ image_pull_policy }}'
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+          env:
+            - name: SUPERVISOR_WEB_CONFIG_PATH
+              value: "/etc/supervisor_rsyslog.conf"
+{% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
 {% endif %}
 {% if node_selector %}
       nodeSelector:
@@ -471,13 +496,9 @@ spec:
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-redis-data
           emptyDir: {}
-        - name: supervisor-socket
-          emptyDir: {}
         - name: rsyslog-socket
           emptyDir: {}
         - name: receptor-socket
-          emptyDir: {}
-        - name: rsyslog-dir
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-receptor-config
           emptyDir: {}
