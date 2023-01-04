@@ -813,7 +813,22 @@ spec:
   bundle_cacert_secret: <resourcename>-custom-certs
 ```
 
-To create the secrets, you can use the commands below:
+Create the secret with `kustomization.yaml` file:
+
+```yaml
+....
+
+secretGenerator:
+  - name: <resourcename>-custom-certs
+    files:
+      - bundle-ca.crt=<path+filename>
+    options:
+      disableNameSuffixHash: true
+      
+...
+```
+
+Create the secret with CLI:
 
 * Certificate Authority secret
 
