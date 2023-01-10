@@ -1,8 +1,9 @@
 ---
 name: Promote AWX Operator image
 on:
-  release:
-    types: [published]
+  - workflow_dispatch
+  # release:
+  #     types: [published]
 
 jobs:
   promote:
