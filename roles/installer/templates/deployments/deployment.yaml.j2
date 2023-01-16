@@ -224,6 +224,26 @@ spec:
 {% if web_extra_env -%}
             {{ web_extra_env | indent(width=12, first=True) }}
 {% endif %}
+          livenessProbe:
+            httpGet:
+              path: /api/v2/ping
+              port: 8052
+              scheme: HTTP
+            initialDelaySeconds: {{ web_liveness_initial_delay }}
+            periodSeconds: {{ web_liveness_period }}
+            failureThreshold: {{ web_liveness_failure_threshold }}
+            successThreshold: {{ web_liveness_success_threshold }}
+            timeoutSeconds: {{ web_liveness_timeout }}
+          readinessProbe:
+            httpGet:
+              path: /api/v2/ping
+              port: 8052
+              scheme: HTTP
+            initialDelaySeconds: {{ web_readiness_initial_delay }}
+            periodSeconds: {{ web_readiness_period }}
+            failureThreshold: {{ web_readiness_failure_threshold }}
+            successThreshold: {{ web_readiness_success_threshold }}
+            timeoutSeconds: {{ web_readiness_timeout }}
           resources: {{ web_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
