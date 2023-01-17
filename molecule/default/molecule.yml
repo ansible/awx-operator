@@ -3,9 +3,9 @@ dependency:
   name: galaxy
 driver:
   name: delegated
-# lint: |
-#   set -e
-#   yamllint .
+lint: |
+  set -e
+  yamllint .
 platforms:
   - name: cluster
     groups:
