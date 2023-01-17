@@ -169,6 +169,12 @@ spec:
               tolerations:
                 description: node tolerations for the pods
                 type: string
+              task_tolerations:
+                description: node tolerations for the task pods
+                type: string
+              web_tolerations:
+                description: node tolerations for the web pods
+                type: string
               image:
                 description: Registry path to the application container to use
                 type: string

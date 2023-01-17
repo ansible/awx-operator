@@ -311,9 +311,9 @@ spec:
       topologySpreadConstraints:
         {{ topology_spread_constraints | indent(width=8) }}
 {% endif %}
-{% if tolerations %}
+{% if task_tolerations | default(tolerations) %}
       tolerations:
-        {{ tolerations | indent(width=8) }}
+        {{ task_tolerations | default(tolerations) | indent(width=8) }}
 {% endif %}
 {% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
       securityContext:

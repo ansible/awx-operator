@@ -223,9 +223,9 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if tolerations or web_tolerations%}
+{% if web_tolerations | default(tolerations) %}
       tolerations:
-        {{ tolerations | indent(width=8) }}
+        {{ web_tolerations | default(tolerations) | indent(width=8) }}
 {% endif %}
       volumes:
 {% if bundle_ca_crt %}
