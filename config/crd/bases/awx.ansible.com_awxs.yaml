@@ -619,6 +619,26 @@ spec:
                 description: Number of seconds after which the probe times out.
                 type: integer
                 default: 1
+              task_readiness_initial_delay:
+                description: Number of seconds after the container has started before startup
+                type: integer
+                default: 3
+              task_readiness_period:
+                description: How often (in seconds) to perform the probe.
+                type: integer
+                default: 3
+              task_readiness_failure_threshold:
+                description: Consecutive failure for the probe to be considered failed.
+                type: integer
+                default: 3
+              task_readiness_success_threshold:
+                description: Minimum consecutive successes for the probe to be considered successful after having failed.
+                type: integer
+                default: 1
+              task_readiness_timeout:
+                description: Number of seconds after which the probe times out.
+                type: integer
+                default: 10
               task_resource_requirements:
                 description: Resource requirements for the task container
                 properties:

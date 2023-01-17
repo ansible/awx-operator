@@ -336,6 +336,16 @@ spec:
 {% if task_extra_env -%}
             {{ task_extra_env | indent(width=12, first=True) }}
 {% endif %}
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/awx-manage
+              - check
+            initialDelaySeconds: {{ task_readiness_initial_delay }}
+            periodSeconds: {{ task_readiness_period }}
+            failureThreshold: {{ task_readiness_failure_threshold }}
+            successThreshold: {{ task_readiness_success_threshold }}
+            timeoutSeconds: {{ task_readiness_timeout }}
           resources: {{ task_resource_requirements }}
         - image: '{{ _control_plane_ee_image }}'
           name: '{{ ansible_operator_meta.name }}-ee'
