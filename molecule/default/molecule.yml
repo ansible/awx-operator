@@ -27,7 +27,7 @@ provisioner:
         ansible_python_interpreter: '{{ ansible_playbook_python }}'
         config_dir: ${MOLECULE_PROJECT_DIRECTORY}/config
         samples_dir: ${MOLECULE_PROJECT_DIRECTORY}/config/samples
-        operator_image: ${OPERATOR_IMAGE:-"717487414941.dkr.ecr.eu-west-1.amazonaws.com/awx-operator:0.2"}
+        operator_image: ${OPERATOR_IMAGE:-""}
         operator_pull_policy: ${OPERATOR_PULL_POLICY:-"Always"}
         kustomize: ${KUSTOMIZE_PATH:-kustomize}
   env:

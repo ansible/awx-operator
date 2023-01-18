@@ -20,7 +20,4 @@ resources:
 - ../manager
 images:
 - name: testing
-  newName: 717487414941.dkr.ecr.eu-west-1.amazonaws.com/awx-operator
-  newTag: "0.2"
-patches:
-- path: pull_policy/Always.yaml
+  newName: testing-operator
