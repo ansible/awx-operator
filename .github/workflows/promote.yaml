@@ -1,15 +1,21 @@
 ---
 name: Promote AWX Operator image
 on:
-  - workflow_dispatch
-  # release:
-  #     types: [published]
+  release:
+    types: [published]
 
 jobs:
   promote:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          depth: 0
+
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
 
       - name: Log in to GHCR
         run: |
