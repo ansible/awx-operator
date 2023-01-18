@@ -226,7 +226,7 @@ spec:
 {% endif %}
           livenessProbe:
             httpGet:
-              path: /api/v2/ping
+              path: /api/v2/ping/
               port: 8052
               scheme: HTTP
             initialDelaySeconds: {{ web_liveness_initial_delay }}
@@ -236,7 +236,7 @@ spec:
             timeoutSeconds: {{ web_liveness_timeout }}
           readinessProbe:
             httpGet:
-              path: /api/v2/ping
+              path: /api/v2/ping/
               port: 8052
               scheme: HTTP
             initialDelaySeconds: {{ web_readiness_initial_delay }}
