@@ -55,7 +55,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
             * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
             * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
             * [Steps to upgrade](#steps-to-upgrade)
-       * [Ipv6](#ipv6-disable-new-installs)
+       * [Disable IPV6 for install and upgrade](#ipv6-disable-new-installs)
       * [Add Execution Nodes](#adding-execution-nodes)
           * [Custom Receptor CA](#custom-receptor-ca)
    * [Contributing](#contributing)
@@ -1286,7 +1286,7 @@ Then install the new AWX Operator by following the instructions in [Basic Instal
 
 Once the new AWX Operator is up and running, your AWX deployment will also be upgraded.
 
-# Disable IPV6 for install and upgrade
+#### Disable IPV6 for install and upgrade
 Starting with  AWX Operator release 0.24.0 ipv6 had been enabled in ngnix configuration which caused upgrades/new install's to fail.
 As a work around until AWX Operator release 1.1.1 and AWX v21.10.0 it is suggested to enable ipv6 on worker nodes from 1.1.1 release
 a flag to disable ipv6 had been added.Inorder to disable ipv6 on ngnix configuration(awx-web container) it is recommended to add following
