@@ -8,7 +8,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-ingress'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    {{ lookup("template", "roles/common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 {% if ingress_annotations %}
   annotations:
     {{ ingress_annotations | indent(width=4) }}
@@ -48,7 +48,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    {{ lookup("template", "roles/common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 spec:
 {% if route_host != '' %}
   host: {{ route_host }}

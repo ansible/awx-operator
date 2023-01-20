@@ -6,7 +6,7 @@ metadata:
   namespace: {{ backup_pvc_namespace }}
   ownerReferences: null
   labels:
-    {{ lookup("template", "roles/common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 spec:
   accessModes:
     - ReadWriteOnce

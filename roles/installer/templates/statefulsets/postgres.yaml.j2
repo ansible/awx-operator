@@ -6,7 +6,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    {{ lookup("template", "roles/common/templates/labels/inherited_labels.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/inherited_labels.yaml.j2") | indent(width=4) | trim }}
     app.kubernetes.io/name: 'postgres-{{ supported_pg_version }}'
     app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
     app.kubernetes.io/component: 'database'
@@ -28,7 +28,7 @@ spec:
   template:
     metadata:
       labels:
-        {{ lookup("template", "roles/common/templates/labels/inherited_labels.yaml.j2") | indent(width=8) | trim }}
+        {{ lookup("template", "../common/templates/labels/inherited_labels.yaml.j2") | indent(width=8) | trim }}
         app.kubernetes.io/name: 'postgres-{{ supported_pg_version }}'
         app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
         app.kubernetes.io/component: 'database'
@@ -129,7 +129,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    {{ lookup("template", "roles/common/templates/labels/inherited_labels.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/inherited_labels.yaml.j2") | indent(width=4) | trim }}
     app.kubernetes.io/name: 'postgres-{{ supported_pg_version }}'
     app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
     app.kubernetes.io/component: 'database'
