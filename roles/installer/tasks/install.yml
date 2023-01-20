@@ -28,6 +28,7 @@
       additional_labels_items: >-
         {{ this_awx['resources'][0]['metadata']['labels']
            | dict2items | selectattr('key', 'in', additional_labels)
+           | list
         }}
     when: this_awx['resources'][0]['metadata']['labels']
   when: additional_labels | length
