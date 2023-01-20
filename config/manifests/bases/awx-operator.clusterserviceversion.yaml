@@ -709,7 +709,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Additional labels defined on the resource, which should be
           propagated to child resources
-        path: inherited_labels
+        path: additional_labels
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

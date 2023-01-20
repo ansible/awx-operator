@@ -48,6 +48,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Auto Upgrade](#auto-upgrade)
             * [Upgrade of instances without auto upgrade](#upgrade-of-instances-without-auto-upgrade)
          * [Service Account](#service-account)
+         * [Labeling operator managed objects](#labeling-operator-managed-objects)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
          * [Backup](#backup)
@@ -1193,11 +1194,11 @@ Example configuration of environment variables
 
 In certain situations labeling of Kubernetes objects managed by the operator
 might be desired (e.g. for owner identification purposes). For that
-`inherited_labels` parameter could be used
+`additional_labels` parameter could be used
 
 | Name                        | Description                                                                              | Default |
 | --------------------------- | ---------------------------------------------------------------------------------------- | ------- |
-| inherited_labels            | Additional labels defined on the resource, which should be propagated to child resources | []      |
+| additional_labels           | Additional labels defined on the resource, which should be propagated to child resources | []      |
 
 Example configuration where only `my/team` and `my/service` labels will be
 propagated to child objects (`Deployment`, `Secret`s, `ServiceAccount`, etc):
@@ -1212,7 +1213,7 @@ metadata:
     my/service: "bar"
     my/do-not-inherit: "yes"
 spec:
-  inherited_labels:
+  additional_labels:
   - my/team
   - my/service
 ...

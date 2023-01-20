@@ -21,14 +21,14 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_backup
 
-- name: Build `inherited_labels_items` labels from `inherited_labels`
+- name: Build `additional_labels_items` labels from `additional_labels`
   set_fact:
-    inherited_labels_items: >-
+    additional_labels_items: >-
       {{ this_backup['resources'][0]['metadata']['labels']
-         | dict2items | selectattr('key', 'in', inherited_labels)
+         | dict2items | selectattr('key', 'in', additional_labels)
       }}
   when:
-  - inherited_labels | length
+  - additional_labels | length
   - this_backup['resources'][0]['metadata']['labels']
 
 - block:

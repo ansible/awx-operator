@@ -96,7 +96,7 @@ spec:
                 description: Configure no_log for no_log tasks
                 type: boolean
                 default: true
-              inherited_labels:
+              additional_labels:
                 description: Additional labels defined on the resource, which should be propagated to child resources
                 type: array
                 items:
