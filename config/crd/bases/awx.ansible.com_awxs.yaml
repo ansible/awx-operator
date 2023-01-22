@@ -598,7 +598,7 @@ spec:
               web_liveness_timeout:
                 description: Number of seconds after which the probe times out.
                 type: integer
-                default: 1
+                default: 10
               web_readiness_initial_delay:
                 description: Number of seconds after the container has started before startup
                 type: integer
@@ -618,7 +618,7 @@ spec:
               web_readiness_timeout:
                 description: Number of seconds after which the probe times out.
                 type: integer
-                default: 1
+                default: 5
               task_readiness_initial_delay:
                 description: Number of seconds after the container has started before startup
                 type: integer
