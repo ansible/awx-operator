@@ -244,6 +244,18 @@ spec:
             failureThreshold: {{ web_readiness_failure_threshold }}
             successThreshold: {{ web_readiness_success_threshold }}
             timeoutSeconds: {{ web_readiness_timeout }}
+          startupProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                ! awx-manage showmigrations | grep '\[ \]'
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 900
+            successThreshold: 1
+            timeoutSeconds: 5
           resources: {{ web_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
