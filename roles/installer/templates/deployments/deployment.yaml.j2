@@ -225,10 +225,10 @@ spec:
             {{ web_extra_env | indent(width=12, first=True) }}
 {% endif %}
           livenessProbe:
-            httpGet:
-              path: /api/v2/ping/
-              port: 8052
-              scheme: HTTP
+            exec:
+              command:
+              - /usr/bin/awx-manage
+              - check
             initialDelaySeconds: {{ web_liveness_initial_delay }}
             periodSeconds: {{ web_liveness_period }}
             failureThreshold: {{ web_liveness_failure_threshold }}
@@ -346,6 +346,18 @@ spec:
             failureThreshold: {{ task_readiness_failure_threshold }}
             successThreshold: {{ task_readiness_success_threshold }}
             timeoutSeconds: {{ task_readiness_timeout }}
+          startupProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                ! awx-manage showmigrations | grep '\[ \]'
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 900
+            successThreshold: 1
+            timeoutSeconds: 5
           resources: {{ task_resource_requirements }}
         - image: '{{ _control_plane_ee_image }}'
           name: '{{ ansible_operator_meta.name }}-ee'
