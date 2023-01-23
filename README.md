@@ -55,7 +55,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
             * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
             * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
             * [Steps to upgrade](#steps-to-upgrade)
-       * [Disable IPV6 for install and upgrade](#ipv6-disable-new-installs)
+      * [Disable IPV6](#IPV6)
       * [Add Execution Nodes](#adding-execution-nodes)
           * [Custom Receptor CA](#custom-receptor-ca)
    * [Contributing](#contributing)
@@ -1286,11 +1286,13 @@ Then install the new AWX Operator by following the instructions in [Basic Instal
 
 Once the new AWX Operator is up and running, your AWX deployment will also be upgraded.
 
-#### Disable IPV6 for install and upgrade
-Starting with  AWX Operator release 0.24.0 ipv6 had been enabled in ngnix configuration which caused upgrades/new install's to fail.
-As a work around until AWX Operator release 1.1.1 and AWX v21.10.0 it is suggested to enable ipv6 on worker nodes from 1.1.1 release
-a flag to disable ipv6 had been added.Inorder to disable ipv6 on ngnix configuration(awx-web container) it is recommended to add following
-spec.
+### Disable IPV6 ###
+Starting with AWX Operator release 0.24.0,[IPV6 was enabled in ngnix configuration](https://github.com/ansible/awx-operator/pull/950) which causes
+upgrades and installs to fail in environments where IPv6 is not allowed. Starting in 1.1.1 release, tou can set the `ipv6_disabled` flag on the AWX
+spec. If you need to use an AWX operator version between 0.24.0 and 1.1.1 in an IPv6 disabled environment, it is suggested to enabled ipv6 on worker
+nodes.
+
+In order to disable ipv6 on ngnix configuration (awx-web container), add following to the AWX spec.
 
 The following variables are customizable 
 
@@ -1299,10 +1301,10 @@ The following variables are customizable
 | ipv6_disabled | Flag to disable ipv6   | false   |
 
 ```yaml
----
 spec:
   ...
   ipv6_disabled: true
+```
 
 ### Adding Execution Nodes
 Starting with AWX Operator v0.30.0 and AWX v21.7.0, standalone execution nodes can be added to your deployments.
