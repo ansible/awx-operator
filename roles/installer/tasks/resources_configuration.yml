@@ -13,9 +13,17 @@
       - status.phase=Running
   register: tower_pod
 
+- name: Set the resource pod as a variable.
+  set_fact:
+    tower_pod: >-
+      {{ tower_pod['resources']
+         | rejectattr('metadata.deletionTimestamp', 'defined')
+         | sort(attribute='metadata.creationTimestamp')
+         | first | default({}) }}
+
 - name: Set the resource pod name as a variable.
   set_fact:
-    tower_pod_name: "{{ tower_pod['resources'][0]['metadata']['name'] | default('') }}"
+    tower_pod_name: "{{ tower_pod['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
   set_fact:
@@ -238,9 +246,17 @@
           - status.phase=Running
       register: _new_pod
 
+    - name: Update new resource pod as a variable.
+      set_fact:
+        tower_pod: >-
+          {{ _new_pod['resources']
+             | rejectattr('metadata.deletionTimestamp', 'defined')
+             | sort(attribute='metadata.creationTimestamp')
+             | last | default({}) }}
+
     - name: Update new resource pod name as a variable.
       set_fact:
-        tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
+        tower_pod_name: '{{ tower_pod["metadata"]["name"] | default("")}}'
   when:
     - tower_resources_result.changed or this_deployment_result.changed
 
