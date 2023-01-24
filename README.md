@@ -463,6 +463,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | hostname            | Define the FQDN                          | {{ meta.name }}.example.com |
 | ingress_path        | Define the ingress path to the service   | /                           |
 | ingress_path_type   | Define the type of the path (for LBs)    | Prefix                      |
+| ingress_api_version | Define the Ingress resource apiVersion   | 'networking.k8s.io/v1'      |
 
 ```yaml
 ---
@@ -483,6 +484,7 @@ The following variables are customizable when `ingress_type=route`
 | route_host                      | Common name the route answers for             | `<instance-name>-<namespace>-<routerCanonicalHostname>` |
 | route_tls_termination_mechanism | TLS Termination mechanism (Edge, Passthrough) | Edge                                                    |
 | route_tls_secret                | Secret that contains the TLS information      | Empty string                                            |
+| route_api_version               | Define the Route resource apiVersion          | 'route.openshift.io/v1'                                 |
 
 ```yaml
 ---
