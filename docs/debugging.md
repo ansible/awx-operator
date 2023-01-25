@@ -35,6 +35,19 @@ ansible_operator_meta:
   namespace: awx
 service_type: nodeport
 ```
+The vars file will replace the awx resource so any value that you wish to over ride using the awx resource, put in the vars file. For example, if you wish to use your own image, version and pull policy, you can specify it like below:
+
+```yaml
+# vars.yml
+---
+ansible_operator_meta:
+  name: awx
+  namespace: awx
+service_type: nodeport
+image: $DEV_DOCKER_TAG_BASE/awx_kube_devel
+image_pull_policy: Always
+image_version: $COMPOSE_TAG
+```
 
 Run the installer:
 
