@@ -377,10 +377,11 @@ helm-index:
 	for tag in $(TAGS); do\
 		dl_url="https://github.com/$(CHART_OWNER)/$(CHART_REPO)/releases/download/$${tag}/$(CHART_REPO)-$${tag}.tgz";\
 		echo "Downloading $${tag} from $${dl_url}";\
-		curl -RLOs -z ".cr-release-packages/$(CHART_REPO)-$${tag}.tgz" --fail $${dl_url};\
+		curl -RLOs -z "$(CHART_REPO)-$${tag}.tgz" --fail $${dl_url};\
 		result=$$?;\
 		if [ $${result} -eq 0 ]; then\
 			echo "Downloaded $${dl_url}";\
+			mv ./$(CHART_REPO)-$${tag}.tgz .cr-release-packages/;\
 		else\
 			echo "Skipping release $${tag}; No helm chart present";\
 			rm -rf ".cr-release-packages/$(CHART_REPO)-$${tag}.tgz";\
