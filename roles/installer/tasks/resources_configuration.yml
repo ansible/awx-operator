@@ -210,6 +210,7 @@
     apply: yes
     definition: "{{ lookup('template', 'deployments/deployment.yaml.j2') }}"
     wait: yes
+    wait_timeout: "{{ 120 * replicas or 120 }}"
   register: this_deployment_result
 
 - block:
