@@ -122,7 +122,7 @@
         that:
           - pod_additional_labels == awx_additional_labels
 
-    - name: Exract labels which should not be propagated to AWX Pod
+    - name: Exract Pod labels which shouldn't have been propagated to it from AWX
       set_fact:
         pod_extra_labels: >-
           {{ awx_pod.resources[0].metadata.labels
