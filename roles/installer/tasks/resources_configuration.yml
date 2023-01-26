@@ -237,11 +237,6 @@
         field_selectors:
           - status.phase=Running
       register: _new_pod
-      until:
-        - _new_pod['resources'] | length
-        - _new_pod['resources'][0]['metadata']['name'] != tower_pod_name
-      delay: 5
-      retries: 60
 
     - name: Update new resource pod name as a variable.
       set_fact:
