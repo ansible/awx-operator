@@ -90,20 +90,56 @@ topology_spread_constraints: ''
 tolerations: ''
 
 # Add node tolerations for the task pods. Specify as literal block. E.g.:
-# tolerations: |
+# task_tolerations: |
 #   - key: "dedicated"
 #     operator: "Equal"
-#     value: "AWX"
+#     value: "AWXtask"
 #     effect: "NoSchedule"
 task_tolerations: ''
 
 # Add node tolerations for the web pods. Specify as literal block. E.g.:
-# tolerations: |
+# web_tolerations: |
 #   - key: "dedicated"
 #     operator: "Equal"
-#     value: "AWX"
+#     value: "AWXweb"
 #     effect: "NoSchedule"
 web_tolerations: ''
+
+# Add affinities for all pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/component
+#            operator: In
+#            values:
+#            - awx
+affinity: {}
+
+# Add affinities for all task pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-task
+task_affinity: {}
+
+# Add affinities for all web pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-web
+web_affinity: {}
 
 # Add annotations to awx pods. Specify as literal block. E.g.:
 # annotations: |
@@ -212,7 +248,7 @@ ee_resource_requirements:
     cpu: 100m
     memory: 64Mi
 
-# TODO: validate defaul resource requirements
+# TODO: validate default resource requirements
 rsyslog_resource_requirements:
   requests:
     cpu: 100m
