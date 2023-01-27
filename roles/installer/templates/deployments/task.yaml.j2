@@ -311,13 +311,20 @@ spec:
       topologySpreadConstraints:
         {{ topology_spread_constraints | indent(width=8) }}
 {% endif %}
-{% if task_tolerations or tolerations %}
+{% if task_tolerations %}
       tolerations:
-        {{ task_tolerations | default(tolerations) | indent(width=8) }}
+        {{ task_tolerations| indent(width=8) }}
+{% elif tolerations %}
+      tolerations:
+        {{ tolerations| indent(width=8) }}
 {% endif %}
-{% if task_affinity | default(affinity) %}
+{% if task_affinity %}
       affinity:
-        {{ task_affinity | default(affinity) | indent(width=8) }}
+        {{ task_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
+{% endif %}
 {% endif %}
 {% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
       securityContext:

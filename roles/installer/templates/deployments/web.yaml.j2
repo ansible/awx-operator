@@ -223,17 +223,19 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if web_tolerations or tolerations %}
+{% if web_tolerations %}
       tolerations:
-      {% if web_tolerations %}
         {{ web_tolerations| indent(width=8) }}
-      {%elif tolerations and not web_tolerations%}
+{% elif tolerations %}
+      tolerations:
         {{ tolerations| indent(width=8) }}
-      {% endif %}
 {% endif %}
-{% if web_affinity | default(affinity) %}
+{% if web_affinity %}
       affinity:
-        {{ web_affinity | default(affinity) | to_nice_yaml | indent(width=8) }}
+        {{ web_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
       volumes:
 {% if bundle_ca_crt %}
