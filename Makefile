@@ -381,8 +381,8 @@ helm-index:
 		result=$$?;\
 		if [ $${result} -eq 0 ]; then\
 			echo "Downloaded $${dl_url}";\
-			mkdir -p .cr-release-packages/$${tag}
-			mv ./$(CHART_REPO)-$${tag}.tgz .cr-release-packages/$${tag};\
+			mkdir -p .cr-release-packages/$${tag};\
+			mv ./$(CHART_REPO)-$${tag}.tgz .cr-release-packages/$${tag}/;\
 		else\
 			echo "Skipping release $${tag}; No helm chart present";\
 			rm -rf "$(CHART_REPO)-$${tag}.tgz";\
