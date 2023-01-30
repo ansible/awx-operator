@@ -707,6 +707,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Additional labels defined on the resource, which should be
+          propagated to child resources
+        path: additional_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Disable IPv6 listener?
         path: ipv6_disabled
         x-descriptors:
