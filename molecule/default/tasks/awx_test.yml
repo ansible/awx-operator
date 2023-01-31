@@ -28,7 +28,7 @@
       register: awx_pod
       when: not awx_version
 
-    - name: Exract tags from images
+    - name: Extract tags from images
       set_fact:
         image_tags: |
           {{ awx_pod.resources[0].spec.containers |
@@ -77,6 +77,64 @@
       loop_control:
         loop_var: endpoint
 
+    - name: Re-emit failure
+      vars:
+        failed_task:
+          result: '{{ ansible_failed_result }}'
+      fail:
+        msg: '{{ failed_task }}'
+
+- block:
+    - name: Look up details for this deployment
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: "awx.ansible.com/v1beta1"
+        kind: AWX
+        name: example-awx
+      register: this_awx
+
+    - name: Get pod details
+      k8s_info:
+        namespace: '{{ namespace }}'
+        kind: Pod
+        label_selectors:
+          - app.kubernetes.io/name = example-awx
+      register: awx_pod
+
+    - name: Extract additional_labels from AWX spec
+      set_fact:
+        awx_additional_labels: >-
+          {{ this_awx.resources[0].metadata.labels
+             | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+             | list
+          }}
+
+    - name: Extract additional_labels from AWX Pod
+      set_fact:
+        pod_additional_labels: >-
+          {{ awx_pod.resources[0].metadata.labels
+             | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+             | list
+          }}
+
+    - name: AWX Pod contains additional_labels
+      ansible.builtin.assert:
+        that:
+          - pod_additional_labels == awx_additional_labels
+
+    - name: Extract Pod labels which shouldn't have been propagated to it from AWX
+      set_fact:
+        pod_extra_labels: >-
+          {{ awx_pod.resources[0].metadata.labels
+             | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
+             | list
+          }}
+
+    - name: AWX Pod doesn't contain AWX labels not in additional_labels
+      ansible.builtin.assert:
+        that:
+          - pod_extra_labels == []
+  rescue:
     - name: Re-emit failure
       vars:
         failed_task:
