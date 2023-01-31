@@ -28,7 +28,7 @@
       register: awx_pod
       when: not awx_version
 
-    - name: Exract tags from images
+    - name: Extract tags from images
       set_fact:
         image_tags: |
           {{ awx_pod.resources[0].spec.containers |
@@ -101,7 +101,7 @@
           - app.kubernetes.io/name = example-awx
       register: awx_pod
 
-    - name: Exract additional_labels from AWX spec
+    - name: Extract additional_labels from AWX spec
       set_fact:
         awx_additional_labels: >-
           {{ this_awx.resources[0].metadata.labels
@@ -109,7 +109,7 @@
              | list
           }}
 
-    - name: Exract additional_labels from AWX Pod
+    - name: Extract additional_labels from AWX Pod
       set_fact:
         pod_additional_labels: >-
           {{ awx_pod.resources[0].metadata.labels
@@ -122,7 +122,7 @@
         that:
           - pod_additional_labels == awx_additional_labels
 
-    - name: Exract Pod labels which shouldn't have been propagated to it from AWX
+    - name: Extract Pod labels which shouldn't have been propagated to it from AWX
       set_fact:
         pod_extra_labels: >-
           {{ awx_pod.resources[0].metadata.labels
