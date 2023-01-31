@@ -151,7 +151,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       version: v1beta1
-    - description: Deploy a new instance of AWX
+    - description: Deploy a new instance of AWX. A standardized way to define, operate and scale automation with Ansible.
       displayName: AWX
       kind: AWX
       name: awxs.awx.ansible.com
