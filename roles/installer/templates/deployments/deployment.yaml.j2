@@ -348,6 +348,18 @@ spec:
 {% if task_extra_env -%}
             {{ task_extra_env | indent(width=12, first=True) }}
 {% endif %}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                awx-manage run_dispatcher --running | grep '\[\]'
+            initialDelaySeconds: {{ task_liveness_initial_delay }}
+            periodSeconds: {{ task_liveness_period }}
+            failureThreshold: {{ task_liveness_failure_threshold }}
+            successThreshold: {{ task_liveness_success_threshold }}
+            timeoutSeconds: {{ task_liveness_timeout }}
           readinessProbe:
             exec:
               command:

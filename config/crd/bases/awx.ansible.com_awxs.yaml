@@ -619,6 +619,26 @@ spec:
                 description: Number of seconds after which the probe times out.
                 type: integer
                 default: 5
+              task_liveness_initial_delay:
+                description: Number of seconds after the container has started before startup.
+                type: integer
+                default: 3
+              task_liveness_period:
+                description: How often (in seconds) to perform the probe.
+                type: integer
+                default: 3
+              task_liveness_failure_threshold:
+                description: Consecutive failure for the probe to be considered failed.
+                type: integer
+                default: 3
+              task_liveness_success_threshold:
+                description: Minimum consecutive successes for the probe to be considered successful after having failed.
+                type: integer
+                default: 1
+              task_liveness_timeout:
+                description: Number of seconds after which the probe times out.
+                type: integer
+                default: 10
               task_readiness_initial_delay:
                 description: Number of seconds after the container has started before startup
                 type: integer
