@@ -24,7 +24,8 @@ galaxy_info:
     - backup
     - automation
 
-dependencies: []
+dependencies:
+  - role: common
 
 collections:
   - kubernetes.core

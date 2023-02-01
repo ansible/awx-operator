@@ -950,6 +950,11 @@ spec:
                 description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
                 type: boolean
                 default: true
+              additional_labels:
+                description: Additional labels defined on the resource, which should be propagated to child resources
+                type: array
+                items:
+                  type: string
               ipv6_disabled:
                 description: Disable web container's nginx ipv6 listener
                 type: boolean
