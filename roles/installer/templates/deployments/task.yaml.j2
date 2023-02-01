@@ -325,7 +325,6 @@ spec:
       affinity:
         {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
-{% endif %}
 {% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
       securityContext:
 {% if projects_persistence|bool and is_k8s|bool %}
