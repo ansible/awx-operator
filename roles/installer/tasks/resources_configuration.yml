@@ -6,7 +6,7 @@
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}"
+      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
       - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
