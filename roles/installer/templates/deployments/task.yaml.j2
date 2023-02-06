@@ -301,7 +301,10 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
-{% if node_selector %}
+{% if task_node_selector %}
+      nodeSelector:
+        {{ task_node_selector | indent(width=8) }}
+{% elif node_selector %}
       nodeSelector:
         {{ node_selector | indent(width=8) }}
 {% endif %}
