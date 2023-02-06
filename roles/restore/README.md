@@ -17,6 +17,12 @@ This role assumes you are authenticated with an Openshift or Kubernetes cluster:
   - AWX is deployed to via the operator
   - An AWX backup is available on a PVC in your cluster (see the backup [README.md](../backup/README.md))
 
+*Before Restoring from a backup*, be sure to:
+  - delete the old existing AWX CR
+  - delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-13-<deployment-name>-postgres-13-0`
+
+**Note**: Do not delete the namespace/project, as that will delete the backup and the backup's PVC as well.
+
 
 Usage
 ----------------

@@ -6,11 +6,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 data:
   environment: |
     AWX_SKIP_MIGRATIONS=true
@@ -218,9 +214,7 @@ data:
                 uwsgi_read_timeout 120s;
                 uwsgi_pass uwsgi;
                 include /etc/nginx/uwsgi_params;
-                {%- if extra_nginx_include is defined %}
-                include {{ extra_nginx_include }};
-                {%- endif %}
+                include /etc/nginx/conf.d/*.conf;
                 proxy_set_header X-Forwarded-Port 443;
                 uwsgi_param HTTP_X_FORWARDED_PORT 443;
 

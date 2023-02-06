@@ -78,6 +78,9 @@ spec:
               clean_backup_on_delete:
                 description: Flag to indicate if backup should be deleted on PVC if AWXBackup object is deleted
                 type: boolean
+              pg_dump_suffix:
+                description: Additional parameters for the pg_dump command
+                type: string
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for backing up data
                 type: string
@@ -91,6 +94,11 @@ spec:
                 description: Configure no_log for no_log tasks
                 type: boolean
                 default: true
+              additional_labels:
+                description: Additional labels defined on the resource, which should be propagated to child resources
+                type: array
+                items:
+                  type: string
               set_self_labels:
                 description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
                 type: boolean

@@ -81,6 +81,8 @@ node_selector: ''
 #         app.kubernetes.io/name: "<resourcename>"
 topology_spread_constraints: ''
 
+affinity: {}
+
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
 #   - key: "dedicated"
@@ -362,6 +364,9 @@ no_log: true
 # Should AWX instances be automatically upgraded when operator gets upgraded
 #
 auto_upgrade: true
+
+# Labels defined on the resource, which should be propagated to child resources
+additional_labels: []
 
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true

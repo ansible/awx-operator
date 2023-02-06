@@ -18,10 +18,21 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ tower_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "echo \"from django.contrib.auth.models import User;
-      User.objects.create_superuser('{{ admin_user }}', '{{ admin_email }}', '{{ admin_password }}')\"
-      | awx-manage shell"
+    command: awx-manage createsuperuser --username={{ admin_user | quote }} --email={{ admin_email | quote }} --noinput
+  register: result
+  changed_when: "'That username is already taken' not in result.stderr"
+  failed_when: "'That username is already taken' not in result.stderr and 'Superuser created successfully' not in result.stdout"
+  no_log: "{{ no_log }}"
+  when: users_result.return_code > 0
+
+- name: Update Django super user password
+  k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ tower_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-task"
+    command: awx-manage update_password --username='{{ admin_user }}' --password='{{ admin_password }}'
+  register: result
+  changed_when: "'Password updated' in result.stdout"
   no_log: "{{ no_log }}"
   when: users_result.return_code > 0
 

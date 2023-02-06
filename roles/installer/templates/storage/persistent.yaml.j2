@@ -5,11 +5,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-projects-claim'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 spec:
   accessModes:
     - {{ projects_storage_access_mode }}
