@@ -223,6 +223,13 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
+{% if web_node_selector %}
+      nodeSelector:
+        {{ web_node_selector | indent(width=8) }}
+{% elif node_selector %}
+      nodeSelector:
+        {{ node_selector | indent(width=8) }}
+{% endif %}
 {% if web_tolerations %}
       tolerations:
         {{ web_tolerations| indent(width=8) }}
