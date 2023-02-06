@@ -6,7 +6,7 @@
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}"
+      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
       - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
@@ -250,6 +250,8 @@
         tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
   when:
     - tower_resources_result.changed or this_deployment_result.changed
+- debug:
+    var: tower_pod_name
 
 - name: Verify the resource pod name is populated.
   assert:
