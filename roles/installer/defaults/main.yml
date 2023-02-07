@@ -97,8 +97,6 @@ task_node_selector: ''
 #         app.kubernetes.io/name: "<resourcename>"
 topology_spread_constraints: ''
 
-affinity: {}
-
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
 #   - key: "dedicated"
