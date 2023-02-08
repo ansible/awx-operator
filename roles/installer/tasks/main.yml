@@ -1,9 +1,9 @@
 ---
-- name: Check for presence of Deployment
+- name: Check for presence of web deployment
   k8s_info:
     api_version: v1
     kind: Deployment
-    name: "{{ ansible_operator_meta.name }}"
+    name: "{{ ansible_operator_meta.name }}-web "
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: tower_deployment
 
