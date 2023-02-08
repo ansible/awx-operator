@@ -8,7 +8,11 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
+{% if task_replicas %}
   replicas: {{ task_replicas }}
+{% elif replicas %}
+  replicas: {{ replicas }}
+{% endif %}
   selector:
     matchLabels:
       app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
@@ -17,6 +21,7 @@ spec:
   template:
     metadata:
       labels:
+        app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
       annotations:
