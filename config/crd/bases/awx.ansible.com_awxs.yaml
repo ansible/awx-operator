@@ -1433,6 +1433,11 @@ spec:
               service_account_annotations:
                 description: ServiceAccount annotations
                 type: string
+              replicas:
+                description: Number of instance replicas
+                type: integer
+                default: 1
+                format: int32
               web_replicas:
                 description: Number of web instance replicas
                 type: integer

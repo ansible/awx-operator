@@ -236,6 +236,7 @@ _init_projects_container_image: quay.io/centos/centos:stream9
 
 create_preload_data: true
 
+replicas: "1"
 web_replicas: "1"
 task_replicas: "1"
 
