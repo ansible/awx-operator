@@ -1,13 +1,24 @@
 ---
+- name: Check for presence of task deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ ansible_operator_meta.name }}-task"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: tower_task_deployment
+
 - name: Check for presence of web deployment
   k8s_info:
     api_version: v1
     kind: Deployment
-    name: "{{ ansible_operator_meta.name }}-web "
+    name: "{{ ansible_operator_meta.name }}-web"
     namespace: "{{ ansible_operator_meta.namespace }}"
-  register: tower_deployment
+  register: tower_web_deployment
 
-# Just execute deployment steps when auto_upgrade is true or when no deployment exists
+# if web and task deployments BOTH do not exist run install.yml
+# if EITHER web or task deployment exist and auto_upgrade is set to true run install.yml
 - name: Start installation
   include_tasks: install.yml
-  when: (tower_deployment['resources'] | length > 0 and auto_upgrade | bool ) or (tower_deployment['resources'] | length == 0)
+  when: (tower_task_deployment['resources'] or tower_web_deployment['resources'] | length > 0  and auto_upgrade | bool ) or (tower_task_deployment['resources'] or tower_web_deployment['resources'] | length == 0)
+
+
