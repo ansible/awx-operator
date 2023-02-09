@@ -1441,12 +1441,10 @@ spec:
               web_replicas:
                 description: Number of web instance replicas
                 type: integer
-                default: 1
                 format: int32
               task_replicas:
                 description: Number of task instance replicas
                 type: integer
-                default: 1
                 format: int32
               garbage_collect_secrets:
                 description: Whether or not to remove secrets upon instance removal
