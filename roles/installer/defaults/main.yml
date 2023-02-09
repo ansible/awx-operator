@@ -236,8 +236,9 @@ _init_projects_container_image: quay.io/centos/centos:stream9
 
 create_preload_data: true
 
-web_replicas: "1"
-task_replicas: "1"
+replicas: "1"
+web_replicas: ''
+task_replicas: ''
 
 task_args:
   - /usr/bin/launch_awx_task.sh
