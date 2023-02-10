@@ -26,6 +26,16 @@ spec:
 {% endif %}
     spec:
       serviceAccountName: '{{ ansible_operator_meta.name }}'
+{% if host_aliases | length > 0 %}
+      hostAliases:
+{% for item in host_aliases %}
+      - ip: {{ item.ip }}
+        hostnames:
+{% for hostname in item.hostnames %}
+        - {{ hostname }}
+{% endfor %}
+{% endfor %}
+{% endif %}
 {% if image_pull_secret is defined %}
       imagePullSecrets:
         - name: {{ image_pull_secret }}
