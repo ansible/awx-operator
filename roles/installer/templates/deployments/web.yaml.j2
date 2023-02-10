@@ -234,6 +234,13 @@ spec:
       nodeSelector:
         {{ node_selector | indent(width=8) }}
 {% endif %}
+{% if web_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ web_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ topology_spread_constraints | indent(width=8) }}
+{% endif %}
 {% if web_tolerations %}
       tolerations:
         {{ web_tolerations| indent(width=8) }}
