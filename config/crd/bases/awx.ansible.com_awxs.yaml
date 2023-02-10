@@ -153,7 +153,6 @@ spec:
               nodeport_port:
                 description: Port to use for the nodeport
                 type: integer
-                default: 30080
               node_selector:
                 description: nodeSelector for the pods
                 type: string
