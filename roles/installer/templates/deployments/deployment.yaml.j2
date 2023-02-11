@@ -371,6 +371,10 @@ spec:
 {% if ee_extra_env -%}
             {{ ee_extra_env | indent(width=12, first=True) }}
 {% endif %}
+# Optional sidecars to be added to the deployment:
+{% if extra_sidecars %}
+        {{ extra_sidecars | indent(width=8, first=True) }}
+{% endif %}
 {% if node_selector %}
       nodeSelector:
         {{ node_selector | indent(width=8) }}

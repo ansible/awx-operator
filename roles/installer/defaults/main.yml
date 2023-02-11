@@ -132,6 +132,14 @@ ee_pull_credentials_secret: ''
 #     emptyDir: {}
 extra_volumes: ''
 
+# Add extra sidecars to the AWX pod. Specify as literal block. E.g.:
+# extra_sidecars: |
+#   - name: my-sidecar
+#     image: my-sidecar-image
+#     imagePullPolicy: Always
+#     ...
+extra_sidecars: ''
+
 # Use these image versions for Ansible AWX.
 
 _image: quay.io/ansible/awx
