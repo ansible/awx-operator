@@ -165,6 +165,12 @@ spec:
               topology_spread_constraints:
                 description: topology rule(s) for the pods
                 type: string
+              task_topology_spread_constraints:
+                description: topology rule(s) for the task pods
+                type: string
+              web_topology_spread_constraints:
+                description: topology rule(s) for the web pods
+                type: string
               annotations:
                 description: annotations for the pods
                 type: string
