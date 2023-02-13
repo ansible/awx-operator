@@ -99,6 +99,28 @@ task_node_selector: ''
 #         app.kubernetes.io/name: "<resourcename>"
 topology_spread_constraints: ''
 
+# Add a topologySpreadConstraints for the task pods.
+# Specify as literal block. E.g.:
+# task_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>""
+task_topology_spread_constraints: ''
+
+# Add a topologySpreadConstraints for the web pods.
+# Specify as literal block. E.g.:
+# web_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+web_topology_spread_constraints: ''
+
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
 #   - key: "dedicated"
