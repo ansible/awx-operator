@@ -313,7 +313,10 @@ spec:
       nodeSelector:
         {{ node_selector | indent(width=8) }}
 {% endif %}
-{% if topology_spread_constraints %}
+{% if task_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ task_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
       topologySpreadConstraints:
         {{ topology_spread_constraints | indent(width=8) }}
 {% endif %}
