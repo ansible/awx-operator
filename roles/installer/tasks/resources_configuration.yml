@@ -1,6 +1,5 @@
 ---
-
-- name: Get the current resource pod information.
+- name: Get the current resource task pod information.
   k8s_info:
     api_version: v1
     kind: Pod
@@ -11,11 +10,20 @@
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
       - status.phase=Running
-  register: tower_pod
+  register: awx_task_pod
 
-- name: Set the resource pod name as a variable.
+- name: Initialize the resource pod name variable.
   set_fact:
-    tower_pod_name: "{{ tower_pod['resources'][0]['metadata']['name'] | default('') }}"
+    tower_pod_name: ""
+  when:
+    - tower_pod_name is not defined
+
+- name: Set the resource pod name to task pod name.
+  set_fact:
+    tower_pod_name: "{{ awx_task_pod['resources'][0]['metadata']['name'] | default('') }}"
+  when:
+    - awx_task_pod['resources'] | length > 0
+    - tower_pod_name == ""
 
 - name: Set user provided control plane ee image
   set_fact:
