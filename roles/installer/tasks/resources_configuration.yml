@@ -1,6 +1,5 @@
 ---
-
-- name: Get the current resource pod information.
+- name: Get the current resource task pod information.
   k8s_info:
     api_version: v1
     kind: Pod
@@ -11,7 +10,7 @@
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
       - status.phase=Running
-  register: tower_pod
+  register: awx_task_pod
 
 - name: Set the resource pod as a variable.
   set_fact:
