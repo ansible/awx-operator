@@ -1,13 +1,36 @@
 ---
-- name: Check for presence of Deployment
+- name: Check for presence of old awx Deployment
   k8s_info:
     api_version: apps/v1
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
-  register: tower_deployment
+  register: awx_deployment
 
-# Just execute deployment steps when auto_upgrade is true or when no deployment exists
-- name: Start installation
+- name: Check for presence of awx-task Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ ansible_operator_meta.name }}-task"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: awx_task_deployment
+
+- name: Check for presence of awx-web Deployment
+  k8s_info:
+    api_version: v1
+    kind: Deployment
+    name: "{{ ansible_operator_meta.name }}-web"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: awx_web_deployment
+
+- name: Start installation if auto_upgrade is true
   include_tasks: install.yml
-  when: (tower_deployment['resources'] | length > 0 and auto_upgrade | bool ) or (tower_deployment['resources'] | length == 0)
+  when:
+    - auto_upgrade | bool
+
+- name: Start installation if auto_upgrade is false and deployment is missing
+  include_tasks: install.yml
+  when:
+    - not (auto_upgrade | bool)
+    - not (awx_deployment['resources'] | length > 0)
+    - not (awx_web_deployment['resources'] | length > 0 and awx_task_deployment['resources'] | length > 0)
