@@ -722,18 +722,28 @@ pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
+If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
 
-| Name                        | Description                         | Default  |
-| --------------------------- | ----------------------------------- | -------  |
-| postgres_image              | Path of the image to pull           | postgres |
-| postgres_image_version      | Image version to pull               | 13       |
-| node_selector               | AWX pods' nodeSelector              | ''       |
-| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''       |
-| affinity                    | AWX pods' affinity rules            | ''       |
-| tolerations                 | AWX pods' tolerations               | ''       |
-| annotations                 | AWX pods' annotations               | ''       |
-| postgres_selector           | Postgres pods' nodeSelector         | ''       |
-| postgres_tolerations        | Postgres pods' tolerations          | ''       |
+| Name                             | Description                              | Default  |
+| -------------------------------- | ---------------------------------------- | -------  |
+| postgres_image                   | Path of the image to pull                | postgres |
+| postgres_image_version           | Image version to pull                    | 13       |
+| node_selector                    | AWX pods' nodeSelector                   | ''       |
+| web_node_selector                | AWX web pods' nodeSelector               | ''       |
+| task_node_selector               | AWX task pods' nodeSelector              | ''       |
+| topology_spread_constraints      | AWX pods' topologySpreadConstraints      | ''       |
+| web_topology_spread_constraints  | AWX web pods' topologySpreadConstraints  | ''       |
+| task_topology_spread_constraints | AWX task pods' topologySpreadConstraints | ''       |
+| affinity                         | AWX pods' affinity rules                 | ''       |
+| web_affinity                     | AWX web pods' affinity rules             | ''       |
+| task_affinity                    | AWX task pods' affinity rules            | ''       |
+| tolerations                      | AWX pods' tolerations                    | ''       |
+| web_tolerations                  | AWX web pods' tolerations                | ''       |
+| task_tolerations                 | AWX task pods' tolerations               | ''       |
+| annotations                      | AWX pods' annotations                    | ''       |
+| postgres_selector                | Postgres pods' nodeSelector              | ''       |
+| postgres_tolerations             | Postgres pods' tolerations               | ''       |
 
 Example of customization could be:
 
