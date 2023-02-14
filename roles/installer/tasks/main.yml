@@ -21,5 +21,4 @@
 - name: Start installation
   include_tasks: install.yml
   when: 
-    -(tower_task_deployment['resources'] | length > 0  and auto_upgrade | bool ) or (tower_web_deployment['resources'] | length > 0  and auto_upgrade | bool )
-    -(tower_web_deployment['resources'] | length == 0 and tower_task_deployment['resources'] | length == 0)
+      - (tower_task_deployment['resources'] | length > 0 and auto_upgrade | bool ) or (tower_task_deployment['resources'] | length == 0)
