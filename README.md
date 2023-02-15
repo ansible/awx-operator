@@ -713,7 +713,9 @@ spec:
   control_plane_priority_class: awx-demo-high-priority
   postgres_priority_class: awx-demo-medium-priority
 ```
+#### Scaling the Web and Task Pods independently 
 
+You can scale replicas up or down for each deployment by using the `web_replicas` or `task_replicas` respectively. You can scale all pods across both deployments by using `replicas` as well. These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section. 
 #### Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
@@ -766,6 +768,11 @@ spec:
     - key: "dedicated"
       operator: "Equal"
       value: "AWX"
+      effect: "NoSchedule"
+  task_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX_task"
       effect: "NoSchedule"
   postgres_selector: |
     disktype: ssd
