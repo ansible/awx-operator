@@ -713,7 +713,14 @@ spec:
   control_plane_priority_class: awx-demo-high-priority
   postgres_priority_class: awx-demo-medium-priority
 ```
+#### Scaling the Web and Task Pods independently 
 
+You can scale replicas up or down for each deployment by using the `web_replicas` or `task_replicas` respectively. You can scale all pods across both deployments by using `replicas` as well. The logic behind these CRD keys acts as such:
+
+- If you specify the `replicas` field, the key passed will scale both the `web` and `task` replicas to the same number. 
+- If `web_replicas` or `task_replicas` is ever passed, it will override the existing `replicas` field on the specific deployment with the new key value.
+
+These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section. 
 #### Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
@@ -722,18 +729,28 @@ pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
+If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
 
-| Name                        | Description                         | Default  |
-| --------------------------- | ----------------------------------- | -------  |
-| postgres_image              | Path of the image to pull           | postgres |
-| postgres_image_version      | Image version to pull               | 13       |
-| node_selector               | AWX pods' nodeSelector              | ''       |
-| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''       |
-| affinity                    | AWX pods' affinity rules            | ''       |
-| tolerations                 | AWX pods' tolerations               | ''       |
-| annotations                 | AWX pods' annotations               | ''       |
-| postgres_selector           | Postgres pods' nodeSelector         | ''       |
-| postgres_tolerations        | Postgres pods' tolerations          | ''       |
+| Name                             | Description                              | Default  |
+| -------------------------------- | ---------------------------------------- | -------  |
+| postgres_image                   | Path of the image to pull                | postgres |
+| postgres_image_version           | Image version to pull                    | 13       |
+| node_selector                    | AWX pods' nodeSelector                   | ''       |
+| web_node_selector                | AWX web pods' nodeSelector               | ''       |
+| task_node_selector               | AWX task pods' nodeSelector              | ''       |
+| topology_spread_constraints      | AWX pods' topologySpreadConstraints      | ''       |
+| web_topology_spread_constraints  | AWX web pods' topologySpreadConstraints  | ''       |
+| task_topology_spread_constraints | AWX task pods' topologySpreadConstraints | ''       |
+| affinity                         | AWX pods' affinity rules                 | ''       |
+| web_affinity                     | AWX web pods' affinity rules             | ''       |
+| task_affinity                    | AWX task pods' affinity rules            | ''       |
+| tolerations                      | AWX pods' tolerations                    | ''       |
+| web_tolerations                  | AWX web pods' tolerations                | ''       |
+| task_tolerations                 | AWX task pods' tolerations               | ''       |
+| annotations                      | AWX pods' annotations                    | ''       |
+| postgres_selector                | Postgres pods' nodeSelector              | ''       |
+| postgres_tolerations             | Postgres pods' tolerations               | ''       |
 
 Example of customization could be:
 
@@ -756,6 +773,11 @@ spec:
     - key: "dedicated"
       operator: "Equal"
       value: "AWX"
+      effect: "NoSchedule"
+  task_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX_task"
       effect: "NoSchedule"
   postgres_selector: |
     disktype: ssd
