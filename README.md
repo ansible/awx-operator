@@ -574,7 +574,7 @@ spec:
       cpu: 500m
       memory: 2Gi
     limits:
-      cpu: 1
+      cpu: '1'
       memory: 4Gi
   postgres_storage_requirements:
     requests:
