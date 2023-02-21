@@ -2,8 +2,18 @@ apiVersion: v1
 entries:
   awx-operator:
   - apiVersion: v2
+    appVersion: 1.2.0
+    created: "2023-02-21T13:59:24.217302823-05:00"
+    description: A Helm chart for the AWX Operator
+    digest: a6869c8e3974924636a9fbabdb96dafdbc91ef840245d59474f52d7828e3bb3a
+    name: awx-operator
+    type: application
+    urls:
+    - https://github.com/ansible/awx-operator/releases/download/1.2.0/awx-operator-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v2
     appVersion: 1.1.4
-    created: "2023-01-27T09:22:48.203953107-05:00"
+    created: "2023-02-21T13:59:24.215930886-05:00"
     description: A Helm chart for the AWX Operator
     digest: 0d2ddc1eb31a3e61fca1b37d6be957423aba79edc2f8343e2f4e27fd6030a3e7
     name: awx-operator
@@ -13,7 +23,7 @@ entries:
     version: 1.1.4
   - apiVersion: v2
     appVersion: 1.1.3
-    created: "2023-01-27T09:22:48.20310987-05:00"
+    created: "2023-02-21T13:59:24.214684828-05:00"
     description: A Helm chart for the AWX Operator
     digest: 0ea2087d0201e790db8aa30f4680d0ad2f7773520759ee6641c1d0c5e4ac2aa8
     name: awx-operator
@@ -23,7 +33,7 @@ entries:
     version: 1.1.3
   - apiVersion: v2
     appVersion: 1.1.2
-    created: "2023-01-27T09:22:48.202113006-05:00"
+    created: "2023-02-21T13:59:24.2135311-05:00"
     description: A Helm chart for the AWX Operator
     digest: bf81f22c3ad151bfcbd6173581f1dc1f35a3607a71133c331e9bcb97ea55024f
     name: awx-operator
@@ -33,7 +43,7 @@ entries:
     version: 1.1.2
   - apiVersion: v2
     appVersion: 1.1.1
-    created: "2023-01-27T09:22:48.201428183-05:00"
+    created: "2023-02-21T13:59:24.212454694-05:00"
     description: A Helm chart for the AWX Operator
     digest: 56fff8e295388abaf8ef7eb32505b926b031a662d2e1d164317513dc20c0333c
     name: awx-operator
@@ -43,7 +53,7 @@ entries:
     version: 1.1.1
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2023-01-27T09:22:48.200783611-05:00"
+    created: "2023-02-21T13:59:24.211428073-05:00"
     description: A Helm chart for the AWX Operator
     digest: 234128d94faa7820a645976ae9a97265fe98bebcefaa8bca9e10b343f586fcdb
     name: awx-operator
@@ -53,7 +63,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-27T09:22:48.200093837-05:00"
+    created: "2023-02-21T13:59:24.210431022-05:00"
     description: A Helm chart for the AWX Operator
     digest: d4dd771ff42a61df65bc26bbf414916e0e65a03bb00d9eb72336986f4645cfc0
     name: awx-operator
@@ -63,7 +73,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 0.30.0
-    created: "2023-01-27T09:22:48.199453672-05:00"
+    created: "2023-02-21T13:59:24.209424849-05:00"
     description: A Helm chart for the AWX Operator
     digest: 9844a92b43af1b9fd988c6c77ce8ab2943f47d25aba77e9195f1cf6310d33373
     name: awx-operator
@@ -73,7 +83,7 @@ entries:
     version: 0.30.0
   - apiVersion: v2
     appVersion: 0.29.0
-    created: "2023-01-27T09:22:48.198841567-05:00"
+    created: "2023-02-21T13:59:24.208425435-05:00"
     description: A Helm chart for the AWX Operator
     digest: 1fe903a3de69d54b9ff9b4b121728b12376e8493c26baf796713135ad5194902
     name: awx-operator
@@ -83,7 +93,7 @@ entries:
     version: 0.29.0
   - apiVersion: v2
     appVersion: 0.28.0
-    created: "2023-01-27T09:22:48.198199591-05:00"
+    created: "2023-02-21T13:59:24.20741248-05:00"
     description: A Helm chart for the AWX Operator
     digest: fc6c93d7886e9475a9e4ec3944b4842702d7b6b5e5ecb0bb3fcac7f47a5a62fa
     name: awx-operator
@@ -93,7 +103,7 @@ entries:
     version: 0.28.0
   - apiVersion: v2
     appVersion: 0.27.0
-    created: "2023-01-27T09:22:48.19750323-05:00"
+    created: "2023-02-21T13:59:24.205952647-05:00"
     description: A Helm chart for the AWX Operator
     digest: 7ab39a927ffad72746c34f9b4f614bdea629a4c05851aba9e40252a30cf1e2c5
     name: awx-operator
@@ -103,7 +113,7 @@ entries:
     version: 0.27.0
   - apiVersion: v2
     appVersion: 0.26.0
-    created: "2023-01-27T09:22:48.19675227-05:00"
+    created: "2023-02-21T13:59:24.204712835-05:00"
     description: A Helm chart for the AWX Operator
     digest: 2c17747da2a289d0cdde0c6c8641ae41bdcb4683cabbb1efeebeb37fa2ce54b5
     name: awx-operator
@@ -113,7 +123,7 @@ entries:
     version: 0.26.0
   - apiVersion: v2
     appVersion: 0.25.0
-    created: "2023-01-27T09:22:48.195114993-05:00"
+    created: "2023-02-21T13:59:24.20397979-05:00"
     description: A Helm chart for the AWX Operator
     digest: 671b5fc067fce44e3163c8ce38a8b70d38d955f76826f8d9811398a70d09ae09
     name: awx-operator
@@ -123,7 +133,7 @@ entries:
     version: 0.25.0
   - apiVersion: v2
     appVersion: 0.24.0
-    created: "2023-01-27T09:22:48.194353653-05:00"
+    created: "2023-02-21T13:59:24.203304203-05:00"
     description: A Helm chart for the AWX Operator
     digest: ebbdb85de1daac24d6659a9fa19596b8ff9e76e62bf95fccba819389ac6c9741
     name: awx-operator
@@ -133,7 +143,7 @@ entries:
     version: 0.24.0
   - apiVersion: v2
     appVersion: 0.23.0
-    created: "2023-01-27T09:22:48.193820456-05:00"
+    created: "2023-02-21T13:59:24.202843894-05:00"
     description: A Helm chart for the AWX Operator
     digest: b910830da382832055f67bc89548e4e4fd163b77881c6e9ae76e9b1e2f588619
     name: awx-operator
@@ -143,7 +153,7 @@ entries:
     version: 0.23.0
   - apiVersion: v2
     appVersion: 0.22.0
-    created: "2023-01-27T09:22:48.193328069-05:00"
+    created: "2023-02-21T13:59:24.202312989-05:00"
     description: A Helm chart for the AWX Operator
     digest: 7727626fd07286c2476af7eff4e29eea06cfa98baba219ebfc719a59ad3b3853
     name: awx-operator
@@ -153,7 +163,7 @@ entries:
     version: 0.22.0
   - apiVersion: v2
     appVersion: 0.21.0
-    created: "2023-01-27T09:22:48.192815746-05:00"
+    created: "2023-02-21T13:59:24.201858606-05:00"
     description: A Helm chart for the AWX Operator
     digest: 3e8088c3e04340d13b565abc319b4952eb508a1f4bd611772f0332f5aaa89cd4
     name: awx-operator
@@ -161,4 +171,4 @@ entries:
     urls:
     - https://github.com/ansible/awx-operator/releases/download/0.21.0/awx-operator-0.21.0.tgz
     version: 0.21.0
-generated: "2023-01-27T09:22:48.191694745-05:00"
+generated: "2023-02-21T13:59:24.200954928-05:00"
