@@ -17,3 +17,20 @@
       {{ _custom_init_container_image |
          default(lookup('env', 'RELATED_IMAGE_AWX_INIT_CONTAINER')) |
          default(_default_init_container_image, true) }}
+
+- name: Set default awx init projects container image
+  set_fact:
+    _default_init_projects_container_image: "{{ _init_projects_container_image }}"
+
+- name: Set user provided awx init projects image
+  set_fact:
+    _custom_init_projects_container_image: "{{ init_projects_container_image }}"
+  when:
+    - init_projects_container_image | default([]) | length
+
+- name: Set Init projects image URL
+  set_fact:
+    _init_projects_container_image: >-
+      {{ _custom_init_projects_container_image |
+         default(lookup('env', 'RELATED_IMAGE_AWX_INIT_PROJECTS_CONTAINER')) |
+         default(_default_init_projects_container_image, true) }}

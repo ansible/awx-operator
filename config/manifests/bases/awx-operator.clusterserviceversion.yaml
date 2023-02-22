@@ -687,6 +687,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Init Projects Container image to use
+        displayName: Init Projects Container Image
+        path: init_projects_container_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Secret where can be found the trusted Certificate Authority Bundle
         path: bundle_cacert_secret
         x-descriptors:
