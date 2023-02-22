@@ -66,9 +66,8 @@
 
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: "{{ awx_postgres_host }}.{{ ansible_operator_meta.namespace }}.svc.{{ cluster_name }}"
+    resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc." + cluster_name, awx_postgres_host) }}'  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
-  when: awx_postgres_type == 'managed'
 
 - name: Set pg_restore command
   set_fact:
