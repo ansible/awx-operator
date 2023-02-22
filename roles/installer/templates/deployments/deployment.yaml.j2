@@ -245,18 +245,6 @@ spec:
 {% if web_extra_volume_mounts -%}
             {{ web_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
-{% if termination_grace_period_seconds is defined %}
-            - name: pre-stop-data
-              mountPath: /var/lib/pre-stop
-            - name: pre-stop-scripts
-              mountPath: /var/lib/pre-stop/scripts
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                - bash
-                - /var/lib/pre-stop/scripts/termination-waiter
-{% endif %}
           env:
             - name: MY_POD_NAMESPACE
               valueFrom:
