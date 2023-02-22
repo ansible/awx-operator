@@ -33,11 +33,6 @@ jobs:
           docker push quay.io/${{ github.repository }}:${{ github.event.release.tag_name }}
           docker push quay.io/${{ github.repository }}:latest
 
-      - name: Configure git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Release Helm chart
         run: |
           ansible-playbook ansible/helm-release.yml -v \
@@ -45,3 +40,4 @@ jobs:
             -e chart_owner=${{ github.repository_owner }} \
             -e tag=${{ github.event.release.tag_name }} \
             -e gh_token=${{ secrets.GITHUB_TOKEN }}
+            -e gh_user=${{ github.actor }}

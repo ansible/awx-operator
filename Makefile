@@ -395,9 +395,3 @@ helm-index:
 	$(HELM) repo index .cr-release-packages --url https://github.com/$(CHART_OWNER)/$(CHART_REPO)/releases/download/ --merge gh-pages/index.yaml
 
 	mv .cr-release-packages/index.yaml gh-pages/index.yaml
-
-	@echo "== PUSH INDEX FILE =="
-	cd gh-pages;\
-	git add index.yaml;\
-	git commit -m "Updated index.yaml latest release";\
-	git push;\
