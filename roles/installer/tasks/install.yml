@@ -1,4 +1,12 @@
 ---
+- name: Delete old deployment for before installing during upgrade
+  k8s:
+    kind: Deployment
+    api_version: v1
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    state: absent
+
 - name: Patching labels to AWX kind
   k8s:
     state: present
