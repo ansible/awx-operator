@@ -269,7 +269,7 @@ yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
 
 You just completed the most basic install of an AWX instance via this operator. Congratulations!!!
 
-For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
+For an example using the Nginx Ingress Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
 
 
 ### Helm Install on existing cluster
