@@ -32,24 +32,24 @@
   - this_restore['resources'][0]['metadata']['labels']
 
 - block:
-    - include_tasks: init.yml
+  - include_tasks: init.yml
 
-    - include_tasks: import_vars.yml
+  - include_tasks: import_vars.yml
 
-    - include_tasks: secrets.yml
+  - include_tasks: secrets.yml
 
-    - include_tasks: deploy_awx.yml
+  - include_tasks: deploy_awx.yml
 
-    - include_tasks: postgres.yml
+  - include_tasks: postgres.yml
 
-    - name: Set flag signifying this restore was successful
-      set_fact:
-        tower_restore_complete: True
+  - name: Set flag signifying this restore was successful
+    set_fact:
+      tower_restore_complete: True
 
-    - include_tasks: cleanup.yml
+  - include_tasks: cleanup.yml
 
   when:
-    - this_restore['resources'][0]['status']['restoreComplete'] is not defined
+  - this_restore['resources'][0]['status']['restoreComplete'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml
