@@ -175,6 +175,13 @@ spec:
               web_topology_spread_constraints:
                 description: topology rule(s) for the web pods
                 type: string
+              termination_grace_period_seconds:
+                description: Optional duration in seconds pods needs to terminate gracefully
+                type: integer
+                format: int32
+              service_labels:
+                description: Additional labels to apply to the service
+                type: string
               annotations:
                 description: annotations for the pods
                 type: string
