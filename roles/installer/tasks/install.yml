@@ -6,7 +6,6 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     name: "{{ ansible_operator_meta.name }}"
     state: absent
-    wait: true
 
 - name: Patching labels to AWX kind
   k8s:
