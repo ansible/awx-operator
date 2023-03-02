@@ -25,8 +25,26 @@ spec:
         app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels//version.yaml.j2") | indent(width=8) | trim }}
-{% if annotations %}
       annotations:
+{% for template in [
+    "configmaps/config",
+    "configmaps/pre_stop_scripts",
+    "secrets/app_credentials",
+    "storage/persistent",
+  ] %}
+        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | md5 }}"
+{% endfor %}
+{% for secret in [
+    "bundle_cacert",
+    "route_tls",
+    "ldap_cacert",
+    "secret_key",
+    "receptor_ca",
+    "receptor_work_signing",
+  ] %}
+        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | md5 }}"
+{% endfor %}
+{% if annotations %}
         {{ annotations | indent(width=8) }}
 {% endif %}
     spec:
@@ -102,13 +120,13 @@ spec:
           resources: {{ redis_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
+          imagePullPolicy: '{{ image_pull_policy }}'
 {% if web_command %}
           command: {{ web_command }}
 {% endif %}
 {% if web_args %}
           args: {{ web_args }}
 {% endif %}
-          imagePullPolicy: '{{ image_pull_policy }}'
           ports:
             - containerPort: 8052
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
