@@ -47,7 +47,7 @@
 - name: Retrieve instance version
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage --version"
