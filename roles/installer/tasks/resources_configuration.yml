@@ -14,15 +14,15 @@
 
 - name: Set the resource pod as a variable.
   set_fact:
-    tower_pod: >-
-      {{ tower_pod['resources']
+    awx_task_pod: >-
+      {{ awx_task_pod['resources']
          | rejectattr('metadata.deletionTimestamp', 'defined')
          | sort(attribute='metadata.creationTimestamp')
          | first | default({}) }}
 
 - name: Set the resource pod name as a variable.
   set_fact:
-    tower_pod_name: "{{ tower_pod['metadata']['name'] | default('') }}"
+    awx_task_pod_name: "{{ awx_task_pod['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
   set_fact:
@@ -252,8 +252,8 @@
     wait: yes
     wait_timeout: "{{ (120 * replicas) or 120 }}"
   loop:
-    - web
     - task
+    - web
   register: this_deployment_result
 
 - block:
@@ -271,7 +271,7 @@
 
     - name: Update new resource pod as a variable.
       set_fact:
-        tower_pod: >-
+        awx_task_pod: >-
           {{ _new_pod['resources']
              | rejectattr('metadata.deletionTimestamp', 'defined')
              | sort(attribute='metadata.creationTimestamp')
@@ -279,11 +279,11 @@
 
     - name: Update new resource pod name as a variable.
       set_fact:
-        tower_pod_name: '{{ tower_pod["metadata"]["name"] | default("")}}'
+        awx_task_pod_name: '{{ awx_task_pod["metadata"]["name"] | default("")}}'
   when:
     - this_deployment_result.changed
 
 - name: Verify the resource pod name is populated.
   assert:
-    that: tower_pod_name != ''
+    that: awx_task_pod_name != ''
     fail_msg: "Could not find the tower pod's name."
