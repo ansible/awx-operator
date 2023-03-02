@@ -50,7 +50,7 @@
 
 - name: Determine the timestamp for the backup once for all nodes
   set_fact:
-    now: '{{ lookup("pipe", "date +%F-%T") }}'
+    now: '{{ lookup("pipe", "date +%F-%H%M%S") }}'
 
 - name: Set backup directory name
   set_fact:
