@@ -410,7 +410,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 spec:
   ...
   service_type: LoadBalancer
-  loadbalanserip: '192.168.10.25'
+  loadbalancerip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
   service_annotations: |
