@@ -403,12 +403,14 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | --------------------- | ---------------------------------------- | ------- |
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
+| loadbalancerip        | Assign Loadbalancer IP                   | ''      |  
 
 ```yaml
 ---
 spec:
   ...
   service_type: LoadBalancer
+  loadbalanserip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
   service_annotations: |
