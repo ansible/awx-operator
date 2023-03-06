@@ -1410,3 +1410,4 @@ testing slack
 testing urls
 testing urls
 testing urls
+testing template names
