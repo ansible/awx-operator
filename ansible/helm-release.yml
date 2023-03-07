@@ -38,9 +38,11 @@
       changed_when: asset_upload.json.state == "uploaded"
 
     - name: Configure git config
-      run: |
-        git config user.name "{{ gh_user }}"
-        git config user.email "{{ gh_user }}@users.noreply.github.com"
+      shell: |
+        git config user.name {{ gh_user }}
+        git config user.email {{ gh_user }}@users.noreply.github.com
+      args:
+        chdir: "{{ playbook_dir }}/../gh-pages"
 
     - name: Publish helm index
       command: |
