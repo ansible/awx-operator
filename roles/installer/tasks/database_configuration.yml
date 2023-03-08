@@ -85,14 +85,14 @@
 
 - name: Set PostgreSQL Configuration
   set_fact:
-    pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
-  no_log: "{{ no_log }}"
-
-- name: Set actual postgres configuration secret used
   set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
 - name: Store Database Configuration
+    pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
+  no_log: "{{ no_log }}"
+
+- name: Set actual postgres configuration secret used
   set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
     awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
@@ -100,6 +100,7 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+    awx_postgres_sslunauthorized: "{{ pg_config['resources'][0]['data']['sslrejectUnauthorized'] |  default('false'|b64encode) | b64decode }}"
   no_log: "{{ no_log }}"
 
 - name: Set database as managed
