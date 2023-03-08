@@ -85,7 +85,6 @@
 
 - name: Set PostgreSQL Configuration
   set_fact:
-  set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
 - name: Store Database Configuration
