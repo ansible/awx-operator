@@ -54,7 +54,7 @@
         chdir: "{{ playbook_dir }}/../"
 
     - name: Stage and Push commit to gh-pages branch
-      command: |
+      shell: |
         git add index.yaml
         git commit -m "Updated index.yaml latest release"
         git push
