@@ -62,7 +62,7 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
+{% if bundle_ca_crt or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -73,10 +73,6 @@ spec:
 {% if bundle_ca_crt  %}
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
-{% endif %}
-{% if projects_persistence|bool %}
-              chmod 775 /var/lib/awx/projects
-              chgrp 1000 /var/lib/awx/projects
 {% endif %}
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
@@ -89,10 +85,6 @@ spec:
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
-{% endif %}
-{% if projects_persistence|bool %}
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
 {% endif %}
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
@@ -180,8 +172,6 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -350,17 +340,6 @@ spec:
             items:
               - key: receptor_conf
                 path: receptor.conf
-        - name: "{{ ansible_operator_meta.name }}-projects"
-{% if projects_persistence|bool %}
-          persistentVolumeClaim:
-{% if projects_existing_claim %}
-            claimName: {{ projects_existing_claim }}
-{% else %}
-            claimName: '{{ ansible_operator_meta.name }}-projects-claim'
-{% endif %}
-{% else %}
-          emptyDir: {}
-{% endif %}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:
