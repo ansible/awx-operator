@@ -20,6 +20,12 @@ $ helm repo update
 $ helm search repo awx-operator -l
 ```
 
+Install a specific awx-operator helm chart version in a specific namespace
+
+```
+helm install my-awx-operator awx-operator/awx-operator -n awx --create-namespace -f my-values.yml --version 1.3.0
+```
+
 ### Running helm-release playbook
 
 If the helm release automation fails, sometimes it may be necessary to re-run and debug the release playbook.  Here is how to run it:

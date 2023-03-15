@@ -21,6 +21,12 @@ To install the `awx-operator` chart:
 helm install my-awx-operator awx-operator/awx-operator
 ```
 
+To install a specific awx-operator helm chart version in a specific namespace:
+
+```
+helm install my-awx-operator awx-operator/awx-operator -n awx --create-namespace -f my-values.yml --version 1.3.0
+```
+
 To uninstall the chart:
 
 ```bash
