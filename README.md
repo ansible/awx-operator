@@ -533,6 +533,8 @@ type: Opaque
 
 > It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 
+**Note**. The vairable `sslrejectUnauthorized1 is valid for `external` databases only. The allowed values are: `false`, `true`.
+
 **Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
 
 Once the secret is created, you can specify it on your spec:
