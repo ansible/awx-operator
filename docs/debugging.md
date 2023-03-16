@@ -1,4 +1,67 @@
-# Iterating on the installer without deploying the operator
+# Debugging the AWX Operator
+
+## General Debugging
+
+When the operator is deploying AWX, it is running the `installer` role inside the operator container. If the AWX CR's status is `Failed`, it is often useful to look at the awx-operator container logs, which shows the output of the installer role. To see these logs, run:
+
+```
+kubectl logs deployments/awx-operator-controller-manager -c awx-manager -f
+```
+
+### Inspect k8s Resources
+
+Past that, it is often useful to inspect various resources the AWX Operator manages like:
+* awx
+* awxbackup
+* awxrestore
+* pod
+* deployment
+* pvc
+* service
+* ingress
+* route
+* secrets
+* serviceaccount
+
+And if installing via OperatorHub and OLM:
+* subscription
+* csv
+* installPlan
+* catalogSource
+
+To inspect these resources you can use these commands
+
+```
+# Inspecting k8s resources
+kubectl describe -n <namespace> <resource> <resource-name>
+kubectl get -n <namespace> <resource> <resource-name> -o yaml
+kubectl logs -n <namespace> <resource> <resource-name>
+
+# Inspecting Pods
+kubectl exec -it -n <namespace> <pod> <pod-name>
+```
+
+
+### Configure No Log
+
+It is possible to show task output for debugging by setting no_log to false on the AWX CR spec.
+This will show output in the awx-operator logs for any failed tasks where no_log was set to true.
+
+For example:
+
+```
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-demo
+spec:
+  service_type: nodeport
+  no_log: false                  # <------------
+
+```
+
+## Iterating on the installer without deploying the operator
 
 Go through the [normal basic install](https://github.com/ansible/awx-operator/blob/devel/README.md#basic-install) steps.
 
