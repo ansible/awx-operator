@@ -12,8 +12,11 @@
   kubernetes.core.k8s_scale:
     api_version: v1
     kind: Deployment
-    name: "{{ ansible_operator_meta.name }}"
+    name: "{{ item }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
     replicas: 0
     wait: yes
+  loop:
+    - "{{ ansible_operator_meta.name }}-task"
+    - "{{ ansible_operator_meta.name }}-web"
   when: this_deployment['resources'] | length
