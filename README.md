@@ -659,7 +659,7 @@ Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to
 
 #### Containers HostAliases Requirements
 
-Sometimes you might need to use HostAliases in web/task containers.
+Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
 
 | Name         | Description           | Default |
 | ------------ | --------------------- | ------- |
