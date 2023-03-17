@@ -49,6 +49,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
             * [Upgrade of instances without auto upgrade](#upgrade-of-instances-without-auto-upgrade)
          * [Service Account](#service-account)
          * [Labeling operator managed objects](#labeling-operator-managed-objects)
+         * [Pods termination grace period](#pods-termination-grace-period)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
          * [Backup](#backup)
@@ -269,7 +270,7 @@ yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
 
 You just completed the most basic install of an AWX instance via this operator. Congratulations!!!
 
-For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
+For an example using the Nginx Ingress Controller in Minikube, don't miss our [demo video](https://asciinema.org/a/416946).
 
 
 ### Helm Install on existing cluster
@@ -574,7 +575,7 @@ spec:
       cpu: 500m
       memory: 2Gi
     limits:
-      cpu: 1
+      cpu: '1'
       memory: 4Gi
   postgres_storage_requirements:
     requests:
@@ -888,7 +889,7 @@ A sample of extra settings can be found as below. All possible options can be fo
       value: 'LDAPSearch("OU=Groups,DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(objectClass=group)",)'
 
     - setting: AUTH_LDAP_GROUP_TYPE
-      value: 'GroupOfNamesType(name_attr="cn")'
+      value: 'GroupOfNamesType'
 
     - setting: AUTH_LDAP_USER_ATTR_MAP
       value: '{"first_name": "givenName","last_name": "sn","email": "mail"}'
@@ -1264,6 +1265,46 @@ spec:
   - my/service
 ...
 ```
+
+#### Pods termination grace period
+
+During deployment restarts or new rollouts, when old ReplicaSet Pods are being
+terminated, the corresponding jobs which are managed (executed or controlled)
+by old AWX Pods may end up in `Error` state as there is no mechanism to
+transfer them to the newly spawned AWX Pods. To work around the problem one
+could set `termination_grace_period_seconds` in AWX spec, which does the
+following:
+
+* It sets the corresponding
+  [`terminationGracePeriodSeconds`](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination)
+  Pod spec of the AWX Deployment to the value provided
+
+  > The grace period is the duration in seconds after the processes running in
+  > the pod are sent a termination signal and the time when the processes are
+  > forcibly halted with a kill signal
+
+* It adds a
+  [`PreStop`](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-handler-execution)
+  hook script, which will keep AWX Pods in terminating state until it finished,
+  up to `terminationGracePeriodSeconds`.
+
+  > This grace period applies to the total time it takes for both the PreStop
+  > hook to execute and for the Container to stop normally
+
+  While the hook script just waits until the corresponding AWX Pod (instance)
+  no longer has any managed jobs, in which case it finishes with success and
+  hands over the overall Pod termination process to normal AWX processes.
+
+One may want to set this value to the maximum duration they accept to wait for
+the affected Jobs to finish. Keeping in mind that such finishing jobs may
+increase Pods termination time in such situations as `kubectl rollout restart`,
+AWX upgrade by the operator, or Kubernetes [API-initiated
+evictions](https://kubernetes.io/docs/concepts/scheduling-eviction/api-eviction/).
+
+
+| Name                             | Description                                                     | Default |
+| -------------------------------- | --------------------------------------------------------------- | ------- |
+| termination_grace_period_seconds | Optional duration in seconds pods needs to terminate gracefully | not set |
 
 ### Uninstall ###
 

@@ -1,0 +1,33 @@
+#/usr/bin/env bash
+
+PRE_STOP_LOG_ROLE="${PRE_STOP_LOG_ROLE:-waiter}"
+source $(dirname "$0")/termination-env
+
+{
+
+log "The hook has started: %s" \
+  "$(parameters_string \
+    "marker_file" \
+    "heartbeat_file" \
+    "bailout_file" \
+    "recheck_sleep" \
+    "report_every" \
+  )"
+
+n=0
+checks_started=$(date +%s)
+
+while ! [[ -f $marker_file ]]; do
+  check_bailout
+  check_heartbeat $checks_started
+
+  if [[ $(($n % $report_every)) -eq 0 ]]; then
+    log "Waiting for the marker file to be accessible..."
+  fi
+  n=$(($n + 1))
+  sleep $recheck_sleep
+done
+
+log "The marker file found, exiting to proceed to termination"
+
+} > "$stdout" 2> "$stderr"

@@ -156,7 +156,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.25.3/ansible-operator_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.26.0/ansible-operator_$(OS)_$(ARCHA) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else
@@ -187,7 +187,7 @@ ifeq (,$(shell which opm 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.25.3/$(OS)-$(ARCHA)-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.26.0/$(OS)-$(ARCHA)-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
@@ -395,9 +395,3 @@ helm-index:
 	$(HELM) repo index .cr-release-packages --url https://github.com/$(CHART_OWNER)/$(CHART_REPO)/releases/download/ --merge gh-pages/index.yaml
 
 	mv .cr-release-packages/index.yaml gh-pages/index.yaml
-
-	@echo "== PUSH INDEX FILE =="
-	cd gh-pages;\
-	git add index.yaml;\
-	git commit -m "Updated index.yaml latest release";\
-	git push;\

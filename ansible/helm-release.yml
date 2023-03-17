@@ -37,6 +37,13 @@
       register: asset_upload
       changed_when: asset_upload.json.state == "uploaded"
 
+    - name: Configure git config
+      shell: |
+        git config user.name {{ gh_user }}
+        git config user.email {{ gh_user }}@users.noreply.github.com
+      args:
+        chdir: "{{ playbook_dir }}/../gh-pages"
+
     - name: Publish helm index
       command: |
         make helm-index
@@ -45,3 +52,11 @@
         CR_TOKEN: "{{ gh_token }}"
       args:
         chdir: "{{ playbook_dir }}/../"
+
+    - name: Stage and Push commit to gh-pages branch
+      shell: |
+        git add index.yaml
+        git commit -m "Updated index.yaml latest release"
+        git push
+      args:
+        chdir: "{{ playbook_dir }}/../gh-pages"

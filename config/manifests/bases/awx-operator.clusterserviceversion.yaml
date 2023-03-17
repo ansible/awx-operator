@@ -622,6 +622,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Termination Grace Period Seconds
+        path: termination_grace_period_seconds
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Service Labels
         path: service_labels
         x-descriptors:
@@ -684,6 +689,12 @@ spec:
       - description: Specify volume mounts to be added to Init container
         displayName: Init Container Extra Volume Mounts
         path: init_container_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Init Projects Container image to use
+        displayName: Init Projects Container Image
+        path: init_projects_container_image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

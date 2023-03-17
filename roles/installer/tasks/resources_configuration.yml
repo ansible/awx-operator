@@ -13,9 +13,17 @@
       - status.phase=Running
   register: tower_pod
 
+- name: Set the resource pod as a variable.
+  set_fact:
+    tower_pod: >-
+      {{ tower_pod['resources']
+         | rejectattr('metadata.deletionTimestamp', 'defined')
+         | sort(attribute='metadata.creationTimestamp')
+         | first | default({}) }}
+
 - name: Set the resource pod name as a variable.
   set_fact:
-    tower_pod_name: "{{ tower_pod['resources'][0]['metadata']['name'] | default('') }}"
+    tower_pod_name: "{{ tower_pod['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
   set_fact:
@@ -32,13 +40,13 @@
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-receptor-ca'
-  register: _receptor_ca
+  register: receptor_ca
   no_log: "{{ no_log }}"
 
 - name: Migrate Receptor CA Secret
   when:
-    - _receptor_ca['resources'] | default([]) | length
-    - _receptor_ca['resources'][0]['type'] != "kubernetes.io/tls"
+    - receptor_ca['resources'] | default([]) | length
+    - receptor_ca['resources'][0]['type'] != "kubernetes.io/tls"
   block:
     - name: Delete old Receptor CA Secret
       k8s:
@@ -53,7 +61,7 @@
       register: _receptor_ca_key_file
     - name: Copy Receptor CA key from old secret to tempfile
       copy:
-        content: "{{ _receptor_ca['resources'][0]['data']['receptor-ca.key'] | b64decode }}"
+        content: "{{ receptor_ca['resources'][0]['data']['receptor-ca.key'] | b64decode }}"
         dest: "{{ _receptor_ca_key_file.path }}"
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor-ca.crt
@@ -63,13 +71,24 @@
       register: _receptor_ca_crt_file
     - name: Copy Receptor CA cert from old secret to tempfile
       copy:
-        content: "{{ _receptor_ca['resources'][0]['data']['receptor-ca.crt'] | b64decode }}"
+        content: "{{ receptor_ca['resources'][0]['data']['receptor-ca.crt'] | b64decode }}"
         dest: "{{ _receptor_ca_crt_file.path }}"
       no_log: "{{ no_log }}"
     - name: Create New Receptor CA secret
       k8s:
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_ca_secret.yaml.j2') }}"
+      no_log: "{{ no_log }}"
+    - name: Read New Receptor CA Secret
+      k8s_info:
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-receptor-ca'
+      register: _receptor_ca
+      no_log: "{{ no_log }}"
+    - name: Set receptor_ca variable
+      set_fact:
+        receptor_ca: '{{ _receptor_ca }}'
       no_log: "{{ no_log }}"
     - name: Remove tempfiles
       file:
@@ -106,6 +125,17 @@
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_ca_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
+    - name: Read Receptor CA secret
+      k8s_info:
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-receptor-ca'
+      register: _receptor_ca
+      no_log: "{{ no_log }}"
+    - name: Set receptor_ca variable
+      set_fact:
+        receptor_ca: '{{ _receptor_ca }}'
+      no_log: "{{ no_log }}"
     - name: Remove tempfiles
       file:
         path: "{{ item }}"
@@ -113,14 +143,14 @@
       loop:
         - "{{ _receptor_ca_key_file.path }}"
         - "{{ _receptor_ca_crt_file.path }}"
-  when: not _receptor_ca['resources'] | default([]) | length
+  when: not receptor_ca['resources'] | default([]) | length
 
 - name: Check for Receptor work signing Secret
   k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ ansible_operator_meta.name }}-receptor-work-signing'
-  register: _receptor_work_signing
+  register: receptor_work_signing
   no_log: "{{ no_log }}"
 
 - name: Generate Receptor work signing RSA key pair
@@ -151,6 +181,17 @@
         apply: true
         definition: "{{ lookup('template', 'secrets/receptor_work_signing_secret.yaml.j2') }}"
       no_log: "{{ no_log }}"
+    - name: Read Receptor work signing Secret
+      k8s_info:
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ ansible_operator_meta.name }}-receptor-work-signing'
+      register: _receptor_work_signing
+      no_log: "{{ no_log }}"
+    - name: Set receptor_work_signing variable
+      set_fact:
+        receptor_work_signing: '{{ _receptor_work_signing }}'
+      no_log: "{{ no_log }}"
     - name: Remove tempfiles
       file:
         path: "{{ item }}"
@@ -158,16 +199,16 @@
       loop:
         - "{{ _receptor_work_signing_private_key_file.path }}"
         - "{{ _receptor_work_signing_public_key_file.path }}"
-  when: not _receptor_work_signing['resources'] | default([]) | length
+  when: not receptor_work_signing['resources'] | default([]) | length
 
 - name: Apply Resources
   k8s:
     apply: yes
     definition: "{{ lookup('template', item + '.yaml.j2') }}"
     wait: yes
-  register: tower_resources_result
   loop:
     - 'configmaps/config'
+    - 'configmaps/pre_stop_scripts'
     - 'secrets/app_credentials'
     - 'rbac/service_account'
     - 'storage/persistent'
@@ -210,21 +251,10 @@
     apply: yes
     definition: "{{ lookup('template', 'deployments/deployment.yaml.j2') }}"
     wait: yes
+    wait_timeout: "{{ 120 * replicas or 120 }}"
   register: this_deployment_result
 
 - block:
-    - name: Delete pod to reload a resource configuration
-      k8s:
-        api_version: v1
-        state: absent
-        kind: Pod
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        name: '{{ tower_pod_name }}'
-        wait: yes
-      when:
-        - tower_resources_result.changed
-        - tower_pod_name | length
-
     - name: Get the new resource pod information after updating resource.
       k8s_info:
         kind: Pod
@@ -236,17 +266,20 @@
         field_selectors:
           - status.phase=Running
       register: _new_pod
-      until:
-        - _new_pod['resources'] | length
-        - _new_pod['resources'][0]['metadata']['name'] != tower_pod_name
-      delay: 5
-      retries: 60
+
+    - name: Update new resource pod as a variable.
+      set_fact:
+        tower_pod: >-
+          {{ _new_pod['resources']
+             | rejectattr('metadata.deletionTimestamp', 'defined')
+             | sort(attribute='metadata.creationTimestamp')
+             | last | default({}) }}
 
     - name: Update new resource pod name as a variable.
       set_fact:
-        tower_pod_name: '{{ _new_pod["resources"][0]["metadata"]["name"] }}'
+        tower_pod_name: '{{ tower_pod["metadata"]["name"] | default("")}}'
   when:
-    - tower_resources_result.changed or this_deployment_result.changed
+    - this_deployment_result.changed
 
 - name: Verify the resource pod name is populated.
   assert:
