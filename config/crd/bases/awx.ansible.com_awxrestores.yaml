@@ -39,6 +39,8 @@ spec:
           spec:
             type: object
             x-kubernetes-preserve-unknown-fields: true
+            required:
+            - deployment_name
             properties:
               backup_source:
                 description: Backup source
