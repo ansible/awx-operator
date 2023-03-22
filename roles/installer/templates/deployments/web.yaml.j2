@@ -172,6 +172,18 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              subPath: "tls.crt"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
+              subPath: "tls.key"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/signing/work-public-key.pem"
+              subPath: "work-public-key.pem"
+              readOnly: true
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -266,6 +278,12 @@ spec:
         {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
       volumes:
+        - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-ca"
+        - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-work-signing"
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
           emptyDir: {}
