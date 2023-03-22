@@ -180,6 +180,8 @@ spec:
             {{ web_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           env:
+            - name: AWX_COMPONENT
+              value: "web"
             - name: MY_POD_NAMESPACE
               valueFrom:
                 fieldRef:

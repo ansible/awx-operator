@@ -238,6 +238,8 @@ spec:
                 - /var/lib/pre-stop/scripts/termination-master
 {% endif %}
           env:
+            - name: AWX_COMPONENT
+              value: "task"
             - name: SUPERVISOR_WEB_CONFIG_PATH
               value: "/etc/supervisord.conf"
             - name: AWX_SKIP_MIGRATIONS
