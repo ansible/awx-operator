@@ -39,5 +39,5 @@ jobs:
             -e operator_image=quay.io/${{ github.repository }} \
             -e chart_owner=${{ github.repository_owner }} \
             -e tag=${{ github.event.release.tag_name }} \
-            -e gh_token=${{ secrets.GITHUB_TOKEN }}
+            -e gh_token=${{ secrets.GITHUB_TOKEN }} \
             -e gh_user=${{ github.actor }}
