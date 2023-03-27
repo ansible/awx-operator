@@ -14,49 +14,73 @@
           Release must exist before running this playbook
       when: release is not success
 
-    - name: Build and package helm chart
-      command: |
-        make helm-package
-      environment:
-        VERSION: "{{ tag }}"
-        IMAGE_TAG_BASE: "{{ operator_image }}"
-      args:
-        chdir: "{{ playbook_dir }}/../"
+    - name: See if file is already attached
+      set_fact:
+        asset_already_attached: "{{ (file_name in release.json | community.general.json_query(jmes_query)) | ternary(True, False) }}"
+        helm_file_name: "{{ file_name }}"
+        commit_message: "Updated index.yaml for release {{ release.json.tag_name }}"
+      vars:
+        jmes_query: 'assets[*].name'
+        file_name: "awx-operator-{{ tag }}.tgz"
 
-    # Move to chart releaser after https://github.com/helm/chart-releaser/issues/122 exists
-    - name: Upload helm chart
-      uri:
-        url: "https://uploads.github.com/repos/{{ chart_owner }}/{{ chart_repo }}/releases/{{ release.json.id }}/assets?name=awx-operator-{{ tag }}.tgz"
-        src: "{{ playbook_dir }}/../.cr-release-packages/awx-operator-{{ tag }}.tgz"
-        headers:
-          Authorization: "token {{ gh_token }}"
-          Content-Type: "application/octet-stream"
-        status_code:
-          - 200
-          - 201
-      register: asset_upload
-      changed_when: asset_upload.json.state == "uploaded"
+    - when: not asset_already_attached
+      block:
+        - name: Build and package helm chart
+          command: |
+            make helm-package
+          environment:
+            VERSION: "{{ tag }}"
+            IMAGE_TAG_BASE: "{{ operator_image }}"
+          args:
+            chdir: "{{ playbook_dir }}/../"
 
-    - name: Configure git config
-      shell: |
-        git config user.name {{ gh_user }}
-        git config user.email {{ gh_user }}@users.noreply.github.com
-      args:
+        # Move to chart releaser after https://github.com/helm/chart-releaser/issues/122 exists
+        - name: Upload helm chart
+          uri:
+            url: "https://uploads.github.com/repos/{{ chart_owner }}/{{ chart_repo }}/releases/{{ release.json.id }}/assets?name={{ helm_file_name }}"
+            src: "{{ playbook_dir }}/../.cr-release-packages/awx-operator-{{ tag }}.tgz"
+            headers:
+              Authorization: "token {{ gh_token }}"
+              Content-Type: "application/octet-stream"
+            status_code:
+              - 200
+              - 201
+          register: asset_upload
+          changed_when: asset_upload.json.state == "uploaded"
+
+    - name: Ensure gh-pages exists
+      file:
+        state: directory
+        path: "{{ playbook_dir }}/../gh-pages"
+
+    - name: Check if we have published the release
+      command:
+        cmd: "git log --grep='{{ commit_message }}'"
         chdir: "{{ playbook_dir }}/../gh-pages"
+      register: commits_for_release
 
-    - name: Publish helm index
-      command: |
-        make helm-index
-      environment:
-        CHART_OWNER: "{{ chart_owner }}"
-        CR_TOKEN: "{{ gh_token }}"
-      args:
-        chdir: "{{ playbook_dir }}/../"
+    - when: commits_for_release.stdout == ''
+      block:
+        - name: Configure git config
+          shell: |
+            git config user.name {{ gh_user }}
+            git config user.email {{ gh_user }}@users.noreply.github.com
+          args:
+            chdir: "{{ playbook_dir }}/../gh-pages"
 
-    - name: Stage and Push commit to gh-pages branch
-      shell: |
-        git add index.yaml
-        git commit -m "Updated index.yaml latest release"
-        git push
-      args:
-        chdir: "{{ playbook_dir }}/../gh-pages"
+        - name: Publish helm index
+          command: |
+            make helm-index
+          environment:
+            CHART_OWNER: "{{ chart_owner }}"
+            CR_TOKEN: "{{ gh_token }}"
+          args:
+            chdir: "{{ playbook_dir }}/../"
+
+        - name: Stage and Push commit to gh-pages branch
+          shell: |
+            git add index.yaml
+            git commit -m "{{ commit_message }}"
+            git push
+          args:
+            chdir: "{{ playbook_dir }}/../gh-pages"
