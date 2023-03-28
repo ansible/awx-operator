@@ -14,14 +14,19 @@
           Release must exist before running this playbook
       when: release is not success
 
+    - name: Set helm filename and commit message
+      set_fact:
+        asset_already_attached: False
+        helm_file_name: "awx-operator-{{ tag }}.tgz"
+        commit_message: "Updated index.yaml for release {{ release.json.tag_name }}"
+
     - name: See if file is already attached
       set_fact:
-        asset_already_attached: "{{ (file_name in release.json | community.general.json_query(jmes_query)) | ternary(True, False) }}"
-        helm_file_name: "{{ file_name }}"
-        commit_message: "Updated index.yaml for release {{ release.json.tag_name }}"
-      vars:
-        jmes_query: 'assets[*].name'
-        file_name: "awx-operator-{{ tag }}.tgz"
+        asset_already_attached: True
+      loop: "{{ release.json.get('assets', []) }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: item.name == helm_file_name
 
     - when: not asset_already_attached
       block:
