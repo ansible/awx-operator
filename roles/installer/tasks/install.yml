@@ -39,17 +39,17 @@
 - name: Load LDAP CAcert certificate
   include_tasks: load_ldap_cacert_secret.yml
   when:
-    - ldap_cacert_secret != ''
+  - ldap_cacert_secret != ''
 
 - name: Load ldap bind password
   include_tasks: load_ldap_password_secret.yml
   when:
-    - ldap_password_secret != ''
+  - ldap_password_secret != ''
 
 - name: Load bundle certificate authority certificate
   include_tasks: load_bundle_cacert_secret.yml
   when:
-    - bundle_cacert_secret != ''
+  - bundle_cacert_secret != ''
 
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
@@ -66,8 +66,8 @@
 - name: Load Route TLS certificate
   include_tasks: load_route_tls_secret.yml
   when:
-    - ingress_type | lower == 'route'
-    - route_tls_secret != ''
+  - ingress_type | lower == 'route'
+  - route_tls_secret != ''
 
 - name: Include resources configuration tasks
   include_tasks: resources_configuration.yml
@@ -91,8 +91,8 @@
       bash -c "awx-manage migrate --noinput"
   register: migrate_result
   when:
-    - database_check is defined
-    - (database_check.stdout|trim) != '0'
+  - database_check is defined
+  - (database_check.stdout|trim) != '0'
 
 - name: Initialize Django
   include_tasks: initialize_django.yml

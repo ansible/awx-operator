@@ -19,7 +19,9 @@ spec:
       protocol: TCP
       targetPort: 8052
       name: http
+{% if nodeport_port is defined %}
       nodePort: {{ nodeport_port }}
+{% endif %}
 {% elif service_type | lower != 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
     - port: 80
       protocol: TCP
@@ -51,6 +53,9 @@ spec:
   type: NodePort
 {% elif service_type | lower == "loadbalancer" %}
   type: LoadBalancer
+{% if variable is defined and variable|length %}
+  loadbalancerip: '{{ loadbalancer_ip }}'
+{% endif %}
 {% else %}
   type: ClusterIP
 {% endif %}

@@ -1,0 +1,66 @@
+# file, which when exists, indicates that `master` script has successfully
+# completed pre-stop script execution
+marker_file="${PRE_STOP_MARKER_FILE:-/var/lib/pre-stop/.termination_marker}"
+
+# file which the running `master` script continuously updates (mtime) to
+# indicate it's still running. this file is then read by `watcher`s to
+# understand if they still have to wait for `termination_marker`
+heartbeat_file="${PRE_STOP_HEARTBEAT_FILE:-/var/lib/pre-stop/.heartbeat}"
+
+# file which:
+#   * `watcher`s create when they bail out because they didn't see the
+#   `heartbeat_file` to be updated within `$heartbeat_failed_threshold`;
+#   * `master` creates when its handler command fails;
+# when scripts see such file, they also give up
+bailout_file="${PRE_STOP_BAILOUT_FILE:-/var/lib/pre-stop/.bailout}"
+heartbeat_threshold="${PRE_STOP_HEARTBEAT_THRESHOLD:-60}"
+
+# where the scripts' stdout/stderr are streamed
+stdout="${PRE_STOP_STDOUT:-/proc/1/fd/1}"
+stderr="${PRE_STOP_STDERR:-/proc/1/fd/2}"
+
+# command the `master` script executes, which when successfully finishes,
+# causes the script to create the `marker_file`
+handler="${PRE_STOP_HANDLER:-bash -c \"PYTHONUNBUFFERED=x awx-manage disable_instance --wait --retry=inf\"}"
+
+log_prefix="${PRE_STOP_LOG_PREFIX:-preStop.exec}"
+[[ -n ${PRE_STOP_LOG_ROLE} ]] && log_prefix="${log_prefix}] [$PRE_STOP_LOG_ROLE"
+
+# interval at which `watcher`s check for `marker_file` presence
+recheck_sleep="${PRE_STOP_RECHECK_SLEEP:-1}"
+# interval at which `watcher`s report into $stdout that they are still watching
+report_every="${PRE_STOP_REPORT_EVERY:-30}"
+
+function log {
+  printf "[%s] $1\n" "$log_prefix" "${@:2}"
+}
+
+function parameters_string {
+  for param in "$@"; do
+    printf "%s=\"%s\"\n" "$param" "${!param}"
+  done | paste -s -d ' '
+}
+
+function check_bailout {
+  if [[ -f $bailout_file ]]; then
+    log "\"%s\" file has been detected, accepting bail out signal and failing the hook script" \
+      "$bailout_file"
+    exit 1
+  fi
+}
+
+function check_heartbeat {
+  if [[ -f $heartbeat_file ]]; then
+    delta=$(( $(date +%s) - $(stat -c %Y "$heartbeat_file") ))
+  else
+    delta=$(( $(date +%s) - $1 ))
+  fi
+
+  if [[ $delta -gt $heartbeat_threshold ]]; then
+    log "The heartbeat file hasn't been updated since %ss, which is above the threshold of %ds, assuming the master is not operating and failing the hook script" \
+      $delta
+      $heartbeat_threshold
+    touch "$bailout_file"
+    exit 1
+  fi
+}

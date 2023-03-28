@@ -32,22 +32,22 @@
   - this_backup['resources'][0]['metadata']['labels']
 
 - block:
-    - include_tasks: init.yml
+  - include_tasks: init.yml
 
-    - include_tasks: postgres.yml
+  - include_tasks: postgres.yml
 
-    - include_tasks: awx-cro.yml
+  - include_tasks: awx-cro.yml
 
-    - include_tasks: secrets.yml
+  - include_tasks: secrets.yml
 
-    - name: Set flag signifying this backup was successful
-      set_fact:
-        backup_complete: true
+  - name: Set flag signifying this backup was successful
+    set_fact:
+      backup_complete: true
 
-    - include_tasks: cleanup.yml
+  - include_tasks: cleanup.yml
 
   when:
-    - this_backup['resources'][0]['status']['backupDirectory'] is not defined
+  - this_backup['resources'][0]['status']['backupDirectory'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml

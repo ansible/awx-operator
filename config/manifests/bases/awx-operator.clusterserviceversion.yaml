@@ -151,7 +151,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       version: v1beta1
-    - description: Deploy a new instance of AWX
+    - description: Deploy a new instance of AWX. A standardized way to define, operate and scale automation with Ansible.
       displayName: AWX
       kind: AWX
       name: awxs.awx.ansible.com
@@ -269,6 +269,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
+      - displayName: LoadBalancer IP
+        path: loadbalancer_ip
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:string
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service_type:LoadBalancer
       - displayName: Route API Version
         path: route_api_version
@@ -622,6 +628,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Termination Grace Period Seconds
+        path: termination_grace_period_seconds
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Service Labels
         path: service_labels
         x-descriptors:
@@ -684,6 +695,12 @@ spec:
       - description: Specify volume mounts to be added to Init container
         displayName: Init Container Extra Volume Mounts
         path: init_container_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Init Projects Container image to use
+        displayName: Init Projects Container Image
+        path: init_projects_container_image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

@@ -132,6 +132,10 @@ spec:
                 description: Port to use for the loadbalancer
                 type: integer
                 default: 80
+              loadbalancer_ip:
+                description: Assign LoadBalancer IP address
+                type: string
+                default: ''
               route_host:
                 description: The DNS to use to points to the instance
                 type: string
@@ -153,7 +157,6 @@ spec:
               nodeport_port:
                 description: Port to use for the nodeport
                 type: integer
-                default: 30080
               node_selector:
                 description: nodeSelector for the pods
                 type: string
@@ -526,6 +529,10 @@ spec:
                         type: array
                     type: object
                 type: object
+              termination_grace_period_seconds:
+                description: Optional duration in seconds pods needs to terminate gracefully
+                type: integer
+                format: int32
               service_labels:
                 description: Additional labels to apply to the service
                 type: string
@@ -758,6 +765,9 @@ spec:
                 type: string
               init_container_extra_volume_mounts:
                 description: Specify volume mounts to be added to the init container
+                type: string
+              init_projects_container_image:
+                description: Registry path to the init projects container to use
                 type: string
               postgres_image:
                 description: Registry path to the PostgreSQL container to use
