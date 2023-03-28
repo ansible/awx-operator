@@ -35,6 +35,7 @@ jobs:
 
       - name: Release Helm chart
         run: |
+          pip install jmespath
           ansible-playbook ansible/helm-release.yml -v \
             -e operator_image=quay.io/${{ github.repository }} \
             -e chart_owner=${{ github.repository_owner }} \
