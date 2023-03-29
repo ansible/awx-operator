@@ -48,7 +48,7 @@
 
 - name: Check for presence of AWX Deployment
   k8s_info:
-    api_version: v1
+    api_version: apps/v1
     kind: Deployment
     name: "{{ deployment_name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -56,7 +56,7 @@
 
 - name: Scale down Deployment for migration
   k8s_scale:
-    api_version: v1
+    api_version: apps/v1
     kind: Deployment
     name: "{{ deployment_name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
