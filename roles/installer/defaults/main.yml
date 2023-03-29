@@ -268,7 +268,7 @@ task_args:
   - /usr/bin/launch_awx_task.sh
 task_command: []
 web_args:
-  - /usr/bin/launch_awx.sh
+  - /usr/bin/launch_awx_web.sh
 web_command: []
 ryslog_args:
   - /usr/bin/launch_awx_rsyslog.sh
