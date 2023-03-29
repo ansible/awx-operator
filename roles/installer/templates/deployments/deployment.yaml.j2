@@ -226,6 +226,10 @@ spec:
               mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
+            - name: {{ ansible_operator_meta.name }}-uwsgi-config
+              readOnly: true
+              mountPath: /etc/tower/uwsgi.ini
+              subPath: uwsgi.ini
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
               mountPath: "/etc/receptor/signing/work-public-key.pem"
               subPath: "work-public-key.pem"
@@ -557,6 +561,12 @@ spec:
             items:
               - key: receptor_conf
                 path: receptor.conf
+        - name: {{ ansible_operator_meta.name }}-uwsgi-config
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: uwsgi.ini 
+                path: uwsgi.ini
         - name: "{{ ansible_operator_meta.name }}-projects"
 {% if projects_persistence|bool %}
           persistentVolumeClaim:
