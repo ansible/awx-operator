@@ -107,7 +107,7 @@ topology_spread_constraints: ''
 #     whenUnsatisfiable: "ScheduleAnyway"
 #     labelSelector:
 #       matchLabels:
-#         app.kubernetes.io/name: "<resourcename>""
+#         app.kubernetes.io/name: "<resourcename>"
 task_topology_spread_constraints: ''
 
 # Add a topologySpreadConstraints for the web pods.
