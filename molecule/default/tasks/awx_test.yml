@@ -24,7 +24,7 @@
         namespace: '{{ namespace }}'
         kind: Pod
         label_selectors:
-          - app.kubernetes.io/name = example-awx
+          - app.kubernetes.io/name = example-awx-web
       register: awx_pod
       when: not awx_version
 
