@@ -240,8 +240,8 @@ spec:
           env:
             - name: AWX_COMPONENT
               value: "task"
-            - name: SUPERVISOR_WEB_CONFIG_PATH
-              value: "/etc/supervisord.conf"
+            - name: SUPERVISOR_CONFIG_PATH
+              value: "/etc/supervisord_task.conf"
             - name: AWX_SKIP_MIGRATIONS
               value: "1"
             - name: MY_POD_UID
@@ -361,7 +361,7 @@ spec:
               mountPath: "/awx_devel"
 {% endif %}
           env:
-            - name: SUPERVISOR_WEB_CONFIG_PATH
+            - name: SUPERVISOR_CONFIG_PATH
               value: "/etc/supervisor_rsyslog.conf"
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
