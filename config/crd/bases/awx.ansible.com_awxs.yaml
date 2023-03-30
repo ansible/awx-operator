@@ -81,6 +81,9 @@ spec:
               extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string
+              extra_sidecars:
+                description: Specify extra sidecars to add to the application pod
+                type: string
               service_annotations:
                 description: Annotations to add to the service
                 type: string
