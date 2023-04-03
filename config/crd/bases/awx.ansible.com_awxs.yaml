@@ -121,6 +121,16 @@ spec:
               ingress_class_name:
                 description: The name of ingress class to use instead of the cluster default.
                 type: string
+              ingress_hosts:
+                description: Hostnames of the instance
+                type: array
+                items:
+                  type: object
+                  properties:
+                    hostname:
+                      type: string
+                    tls_secret:
+                      type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string

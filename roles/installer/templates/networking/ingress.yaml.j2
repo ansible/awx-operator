@@ -18,6 +18,7 @@ spec:
   ingressClassName: '{{ ingress_class_name }}'
 {% endif %}
   rules:
+{% for item in ingress_hosts %}
     - http:
         paths:
           - path: '{{ ingress_path }}'
@@ -27,15 +28,16 @@ spec:
                 name: '{{ ansible_operator_meta.name }}-service'
                 port:
                   number: 80
-{% if hostname %}      
-      host: {{ hostname }}
-{% endif %}      
-{% if ingress_tls_secret %}
-  tls:
-    - hosts:
-        - {{ hostname }}
-      secretName: {{ ingress_tls_secret }}
+{% if item.hostname %}
+      host: {{ item.hostname }}
 {% endif %}
+{% endfor %}
+  tls:
+{%- for item in ingress_hosts if item.tls_secret %}   
+    - hosts:
+      - {{ item.hostname }}
+      secretName: {{ item.tls_secret }}
+{%- endfor %}
 {% endif %}
 
 {% if ingress_type|lower == "route" %}
