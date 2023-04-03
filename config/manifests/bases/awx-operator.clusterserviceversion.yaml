@@ -156,11 +156,6 @@ spec:
       kind: AWX
       name: awxs.awx.ansible.com
       specDescriptors:
-      - displayName: Hostname
-        path: hostname
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Admin Account Username
         path: admin_user
         x-descriptors:
@@ -222,6 +217,12 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress Hosts
+        path: ingress_hosts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
       - displayName: Ingress API Version
         path: ingress_api_version
         x-descriptors:
@@ -244,12 +245,6 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
-        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Ingress TLS Secret
-        path: ingress_tls_secret
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:io.kubernetes:Secret
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
       - displayName: LoadBalancer Annotations
         path: service_annotations

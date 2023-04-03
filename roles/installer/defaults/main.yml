@@ -30,12 +30,6 @@ service_labels: ''
 #   nginx.ingress.kubernetes.io/proxy-connect-timeout: 60s
 ingress_annotations: ''
 
-# TLS secret for the ingress. The secret either has to exist before hand with
-# the corresponding cert and key or just be an indicator for where an automated
-# process like cert-manager (enabled via annotations) will store the TLS
-# certificate and key.
-ingress_tls_secret: ''
-
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
 service_annotations: ''
@@ -62,8 +56,14 @@ route_api_version: 'route.openshift.io/v1'
 #
 route_host: ''
 
-hostname: ''
-
+# One or multiple FQDN with optional Secret that contains the TLS information.
+# The TLS secret either has to exist before hand with
+# the corresponding cert and key or just be an indicator for where an automated
+# process like cert-manager (enabled via annotations) will store the TLS
+# certificate and key.
+# ingress_hosts:
+#   - hostname: awx-demo.example.com
+#     tls_secret: example-com-tls
 ingress_hosts: ''
 
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
