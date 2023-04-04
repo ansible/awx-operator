@@ -9,7 +9,7 @@ entries:
     name: awx-operator
     type: application
     urls:
-    - https://github.com/ansible/awx-operator/releases/download/awx-operator-2.0.0.tgz
+    - https://github.com/ansible/awx-operator/releases/download/2.0.0/awx-operator-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v2
     appVersion: 1.4.0
