@@ -161,7 +161,7 @@
       register: _receptor_work_signing_private_key_file
     - name: Generate Receptor work signing private key
       command: |
-        openssl genrsa -out {{ _receptor_work_signing_private_key_file.path }} 4096
+        openssl genrsa -aes256 -out {{ _receptor_work_signing_private_key_file.path }} 4096
       no_log: "{{ no_log }}"
     - name: Create tempfile for receptor work signing public key
       tempfile:
