@@ -362,7 +362,7 @@ spec:
 {% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
-              value: "/etc/supervisor_rsyslog.conf"
+              value: "/etc/supervisord_rsyslog.conf"
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
