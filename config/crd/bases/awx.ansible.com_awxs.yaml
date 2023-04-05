@@ -121,6 +121,9 @@ spec:
               ingress_class_name:
                 description: The name of ingress class to use instead of the cluster default.
                 type: string
+              ingress_controller:
+                description: Special configuration for specific Ingress Controllers
+                type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string
