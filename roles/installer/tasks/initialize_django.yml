@@ -2,7 +2,7 @@
 - name: Check if there are any super users defined.
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "echo 'from django.contrib.auth.models import User;
@@ -16,7 +16,7 @@
 - name: Create super user via Django if it doesn't exist.
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: awx-manage createsuperuser --username={{ admin_user | quote }} --email={{ admin_email | quote }} --noinput
   register: result
@@ -28,7 +28,7 @@
 - name: Update Django super user password
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: awx-manage update_password --username='{{ admin_user }}' --password='{{ admin_password }}'
   register: result
@@ -39,7 +39,7 @@
 - name: Check if legacy queue is present
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage list_instances | grep '^\[tower capacity=[0-9]*\]'"
@@ -50,7 +50,7 @@
 - name: Unregister legacy queue
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage unregister_queue --queuename=tower"
@@ -74,7 +74,7 @@
 - name: Register default execution environments (without authentication)
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage register_default_execution_environments"
@@ -95,7 +95,7 @@
     - name: Register default execution environments (with authentication)
       k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
-        pod: "{{ tower_pod_name }}"
+        pod: "{{ awx_task_pod_name }}"
         container: "{{ ansible_operator_meta.name }}-task"
         command: >-
           bash -c "awx-manage register_default_execution_environments
@@ -111,7 +111,7 @@
 - name: Create preload data if necessary.  # noqa 305
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage create_preload_data"

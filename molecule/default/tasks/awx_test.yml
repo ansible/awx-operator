@@ -24,7 +24,7 @@
         namespace: '{{ namespace }}'
         kind: Pod
         label_selectors:
-          - app.kubernetes.io/name = example-awx
+          - app.kubernetes.io/name = example-awx-web
       register: awx_pod
       when: not awx_version
 
@@ -85,7 +85,7 @@
         msg: '{{ failed_task }}'
 
 - block:
-    - name: Look up details for this deployment
+    - name: Look up details for this AWX instance
       k8s_info:
         namespace: "{{ namespace }}"
         api_version: "awx.ansible.com/v1beta1"
@@ -98,7 +98,7 @@
         namespace: '{{ namespace }}'
         kind: Pod
         label_selectors:
-          - app.kubernetes.io/name = example-awx
+          - app.kubernetes.io/name = example-awx-web
       register: awx_pod
 
     - name: Extract additional_labels from AWX spec

@@ -1,23 +1,27 @@
-# AWX Deployment.
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: '{{ ansible_operator_meta.name }}'
+  name: '{{ ansible_operator_meta.name }}-task'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
+{% if task_replicas %}
+  replicas: {{ task_replicas }}
+{% elif replicas %}
   replicas: {{ replicas }}
+{% endif %}
   selector:
     matchLabels:
-      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
       app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
       app.kubernetes.io/component: '{{ deployment_type }}'
   template:
     metadata:
       labels:
+        app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
       annotations:
@@ -159,108 +163,6 @@ spec:
 {% endif %}
           resources: {{ redis_resource_requirements }}
         - image: '{{ _image }}'
-          name: '{{ ansible_operator_meta.name }}-web'
-{% if web_command %}
-          command: {{ web_command }}
-{% endif %}
-{% if web_args %}
-          args: {{ web_args }}
-{% endif %}
-          imagePullPolicy: '{{ image_pull_policy }}'
-          ports:
-            - containerPort: 8052
-{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
-            - containerPort: 8053
-{% endif %}
-          volumeMounts:
-{% if bundle_ca_crt %}
-            - name: "ca-trust-extracted"
-              mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
-{% endif %}
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/execution_environments.py"
-              subPath: execution_environments.py
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/credentials.py"
-              subPath: credentials.py
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-application-credentials"
-              mountPath: "/etc/tower/conf.d/ldap.py"
-              subPath: ldap.py
-              readOnly: true
-{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
-            - name: "{{ ansible_operator_meta.name }}-nginx-certs"
-              mountPath: "/etc/nginx/pki"
-              readOnly: true
-{% endif %}
-{% if ldap_cacert_ca_crt %}
-            - name: "{{ ansible_operator_meta.name }}-ldap-cacert"
-              mountPath: /etc/openldap/certs/ldap-ca.crt
-              subPath: ldap-ca.crt
-              readOnly: true
-{% endif %}
-            - name: "{{ secret_key_secret_name }}"
-              mountPath: /etc/tower/SECRET_KEY
-              subPath: SECRET_KEY
-              readOnly: true
-            - name: {{ ansible_operator_meta.name }}-settings
-              mountPath: /etc/tower/settings.py
-              subPath: settings.py
-              readOnly: true
-            - name: {{ ansible_operator_meta.name }}-nginx-conf
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-              readOnly: true
-            - name: {{ ansible_operator_meta.name }}-redis-socket
-              mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
-            - name: rsyslog-socket
-              mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
-            - name: "{{ ansible_operator_meta.name }}-projects"
-              mountPath: "/var/lib/awx/projects"
-            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-public-key.pem"
-              subPath: "work-public-key.pem"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
-              subPath: "tls.crt"
-              readOnly: true
-            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
-              subPath: "tls.key"
-              readOnly: true
-{% if development_mode | bool %}
-            - name: awx-devel
-              mountPath: "/awx_devel"
-{% endif %}
-{% if web_extra_volume_mounts -%}
-            {{ web_extra_volume_mounts | indent(width=12, first=True) }}
-{% endif %}
-          env:
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: UWSGI_MOUNT_PATH
-              value: "{{ ingress_path }}"
-{% if development_mode | bool %}
-            - name: AWX_KUBE_DEVEL
-              value: "1"
-{% endif %}
-{% if web_extra_env -%}
-            {{ web_extra_env | indent(width=12, first=True) }}
-{% endif %}
-          resources: {{ web_resource_requirements }}
-        - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
 {% if task_privileged == true %}
@@ -304,12 +206,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
-            - name: supervisor-socket
-              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-            - name: rsyslog-dir
-              mountPath: "/var/lib/awx/rsyslog"
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
@@ -340,8 +238,10 @@ spec:
                 - /var/lib/pre-stop/scripts/termination-master
 {% endif %}
           env:
-            - name: SUPERVISOR_WEB_CONFIG_PATH
-              value: "/etc/supervisord.conf"
+            - name: AWX_COMPONENT
+              value: "task"
+            - name: SUPERVISOR_CONFIG_PATH
+              value: "/etc/supervisord_task.conf"
             - name: AWX_SKIP_MIGRATIONS
               value: "1"
             - name: MY_POD_UID
@@ -430,21 +330,70 @@ spec:
 {% if ee_extra_env -%}
             {{ ee_extra_env | indent(width=12, first=True) }}
 {% endif %}
-{% if node_selector %}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-rsyslog'
+{% if rsyslog_command %}
+          command: {{ rsyslog_command }}
+{% endif %}
+{% if ryslog_args %}
+          args: {{ ryslog_args }}
+{% endif %}
+          imagePullPolicy: '{{ image_pull_policy }}'
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+          env:
+            - name: SUPERVISOR_CONFIG_PATH
+              value: "/etc/supervisord_rsyslog.conf"
+{% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
+{% endif %}
+{% if task_node_selector %}
+      nodeSelector:
+        {{ task_node_selector | indent(width=8) }}
+{% elif node_selector %}
       nodeSelector:
         {{ node_selector | indent(width=8) }}
 {% endif %}
-{% if topology_spread_constraints %}
+{% if task_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ task_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
       topologySpreadConstraints:
         {{ topology_spread_constraints | indent(width=8) }}
 {% endif %}
-{% if affinity | length %}
+{% if task_tolerations %}
+      tolerations:
+        {{ task_tolerations | to_nice_yaml | indent(width=8) }}
+{% elif tolerations %}
+      tolerations:
+        {{ tolerations | to_nice_yaml | indent(width=8) }}
+{% endif %}
+{% if task_affinity %}
+      affinity:
+        {{ task_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
       affinity:
         {{ affinity | to_nice_yaml | indent(width=8) }}
-{% endif %}
-{% if tolerations %}
-      tolerations:
-        {{ tolerations | indent(width=8) }}
 {% endif %}
 {% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
       securityContext:
@@ -541,13 +490,9 @@ spec:
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-redis-data
           emptyDir: {}
-        - name: supervisor-socket
-          emptyDir: {}
         - name: rsyslog-socket
           emptyDir: {}
         - name: receptor-socket
-          emptyDir: {}
-        - name: rsyslog-dir
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-receptor-config
           emptyDir: {}

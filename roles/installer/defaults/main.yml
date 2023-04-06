@@ -67,10 +67,23 @@ hostname: ''
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:
 # node_selector: |
-#   disktype: ssd
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
 node_selector: ''
+
+# Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
+# to be scheduled on that node. Specify as literal block. E.g.:
+# node_selector: |
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+web_node_selector: ''
+
+# Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
+# to be scheduled on that node. Specify as literal block. E.g.:
+# node_selector: |
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+task_node_selector: ''
 
 # Add a topologySpreadConstraints for the AWX pods.
 # Specify as literal block. E.g.:
@@ -83,7 +96,27 @@ node_selector: ''
 #         app.kubernetes.io/name: "<resourcename>"
 topology_spread_constraints: ''
 
-affinity: {}
+# Add a topologySpreadConstraints for the task pods.
+# Specify as literal block. E.g.:
+# task_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+task_topology_spread_constraints: ''
+
+# Add a topologySpreadConstraints for the web pods.
+# Specify as literal block. E.g.:
+# web_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+web_topology_spread_constraints: ''
 
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
@@ -92,6 +125,58 @@ affinity: {}
 #     value: "AWX"
 #     effect: "NoSchedule"
 tolerations: ''
+
+# Add node tolerations for the task pods. Specify as literal block. E.g.:
+# task_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWXtask"
+#     effect: "NoSchedule"
+task_tolerations: ''
+
+# Add node tolerations for the web pods. Specify as literal block. E.g.:
+# web_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWXweb"
+#     effect: "NoSchedule"
+web_tolerations: ''
+
+# Add affinities for all pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/component
+#            operator: In
+#            values:
+#            - awx
+affinity: {}
+
+# Add affinities for all task pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-task
+task_affinity: {}
+
+# Add affinities for all web pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-web
+web_affinity: {}
 
 # Add annotations to awx pods. Specify as literal block. E.g.:
 # annotations: |
@@ -173,13 +258,18 @@ _init_projects_container_image: quay.io/centos/centos:stream9
 create_preload_data: true
 
 replicas: "1"
+web_replicas: ''
+task_replicas: ''
 
 task_args:
   - /usr/bin/launch_awx_task.sh
 task_command: []
 web_args:
-  - /usr/bin/launch_awx.sh
+  - /usr/bin/launch_awx_web.sh
 web_command: []
+ryslog_args:
+  - /usr/bin/launch_awx_rsyslog.sh
+rsyslog_command: []
 
 task_resource_requirements:
   requests:
@@ -195,6 +285,12 @@ ee_resource_requirements:
   requests:
     cpu: 100m
     memory: 64Mi
+
+# TODO: validate default resource requirements
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 # Customize CSRF options
 csrf_cookie_secure: False
