@@ -62,7 +62,7 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-{% if bundle_ca_crt or init_container_extra_commands %}
+{% if bundle_ca_crt or projects_persistence|bool or init_container_extra_commands %}
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -89,6 +89,25 @@ spec:
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
+{% endif %}
+{% if projects_persistence|bool and is_k8s|bool %}
+        - name: init-projects
+          image: '{{ _init_projects_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
 {% endif %}
       containers:
         - image: '{{ _redis_image }}'
@@ -172,6 +191,10 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
+{% if projects_persistence|bool %}
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% endif %}
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
               mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
               subPath: "tls.crt"
@@ -362,10 +385,19 @@ spec:
             items:
               - key: receptor_conf
                 path: receptor.conf
+{% if projects_persistence|bool %}
+        - name: "{{ ansible_operator_meta.name }}-projects"
+          persistentVolumeClaim:
+{% if projects_existing_claim %}
+            claimName: {{ projects_existing_claim }}
+{% else %}
+            claimName: '{{ ansible_operator_meta.name }}-projects-claim'
+{% endif %}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:
             path: /awx_devel
+{% endif %}
 {% endif %}
 {% if extra_volumes -%}
         {{ extra_volumes | indent(width=8, first=True) }}
