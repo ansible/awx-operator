@@ -140,6 +140,7 @@ spec:
 {% endif %}
           ports:
             - containerPort: 8052
+              name: http
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
             - containerPort: 8053
 {% endif %}
