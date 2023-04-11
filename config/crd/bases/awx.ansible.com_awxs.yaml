@@ -186,7 +186,13 @@ spec:
                 description: Additional labels to apply to the service
                 type: string
               annotations:
-                description: annotations for the pods
+                description: Common annotations for both Web and Task deployments.
+                type: string
+              task_annotations:
+                description: Task deployment annotations. This will override the general annotations parameter for the Task deployment.
+                type: string
+              web_annotations:
+                description: Web deployment annotations. This will override the general annotations parameter for the Web deployment.
                 type: string
               tolerations:
                 description: node tolerations for the pods

@@ -44,7 +44,9 @@ spec:
   ] %}
         checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | md5 }}"
 {% endfor %}
-{% if annotations %}
+{% if web_annotations %}
+        {{ web_annotations | indent(width=8) }}
+{% elif annotations %}
         {{ annotations | indent(width=8) }}
 {% endif %}
     spec:
