@@ -391,10 +391,10 @@ spec:
 {% endif %}
 {% if task_tolerations %}
       tolerations:
-        {{ task_tolerations | to_nice_yaml | indent(width=8) }}
+        {{ task_tolerations | indent(width=8) }}
 {% elif tolerations %}
       tolerations:
-        {{ tolerations | to_nice_yaml | indent(width=8) }}
+        {{ tolerations | indent(width=8) }}
 {% endif %}
 {% if task_affinity %}
       affinity:
