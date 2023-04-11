@@ -39,6 +39,12 @@ rules:
       - update
       - watch
   - apiGroups:
+      - ""
+    resources:
+      - secrets/last-applied-configuration
+    verbs:
+      - get
+  - apiGroups:
       - "rbac.authorization.k8s.io"
     resources:
       - roles
