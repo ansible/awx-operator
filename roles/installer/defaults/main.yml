@@ -36,6 +36,10 @@ ingress_annotations: ''
 # certificate and key.
 ingress_tls_secret: ''
 
+# Special configuration for specific Ingress Controllers. E.g.:
+# ingress_controller: contour
+ingress_controller: ''
+
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
 service_annotations: ''
