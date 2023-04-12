@@ -35,7 +35,7 @@ loadbalancer_port: '80'
 service_annotations: ''
 
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768
-#nodeport_port: '30080'
+# nodeport_port: '30080'
 
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
