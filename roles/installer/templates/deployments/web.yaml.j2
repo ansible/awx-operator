@@ -401,11 +401,11 @@ spec:
 {% else %}
             claimName: '{{ ansible_operator_meta.name }}-projects-claim'
 {% endif %}
+{% endif %}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:
             path: /awx_devel
-{% endif %}
 {% endif %}
 {% if extra_volumes -%}
         {{ extra_volumes | indent(width=8, first=True) }}
