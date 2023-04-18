@@ -1,0 +1,37 @@
+FROM quay.io/operator-framework/ansible-operator:v1.26.0
+
+USER 0
+
+RUN dnf install -y openssl make git procps-ng
+
+## Install Kubectl and OC
+RUN ( \
+  set -x; cd "$(mktemp -d)" && \
+  curl -fsSLO https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz && \
+  tar zxvf oc.tar.gz && \
+  mv oc /usr/local/bin/oc && \
+  mv kubectl /usr/local/bin/kubectl \
+)
+
+## Install Krew
+RUN ( \
+  set -x; cd "$(mktemp -d)" && \
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
+  KREW="krew-${OS}_${ARCH}" && \
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
+  tar zxvf "${KREW}.tar.gz" && \
+  ./"${KREW}" install krew \
+)
+
+# Install kubectl plugins via krew
+RUN ${HOME}/.krew/bin/kubectl-krew install ns ctx neat
+
+# Install required collections
+COPY requirements.yml ${HOME}/requirements.yml
+RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
+ && chmod -R ug+rwx ${HOME}/.ansible
+
+
+ENV PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+ENV KUBECONFIG=/usr/local/share/kube-localhost/config
