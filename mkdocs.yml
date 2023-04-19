@@ -37,8 +37,9 @@ theme:
         name: Switch to light mode
 
 nav:
-  - awx-operator Documentation:
-      - home: index.md
+  - home: README.md
+  - debugging.md
+  - migration.md
  
   
 
