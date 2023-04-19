@@ -131,7 +131,7 @@ $ alias kubectl="minikube kubectl --"
 
 ### Basic Install
 
-Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
 First, create a file called `kustomization.yaml` with the following content:
 
@@ -156,7 +156,7 @@ namespace: awx
 Install the manifests by running this:
 
 ```
-$ kustomize build . | kubectl apply -f -
+$ kubectl apply -k .
 namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
@@ -229,10 +229,10 @@ resources:
 ...
 ```
 
-Finally, run `kustomize` again to create the AWX instance in your cluster:
+Finally, apply the changes to create the AWX instance in your cluster:
 
 ```
-kustomize build . | kubectl apply -f -
+kubectl apply -k .
 ```
 
 After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
