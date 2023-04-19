@@ -12,11 +12,6 @@ jobs:
         with:
           depth: 0
 
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
       - name: Log in to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -40,4 +35,5 @@ jobs:
             -e chart_owner=${{ github.repository_owner }} \
             -e tag=${{ github.event.release.tag_name }} \
             -e gh_token=${{ secrets.GITHUB_TOKEN }} \
-            -e gh_user=${{ github.actor }}
+            -e gh_user=${{ github.actor }} \
+            -e repo_type=https

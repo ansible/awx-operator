@@ -2,6 +2,8 @@
 - hosts: localhost
   vars:
     chart_repo: awx-operator
+  environment:
+    CHART_OWNER: "{{ chart_owner }}"
   tasks:
     - name: Look up release
       uri:
@@ -66,26 +68,48 @@
 
     - when: commits_for_release.stdout == ''
       block:
-        - name: Configure git config
-          shell: |
-            git config user.name {{ gh_user }}
-            git config user.email {{ gh_user }}@users.noreply.github.com
-          args:
-            chdir: "{{ playbook_dir }}/../gh-pages"
+        - name: Make a temp dir
+          tempfile:
+            state: directory
+          register: temp_dir
+
+        - name: Clone the gh-pages branch from {{ chart_owner }}
+          git:
+            repo: "{{ ((repo_type | default('http')) == 'ssh') | ternary(ssh_repo, http_repo) }}"
+            dest: "{{ temp_dir.path }}"
+            single_branch: yes
+            version: gh-pages
+          vars:
+            http_repo: "https://github.com/{{ chart_owner }}/{{ chart_repo }}"
+            ssh_repo: "git@github.com:{{ chart_owner }}/{{ chart_repo }}.git"
 
         - name: Publish helm index
-          command: |
-            make helm-index
+          ansible.builtin.command:
+            cmd: make helm-index
           environment:
             CHART_OWNER: "{{ chart_owner }}"
             CR_TOKEN: "{{ gh_token }}"
+            CHART_DIR: "{{ temp_dir.path }}"
           args:
-            chdir: "{{ playbook_dir }}/../"
+            chdir: "{{ playbook_dir }}/.."
 
         - name: Stage and Push commit to gh-pages branch
-          shell: |
-            git add index.yaml
-            git commit -m "{{ commit_message }}"
-            git push
+          command:
+            cmd: "{{ item }}"
+          loop:
+            - git add index.yaml
+            - git commit -m "{{ commit_message }}"
+            #- git push
           args:
-            chdir: "{{ playbook_dir }}/../gh-pages"
+            chdir: "{{ temp_dir.path }}/"
+          environment:
+            GIT_AUTHOR_NAME: "{{ gh_user }}"
+            GIT_AUTHOR_EMAIL: "{{ gh_user }}@users.noreply.github.com"
+            GIT_COMMITTER_NAME: "{{ gh_user }}"
+            GIT_COMMITTER_EMAIL: "{{ gh_user }}@users.noreply.github.com"
+
+      always:
+        - name: Remove temp dir
+          file:
+            path: "{{ temp_dir.path }}"
+            state: absent
