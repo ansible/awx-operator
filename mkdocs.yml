@@ -1,7 +1,7 @@
 ---
 site_name: awx-operator
 site_url: https://awx-operator.readthedocs.io/
-repo_url: https://github.com/ansible/awx
+repo_url: https://github.com/ansible/awx-operator
 edit_uri: blob/main/docs/
 docs_dir: docs
 strict: false
