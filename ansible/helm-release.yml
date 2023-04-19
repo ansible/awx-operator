@@ -43,7 +43,7 @@
         - name: Upload helm chart
           uri:
             url: "https://uploads.github.com/repos/{{ chart_owner }}/{{ chart_repo }}/releases/{{ release.json.id }}/assets?name={{ helm_file_name }}"
-            src: "{{ playbook_dir }}/../.cr-release-packages/awx-operator-{{ tag }}.tgz"
+            src: "{{ playbook_dir }}/../.cr-release-packages/{{ tag }}/awx-operator-{{ tag }}.tgz"
             headers:
               Authorization: "token {{ gh_token }}"
               Content-Type: "application/octet-stream"
