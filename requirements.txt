@@ -1,0 +1,11 @@
+cairosvg
+markdown-exec>=1.0.0
+mkdocs-gen-files>=0.4.0
+mkdocs-material-extensions>=1.1.1
+mkdocs-material>=9.0.6
+mkdocs>=1.4.2
+mkdocstrings-python>=0.8.3
+mkdocstrings>=0.20.0
+pillow
+pipdeptree>=2.3.3
+pymdown-extensions>=9.9.2
