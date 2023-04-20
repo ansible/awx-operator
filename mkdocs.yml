@@ -37,7 +37,7 @@ theme:
         name: Switch to light mode
 
 nav:
-  - home: README.md
+  - home: index.md
   - debugging.md
   - migration.md
  
