@@ -425,3 +425,10 @@ set_self_labels: true
 
 # Disable web container's nginx ipv6 listener
 ipv6_disabled: false
+
+# Set hostAliases on deployments
+#       hostAliases:
+#       - ip: 10.10.0.10
+#         hostnames:
+#         - hostname
+host_aliases: ''

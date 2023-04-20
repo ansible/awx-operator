@@ -50,16 +50,6 @@ spec:
 {% endif %}
     spec:
       serviceAccountName: '{{ ansible_operator_meta.name }}'
-{% if host_aliases | length > 0 %}
-      hostAliases:
-{% for item in host_aliases %}
-      - ip: {{ item.ip }}
-        hostnames:
-{% for hostname in item.hostnames %}
-        - {{ hostname }}
-{% endfor %}
-{% endfor %}
-{% endif %}
 {% if image_pull_secret is defined %}
       imagePullSecrets:
         - name: {{ image_pull_secret }}
@@ -67,6 +57,16 @@ spec:
       imagePullSecrets:
 {% for secret in image_pull_secrets %}
         - name: {{ secret }}
+{% endfor %}
+{% endif %}
+{% if host_aliases is defined and host_aliases | length > 0 %}
+      hostAliases:
+{% for item in host_aliases %}
+      - ip: {{ item.ip }}
+        hostnames:
+{% for hostname in item.hostnames %}
+        - {{ hostname }}
+{% endfor %}
 {% endfor %}
 {% endif %}
 {% if control_plane_priority_class is defined %}

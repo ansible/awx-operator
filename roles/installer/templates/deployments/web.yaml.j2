@@ -60,6 +60,16 @@ spec:
         - name: {{ secret }}
 {% endfor %}
 {% endif %}
+{% if host_aliases is defined and host_aliases | length > 0 %}
+      hostAliases:
+{% for item in host_aliases %}
+      - ip: {{ item.ip }}
+        hostnames:
+{% for hostname in item.hostnames %}
+        - {{ hostname }}
+{% endfor %}
+{% endfor %}
+{% endif %}
 {% if control_plane_priority_class is defined %}
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
