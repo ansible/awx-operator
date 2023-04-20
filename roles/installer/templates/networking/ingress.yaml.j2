@@ -37,7 +37,7 @@ spec:
 {% if item.hostname %}
       host: {{ item.hostname }}
 {% if ingress_controller|lower == "contour" %}
-          - path: '{{ ingress_path }}/websocket'
+          - path: '{{ ingress_path.rstrip("/") }}/websocket'
             pathType: '{{ ingress_path_type }}'
             backend:
               service:
