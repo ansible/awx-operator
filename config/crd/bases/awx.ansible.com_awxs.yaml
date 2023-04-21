@@ -1672,8 +1672,8 @@ spec:
                 type: array
                 items:
                   type: string
-              ipv6_disabled:
-                description: Disable web container's nginx ipv6 listener
+              ipv6_enabled:
+                description: Enable web container's nginx ipv6 listener
                 type: boolean
                 default: false
             type: object

@@ -129,7 +129,7 @@ data:
         {% if route_tls_termination_mechanism | lower == 'passthrough' %}
         server {
             listen 8052 default_server;
-            {% if not ipv6_disabled %}
+            {% if ipv6_enabled %}
             listen [::]:8052 default_server;
             {% endif %}
             server_name _;
@@ -142,7 +142,7 @@ data:
         server {
         {% if route_tls_termination_mechanism | lower == 'passthrough' %}
             listen 8053 ssl;
-            {% if not ipv6_disabled %}
+            {% if ipv6_enabled %}
             listen [::]:8053 ssl;
             {% endif %}
 
@@ -155,7 +155,7 @@ data:
             ssl_prefer_server_ciphers on;
         {% else %}
             listen 8052 default_server;
-            {% if not ipv6_disabled %}
+            {% if ipv6_enabled %}
             listen [::]:8052 default_server;
             {% endif %}
         {% endif %}

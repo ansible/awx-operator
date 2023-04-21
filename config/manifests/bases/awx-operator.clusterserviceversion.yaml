@@ -796,8 +796,8 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Disable IPv6 listener?
-        path: ipv6_disabled
+      - displayName: Enable IPv6 listener?
+        path: ipv6_enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
