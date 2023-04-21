@@ -7,10 +7,6 @@ namePrefix: osdk-
 #commonLabels:
 #  someName: someValue
 
-patchesStrategicMerge:
-- manager_image.yaml
-- debug_logs_patch.yaml
-- ../default/manager_auth_proxy_patch.yaml
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -21,3 +17,7 @@ resources:
 images:
 - name: testing
   newName: testing-operator
+patches:
+- path: manager_image.yaml
+- path: debug_logs_patch.yaml
+- path: ../default/manager_auth_proxy_patch.yaml
