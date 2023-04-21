@@ -36,12 +36,16 @@ ingress_annotations: ''
 # certificate and key.
 ingress_tls_secret: ''
 
+# Special configuration for specific Ingress Controllers. E.g.:
+# ingress_controller: contour
+ingress_controller: ''
+
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
 service_annotations: ''
 
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768
-#nodeport_port: '30080'
+# nodeport_port: '30080'
 
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
@@ -183,6 +187,18 @@ web_affinity: {}
 #   my.annotation/1: value
 #   my.annotation/2: value2
 annotations: ''
+
+# Override annotations to awx task pods. Specify as literal block. E.g.:
+# task_annotations: |
+#   my.task-annotation/1: value
+#   my.task-annotation/2: value2
+task_annotations: ''
+
+# Override annotations to awx web pods. Specify as literal block. E.g.:
+# web_annotations: |
+#   my.web-annotation/1: value
+#   my.web-annotation/2: value2
+web_annotations: ''
 
 admin_user: admin
 admin_email: test@example.com

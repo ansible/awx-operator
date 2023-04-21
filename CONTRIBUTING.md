@@ -31,7 +31,7 @@ Have questions about this document or anything not covered here? Please file a n
 ```
 2. Make your changes.
 3. Test your changes according described on the Testing section.
-4. If everylooks looks correct, commit your changes.
+4. If everything looks correct, commit your changes.
 ```sh
 #> git add <FILES>
 #> git commit -m "My message here"
@@ -56,13 +56,16 @@ Running `molecule test` sets up a clean environment, builds the operator, runs a
 
 If you want to actively develop the operator, use `molecule converge`, which does everything but tear down the environment at the end.
 
-#### Testing in Docker
+#### Testing in Kind
+
+Testing with a kind cluster is the recommended way to test the awx-operator locally. First, you need to install kind if you haven't already. Please see these docs for setting that up:
+* https://kind.sigs.k8s.io/docs/user/quick-start/
+
+To run the tests, from the root of your checkout, run the following command:
 
 ```sh
-#> molecule test -s test-local
+#> molecule test -s kind
 ```
-
-This environment is meant for headless testing (e.g. in a CI environment, or when making smaller changes which don't need to be verified through a web interface). It is difficult to test things like AWX's web UI or to connect other applications on your local machine to the services running inside the cluster, since it is inside a Docker container with no static IP address.
 
 #### Testing in Minikube
 
