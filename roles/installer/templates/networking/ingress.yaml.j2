@@ -13,7 +13,7 @@ metadata:
   annotations:
 {% if ingress_annotations %}
     {{ ingress_annotations | indent(width=4) }}
-{% endif %}
+{%- endif %}
 {% if ingress_controller|lower == "contour" %}
     projectcontour.io/websocket-routes: "/websocket"
     kubernetes.io/ingress.class: contour
@@ -24,7 +24,9 @@ spec:
   ingressClassName: '{{ ingress_class_name }}'
 {% endif %}
   rules:
-    - http:
+{% if hostname and (not ingress_hosts) %}
+    - host: {{ hostname }}
+      http:
         paths:
           - path: '{{ ingress_path }}'
             pathType: '{{ ingress_path_type }}'
@@ -42,14 +44,41 @@ spec:
                 port:
                   number: 80
 {% endif %}
-{% if hostname %}      
-      host: {{ hostname }}
-{% endif %}      
 {% if ingress_tls_secret %}
   tls:
     - hosts:
-        - {{ hostname }}
+      - {{ hostname }}
       secretName: {{ ingress_tls_secret }}
+{% endif %}
+{% endif %}
+{% if ingress_hosts %}
+{% for item in ingress_hosts %}
+    - host: {{ item.hostname }}
+      http:
+        paths:
+          - path: '{{ ingress_path }}'
+            pathType: '{{ ingress_path_type }}'
+            backend:
+              service:
+                name: '{{ ansible_operator_meta.name }}-service'
+                port:
+                  number: 80
+{% if ingress_controller|lower == "contour" %}
+          - path: '{{ ingress_path.rstrip("/") }}/websocket'
+            pathType: '{{ ingress_path_type }}'
+            backend:
+              service:
+                name: '{{ ansible_operator_meta.name }}-service'
+                port:
+                  number: 80
+{% endif %}
+{% endfor %}
+  tls:
+{%- for item in ingress_hosts if item.tls_secret %}   
+    - hosts:
+      - {{ item.hostname }}
+      secretName: {{ item.tls_secret }}
+{%- endfor %}
 {% endif %}
 {% endif %}
 

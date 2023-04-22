@@ -156,7 +156,7 @@ spec:
       kind: AWX
       name: awxs.awx.ansible.com
       specDescriptors:
-      - displayName: Hostname
+      - displayName: Hostname (Deprecated)
         path: hostname
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -245,11 +245,17 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
-      - displayName: Ingress TLS Secret
+      - displayName: Ingress TLS Secret (Deprecated)
         path: ingress_tls_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
+      - displayName: Ingress Hosts
+        path: ingress_hosts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Ingress
       - displayName: Ingress Controller
         path: ingress_controller
