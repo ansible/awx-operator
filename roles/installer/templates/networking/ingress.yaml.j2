@@ -9,9 +9,15 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
-{% if ingress_annotations %}
+{% if ingress_annotations or ingress_controller|lower == "contour" %}
   annotations:
+{% if ingress_annotations %}
     {{ ingress_annotations | indent(width=4) }}
+{% endif %}
+{% if ingress_controller|lower == "contour" %}
+    projectcontour.io/websocket-routes: "/websocket"
+    kubernetes.io/ingress.class: contour
+{% endif %}
 {% endif %}
 spec:
 {% if ingress_class_name %}
@@ -30,6 +36,23 @@ spec:
                   number: 80
 {% if item.hostname %}
       host: {{ item.hostname }}
+{% if ingress_controller|lower == "contour" %}
+          - path: '{{ ingress_path }}/websocket'
+            pathType: '{{ ingress_path_type }}'
+            backend:
+              service:
+                name: '{{ ansible_operator_meta.name }}-service'
+                port:
+                  number: 80
+{% endif %}
+{% if hostname %}      
+      host: {{ hostname }}
+{% endif %}      
+{% if ingress_tls_secret %}
+  tls:
+    - hosts:
+        - {{ hostname }}
+      secretName: {{ ingress_tls_secret }}
 {% endif %}
 {% endfor %}
   tls:

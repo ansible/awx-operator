@@ -479,6 +479,23 @@ spec:
     environment: testing
 ```
 
+##### Specialized Ingress Controller configuration
+
+Some Ingress Controllers need a special configuration to fully support AWX, add the following value with the `ingress_controller` variable, if you are using one of these:
+
+| Ingress Controller name               | value   |
+| ------------------------------------- | ------- |
+| [Contour](https://projectcontour.io/) | contour |
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: ingress
+  hostname: awx-demo.example.com
+  ingress_controller: contour
+```
+
   * Route
 
 The following variables are customizable when `ingress_type=route`

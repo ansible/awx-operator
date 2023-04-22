@@ -130,6 +130,9 @@ spec:
                     tls_secret:
                       description: Secret where the Ingress TLS secret can be found
                       type: string
+              ingress_controller:
+                description: Special configuration for specific Ingress Controllers
+                type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string
