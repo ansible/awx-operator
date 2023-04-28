@@ -244,8 +244,8 @@ spec:
 {% if rsyslog_command %}
           command: {{ rsyslog_command }}
 {% endif %}
-{% if ryslog_args %}
-          args: {{ ryslog_args }}
+{% if rsyslog_args %}
+          args: {{ rsyslog_args }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
           volumeMounts:
