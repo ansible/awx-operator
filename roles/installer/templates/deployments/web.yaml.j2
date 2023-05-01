@@ -32,7 +32,7 @@ spec:
     "secrets/app_credentials",
     "storage/persistent",
   ] %}
-        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | md5 }}"
+        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | sha1 }}"
 {% endfor %}
 {% for secret in [
     "bundle_cacert",
@@ -42,7 +42,7 @@ spec:
     "receptor_ca",
     "receptor_work_signing",
   ] %}
-        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | md5 }}"
+        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% endfor %}
 {% if web_annotations %}
         {{ web_annotations | indent(width=8) }}
