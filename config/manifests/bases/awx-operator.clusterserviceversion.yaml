@@ -226,7 +226,7 @@ spec:
         path: ingress_api_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text 
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Ingress Path
         path: ingress_path
         x-descriptors:
@@ -480,6 +480,26 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Extra Arguments
         path: postgres_extra_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Enable Postgres Keepalives
+        path: postgres_keepalives
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Count
+        path: postgres_keepalives_count
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Idle
+        path: postgres_keepalives_idle
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Interval
+        path: postgres_keepalives_interval
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

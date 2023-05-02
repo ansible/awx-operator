@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://github.com/ansible/awx-operator/workflows/CI/badge.svg?event=push)](https://github.com/ansible/awx-operator/actions)
-[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-Ansible-yellow.svg)](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html) 
+[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-Ansible-yellow.svg)](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
 [![AWX Mailing List](https://img.shields.io/badge/mailing%20list-AWX-orange.svg)](https://groups.google.com/g/awx-project)
 [![IRC Chat - #ansible-awx](https://img.shields.io/badge/IRC-%23ansible--awx-blueviolet.svg)](https://libera.chat)
 
@@ -12,59 +12,65 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
-* [AWX Operator](#awx-operator)
-* [Table of Contents](#table-of-contents)
-   * [Purpose](#purpose)
-   * [Usage](#usage)
-      * [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
-      * [Basic Install](#basic-install)
-      * [Helm Install on existing cluster](#helm-install-on-existing-cluster)
-      * [Admin user account configuration](#admin-user-account-configuration)
-      * [Network and TLS Configuration](#network-and-tls-configuration)
-         * [Service Type](#service-type)
-         * [Ingress Type](#ingress-type)
-      * [Database Configuration](#database-configuration)
-         * [External PostgreSQL Service](#external-postgresql-service)
-         * [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
-         * [Managed PostgreSQL Service](#managed-postgresql-service)
-      * [Advanced Configuration](#advanced-configuration)
-         * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
-         * [Redis container capabilities](#redis-container-capabilities)
-         * [Privileged Tasks](#privileged-tasks)
-         * [Containers Resource Requirements](#containers-resource-requirements)
-         * [Priority Classes](#priority-classes)
-         * [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
-         * [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
-         * [Enabling LDAP Integration at AWX bootstrap](#enabling-ldap-integration-at-awx-bootstrap)
-         * [Persisting Projects Directory](#persisting-projects-directory)
-         * [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
-         * [Default execution environments from private registries](#default-execution-environments-from-private-registries)
-            * [Control plane ee from private registry](#control-plane-ee-from-private-registry)
-         * [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
-         * [CSRF Cookie Secure Setting](#csrf-cookie-secure-setting)
-         * [Session Cookie Secure Setting](#session-cookie-secure-setting)
-         * [Extra Settings](#extra-settings)
-         * [Configure no_log](#no-log)
-         * [Auto Upgrade](#auto-upgrade)
-            * [Upgrade of instances without auto upgrade](#upgrade-of-instances-without-auto-upgrade)
-         * [Service Account](#service-account)
-         * [Labeling operator managed objects](#labeling-operator-managed-objects)
-         * [Pods termination grace period](#pods-termination-grace-period)
-      * [Uninstall](#uninstall)
-      * [Upgrading](#upgrading)
-         * [Backup](#backup)
-         * [v0.14.0](#v0140)
-            * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
-            * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
-            * [Steps to upgrade](#steps-to-upgrade)
-      * [Disable IPV6](#disable-ipv6)
-      * [Add Execution Nodes](#adding-execution-nodes)
-          * [Custom Receptor CA](#custom-receptor-ca)
-   * [Contributing](#contributing)
-   * [Release Process](#release-process)
-   * [Author](#author)
-   * [Code of Conduct](#code-of-conduct)
-   * [Get Involved](#get-involved)
+- [AWX Operator](#awx-operator)
+- [Table of Contents](#table-of-contents)
+  - [Purpose](#purpose)
+  - [Usage](#usage)
+    - [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
+    - [Basic Install](#basic-install)
+    - [Helm Install on existing cluster](#helm-install-on-existing-cluster)
+    - [Admin user account configuration](#admin-user-account-configuration)
+    - [Secret Key Configuration](#secret-key-configuration)
+    - [Network and TLS Configuration](#network-and-tls-configuration)
+      - [Service Type](#service-type)
+      - [Ingress Type](#ingress-type)
+        - [Specialized Ingress Controller configuration](#specialized-ingress-controller-configuration)
+    - [Database Configuration](#database-configuration)
+      - [Postgres Version](#postgres-version)
+      - [External PostgreSQL Service](#external-postgresql-service)
+      - [Migrating data from an old AWX instance](#migrating-data-from-an-old-awx-instance)
+      - [Managed PostgreSQL Service](#managed-postgresql-service)
+    - [Advanced Configuration](#advanced-configuration)
+      - [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+      - [Redis container capabilities](#redis-container-capabilities)
+      - [Privileged Tasks](#privileged-tasks)
+      - [Containers Resource Requirements](#containers-resource-requirements)
+      - [Priority Classes](#priority-classes)
+      - [Scaling the Web and Task Pods independently](#scaling-the-web-and-task-pods-independently)
+      - [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes)
+      - [Trusting a Custom Certificate Authority](#trusting-a-custom-certificate-authority)
+      - [Enabling LDAP Integration at AWX bootstrap](#enabling-ldap-integration-at-awx-bootstrap)
+      - [Persisting Projects Directory](#persisting-projects-directory)
+      - [Custom Volume and Volume Mount Options](#custom-volume-and-volume-mount-options)
+        - [Custom Nginx Configuration](#custom-nginx-configuration)
+      - [Default execution environments from private registries](#default-execution-environments-from-private-registries)
+        - [Control plane ee from private registry](#control-plane-ee-from-private-registry)
+      - [Exporting Environment Variables to Containers](#exporting-environment-variables-to-containers)
+      - [CSRF Cookie Secure Setting](#csrf-cookie-secure-setting)
+      - [Session Cookie Secure Setting](#session-cookie-secure-setting)
+      - [Extra Settings](#extra-settings)
+      - [No Log](#no-log)
+      - [Auto upgrade](#auto-upgrade)
+        - [Upgrade of instances without auto upgrade](#upgrade-of-instances-without-auto-upgrade)
+      - [Service Account](#service-account)
+      - [Labeling operator managed objects](#labeling-operator-managed-objects)
+      - [Pods termination grace period](#pods-termination-grace-period)
+    - [Uninstall](#uninstall)
+    - [Upgrading](#upgrading)
+      - [Backup](#backup)
+      - [PostgreSQL Upgrade Considerations](#postgresql-upgrade-considerations)
+      - [v0.14.0](#v0140)
+        - [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
+        - [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
+        - [Steps to upgrade](#steps-to-upgrade)
+    - [Disable IPV6](#disable-ipv6)
+    - [Adding Execution Nodes](#adding-execution-nodes)
+      - [Custom Receptor CA](#custom-receptor-ca)
+  - [Contributing](#contributing)
+  - [Release Process](#release-process)
+  - [Author](#author)
+  - [Code of Conduct](#code-of-conduct)
+  - [Get Involved](#get-involved)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
@@ -403,7 +409,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | --------------------- | ---------------------------------------- | ------- |
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
-| loadbalancer_ip        | Assign Loadbalancer IP                   | ''      |  
+| loadbalancer_ip        | Assign Loadbalancer IP                   | ''      |
 
 ```yaml
 ---
@@ -733,14 +739,14 @@ spec:
   control_plane_priority_class: awx-demo-high-priority
   postgres_priority_class: awx-demo-medium-priority
 ```
-#### Scaling the Web and Task Pods independently 
+#### Scaling the Web and Task Pods independently
 
 You can scale replicas up or down for each deployment by using the `web_replicas` or `task_replicas` respectively. You can scale all pods across both deployments by using `replicas` as well. The logic behind these CRD keys acts as such:
 
-- If you specify the `replicas` field, the key passed will scale both the `web` and `task` replicas to the same number. 
+- If you specify the `replicas` field, the key passed will scale both the `web` and `task` replicas to the same number.
 - If `web_replicas` or `task_replicas` is ever passed, it will override the existing `replicas` field on the specific deployment with the new key value.
 
-These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section. 
+These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section.
 #### Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
@@ -750,7 +756,7 @@ The ability to specify topologySpreadConstraints is also allowed through `topolo
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
 If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
-example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints.
 
 | Name                             | Description                              | Default  |
 | -------------------------------- | ---------------------------------------- | -------  |
@@ -868,7 +874,7 @@ secretGenerator:
       - bundle-ca.crt=<path+filename>
     options:
       disableNameSuffixHash: true
-      
+
 ...
 ```
 
@@ -1207,10 +1213,10 @@ Example configuration of `no_log` parameter
 ```
 
 #### Auto upgrade
-With this parameter you can influence the behavior during an operator upgrade.  
-If set to `true`, the operator will upgrade the specific instance directly.  
-When the value is set to `false`, and we have a running deployment, the operator will not update the AWX instance.  
-This can be useful when you have multiple AWX instances which you want to upgrade step by step instead of all at once.  
+With this parameter you can influence the behavior during an operator upgrade.
+If set to `true`, the operator will upgrade the specific instance directly.
+When the value is set to `false`, and we have a running deployment, the operator will not update the AWX instance.
+This can be useful when you have multiple AWX instances which you want to upgrade step by step instead of all at once.
 
 
 | Name         | Description                        | Default |
@@ -1226,21 +1232,21 @@ Example configuration of `auto_upgrade` parameter
 
 ##### Upgrade of instances without auto upgrade
 
-There are two ways to upgrade instances which are marked with the 'auto_upgrade: false' flag.  
+There are two ways to upgrade instances which are marked with the 'auto_upgrade: false' flag.
 
 Changing flags:
 
-- change the auto_upgrade flag on your AWX object to true  
+- change the auto_upgrade flag on your AWX object to true
 - wait until the upgrade process of that instance is finished
-- change the auto_upgrade flag on your AWX object back to false  
+- change the auto_upgrade flag on your AWX object back to false
 
 Delete the deployment:
 
-- delete the deployment object of your AWX instance  
+- delete the deployment object of your AWX instance
 ```
-$ kubectl -n awx delete deployment <yourInstanceName> 
+$ kubectl -n awx delete deployment <yourInstanceName>
 ```
-- wait until the instance gets redeployed  
+- wait until the instance gets redeployed
 
 
 #### Service Account
@@ -1287,6 +1293,8 @@ spec:
   - my/service
 ...
 ```
+
+NOTE: if labels specified in `additional_labels` are not present on the AWX resource it will be ignored.
 
 #### Pods termination grace period
 
@@ -1362,7 +1370,7 @@ In the event you need to recover the backup see the [restore role documentation]
 
 If there is a PostgreSQL major version upgrade, after the data directory on the PVC is migrated to the new version, the old PVC is kept by default.
 This provides the ability to roll back if needed, but can take up extra storage space in your cluster unnecessarily. You can configure it to be deleted automatically
-after a successful upgrade by setting the following variable on the AWX spec. 
+after a successful upgrade by setting the following variable on the AWX spec.
 
 
 ```yaml
@@ -1405,7 +1413,7 @@ nodes.
 
 In order to disable ipv6 on ngnix configuration (awx-web container), add following to the AWX spec.
 
-The following variables are customizable 
+The following variables are customizable
 
 | Name          | Description            | Default |
 | ------------- | ---------------------- | ------- |
