@@ -52,7 +52,7 @@ spec:
   type: NodePort
 {% elif service_type | lower == "loadbalancer" %}
   type: LoadBalancer
-{% if variable is defined and variable|length %}
+{% if loadbalancer_ip is defined and loadbalancer_ip|length %}
   loadbalancerip: '{{ loadbalancer_ip }}'
 {% endif %}
 {% else %}
