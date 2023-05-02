@@ -5,3 +5,4 @@ ansible-lint
 openshift!=0.13.0
 jmespath
 ansible-core
+ansible-compat<4  # https://github.com/ansible-community/molecule/issues/3903
