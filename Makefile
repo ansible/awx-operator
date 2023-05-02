@@ -228,7 +228,7 @@ ifeq (,$(shell which kubectl-slice 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUBECTL_SLICE)) ;\
-	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.1.0/kubectl-slice_1.1.0_$(OS)_$(ARCHX).tar.gz | \
+	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.2.6/kubectl-slice_$(OS)_$(ARCHX).tar.gz | \
 	tar xzf - -C bin/ kubectl-slice ;\
 	}
 else
