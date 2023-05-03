@@ -112,6 +112,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ task_resource_requirements }}
           command:
             - /bin/sh
             - -c
