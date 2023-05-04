@@ -1596,6 +1596,25 @@ spec:
                 type: array
                 items:
                   type: string
+              postgres_keepalives:
+                description: Controls whether client-side TCP keepalives are used for Postgres connections.
+                default: true
+                type: boolean
+              postgres_keepalives_count:
+                description: Controls the number of TCP keepalives that can be lost before the client's connection to the server is considered dead.
+                type: integer
+                default: 5
+                format: int32
+              postgres_keepalives_idle:
+                description: Controls the number of seconds of inactivity after which TCP should send a keepalive message to the server.
+                type: integer
+                default: 5
+                format: int32
+              postgres_keepalives_interval:
+                description: Controls the number of seconds after which a TCP keepalive message that is not acknowledged by the server should be retransmitted.
+                type: integer
+                default: 5
+                format: int32
               ca_trust_bundle:
                 description: Path where the trusted CA bundle is available
                 type: string
