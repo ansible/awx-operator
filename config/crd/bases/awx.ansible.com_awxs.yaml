@@ -54,7 +54,7 @@ spec:
                 description: Username to use for the admin account
                 type: string
                 default: admin
-              hostname: # deprecated
+              hostname:  # deprecated
                 description: (Deprecated) The hostname of the instance
                 type: string
               admin_email:
@@ -115,7 +115,7 @@ spec:
               ingress_annotations:
                 description: Annotations to add to the Ingress Controller
                 type: string
-              ingress_tls_secret: # deprecated
+              ingress_tls_secret:  # deprecated
                 description: (Deprecated) Secret where the Ingress TLS secret can be found
                 type: string
               ingress_class_name:
