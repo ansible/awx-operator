@@ -471,6 +471,7 @@ spec:
       - displayName: Postgres Storage Class
         path: postgres_storage_class
         x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
         - urn:alm:descriptor:com.tectonic.ui:advanced
       - displayName: Postgres Datapath
         path: postgres_data_path
