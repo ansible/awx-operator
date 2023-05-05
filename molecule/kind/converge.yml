@@ -5,8 +5,20 @@
   gather_facts: no
 
   tasks:
+    # Remove after this if fixed: https://github.com/ansible-collections/community.docker/issues/611
+    - name: Install docker
+      become: yes
+      pip:
+        name:
+          - websocket-client==0.59.0
+          - requests==2.28.2
+          - urllib3==1.26.15
+          - docker
+          - docker-compose
+        state: present
+
     - name: Build operator image
-      docker_image:
+      community.docker.docker_image:
         build:
           path: '{{ project_dir }}'
           pull: no
