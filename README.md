@@ -918,7 +918,7 @@ A sample of extra settings can be found as below. All possible options can be fo
       value: 'LDAPSearch("OU=Groups,DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(objectClass=group)",)'
 
     - setting: AUTH_LDAP_GROUP_TYPE
-      value: 'GroupOfNamesType'
+      value: 'GroupOfNamesType()'
 
     - setting: AUTH_LDAP_USER_ATTR_MAP
       value: '{"first_name": "givenName","last_name": "sn","email": "mail"}'
