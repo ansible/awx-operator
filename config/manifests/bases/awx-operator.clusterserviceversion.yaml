@@ -88,10 +88,10 @@ spec:
       kind: AWXRestore
       name: awxrestores.awx.ansible.com
       specDescriptors:
-      - displayName: Backup Source to restore from
-        description: Select what type of backup to specify. Backup CR, allows you to specify
-          the name of an AWXBackup object (recommended approach).  The PVC option allows you to
-          specify a custom PVC and directory to backup from.
+      - description: Select what type of backup to specify. Backup CR, allows you
+          to specify the name of an AWXBackup object (recommended approach).  The
+          PVC option allows you to specify a custom PVC and directory to backup from.
+        displayName: Backup Source to restore from
         path: backup_source
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:select:Backup CR
@@ -115,8 +115,9 @@ spec:
         path: backup_pvc_namespace
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Backup Directory
-        description: This is the directory inside the PVC that your backup is stored in.
+      - description: This is the directory inside the PVC that your backup is stored
+          in.
+        displayName: Backup Directory
         path: backup_dir
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
@@ -151,7 +152,8 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
       version: v1beta1
-    - description: Deploy a new instance of AWX. A standardized way to define, operate and scale automation with Ansible.
+    - description: Deploy a new instance of AWX. A standardized way to define, operate
+        and scale automation with Ansible.
       displayName: AWX
       kind: AWX
       name: awxs.awx.ansible.com
@@ -186,8 +188,9 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
-      - displayName: Secret Key
-        description: Name of the k8s secret the symmetric encryption key is stored in.
+      - description: Name of the k8s secret the symmetric encryption key is stored
+          in.
+        displayName: Secret Key
         path: secret_key_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -226,7 +229,7 @@ spec:
         path: ingress_api_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text 
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Ingress Path
         path: ingress_path
         x-descriptors:
@@ -335,9 +338,9 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: PostgreSQL Init Container Resource Requirements
-        description: The PostgreSQL init container is not used when an external DB
+      - description: The PostgreSQL init container is not used when an external DB
           is configured
+        displayName: PostgreSQL Init Container Resource Requirements
         path: postgres_init_container_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -347,20 +350,17 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: PostgreSQL Container Resource Requirements
-        description: The PostgreSQL container is not used when an external DB
-          is configured
+      - description: The PostgreSQL container is not used when an external DB is configured
+        displayName: PostgreSQL Container Resource Requirements
         path: postgres_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: PostgreSQL Container Storage Requirements
-        description: The PostgreSQL container is not used when an external DB
-          is configured
+      - description: The PostgreSQL container is not used when an external DB is configured
+        displayName: PostgreSQL Container Storage Requirements
         path: postgres_storage_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Replicas
         path: replicas
         x-descriptors:
@@ -471,8 +471,8 @@ spec:
       - displayName: Postgres Storage Class
         path: postgres_storage_class
         x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Datapath
         path: postgres_data_path
         x-descriptors:
@@ -790,8 +790,8 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-      - displayName: Additional labels defined on the resource, which should be
-          propagated to child resources
+      - displayName: Additional labels defined on the resource, which should be propagated
+          to child resources
         path: additional_labels
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -876,7 +876,7 @@ spec:
   - email: awx-project@googlegroups.com
     name: AWX Team
   maturity: alpha
-  MinKubeVersion: 1.22.15
+  minKubeVersion: 1.22.15
   provider:
     name: Ansible
     url: github.com/ansible/awx-operator

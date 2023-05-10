@@ -32,7 +32,7 @@ spec:
     "secrets/app_credentials",
     "storage/persistent",
   ] %}
-        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | md5 }}"
+        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | sha1 }}"
 {% endfor %}
 {% for secret in [
     "bundle_cacert",
@@ -42,7 +42,7 @@ spec:
     "receptor_ca",
     "receptor_work_signing",
   ] %}
-        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | md5 }}"
+        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% endfor %}
 {% if web_annotations %}
         {{ web_annotations | indent(width=8) }}
@@ -68,6 +68,7 @@ spec:
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ web_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -96,6 +97,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ web_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -244,8 +246,8 @@ spec:
 {% if rsyslog_command %}
           command: {{ rsyslog_command }}
 {% endif %}
-{% if ryslog_args %}
-          args: {{ ryslog_args }}
+{% if rsyslog_args %}
+          args: {{ rsyslog_args }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
           volumeMounts:

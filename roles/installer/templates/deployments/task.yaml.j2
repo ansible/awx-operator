@@ -112,6 +112,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ task_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -337,8 +338,8 @@ spec:
 {% if rsyslog_command %}
           command: {{ rsyslog_command }}
 {% endif %}
-{% if ryslog_args %}
-          args: {{ ryslog_args }}
+{% if rsyslog_args %}
+          args: {{ rsyslog_args }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
           volumeMounts:

@@ -99,7 +99,7 @@
           loop:
             - git add index.yaml
             - git commit -m "{{ commit_message }}"
-            #- git push
+            - git push
           args:
             chdir: "{{ temp_dir.path }}/"
           environment:
