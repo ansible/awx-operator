@@ -1083,6 +1083,33 @@ Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it i
 
 The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
 
+##### Custom Favicon
+
+You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, Create the configmap from a local favicon.ico file.
+
+```bash
+$ oc create configmap favicon-configmap --from-file favicon.ico
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+spec:
+  extra_volumes: |
+    - name: favicon
+      configMap:
+        defaultMode: 420
+        items:
+          - key: favicon.ico
+            path: favicon.ico
+        name: favicon-configmap
+  web_extra_volume_mounts: |
+    - name: favicon
+      mountPath: /var/lib/awx/public/static/media/favicon.ico
+      subPath: favicon.ico
+```
 
 #### Default execution environments from private registries
 
