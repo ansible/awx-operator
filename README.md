@@ -676,6 +676,25 @@ $ oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+#### Containers HostAliases Requirements
+
+Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
+
+| Name         | Description           | Default |
+| ------------ | --------------------- | ------- |
+| host_aliases | A list of HostAliases | None    |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  host_aliases:
+    - ip: <name-of-your-ip>
+      hostnames:
+        - <name-of-your-domain>
+```
 
 #### Containers Resource Requirements
 
