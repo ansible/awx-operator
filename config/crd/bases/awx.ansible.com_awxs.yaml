@@ -1357,6 +1357,18 @@ spec:
               image_pull_secret:  # deprecated
                 description: (Deprecated) Image pull secret for app and database containers
                 type: string
+              host_aliases:
+                description: HostAliases for app containers
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ip:
+                      type: string
+                    hostnames:
+                      type: array
+                      items:
+                        type: string
               task_resource_requirements:
                 description: Resource requirements for the task container
                 properties:

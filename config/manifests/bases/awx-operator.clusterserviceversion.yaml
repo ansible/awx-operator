@@ -329,6 +329,11 @@ spec:
         path: image_pull_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: HostAliases for app containers
+        path: host_aliases
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Web Container Resource Requirements
         path: web_resource_requirements
         x-descriptors:

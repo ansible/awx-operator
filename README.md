@@ -683,6 +683,25 @@ $ oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+#### Containers HostAliases Requirements
+
+Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
+
+| Name         | Description           | Default |
+| ------------ | --------------------- | ------- |
+| host_aliases | A list of HostAliases | None    |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  host_aliases:
+    - ip: <name-of-your-ip>
+      hostnames:
+        - <name-of-your-domain>
+```
 
 #### Containers Resource Requirements
 
@@ -1071,6 +1090,33 @@ Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it i
 
 The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
 
+##### Custom Favicon
+
+You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, Create the configmap from a local favicon.ico file.
+
+```bash
+$ oc create configmap favicon-configmap --from-file favicon.ico
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+spec:
+  extra_volumes: |
+    - name: favicon
+      configMap:
+        defaultMode: 420
+        items:
+          - key: favicon.ico
+            path: favicon.ico
+        name: favicon-configmap
+  web_extra_volume_mounts: |
+    - name: favicon
+      mountPath: /var/lib/awx/public/static/media/favicon.ico
+      subPath: favicon.ico
+```
 
 #### Default execution environments from private registries
 
