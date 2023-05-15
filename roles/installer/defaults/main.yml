@@ -384,6 +384,12 @@ projects_existing_claim: ''
 # Define postgres configuration arguments to use
 postgres_extra_args: ''
 
+# Configure postgres connection keepalive
+postgres_keepalives: true
+postgres_keepalives_idle: 5
+postgres_keepalives_interval: 5
+postgres_keepalives_count: 5
+
 # Define the storage_class, size and access_mode
 # when not using an existing claim
 projects_storage_size: 8Gi
