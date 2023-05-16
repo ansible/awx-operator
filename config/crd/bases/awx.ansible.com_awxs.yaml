@@ -1488,7 +1488,7 @@ spec:
                       storage:
                         type: string
                     type: object
-                type: object  
+                type: object
               service_account_annotations:
                 description: ServiceAccount annotations
                 type: string
