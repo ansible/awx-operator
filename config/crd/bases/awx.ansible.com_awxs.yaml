@@ -1468,9 +1468,9 @@ spec:
                     type: object
                 type: object
               rsyslog_resource_requirements:
-               description: Resource requirements for the rsyslog container   
+               description: Resource requirements for the rsyslog container  
                properties:
-                 requests: 
+                 requests:
                     properties:
                       cpu:
                         type: string
@@ -1479,7 +1479,7 @@ spec:
                       storage:
                         type: string
                     type: object
-                 limits:
+                  limits:
                     properties:
                       cpu:
                         type: string
