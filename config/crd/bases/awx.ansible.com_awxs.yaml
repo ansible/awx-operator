@@ -1468,7 +1468,7 @@ spec:
                     type: object
                 type: object
               rsyslog_resource_requirements:
-                description: Resource requirements for the rsyslog container  
+                description: Resource requirements for the rsyslog container
                 properties:
                   requests:
                     properties:
