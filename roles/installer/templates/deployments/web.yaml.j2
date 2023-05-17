@@ -277,7 +277,6 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-          resources: {{ rsyslog_resource_requirements }}   
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
@@ -297,6 +296,7 @@ spec:
             - name: AWX_KUBE_DEVEL
               value: "1"
 {% endif %}
+          resources: {{ rsyslog_resource_requirements }}
 {% if web_node_selector %}
       nodeSelector:
         {{ web_node_selector | indent(width=8) }}
