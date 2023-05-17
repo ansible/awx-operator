@@ -95,7 +95,7 @@
 
         - name: Set url base swap in gitconfig
           command:
-            cmd: "git config --global url.https://{{ gh_user }}:{{ gh_token }}@github.com/.insteadOf https://github.com/"
+            cmd: "git config --local url.https://{{ gh_user }}:{{ gh_token }}@github.com/.insteadOf https://github.com/"
           args:
             chdir: "{{ temp_dir.path }}/"
           no_log: true
