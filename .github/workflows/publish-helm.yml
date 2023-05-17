@@ -1,0 +1,26 @@
+---
+name: Re-publish helm chart
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag'
+        required: true
+        type: string
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          depth: 0
+
+      - name: Release Helm chart
+        run: |
+          ansible-playbook ansible/helm-release.yml -v \
+            -e operator_image=quay.io/${{ github.repository }} \
+            -e chart_owner=${{ github.repository_owner }} \
+            -e tag=${{ inputs.tag }} \
+            -e gh_token=${{ secrets.GITHUB_TOKEN }} \
+            -e gh_user=${{ github.actor }} \
+            -e repo_type=https
