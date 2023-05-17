@@ -355,6 +355,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Rsyslog Container Resource Requirements
+        path: rsyslog_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - description: The PostgreSQL container is not used when an external DB is configured
         displayName: PostgreSQL Container Resource Requirements
         path: postgres_resource_requirements

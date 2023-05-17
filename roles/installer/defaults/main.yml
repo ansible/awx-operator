@@ -303,10 +303,6 @@ ee_resource_requirements:
     memory: 64Mi
 
 # TODO: validate default resource requirements
-rsyslog_resource_requirements:
-  requests:
-    cpu: 100m
-    memory: 128Mi
 
 # Customize CSRF options
 csrf_cookie_secure: False
@@ -319,6 +315,12 @@ redis_resource_requirements:
   requests:
     cpu: 50m
     memory: 64Mi
+
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
