@@ -382,12 +382,18 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
+{% if rsyslog_extra_volume_mounts -%}
+            {{ rsyslog_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
               value: "/etc/supervisord_rsyslog.conf"
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
+{% endif %}
+{% if rsyslog_extra_env -%}
+            {{ rsyslog_extra_env | indent(width=12, first=True) }}
 {% endif %}
 {% if task_node_selector %}
       nodeSelector:

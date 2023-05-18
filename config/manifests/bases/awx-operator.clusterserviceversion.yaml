@@ -643,6 +643,28 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Rsyslog Args
+        path: rsyslog_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Rsyslog Command
+        path: rsyslog_command
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to Rsyslog container
+        displayName: Rsyslog Extra Env
+        path: rsyslog_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Rsyslog container
+        displayName: Rsyslog Extra Volume Mounts
+        path: rsyslog_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Specify extra volumes to add to the application pod
         displayName: Extra Volumes
         path: extra_volumes

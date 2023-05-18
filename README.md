@@ -998,6 +998,7 @@ In a scenario where custom volumes and volume mounts are required to either over
 | extra_volumes                      | Specify extra volumes to add to the application pod      | ''      |
 | web_extra_volume_mounts            | Specify volume mounts to be added to Web container       | ''      |
 | task_extra_volume_mounts           | Specify volume mounts to be added to Task container      | ''      |
+| rsyslog_extra_volume_mounts        | Specify volume mounts to be added to Rsyslog container   | ''      |
 | ee_extra_volume_mounts             | Specify volume mounts to be added to Execution container | ''      |
 | init_container_extra_volume_mounts | Specify volume mounts to be added to Init container      | ''      |
 | init_container_extra_commands      | Specify additional commands for Init container           | ''      |
@@ -1159,11 +1160,12 @@ type: kubernetes.io/dockerconfigjson
 
 If you need to export custom environment variables to your containers.
 
-| Name           | Description                                         | Default |
-| -------------- | --------------------------------------------------- | ------- |
-| task_extra_env | Environment variables to be added to Task container | ''      |
-| web_extra_env  | Environment variables to be added to Web container  | ''      |
-| ee_extra_env   | Environment variables to be added to EE container   | ''      |
+| Name              | Description                                            | Default |
+| ----------------- | ------------------------------------------------------ | ------- |
+| task_extra_env    | Environment variables to be added to Task container    | ''      |
+| web_extra_env     | Environment variables to be added to Web container     | ''      |
+| rsyslog_extra_env | Environment variables to be added to Rsyslog container | ''      |
+| ee_extra_env      | Environment variables to be added to EE container      | ''      |
 
 > :warning: The `ee_extra_env` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
 
@@ -1175,6 +1177,9 @@ Example configuration of environment variables
       - name: MYCUSTOMVAR
         value: foo
     web_extra_env: |
+      - name: MYCUSTOMVAR
+        value: foo
+    rsyslog_extra_env: |
       - name: MYCUSTOMVAR
         value: foo
     ee_extra_env: |
