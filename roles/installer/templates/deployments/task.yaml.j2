@@ -343,7 +343,6 @@ spec:
 {% if ee_extra_env -%}
             {{ ee_extra_env | indent(width=12, first=True) }}
 {% endif %}
-          resources: {{ rsyslog_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-rsyslog'
 {% if rsyslog_command %}
@@ -353,6 +352,7 @@ spec:
           args: {{ rsyslog_args }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ rsyslog_resource_requirements }}
           volumeMounts:
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/credentials.py"
