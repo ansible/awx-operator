@@ -361,6 +361,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Rsyslog Container Resource Requirements
+        path: rsyslog_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - description: The PostgreSQL container is not used when an external DB is configured
         displayName: PostgreSQL Container Resource Requirements
         path: postgres_resource_requirements
@@ -491,6 +496,26 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Extra Arguments
         path: postgres_extra_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Enable Postgres Keepalives
+        path: postgres_keepalives
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Count
+        path: postgres_keepalives_count
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Idle
+        path: postgres_keepalives_idle
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Keepalives Interval
+        path: postgres_keepalives_interval
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

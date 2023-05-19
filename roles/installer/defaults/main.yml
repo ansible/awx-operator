@@ -313,10 +313,6 @@ ee_resource_requirements:
     memory: 64Mi
 
 # TODO: validate default resource requirements
-rsyslog_resource_requirements:
-  requests:
-    cpu: 100m
-    memory: 128Mi
 
 # Customize CSRF options
 csrf_cookie_secure: False
@@ -329,6 +325,12 @@ redis_resource_requirements:
   requests:
     cpu: 50m
     memory: 64Mi
+
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
@@ -393,6 +395,12 @@ projects_existing_claim: ''
 #
 # Define postgres configuration arguments to use
 postgres_extra_args: ''
+
+# Configure postgres connection keepalive
+postgres_keepalives: true
+postgres_keepalives_idle: 5
+postgres_keepalives_interval: 5
+postgres_keepalives_count: 5
 
 # Define the storage_class, size and access_mode
 # when not using an existing claim

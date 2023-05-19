@@ -93,6 +93,13 @@
           args:
             chdir: "{{ playbook_dir }}/.."
 
+        - name: Set url base swap in gitconfig
+          command:
+            cmd: "git config --local url.https://{{ gh_user }}:{{ gh_token }}@github.com/.insteadOf https://github.com/"
+          args:
+            chdir: "{{ temp_dir.path }}/"
+          no_log: true
+
         - name: Stage and Push commit to gh-pages branch
           command:
             cmd: "{{ item }}"
