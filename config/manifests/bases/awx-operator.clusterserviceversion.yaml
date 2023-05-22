@@ -643,6 +643,28 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Args
+        path: redis_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Redis Command
+        path: redis_command
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to Redis container
+        displayName: Redis Extra Env
+        path: redis_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Redis container
+        displayName: Redis Extra Volume Mounts
+        path: redis_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Specify extra volumes to add to the application pod
         displayName: Extra Volumes
         path: extra_volumes
