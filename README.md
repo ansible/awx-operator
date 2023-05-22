@@ -1185,7 +1185,7 @@ Example configuration of environment variables
         value: foo
     redis_extra_env: |
       - name: MYCUSTOMVAR
-        value: food
+        value: foo
 ```
 
 #### CSRF Cookie Secure Setting
