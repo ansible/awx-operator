@@ -1529,6 +1529,14 @@ spec:
                 type: array
                 items:
                   type: string
+              redis_args:
+                type: array
+                items:
+                  type: string
+              redis_command:
+                type: array
+                items:
+                  type: string
               task_extra_env:
                 type: string
               web_extra_env:
@@ -1543,6 +1551,9 @@ spec:
                 type: string
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
+                type: string
+              redis_extra_volume_mounts:
+                description: Specify volume mounts to be added to the Redis container
                 type: string
               redis_image:
                 description: Registry path to the redis container to use
