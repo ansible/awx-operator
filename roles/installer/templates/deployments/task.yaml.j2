@@ -142,6 +142,11 @@ spec:
         - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+{% if redis_command %}
+          command: {{ redis_command }}
+{% endif %}
+{% if redis_args %}
+          args: {{ redis_args }}          
 {% if redis_capabilities is defined and redis_capabilities %}
           securityContext:
             capabilities:
@@ -381,6 +386,9 @@ spec:
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
+{% endif %}
+{% if redis_extra_volume_mounts -%}
+            {{ rsyslog_redis_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
