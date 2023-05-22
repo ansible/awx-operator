@@ -287,7 +287,7 @@ rsyslog_args:
   - /usr/bin/launch_awx_rsyslog.sh
 rsyslog_command: []
 redis_args:
-  - /usr/bin/launch_awx_rsyslog.sh
+  - /usr/bin/launch_awx_redis.sh
 redis_command: []
 
 task_resource_requirements:
