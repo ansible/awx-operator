@@ -655,7 +655,7 @@ spec:
 **Note**: The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
 
 #### Container security context
-To change/add the security context for a specified container, add your items as key-value pairs under the nbame of the container in question. Possible container names are `redis`, `init`, `ee`, `task`, `web`, `rsyslog`. 
+To change/add the security context for a specified container, add your items as key-value pairs under the name of the container in question. Possible container names are `redis`, `init`, `ee`, `task`, `web`, `rsyslog`. 
 
 ```yaml
 ---
