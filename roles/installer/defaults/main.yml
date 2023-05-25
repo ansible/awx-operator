@@ -286,7 +286,7 @@ web_command: []
 rsyslog_args:
   - /usr/bin/launch_awx_rsyslog.sh
 rsyslog_command: []
-redis_args: []
+redis_args: ''
 redis_command: []
 
 task_resource_requirements:
