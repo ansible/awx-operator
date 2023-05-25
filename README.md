@@ -1220,6 +1220,8 @@ With`extra_settings`, you can pass multiple custom settings via the `awx-operato
 | -------------- | -------------- | ------- |
 | extra_settings | Extra settings | ''      |
 
+**Note:** Parameters configured in `extra_settings` cannot change after deployed awx.
+
 Example configuration of `extra_settings` parameter
 
 ```yaml
