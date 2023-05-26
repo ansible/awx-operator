@@ -41,8 +41,6 @@ nav:
   - debugging.md
   - migration.md
  
-  
-
 plugins:
   - autorefs
   - markdown-exec
