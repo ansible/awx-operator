@@ -220,6 +220,8 @@ spec:
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
+            - name: {{ ansible_operator_meta.name }}-supervisor-socket
+              mountPath: "/var/run/supervisor"
               mountPath: "/var/run/awx-rsyslog"
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
@@ -527,6 +529,8 @@ spec:
               - key: redis_conf
                 path: redis.conf
         - name: {{ ansible_operator_meta.name }}-redis-socket
+          emptyDir: {}
+        - name: name: {{ ansible_operator_meta.name }}-supervisor-socket
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-redis-data
           emptyDir: {}
