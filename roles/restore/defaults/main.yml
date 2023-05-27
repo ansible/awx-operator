@@ -17,6 +17,15 @@ cluster_name: 'cluster.local'
 # Set no_log settings on certain tasks
 no_log: true
 
+# Add a nodeSelector for the Postgres pods to backup.
+# Specify as literal block. E.g.:
+# postgres_selector: |
+#   disktype: ssd
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+postgres_selector: ''
+
+
 # Default resource requirements
 restore_resource_requirements:
   limits:
