@@ -20,7 +20,6 @@ no_log: true
 # Add a nodeSelector for the Postgres pods to backup.
 # Specify as literal block. E.g.:
 # db_management_pod_node_selector: |
-#   disktype: ssd
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
 db_management_pod_node_selector: ''
