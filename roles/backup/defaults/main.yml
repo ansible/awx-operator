@@ -20,11 +20,10 @@ clean_backup_on_delete: false
 
 # Add a nodeSelector for the Postgres pods to backup.
 # Specify as literal block. E.g.:
-# postgres_selector: |
-#   disktype: ssd
+# db_management_pod_node_selector: |
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
-postgres_selector: ''
+db_management_pod_node_selector: ''
 
 # Variable to signal that this role is being run as a finalizer
 finalizer_run: false
