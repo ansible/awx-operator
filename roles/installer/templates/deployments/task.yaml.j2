@@ -392,7 +392,7 @@ spec:
               exec:
                 command:
                 - bash
-                - /var/lib/pre-stop/scripts/termination-master
+                - /var/lib/pre-stop/scripts/termination-waiter
 {% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
