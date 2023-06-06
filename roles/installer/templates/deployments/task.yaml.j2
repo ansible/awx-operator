@@ -224,8 +224,8 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/work_private_key.pem"
-              subPath: "work_private_key.pem"
+              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              subPath: "work-private-key.pem"
               readOnly: true
             - name: receptor-socket
               mountPath: "/var/run/receptor"
@@ -309,8 +309,8 @@ spec:
               subPath: "tls.crt"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/work_private_key.pem"
-              subPath: "work_private_key.pem"
+              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              subPath: "work-private-key.pem"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
               mountPath: "/etc/receptor/tls/"
