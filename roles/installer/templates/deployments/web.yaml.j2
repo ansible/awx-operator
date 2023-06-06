@@ -218,8 +218,8 @@ spec:
               subPath: "tls.key"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-public-key.pem"
-              subPath: "work-public-key.pem"
+              mountPath: "/etc/receptor/work_public_key.pem"
+              subPath: "work_public_key.pem"
               readOnly: true
 {% if development_mode | bool %}
             - name: awx-devel
