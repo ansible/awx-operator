@@ -37,6 +37,6 @@ additional_labels: []
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
 
-# Number of partitions to precreate to avoid pg_dump locks.
-partition_count: 1
+# Number of partitions to precreate before starting backup to avoid pg_dump locks.
+partition_count: 3
 ...
