@@ -89,7 +89,7 @@
     container: "{{ ansible_operator_meta.name }}-task"
     command: awx-manage precreate_partitions --count='{{ partition_count }}'
   register: result
-  changed_when: "'Created partitions for' in result.stderr"
+  changed_when: "'Created partitions for' in result.stdout"
   failed_when: result.return_code > 0
 
 - name: Set pg_dump command
