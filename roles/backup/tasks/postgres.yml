@@ -82,6 +82,16 @@
     resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc.cluster.local", awx_postgres_host) }}'  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
 
+- name: Precreate database partitions
+  k8s_exec:
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    pod: "{{ tower_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-task"
+    command: awx-manage precreate_partitions --count='{{ partition_count }}'
+  register: result
+  changed_when: "'Created partitions for' in result.stderr"
+  failed_when: result.return_code > 0
+
 - name: Set pg_dump command
   set_fact:
     pgdump: >-
