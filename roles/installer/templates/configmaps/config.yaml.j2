@@ -100,6 +100,7 @@ data:
         include       /etc/nginx/mime.types;
         default_type  application/octet-stream;
         server_tokens off;
+        client_max_body_size 5M;
     
         log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                           '$status $body_bytes_sent "$http_referer" '
@@ -235,7 +236,7 @@ data:
     bind 127.0.0.1
   receptor_conf: |
     ---
-    - log-level: debug
+    - log-level: info
     - local-only: null
     - node:
        firewallrules:
@@ -268,6 +269,7 @@ data:
         key: /etc/receptor/tls/receptor.key
         name: tlsclient
         rootcas: /etc/receptor/tls/ca/receptor-ca.crt
+        mintls13: false
     - work-signing:
         privatekey: /etc/receptor/signing/work-private-key.pem
         tokenexpiration: 1m

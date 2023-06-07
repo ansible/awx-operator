@@ -131,7 +131,7 @@ $ alias kubectl="minikube kubectl --"
 
 ### Basic Install
 
-Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
 First, create a file called `kustomization.yaml` with the following content:
 
@@ -156,7 +156,7 @@ namespace: awx
 Install the manifests by running this:
 
 ```
-$ kustomize build . | kubectl apply -f -
+$ kubectl apply -k .
 namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
@@ -229,10 +229,10 @@ resources:
 ...
 ```
 
-Finally, run `kustomize` again to create the AWX instance in your cluster:
+Finally, apply the changes to create the AWX instance in your cluster:
 
 ```
-kustomize build . | kubectl apply -f -
+kubectl apply -k .
 ```
 
 After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
@@ -403,12 +403,14 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | --------------------- | ---------------------------------------- | ------- |
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
+| loadbalancer_ip        | Assign Loadbalancer IP                   | ''      |  
 
 ```yaml
 ---
 spec:
   ...
   service_type: LoadBalancer
+  loadbalancer_ip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
   service_annotations: |
@@ -473,6 +475,23 @@ spec:
   hostname: awx-demo.example.com
   ingress_annotations: |
     environment: testing
+```
+
+##### Specialized Ingress Controller configuration
+
+Some Ingress Controllers need a special configuration to fully support AWX, add the following value with the `ingress_controller` variable, if you are using one of these:
+
+| Ingress Controller name               | value   |
+| ------------------------------------- | ------- |
+| [Contour](https://projectcontour.io/) | contour |
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: ingress
+  hostname: awx-demo.example.com
+  ingress_controller: contour
 ```
 
   * Route
@@ -657,6 +676,25 @@ $ oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+#### Containers HostAliases Requirements
+
+Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
+
+| Name         | Description           | Default |
+| ------------ | --------------------- | ------- |
+| host_aliases | A list of HostAliases | None    |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  host_aliases:
+    - ip: <name-of-your-ip>
+      hostnames:
+        - <name-of-your-domain>
+```
 
 #### Containers Resource Requirements
 
@@ -714,7 +752,14 @@ spec:
   control_plane_priority_class: awx-demo-high-priority
   postgres_priority_class: awx-demo-medium-priority
 ```
+#### Scaling the Web and Task Pods independently 
 
+You can scale replicas up or down for each deployment by using the `web_replicas` or `task_replicas` respectively. You can scale all pods across both deployments by using `replicas` as well. The logic behind these CRD keys acts as such:
+
+- If you specify the `replicas` field, the key passed will scale both the `web` and `task` replicas to the same number. 
+- If `web_replicas` or `task_replicas` is ever passed, it will override the existing `replicas` field on the specific deployment with the new key value.
+
+These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section. 
 #### Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
@@ -723,18 +768,28 @@ pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
+If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
 
-| Name                        | Description                         | Default  |
-| --------------------------- | ----------------------------------- | -------  |
-| postgres_image              | Path of the image to pull           | postgres |
-| postgres_image_version      | Image version to pull               | 13       |
-| node_selector               | AWX pods' nodeSelector              | ''       |
-| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''       |
-| affinity                    | AWX pods' affinity rules            | ''       |
-| tolerations                 | AWX pods' tolerations               | ''       |
-| annotations                 | AWX pods' annotations               | ''       |
-| postgres_selector           | Postgres pods' nodeSelector         | ''       |
-| postgres_tolerations        | Postgres pods' tolerations          | ''       |
+| Name                             | Description                              | Default  |
+| -------------------------------- | ---------------------------------------- | -------  |
+| postgres_image                   | Path of the image to pull                | postgres |
+| postgres_image_version           | Image version to pull                    | 13       |
+| node_selector                    | AWX pods' nodeSelector                   | ''       |
+| web_node_selector                | AWX web pods' nodeSelector               | ''       |
+| task_node_selector               | AWX task pods' nodeSelector              | ''       |
+| topology_spread_constraints      | AWX pods' topologySpreadConstraints      | ''       |
+| web_topology_spread_constraints  | AWX web pods' topologySpreadConstraints  | ''       |
+| task_topology_spread_constraints | AWX task pods' topologySpreadConstraints | ''       |
+| affinity                         | AWX pods' affinity rules                 | ''       |
+| web_affinity                     | AWX web pods' affinity rules             | ''       |
+| task_affinity                    | AWX task pods' affinity rules            | ''       |
+| tolerations                      | AWX pods' tolerations                    | ''       |
+| web_tolerations                  | AWX web pods' tolerations                | ''       |
+| task_tolerations                 | AWX task pods' tolerations               | ''       |
+| annotations                      | AWX pods' annotations                    | ''       |
+| postgres_selector                | Postgres pods' nodeSelector              | ''       |
+| postgres_tolerations             | Postgres pods' tolerations               | ''       |
 
 Example of customization could be:
 
@@ -757,6 +812,11 @@ spec:
     - key: "dedicated"
       operator: "Equal"
       value: "AWX"
+      effect: "NoSchedule"
+  task_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX_task"
       effect: "NoSchedule"
   postgres_selector: |
     disktype: ssd
@@ -870,7 +930,7 @@ A sample of extra settings can be found as below. All possible options can be fo
       value: 'LDAPSearch("OU=Groups,DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(objectClass=group)",)'
 
     - setting: AUTH_LDAP_GROUP_TYPE
-      value: 'GroupOfNamesType(name_attr="cn")'
+      value: 'GroupOfNamesType()'
 
     - setting: AUTH_LDAP_USER_ATTR_MAP
       value: '{"first_name": "givenName","last_name": "sn","email": "mail"}'
@@ -1023,6 +1083,33 @@ Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it i
 
 The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
 
+##### Custom Favicon
+
+You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, Create the configmap from a local favicon.ico file.
+
+```bash
+$ oc create configmap favicon-configmap --from-file favicon.ico
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+spec:
+  extra_volumes: |
+    - name: favicon
+      configMap:
+        defaultMode: 420
+        items:
+          - key: favicon.ico
+            path: favicon.ico
+        name: favicon-configmap
+  web_extra_volume_mounts: |
+    - name: favicon
+      mountPath: /var/lib/awx/public/static/media/favicon.ico
+      subPath: favicon.ico
+```
 
 #### Default execution environments from private registries
 

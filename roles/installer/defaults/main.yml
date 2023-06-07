@@ -36,12 +36,16 @@ ingress_annotations: ''
 # certificate and key.
 ingress_tls_secret: ''
 
+# Special configuration for specific Ingress Controllers. E.g.:
+# ingress_controller: contour
+ingress_controller: ''
+
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
 service_annotations: ''
 
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768
-#nodeport_port: '30080'
+# nodeport_port: '30080'
 
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
@@ -67,10 +71,23 @@ hostname: ''
 # Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
 # to be scheduled on that node. Specify as literal block. E.g.:
 # node_selector: |
-#   disktype: ssd
 #   kubernetes.io/arch: amd64
 #   kubernetes.io/os: linux
 node_selector: ''
+
+# Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
+# to be scheduled on that node. Specify as literal block. E.g.:
+# node_selector: |
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+web_node_selector: ''
+
+# Add a nodeSelector for the AWX pods. It must match a node's labels for the pod
+# to be scheduled on that node. Specify as literal block. E.g.:
+# node_selector: |
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+task_node_selector: ''
 
 # Add a topologySpreadConstraints for the AWX pods.
 # Specify as literal block. E.g.:
@@ -83,7 +100,27 @@ node_selector: ''
 #         app.kubernetes.io/name: "<resourcename>"
 topology_spread_constraints: ''
 
-affinity: {}
+# Add a topologySpreadConstraints for the task pods.
+# Specify as literal block. E.g.:
+# task_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+task_topology_spread_constraints: ''
+
+# Add a topologySpreadConstraints for the web pods.
+# Specify as literal block. E.g.:
+# web_topology_spread_constraints: |
+#   - maxSkew: 100
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app.kubernetes.io/name: "<resourcename>"
+web_topology_spread_constraints: ''
 
 # Add node tolerations for the AWX pods. Specify as literal block. E.g.:
 # tolerations: |
@@ -93,11 +130,75 @@ affinity: {}
 #     effect: "NoSchedule"
 tolerations: ''
 
+# Add node tolerations for the task pods. Specify as literal block. E.g.:
+# task_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWXtask"
+#     effect: "NoSchedule"
+task_tolerations: ''
+
+# Add node tolerations for the web pods. Specify as literal block. E.g.:
+# web_tolerations: |
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "AWXweb"
+#     effect: "NoSchedule"
+web_tolerations: ''
+
+# Add affinities for all pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/component
+#            operator: In
+#            values:
+#            - awx
+affinity: {}
+
+# Add affinities for all task pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-task
+task_affinity: {}
+
+# Add affinities for all web pods
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: app.kubernetes.io/name
+#            operator: In
+#            values:
+#            - awx-web
+web_affinity: {}
+
 # Add annotations to awx pods. Specify as literal block. E.g.:
 # annotations: |
 #   my.annotation/1: value
 #   my.annotation/2: value2
 annotations: ''
+
+# Override annotations to awx task pods. Specify as literal block. E.g.:
+# task_annotations: |
+#   my.task-annotation/1: value
+#   my.task-annotation/2: value2
+task_annotations: ''
+
+# Override annotations to awx web pods. Specify as literal block. E.g.:
+# web_annotations: |
+#   my.web-annotation/1: value
+#   my.web-annotation/2: value2
+web_annotations: ''
 
 admin_user: admin
 admin_email: test@example.com
@@ -173,13 +274,18 @@ _init_projects_container_image: quay.io/centos/centos:stream9
 create_preload_data: true
 
 replicas: "1"
+web_replicas: ''
+task_replicas: ''
 
 task_args:
   - /usr/bin/launch_awx_task.sh
 task_command: []
 web_args:
-  - /usr/bin/launch_awx.sh
+  - /usr/bin/launch_awx_web.sh
 web_command: []
+rsyslog_args:
+  - /usr/bin/launch_awx_rsyslog.sh
+rsyslog_command: []
 
 task_resource_requirements:
   requests:
@@ -196,6 +302,8 @@ ee_resource_requirements:
     cpu: 100m
     memory: 64Mi
 
+# TODO: validate default resource requirements
+
 # Customize CSRF options
 csrf_cookie_secure: False
 session_cookie_secure: False
@@ -207,6 +315,12 @@ redis_resource_requirements:
   requests:
     cpu: 50m
     memory: 64Mi
+
+rsyslog_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
@@ -272,6 +386,12 @@ projects_existing_claim: ''
 # Define postgres configuration arguments to use
 postgres_extra_args: ''
 
+# Configure postgres connection keepalive
+postgres_keepalives: true
+postgres_keepalives_idle: 5
+postgres_keepalives_interval: 5
+postgres_keepalives_count: 5
+
 # Define the storage_class, size and access_mode
 # when not using an existing claim
 projects_storage_size: 8Gi
@@ -313,3 +433,10 @@ set_self_labels: true
 
 # Disable web container's nginx ipv6 listener
 ipv6_disabled: false
+
+# Set hostAliases on deployments
+#       hostAliases:
+#       - ip: 10.10.0.10
+#         hostnames:
+#         - hostname
+host_aliases: ''
