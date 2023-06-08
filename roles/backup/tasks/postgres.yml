@@ -84,13 +84,12 @@
 
 - name: Precreate database partitions
   k8s_exec:
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    pod: "{{ tower_pod_name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
-    command: awx-manage precreate_partitions --count='{{ partition_count }}'
+    command: awx-manage precreate_partitions --count='{{ precreate_partition_hours }}'
   register: result
   changed_when: "'Created partitions for' in result.stdout"
-  failed_when: result.return_code > 0
 
 - name: Set pg_dump command
   set_fact:
