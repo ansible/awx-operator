@@ -1694,6 +1694,9 @@ spec:
               session_cookie_secure:
                 description: Set session cookie secure mode for web
                 type: string
+              receptor_log_level:
+                description: Set log level of receptor service
+                type: string
               extra_settings:
                 description: Extra settings to specify for the API
                 items:
