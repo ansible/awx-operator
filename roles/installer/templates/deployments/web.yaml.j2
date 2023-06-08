@@ -142,6 +142,23 @@ spec:
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
               mountPath: "/data"
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - -c
+                # redis image doesn't support writing to `/proc/1/fd/*`
+                - >
+                  PRE_STOP_STDOUT=/dev/stdout
+                  PRE_STOP_STDERR=/dev/stderr
+                  /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
           resources: {{ redis_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
@@ -227,6 +244,18 @@ spec:
 {% endif %}
 {% if web_extra_volume_mounts -%}
             {{ web_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-master
 {% endif %}
           env:
             - name: AWX_COMPONENT
@@ -325,6 +354,9 @@ spec:
       affinity:
         {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
+{% if termination_grace_period_seconds is defined %}
+      terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
+{% endif %}
       volumes:
         - name: "{{ ansible_operator_meta.name }}-receptor-ca"
           secret:
@@ -359,6 +391,14 @@ spec:
             items:
               - key: ldap-ca.crt
                 path: 'ldap-ca.crt'
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+        - name: pre-stop-data
+          emptyDir: {}
+        - name: pre-stop-scripts
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-pre-stop-scripts'
+            defaultMode: 0775
 {% endif %}
         - name: "{{ ansible_operator_meta.name }}-application-credentials"
           secret:
