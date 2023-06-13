@@ -25,7 +25,7 @@ spec:
       {{ backup_resource_requirements | to_nice_yaml(indent=2) | indent(width=6, first=False) }}
 {%- endif %}
 {% if db_management_pod_node_selector %}
-      nodeSelector:
+  nodeSelector:
         {{ db_management_pod_node_selector | indent(width=8) }}
 {% endif %}
   volumes:
