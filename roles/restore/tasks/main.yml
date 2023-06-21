@@ -10,12 +10,7 @@
       metadata:
         name: '{{ ansible_operator_meta.name }}'
         namespace: '{{ ansible_operator_meta.namespace }}'
-        labels:
-          app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-          app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-          app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-          app.kubernetes.io/component: '{{ deployment_type }}'
-          app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+        labels: '{{ lookup("template", "../common/templates/labels/common.yaml.j2") | from_yaml }}'
   when: set_self_labels | bool
 
 - name: Look up details for this restore object
@@ -26,25 +21,35 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_restore
 
+- name: Build `additional_labels_items` labels from `additional_labels`
+  set_fact:
+    additional_labels_items: >-
+      {{ this_restore['resources'][0]['metadata']['labels']
+         | dict2items | selectattr('key', 'in', additional_labels)
+      }}
+  when:
+  - additional_labels | length
+  - this_restore['resources'][0]['metadata']['labels']
+
 - block:
-    - include_tasks: init.yml
+  - include_tasks: init.yml
 
-    - include_tasks: import_vars.yml
+  - include_tasks: import_vars.yml
 
-    - include_tasks: secrets.yml
+  - include_tasks: secrets.yml
 
-    - include_tasks: deploy_awx.yml
+  - include_tasks: deploy_awx.yml
 
-    - include_tasks: postgres.yml
+  - include_tasks: postgres.yml
 
-    - name: Set flag signifying this restore was successful
-      set_fact:
-        tower_restore_complete: True
+  - name: Set flag signifying this restore was successful
+    set_fact:
+      tower_restore_complete: True
 
-    - include_tasks: cleanup.yml
+  - include_tasks: cleanup.yml
 
   when:
-    - this_restore['resources'][0]['status']['restoreComplete'] is not defined
+  - this_restore['resources'][0]['status']['restoreComplete'] is not defined
 
 - name: Update status variables
   include_tasks: update_status.yml

@@ -5,11 +5,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-service'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
     {{ service_labels | indent(width=4) }}
 {% if service_annotations %}
   annotations:
@@ -17,13 +13,14 @@ metadata:
 {% endif %}
 spec:
   ports:
-  
 {% if service_type | lower == "nodeport" %}
     - port: 80
       protocol: TCP
       targetPort: 8052
       name: http
+{% if nodeport_port is defined %}
       nodePort: {{ nodeport_port }}
+{% endif %}
 {% elif service_type | lower != 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
     - port: 80
       protocol: TCP
@@ -48,13 +45,16 @@ spec:
       name: http
 {% endif %}
   selector:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
 {% if service_type | lower == "nodeport" %}
   type: NodePort
 {% elif service_type | lower == "loadbalancer" %}
   type: LoadBalancer
+{% if loadbalancer_ip is defined and loadbalancer_ip|length %}
+  loadbalancerip: '{{ loadbalancer_ip }}'
+{% endif %}
 {% else %}
   type: ClusterIP
 {% endif %}

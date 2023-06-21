@@ -8,14 +8,16 @@ metadata:
   name: '{{ ansible_operator_meta.name }}-ingress'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
-{% if ingress_annotations %}
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+{% if ingress_annotations or ingress_controller|lower == "contour" %}
   annotations:
+{% if ingress_annotations %}
     {{ ingress_annotations | indent(width=4) }}
+{% endif %}
+{% if ingress_controller|lower == "contour" %}
+    projectcontour.io/websocket-routes: "/websocket"
+    kubernetes.io/ingress.class: contour
+{% endif %}
 {% endif %}
 spec:
 {% if ingress_class_name %}
@@ -31,6 +33,15 @@ spec:
                 name: '{{ ansible_operator_meta.name }}-service'
                 port:
                   number: 80
+{% if ingress_controller|lower == "contour" %}
+          - path: '{{ ingress_path.rstrip("/") }}/websocket'
+            pathType: '{{ ingress_path_type }}'
+            backend:
+              service:
+                name: '{{ ansible_operator_meta.name }}-service'
+                port:
+                  number: 80
+{% endif %}
 {% if hostname %}      
       host: {{ hostname }}
 {% endif %}      
@@ -52,11 +63,7 @@ metadata:
   name: '{{ ansible_operator_meta.name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-    app.kubernetes.io/component: '{{ deployment_type }}'
-    app.kubernetes.io/operator-version: '{{ lookup("env", "OPERATOR_VERSION") }}'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 spec:
 {% if route_host != '' %}
   host: {{ route_host }}

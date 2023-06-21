@@ -5,4 +5,5 @@ collections:
     version: 2.3.2
   - name: operator_sdk.util
   - name: community.docker
+    version: 3.4.4
   - name: awx.awx

@@ -48,6 +48,8 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
          * [Auto Upgrade](#auto-upgrade)
             * [Upgrade of instances without auto upgrade](#upgrade-of-instances-without-auto-upgrade)
          * [Service Account](#service-account)
+         * [Labeling operator managed objects](#labeling-operator-managed-objects)
+         * [Pods termination grace period](#pods-termination-grace-period)
       * [Uninstall](#uninstall)
       * [Upgrading](#upgrading)
          * [Backup](#backup)
@@ -55,6 +57,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
             * [Cluster-scope to Namespace-scope considerations](#cluster-scope-to-namespace-scope-considerations)
             * [Project is now based on v1.x of the operator-sdk project](#project-is-now-based-on-v1x-of-the-operator-sdk-project)
             * [Steps to upgrade](#steps-to-upgrade)
+      * [Disable IPV6](#disable-ipv6)
       * [Add Execution Nodes](#adding-execution-nodes)
           * [Custom Receptor CA](#custom-receptor-ca)
    * [Contributing](#contributing)
@@ -128,7 +131,7 @@ $ alias kubectl="minikube kubectl --"
 
 ### Basic Install
 
-Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
 First, create a file called `kustomization.yaml` with the following content:
 
@@ -153,7 +156,7 @@ namespace: awx
 Install the manifests by running this:
 
 ```
-$ kustomize build . | kubectl apply -f -
+$ kubectl apply -k .
 namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
 customresourcedefinition.apiextensions.k8s.io/awxrestores.awx.ansible.com created
@@ -197,8 +200,6 @@ metadata:
   name: awx-demo
 spec:
   service_type: nodeport
-  # default nodeport_port is 30080
-  nodeport_port: <nodeport_port>
 ```
 
 > It may make sense to create and specify your own secret key for your deployment so that if the k8s secret gets deleted, it can be re-created if needed.  If it is not provided, one will be auto-generated, but cannot be recovered if lost. Read more [here](#secret-key-configuration).
@@ -228,10 +229,10 @@ resources:
 ...
 ```
 
-Finally, run `kustomize` again to create the AWX instance in your cluster:
+Finally, apply the changes to create the AWX instance in your cluster:
 
 ```
-kustomize build . | kubectl apply -f -
+kubectl apply -k .
 ```
 
 After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
@@ -269,7 +270,7 @@ yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
 
 You just completed the most basic install of an AWX instance via this operator. Congratulations!!!
 
-For an example using the Nginx Controller in Minukube, don't miss our [demo video](https://asciinema.org/a/416946).
+For an example using the Nginx Ingress Controller in Minikube, don't miss our [demo video](https://asciinema.org/a/416946).
 
 
 ### Helm Install on existing cluster
@@ -402,12 +403,14 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | --------------------- | ---------------------------------------- | ------- |
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
+| loadbalancer_ip        | Assign Loadbalancer IP                   | ''      |  
 
 ```yaml
 ---
 spec:
   ...
   service_type: LoadBalancer
+  loadbalancer_ip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
   service_annotations: |
@@ -462,6 +465,7 @@ The following variables are customizable when `ingress_type=ingress`. The `ingre
 | hostname            | Define the FQDN                          | {{ meta.name }}.example.com |
 | ingress_path        | Define the ingress path to the service   | /                           |
 | ingress_path_type   | Define the type of the path (for LBs)    | Prefix                      |
+| ingress_api_version | Define the Ingress resource apiVersion   | 'networking.k8s.io/v1'      |
 
 ```yaml
 ---
@@ -473,6 +477,23 @@ spec:
     environment: testing
 ```
 
+##### Specialized Ingress Controller configuration
+
+Some Ingress Controllers need a special configuration to fully support AWX, add the following value with the `ingress_controller` variable, if you are using one of these:
+
+| Ingress Controller name               | value   |
+| ------------------------------------- | ------- |
+| [Contour](https://projectcontour.io/) | contour |
+
+```yaml
+---
+spec:
+  ...
+  ingress_type: ingress
+  hostname: awx-demo.example.com
+  ingress_controller: contour
+```
+
   * Route
 
 The following variables are customizable when `ingress_type=route`
@@ -482,6 +503,7 @@ The following variables are customizable when `ingress_type=route`
 | route_host                      | Common name the route answers for             | `<instance-name>-<namespace>-<routerCanonicalHostname>` |
 | route_tls_termination_mechanism | TLS Termination mechanism (Edge, Passthrough) | Edge                                                    |
 | route_tls_secret                | Secret that contains the TLS information      | Empty string                                            |
+| route_api_version               | Define the Route resource apiVersion          | 'route.openshift.io/v1'                                 |
 
 ```yaml
 ---
@@ -572,7 +594,7 @@ spec:
       cpu: 500m
       memory: 2Gi
     limits:
-      cpu: 1
+      cpu: '1'
       memory: 4Gi
   postgres_storage_requirements:
     requests:
@@ -654,6 +676,25 @@ $ oc adm policy add-scc-to-user privileged -z awx
 
 Again, this is the most relaxed SCC that is provided by OpenShift, so be sure to familiarize yourself with the security concerns that accompany this action.
 
+#### Containers HostAliases Requirements
+
+Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
+
+| Name         | Description           | Default |
+| ------------ | --------------------- | ------- |
+| host_aliases | A list of HostAliases | None    |
+
+Example of customization could be:
+
+```yaml
+---
+spec:
+  ...
+  host_aliases:
+    - ip: <name-of-your-ip>
+      hostnames:
+        - <name-of-your-domain>
+```
 
 #### Containers Resource Requirements
 
@@ -711,7 +752,14 @@ spec:
   control_plane_priority_class: awx-demo-high-priority
   postgres_priority_class: awx-demo-medium-priority
 ```
+#### Scaling the Web and Task Pods independently 
 
+You can scale replicas up or down for each deployment by using the `web_replicas` or `task_replicas` respectively. You can scale all pods across both deployments by using `replicas` as well. The logic behind these CRD keys acts as such:
+
+- If you specify the `replicas` field, the key passed will scale both the `web` and `task` replicas to the same number. 
+- If `web_replicas` or `task_replicas` is ever passed, it will override the existing `replicas` field on the specific deployment with the new key value.
+
+These new replicas can be constrained in a similar manner to previous single deployments by appending the particular deployment name in front of the constraint used. More about those new constraints can be found below in the [Assigning AWX pods to specific nodes](#assigning-awx-pods-to-specific-nodes) section. 
 #### Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
@@ -720,18 +768,28 @@ pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
+If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
 
-| Name                        | Description                         | Default  |
-| --------------------------- | ----------------------------------- | -------  |
-| postgres_image              | Path of the image to pull           | postgres |
-| postgres_image_version      | Image version to pull               | 13       |
-| node_selector               | AWX pods' nodeSelector              | ''       |
-| topology_spread_constraints | AWX pods' topologySpreadConstraints | ''       |
-| affinity                    | AWX pods' affinity rules            | ''       |
-| tolerations                 | AWX pods' tolerations               | ''       |
-| annotations                 | AWX pods' annotations               | ''       |
-| postgres_selector           | Postgres pods' nodeSelector         | ''       |
-| postgres_tolerations        | Postgres pods' tolerations          | ''       |
+| Name                             | Description                              | Default  |
+| -------------------------------- | ---------------------------------------- | -------  |
+| postgres_image                   | Path of the image to pull                | postgres |
+| postgres_image_version           | Image version to pull                    | 13       |
+| node_selector                    | AWX pods' nodeSelector                   | ''       |
+| web_node_selector                | AWX web pods' nodeSelector               | ''       |
+| task_node_selector               | AWX task pods' nodeSelector              | ''       |
+| topology_spread_constraints      | AWX pods' topologySpreadConstraints      | ''       |
+| web_topology_spread_constraints  | AWX web pods' topologySpreadConstraints  | ''       |
+| task_topology_spread_constraints | AWX task pods' topologySpreadConstraints | ''       |
+| affinity                         | AWX pods' affinity rules                 | ''       |
+| web_affinity                     | AWX web pods' affinity rules             | ''       |
+| task_affinity                    | AWX task pods' affinity rules            | ''       |
+| tolerations                      | AWX pods' tolerations                    | ''       |
+| web_tolerations                  | AWX web pods' tolerations                | ''       |
+| task_tolerations                 | AWX task pods' tolerations               | ''       |
+| annotations                      | AWX pods' annotations                    | ''       |
+| postgres_selector                | Postgres pods' nodeSelector              | ''       |
+| postgres_tolerations             | Postgres pods' tolerations               | ''       |
 
 Example of customization could be:
 
@@ -754,6 +812,11 @@ spec:
     - key: "dedicated"
       operator: "Equal"
       value: "AWX"
+      effect: "NoSchedule"
+  task_tolerations: |
+    - key: "dedicated"
+      operator: "Equal"
+      value: "AWX_task"
       effect: "NoSchedule"
   postgres_selector: |
     disktype: ssd
@@ -867,7 +930,7 @@ A sample of extra settings can be found as below. All possible options can be fo
       value: 'LDAPSearch("OU=Groups,DC=abc,DC=com",ldap.SCOPE_SUBTREE,"(objectClass=group)",)'
 
     - setting: AUTH_LDAP_GROUP_TYPE
-      value: 'GroupOfNamesType(name_attr="cn")'
+      value: 'GroupOfNamesType()'
 
     - setting: AUTH_LDAP_USER_ATTR_MAP
       value: '{"first_name": "givenName","last_name": "sn","email": "mail"}'
@@ -1020,6 +1083,33 @@ Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it i
 
 The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
 
+##### Custom Favicon
+
+You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, Create the configmap from a local favicon.ico file.
+
+```bash
+$ oc create configmap favicon-configmap --from-file favicon.ico
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+spec:
+  extra_volumes: |
+    - name: favicon
+      configMap:
+        defaultMode: 420
+        items:
+          - key: favicon.ico
+            path: favicon.ico
+        name: favicon-configmap
+  web_extra_volume_mounts: |
+    - name: favicon
+      mountPath: /var/lib/awx/public/static/media/favicon.ico
+      subPath: favicon.ico
+```
 
 #### Default execution environments from private registries
 
@@ -1215,6 +1305,74 @@ Example configuration of environment variables
       eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
 ```
 
+#### Labeling operator managed objects
+
+In certain situations labeling of Kubernetes objects managed by the operator
+might be desired (e.g. for owner identification purposes). For that
+`additional_labels` parameter could be used
+
+| Name                        | Description                                                                              | Default |
+| --------------------------- | ---------------------------------------------------------------------------------------- | ------- |
+| additional_labels           | Additional labels defined on the resource, which should be propagated to child resources | []      |
+
+Example configuration where only `my/team` and `my/service` labels will be
+propagated to child objects (`Deployment`, `Secret`s, `ServiceAccount`, etc):
+
+```yaml
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-demo
+  labels:
+    my/team: "foo"
+    my/service: "bar"
+    my/do-not-inherit: "yes"
+spec:
+  additional_labels:
+  - my/team
+  - my/service
+...
+```
+
+#### Pods termination grace period
+
+During deployment restarts or new rollouts, when old ReplicaSet Pods are being
+terminated, the corresponding jobs which are managed (executed or controlled)
+by old AWX Pods may end up in `Error` state as there is no mechanism to
+transfer them to the newly spawned AWX Pods. To work around the problem one
+could set `termination_grace_period_seconds` in AWX spec, which does the
+following:
+
+* It sets the corresponding
+  [`terminationGracePeriodSeconds`](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination)
+  Pod spec of the AWX Deployment to the value provided
+
+  > The grace period is the duration in seconds after the processes running in
+  > the pod are sent a termination signal and the time when the processes are
+  > forcibly halted with a kill signal
+
+* It adds a
+  [`PreStop`](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#hook-handler-execution)
+  hook script, which will keep AWX Pods in terminating state until it finished,
+  up to `terminationGracePeriodSeconds`.
+
+  > This grace period applies to the total time it takes for both the PreStop
+  > hook to execute and for the Container to stop normally
+
+  While the hook script just waits until the corresponding AWX Pod (instance)
+  no longer has any managed jobs, in which case it finishes with success and
+  hands over the overall Pod termination process to normal AWX processes.
+
+One may want to set this value to the maximum duration they accept to wait for
+the affected Jobs to finish. Keeping in mind that such finishing jobs may
+increase Pods termination time in such situations as `kubectl rollout restart`,
+AWX upgrade by the operator, or Kubernetes [API-initiated
+evictions](https://kubernetes.io/docs/concepts/scheduling-eviction/api-eviction/).
+
+
+| Name                             | Description                                                     | Default |
+| -------------------------------- | --------------------------------------------------------------- | ------- |
+| termination_grace_period_seconds | Optional duration in seconds pods needs to terminate gracefully | not set |
 
 ### Uninstall ###
 
@@ -1284,6 +1442,25 @@ $ kubectl -n default delete clusterrole awx-operator
 Then install the new AWX Operator by following the instructions in [Basic Install](#basic-install-on-existing-cluster). The `NAMESPACE` environment variable have to be the name of the namespace in which your old AWX instance resides.
 
 Once the new AWX Operator is up and running, your AWX deployment will also be upgraded.
+
+### Disable IPV6
+Starting with AWX Operator release 0.24.0,[IPV6 was enabled in ngnix configuration](https://github.com/ansible/awx-operator/pull/950) which causes
+upgrades and installs to fail in environments where IPv6 is not allowed. Starting in 1.1.1 release, you can set the `ipv6_disabled` flag on the AWX
+spec. If you need to use an AWX operator version between 0.24.0 and 1.1.1 in an IPv6 disabled environment, it is suggested to enabled ipv6 on worker
+nodes.
+
+In order to disable ipv6 on ngnix configuration (awx-web container), add following to the AWX spec.
+
+The following variables are customizable 
+
+| Name          | Description            | Default |
+| ------------- | ---------------------- | ------- |
+| ipv6_disabled | Flag to disable ipv6   | false   |
+
+```yaml
+spec:
+  ipv6_disabled: true
+```
 
 ### Adding Execution Nodes
 Starting with AWX Operator v0.30.0 and AWX v21.7.0, standalone execution nodes can be added to your deployments.

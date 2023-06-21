@@ -1,4 +1,12 @@
 ---
+- name: Delete old deployment for before installing during upgrade
+  k8s:
+    kind: Deployment
+    api_version: v1
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+    state: absent
+
 - name: Patching labels to AWX kind
   k8s:
     state: present
@@ -10,8 +18,28 @@
       metadata:
         name: '{{ ansible_operator_meta.name }}'
         namespace: '{{ ansible_operator_meta.namespace }}'
-        labels: '{{ lookup("template", "labels/common.yaml.j2") | from_yaml }}'
+        labels: '{{ lookup("template", "../common/templates/labels/common.yaml.j2") | from_yaml }}'
   when: set_self_labels | bool
+
+- name: Build `additional_labels_items` labels from `additional_labels`
+  block:
+  - name: Look up details for this deployment
+    k8s_info:
+      api_version: "{{ api_version }}"
+      kind: "{{ kind }}"
+      name: "{{ ansible_operator_meta.name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
+    register: this_awx
+
+  - name: Select resource labels which are in `additional_labels`
+    set_fact:
+      additional_labels_items: >-
+        {{ this_awx['resources'][0]['metadata']['labels']
+           | dict2items | selectattr('key', 'in', additional_labels)
+           | list
+        }}
+    when: this_awx['resources'][0]['metadata']['labels']
+  when: additional_labels | length
 
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
@@ -19,17 +47,17 @@
 - name: Load LDAP CAcert certificate
   include_tasks: load_ldap_cacert_secret.yml
   when:
-    - ldap_cacert_secret != ''
+  - ldap_cacert_secret != ''
 
 - name: Load ldap bind password
   include_tasks: load_ldap_password_secret.yml
   when:
-    - ldap_password_secret != ''
+  - ldap_password_secret != ''
 
 - name: Load bundle certificate authority certificate
   include_tasks: load_bundle_cacert_secret.yml
   when:
-    - bundle_cacert_secret != ''
+  - bundle_cacert_secret != ''
 
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
@@ -46,8 +74,8 @@
 - name: Load Route TLS certificate
   include_tasks: load_route_tls_secret.yml
   when:
-    - ingress_type | lower == 'route'
-    - route_tls_secret != ''
+  - ingress_type | lower == 'route'
+  - route_tls_secret != ''
 
 - name: Include resources configuration tasks
   include_tasks: resources_configuration.yml
@@ -55,7 +83,7 @@
 - name: Check for pending migrations
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
@@ -65,14 +93,14 @@
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ tower_pod_name }}"
+    pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
     command: >-
       bash -c "awx-manage migrate --noinput"
   register: migrate_result
   when:
-    - database_check is defined
-    - (database_check.stdout|trim) != '0'
+  - database_check is defined
+  - (database_check.stdout|trim) != '0'
 
 - name: Initialize Django
   include_tasks: initialize_django.yml

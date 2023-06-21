@@ -12,11 +12,6 @@ jobs:
         with:
           depth: 0
 
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
       - name: Log in to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -33,15 +28,12 @@ jobs:
           docker push quay.io/${{ github.repository }}:${{ github.event.release.tag_name }}
           docker push quay.io/${{ github.repository }}:latest
 
-      - name: Configure git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Release Helm chart
         run: |
           ansible-playbook ansible/helm-release.yml -v \
             -e operator_image=quay.io/${{ github.repository }} \
             -e chart_owner=${{ github.repository_owner }} \
             -e tag=${{ github.event.release.tag_name }} \
-            -e gh_token=${{ secrets.GITHUB_TOKEN }}
+            -e gh_token=${{ secrets.GITHUB_TOKEN }} \
+            -e gh_user=${{ github.actor }} \
+            -e repo_type=https

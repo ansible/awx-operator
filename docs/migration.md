@@ -34,7 +34,7 @@ metadata:
   namespace: <target namespace>
 stringData:
   host: <external ip or url resolvable by the cluster>
-  port: <external port, this usually defaults to 5432>
+  port: "<external port, this usually defaults to 5432>"    # quotes are required
   database: <desired database name>
   username: <username to connect as>
   password: <password to connect with>

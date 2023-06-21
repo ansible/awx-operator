@@ -11,7 +11,7 @@ on:
 
 jobs:
   molecule:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: molecule
     env:
       DOCKER_API_VERSION: "1.38"
@@ -40,7 +40,7 @@ jobs:
           make kustomize
           KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind
   helm:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: helm
     steps:
       - uses: actions/checkout@v2

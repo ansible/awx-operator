@@ -39,12 +39,14 @@ spec:
           spec:
             type: object
             x-kubernetes-preserve-unknown-fields: true
+            required:
+            - deployment_name
             properties:
               backup_source:
                 description: Backup source
                 type: string
                 enum:
-                - CR
+                - Backup CR
                 - PVC
               deployment_name:
                 description: Name of the restored deployment. This should be different from the original deployment name
@@ -99,6 +101,11 @@ spec:
                 description: Configure no_log for no_log tasks
                 type: boolean
                 default: true
+              additional_labels:
+                description: Additional labels defined on the resource, which should be propagated to child resources
+                type: array
+                items:
+                  type: string
               set_self_labels:
                 description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
                 type: boolean

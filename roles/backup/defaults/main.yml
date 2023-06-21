@@ -39,6 +39,9 @@ backup_resource_requirements:
 # Allow additional parameters to be added to the pg_dump backup command
 pg_dump_suffix: ''
 
+# Labels defined on the resource, which should be propagated to child resources
+additional_labels: []
+
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
 ...

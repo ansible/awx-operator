@@ -1,0 +1,557 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ ansible_operator_meta.name }}-task'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
+spec:
+{% if task_replicas %}
+  replicas: {{ task_replicas }}
+{% elif replicas %}
+  replicas: {{ replicas }}
+{% endif %}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: '{{ deployment_type }}'
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
+        {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
+        {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
+      annotations:
+{% for template in [
+    "configmaps/config",
+    "configmaps/pre_stop_scripts",
+    "secrets/app_credentials",
+    "storage/persistent",
+  ] %}
+        checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | sha1 }}"
+{% endfor %}
+{% for secret in [
+    "bundle_cacert",
+    "route_tls",
+    "ldap_cacert",
+    "secret_key",
+    "receptor_ca",
+    "receptor_work_signing",
+  ] %}
+        checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | sha1 }}"
+{% endfor %}
+{% if task_annotations %}
+        {{ task_annotations | indent(width=8) }}
+{% elif annotations %}
+        {{ annotations | indent(width=8) }}
+{% endif %}
+    spec:
+      serviceAccountName: '{{ ansible_operator_meta.name }}'
+{% if image_pull_secret is defined %}
+      imagePullSecrets:
+        - name: {{ image_pull_secret }}
+{% elif image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
+{% endif %}
+{% if host_aliases is defined and host_aliases | length > 0 %}
+      hostAliases:
+{% for item in host_aliases %}
+      - ip: {{ item.ip }}
+        hostnames:
+{% for hostname in item.hostnames %}
+        - {{ hostname }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if control_plane_priority_class is defined %}
+      priorityClassName: '{{ control_plane_priority_class }}'
+{% endif %}
+      initContainers:
+        - name: init
+          image: '{{ _init_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ task_resource_requirements }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              hostname=$MY_POD_NAME
+              receptor --cert-makereq bits=2048 commonname=$hostname dnsname=$hostname nodeid=$hostname outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
+              receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/mesh-CA.crt cakey=/etc/receptor/tls/ca/mesh-CA.key outcert=/etc/receptor/tls/receptor.crt verify=yes
+{% if bundle_ca_crt  %}
+              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
+              update-ca-trust
+{% endif %}
+{% if init_container_extra_commands %}
+              {{ init_container_extra_commands | indent(width=14) }}
+{% endif %}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.crt"
+              subPath: "tls.crt"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.key"
+              subPath: "tls.key"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+              mountPath: "/etc/receptor/tls/"
+{% if bundle_ca_crt  %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+{% if init_container_extra_volume_mounts -%}
+            {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if projects_persistence|bool and is_k8s|bool %}
+        - name: init-projects
+          image: '{{ _init_projects_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ task_resource_requirements }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              chmod 775 /var/lib/awx/projects
+              chgrp 1000 /var/lib/awx/projects
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% endif %}
+      containers:
+        - image: '{{ _redis_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          name: redis
+{% if redis_capabilities is defined and redis_capabilities %}
+          securityContext:
+            capabilities:
+              add: {{ redis_capabilities }}
+{% endif %}
+          args: ["redis-server", "/etc/redis.conf"]
+          volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-redis-config
+              mountPath: "/etc/redis.conf"
+              subPath: redis.conf
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: "{{ ansible_operator_meta.name }}-redis-data"
+              mountPath: "/data"
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - -c
+                # redis image doesn't support writing to `/proc/1/fd/*`
+                - >
+                  PRE_STOP_STDOUT=/dev/stdout
+                  PRE_STOP_STDERR=/dev/stderr
+                  /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
+          resources: {{ redis_resource_requirements }}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-task'
+          imagePullPolicy: '{{ image_pull_policy }}'
+{% if task_privileged == true %}
+          securityContext:
+            privileged: true
+{% endif %}
+{% if task_command %}
+          command: {{ task_command }}
+{% endif %}
+{% if task_args %}
+          args: {{ task_args }}
+{% endif %}
+          volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/execution_environments.py"
+              subPath: execution_environments.py
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/ldap.py"
+              subPath: ldap.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+            - name: "{{ ansible_operator_meta.name }}-receptor-config"
+              mountPath: "/etc/receptor/"
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/work_private_key.pem"
+              subPath: "work-private-key.pem"
+              readOnly: true
+            - name: receptor-socket
+              mountPath: "/var/run/receptor"
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+{% if task_extra_volume_mounts -%}
+            {{ task_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-master
+{% endif %}
+          env:
+            - name: AWX_COMPONENT
+              value: "task"
+            - name: SUPERVISOR_CONFIG_PATH
+              value: "/etc/supervisord_task.conf"
+            - name: AWX_SKIP_MIGRATIONS
+              value: "1"
+            - name: MY_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+{% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
+{% endif %}
+{% if task_extra_env -%}
+            {{ task_extra_env | indent(width=12, first=True) }}
+{% endif %}
+          resources: {{ task_resource_requirements }}
+        - image: '{{ _control_plane_ee_image }}'
+          name: '{{ ansible_operator_meta.name }}-ee'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ ee_resource_requirements }}
+          args:
+            - /bin/sh
+            - -c
+            - |
+              if [ ! -f /etc/receptor/receptor.conf ]; then
+                cp /etc/receptor/receptor-default.conf /etc/receptor/receptor.conf
+                sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.conf
+              fi
+              exec receptor --config /etc/receptor/receptor.conf
+          volumeMounts:
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+            - name: "{{ ansible_operator_meta.name }}-default-receptor-config"
+              mountPath: "/etc/receptor/receptor-default.conf"
+              subPath: receptor.conf
+            - name: "{{ ansible_operator_meta.name }}-receptor-config"
+              mountPath: "/etc/receptor/"
+            - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.crt"
+              subPath: "tls.crt"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+              mountPath: "/etc/receptor/work_private_key.pem"
+              subPath: "work-private-key.pem"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+              mountPath: "/etc/receptor/tls/"
+            - name: receptor-socket
+              mountPath: "/var/run/receptor"
+            - name: "{{ ansible_operator_meta.name }}-projects"
+              mountPath: "/var/lib/awx/projects"
+{% if ee_extra_volume_mounts -%}
+            {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
+          env:
+{% if development_mode | bool %}
+            - name: SDB_NOTIFY_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+{% endif %}
+{% if ee_extra_env -%}
+            {{ ee_extra_env | indent(width=12, first=True) }}
+{% endif %}
+        - image: '{{ _image }}'
+          name: '{{ ansible_operator_meta.name }}-rsyslog'
+{% if rsyslog_command %}
+          command: {{ rsyslog_command }}
+{% endif %}
+{% if rsyslog_args %}
+          args: {{ rsyslog_args }}
+{% endif %}
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ rsyslog_resource_requirements }}
+          volumeMounts:
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-redis-socket
+              mountPath: "/var/run/redis"
+            - name: rsyslog-socket
+              mountPath: "/var/run/awx-rsyslog"
+{% if bundle_ca_crt  %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-waiter
+{% endif %}
+          env:
+            - name: SUPERVISOR_CONFIG_PATH
+              value: "/etc/supervisord_rsyslog.conf"
+{% if development_mode | bool %}
+            - name: AWX_KUBE_DEVEL
+              value: "1"
+{% endif %}
+{% if task_node_selector %}
+      nodeSelector:
+        {{ task_node_selector | indent(width=8) }}
+{% elif node_selector %}
+      nodeSelector:
+        {{ node_selector | indent(width=8) }}
+{% endif %}
+{% if task_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ task_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ topology_spread_constraints | indent(width=8) }}
+{% endif %}
+{% if task_tolerations %}
+      tolerations:
+        {{ task_tolerations | indent(width=8) }}
+{% elif tolerations %}
+      tolerations:
+        {{ tolerations | indent(width=8) }}
+{% endif %}
+{% if task_affinity %}
+      affinity:
+        {{ task_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
+{% endif %}
+{% if (projects_persistence|bool and is_k8s|bool) or (security_context_settings|length) %}
+      securityContext:
+{% if projects_persistence|bool and is_k8s|bool %}
+        fsGroup: 1000
+{% endif %}
+{% if security_context_settings|length %}
+        {{ security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+      terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
+{% endif %}
+      volumes:
+{% if bundle_ca_crt %}
+        - name: "ca-trust-extracted"
+          emptyDir: {}
+        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+          secret:
+            secretName: "{{ bundle_cacert_secret }}"
+            items:
+              - key: bundle-ca.crt
+                path: 'bundle-ca.crt'
+{% endif %}
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+        - name: "{{ ansible_operator_meta.name }}-nginx-certs"
+          secret:
+            secretName: "{{ route_tls_secret }}"
+            items:
+              - key: tls.key
+                path: 'web.key'
+              - key: tls.crt
+                path: 'web.crt'
+{% endif %}
+{% if ldap_cacert_ca_crt %}
+        - name: "{{ ansible_operator_meta.name }}-ldap-cacert"
+          secret:
+            secretName: "{{ ldap_cacert_secret }}"
+            items:
+              - key: ldap-ca.crt
+                path: 'ldap-ca.crt'
+{% endif %}
+{% if termination_grace_period_seconds is defined %}
+        - name: pre-stop-data
+          emptyDir: {}
+        - name: pre-stop-scripts
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-pre-stop-scripts'
+            defaultMode: 0775
+{% endif %}
+        - name: "{{ ansible_operator_meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+            items:
+              - key: credentials.py
+                path: 'credentials.py'
+              - key: ldap.py
+                path: 'ldap.py'
+              - key: execution_environments.py
+                path: 'execution_environments.py'
+        - name: "{{ ansible_operator_meta.name }}-receptor-tls"
+          emptyDir: {}
+        - name: "{{ ansible_operator_meta.name }}-receptor-ca"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-ca"
+        - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-receptor-work-signing"
+        - name: "{{ secret_key_secret_name }}"
+          secret:
+            secretName: '{{ secret_key_secret_name }}'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: {{ ansible_operator_meta.name }}-settings
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: settings
+                path: settings.py
+        - name: {{ ansible_operator_meta.name }}-nginx-conf
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: nginx_conf
+                path: nginx.conf
+        - name: {{ ansible_operator_meta.name }}-redis-config
+          configMap:
+            name: {{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap
+            items:
+              - key: redis_conf
+                path: redis.conf
+        - name: {{ ansible_operator_meta.name }}-redis-socket
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-redis-data
+          emptyDir: {}
+        - name: rsyslog-socket
+          emptyDir: {}
+        - name: receptor-socket
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-receptor-config
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-default-receptor-config
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: receptor_conf
+                path: receptor.conf
+        - name: "{{ ansible_operator_meta.name }}-projects"
+{% if projects_persistence|bool %}
+          persistentVolumeClaim:
+{% if projects_existing_claim %}
+            claimName: {{ projects_existing_claim }}
+{% else %}
+            claimName: '{{ ansible_operator_meta.name }}-projects-claim'
+{% endif %}
+{% else %}
+          emptyDir: {}
+{% endif %}
+{% if development_mode | bool %}
+        - name: awx-devel
+          hostPath:
+            path: /awx_devel
+{% endif %}
+{% if extra_volumes -%}
+        {{ extra_volumes | indent(width=8, first=True) }}
+{% endif %}
