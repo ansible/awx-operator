@@ -661,11 +661,14 @@ To change/add the security context for a specified container, add your items as 
 ---
 spec:
   security_context_settings:
-    task:
+    redis:
+      capabilities:
+        add:
+          - CHOWN
+          - SETUID
+          - SETGID
       runAsUser: 1000
       runAsGroup: 1000
-    rsyslog:
-      runAsUser: 1000
 ```
 
 #### Redis container capabilities
