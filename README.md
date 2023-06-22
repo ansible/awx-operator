@@ -672,7 +672,7 @@ spec:
 ```
 
 #### Redis container capabilities
-> :warning: The `redis_capabilities` option is depracated. Please use `security_context_settings` to set any securityContext related settings such as container capabilites.
+> :warning: The `redis_capabilities` option is deprecated. Please use `security_context_settings` to set any securityContext related settings such as container capabilites.
 
 Depending on your kubernetes cluster and settings you might need to grant some capabilities to the redis container so it can start. Set the `redis_capabilities` option so the capabilities are added in the deployment.
 
