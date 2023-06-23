@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     name: molecule
     env:
-      DOCKER_API_VERSION: "1.38"
+      DOCKER_API_VERSION: "1.41"
     steps:
       - uses: actions/checkout@v2
 
