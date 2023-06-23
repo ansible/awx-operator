@@ -1,85 +1,61 @@
+---
+- debug:
+    msg: test - web_replicas and task_replicas should override replicas
+
+- include_tasks: apply_awx_spec.yml
+  vars:
+    additional_fields:
+      replicas: 2
+      web_replicas: 0
+      task_replicas: 0
+
+- include_tasks: _test_case_replicas.yml
+  vars:
+    expected_web_replicas: 0
+    expected_task_replicas: 0
+
+####
+
+- debug:
+    msg: test - replicas should act as a default
+
+- include_tasks: apply_awx_spec.yml
+  vars:
+    additional_fields:
+      replicas: 2
+      web_replicas: 1
+
+- include_tasks: _test_case_replicas.yml
+  vars:
+    expected_web_replicas: 1
+    expected_task_replicas: 2
+
+####
+
+- debug:
+    msg: test - replicas=0 should kill all pods
+
 - include_tasks: apply_awx_spec.yml
   vars:
     additional_fields:
       replicas: 0
-      web_replicas: 0
-      task_replicas: 0
 
-- name: Get web pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-web
-  register: awx_web_pod
+- include_tasks: _test_case_replicas.yml
+  vars:
+    expected_web_replicas: 0
+    expected_task_replicas: 0
 
-- name: Get task pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-task
-  register: awx_task_pod
+####
 
-- name: Ensure that the pods do not exist (0 replicas)
-  assert:
-    that:
-      - awx_web_pod.resources | length == 0
-      - awx_task_pod.resources | length == 0
+- debug:
+    msg: test - replicas=3 should give 3 of each
 
 - include_tasks: apply_awx_spec.yml
   vars:
     additional_fields:
-      replicas: 2
-      web_replicas: 0
-      task_replicas: 0
+      replicas: 3
 
-- name: Get web pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-web
-  register: awx_web_pod
-
-- name: Get task pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-task
-  register: awx_task_pod
-
-- name: Ensure that the pods do not exist (0 replicas)
-  assert:
-    that:
-      - awx_web_pod.resources | length == 2
-      - awx_task_pod.resources | length == 2
-
-- include_tasks: apply_awx_spec.yml
+- include_tasks: _test_case_replicas.yml
   vars:
-    additional_fields:
-      replicas: 2
-      web_replicas: 4
-
-- name: Get web pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-web
-  register: awx_web_pod
-
-- name: Get task pod details
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Pod
-    label_selectors:
-      - app.kubernetes.io/name = example-awx-task
-  register: awx_task_pod
-
-- name: Ensure that the pods do not exist (0 replicas)
-  assert:
-    that:
-      - awx_web_pod.resources | length == 4
-      - awx_task_pod.resources | length == 2
+    expected_web_replicas: 3
+    expected_task_replicas: 3
