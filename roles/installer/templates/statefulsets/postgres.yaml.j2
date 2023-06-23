@@ -51,6 +51,12 @@ spec:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
+{% if security_context_settings.postgres is defined %}
+          securityContext:
+{% for key, value in security_context_settings.postgres.items() %}
+            {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
 {% if postgres_extra_args %}
           args: {{ postgres_extra_args }}
 {% endif %}
