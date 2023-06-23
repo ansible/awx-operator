@@ -1,0 +1,35 @@
+---
+- name: Get web pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-web
+  register: awx_web_pod
+  # This can take a while to actually make it to the cluster
+  retries: 30
+  delay: 5
+  until: awx_web_pod.resources | length == expected_web_replicas
+  ignore_errors: true
+
+- name: Get task pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-task
+  register: awx_task_pod
+  # This can take a while to actually make it to the cluster
+  retries: 30
+  delay: 5
+  until: awx_task_pod.resources | length == expected_task_replicas
+  ignore_errors: true
+
+- name: Ensure that the correct number of web and task pods exist
+  assert:
+    that:
+      - awx_web_pod.resources | length == expected_web_replicas
+      - awx_task_pod.resources | length == expected_task_replicas
+    fail_msg: >-
+      Web pods: Expected {{ expected_web_replicas }}, got {{ awx_web_pod.resources | length }}.
+      Task pods: Expected {{ expected_task_replicas }}, got {{ awx_task_pod.resources | length }}.
