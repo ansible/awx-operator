@@ -9,9 +9,9 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
-{% if web_replicas %}
+{% if web_replicas != '' %}
   replicas: {{ web_replicas }}
-{% elif replicas %}
+{% elif replicas != '' %}
   replicas: {{ replicas }}
 {% endif %}
   selector:

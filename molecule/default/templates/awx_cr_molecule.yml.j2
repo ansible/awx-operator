@@ -37,3 +37,6 @@ spec:
   additional_labels:
   - my/team
   - my/service
+{% if additional_fields is defined %}
+{{ additional_fields | to_nice_yaml(indent=2)}}
+{% endif %}

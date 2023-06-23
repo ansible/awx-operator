@@ -1,0 +1,85 @@
+- include_tasks: apply_awx_spec.yml
+  vars:
+    additional_fields:
+      replicas: 0
+      web_replicas: 0
+      task_replicas: 0
+
+- name: Get web pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-web
+  register: awx_web_pod
+
+- name: Get task pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-task
+  register: awx_task_pod
+
+- name: Ensure that the pods do not exist (0 replicas)
+  assert:
+    that:
+      - awx_web_pod.resources | length == 0
+      - awx_task_pod.resources | length == 0
+
+- include_tasks: apply_awx_spec.yml
+  vars:
+    additional_fields:
+      replicas: 2
+      web_replicas: 0
+      task_replicas: 0
+
+- name: Get web pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-web
+  register: awx_web_pod
+
+- name: Get task pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-task
+  register: awx_task_pod
+
+- name: Ensure that the pods do not exist (0 replicas)
+  assert:
+    that:
+      - awx_web_pod.resources | length == 2
+      - awx_task_pod.resources | length == 2
+
+- include_tasks: apply_awx_spec.yml
+  vars:
+    additional_fields:
+      replicas: 2
+      web_replicas: 4
+
+- name: Get web pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-web
+  register: awx_web_pod
+
+- name: Get task pod details
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name = example-awx-task
+  register: awx_task_pod
+
+- name: Ensure that the pods do not exist (0 replicas)
+  assert:
+    that:
+      - awx_web_pod.resources | length == 4
+      - awx_task_pod.resources | length == 2
