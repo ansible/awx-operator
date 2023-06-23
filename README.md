@@ -1220,6 +1220,8 @@ With`extra_settings`, you can pass multiple custom settings via the `awx-operato
 | -------------- | -------------- | ------- |
 | extra_settings | Extra settings | ''      |
 
+**Note:** Parameters configured in `extra_settings` are set as read-only settings in AWX.  As a result, they cannot be changed in the UI after deployment. If you need to change the setting after the initial deployment, you need to change it on the AWX CR spec.  
+
 Example configuration of `extra_settings` parameter
 
 ```yaml
