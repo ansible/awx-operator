@@ -4,10 +4,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [devel]
-
   push:
-    branches: [devel]
 
 jobs:
   molecule:
