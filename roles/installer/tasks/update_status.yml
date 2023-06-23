@@ -53,6 +53,7 @@
       bash -c "awx-manage --version"
   register: instance_version
   changed_when: false
+  when: awx_task_pod_name != ''
 
 - name: Update version status
   operator_sdk.util.k8s_status:
@@ -62,6 +63,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       version: "{{ instance_version.stdout | trim }}"
+  when: instance_version is not skipped
 
 - name: Update image status
   operator_sdk.util.k8s_status:

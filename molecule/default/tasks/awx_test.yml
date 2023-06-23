@@ -1,15 +1,5 @@
 ---
-- name: Create the awx.ansible.com/v1alpha1.AWX
-  k8s:
-    state: present
-    namespace: '{{ namespace }}'
-    definition: "{{ lookup('template', 'awx_cr_molecule.yml.j2') | from_yaml }}"
-    wait: yes
-    wait_timeout: 900
-    wait_condition:
-      type: Running
-      reason: Successful
-      status: "True"
+- include_tasks: apply_awx_spec.yml
 
 - name: Obtain generated admin password
   k8s_info:
