@@ -11,18 +11,26 @@
           You must specify the OPERATOR_IMAGE environment variable in order to run the
           'default' scenario
       when: not operator_image
+      tags:
+        - always
 
     - name: Set testing image
       command: '{{ kustomize }} edit set image testing={{ operator_image }}'
       args:
         chdir: '{{ config_dir }}/testing'
+      tags:
+        - always
 
     - name: Set pull policy
       command: '{{ kustomize }} edit add patch --path pull_policy/{{ operator_pull_policy }}.yaml'
       args:
         chdir: '{{ config_dir }}/testing'
+      tags:
+        - always
 
     - name: Set testing namespace
       command: '{{ kustomize }} edit set namespace {{ namespace }}'
       args:
         chdir: '{{ config_dir }}/testing'
+      tags:
+        - always

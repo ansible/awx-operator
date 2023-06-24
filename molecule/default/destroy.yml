@@ -10,6 +10,8 @@
     - import_tasks: kustomize.yml
       vars:
         state: absent
+      tags:
+        - always
 
     - name: Destroy Namespace
       k8s:
@@ -17,8 +19,12 @@
         kind: Namespace
         name: '{{ namespace }}'
         state: absent
+      tags:
+        - always
 
     - name: Unset pull policy
       command: '{{ kustomize }} edit remove patch --path pull_policy/{{ operator_pull_policy }}.yaml'
       args:
         chdir: '{{ config_dir }}/testing'
+      tags:
+        - always
