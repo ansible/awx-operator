@@ -94,6 +94,9 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              db_management_pod_node_selector:
+                description: nodeSelector for the Postgres pods to backup
+                type: string
               no_log:
                 description: Configure no_log for no_log tasks
                 type: boolean

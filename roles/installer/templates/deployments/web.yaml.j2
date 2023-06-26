@@ -28,7 +28,6 @@ spec:
       annotations:
 {% for template in [
     "configmaps/config",
-    "configmaps/pre_stop_scripts",
     "secrets/app_credentials",
     "storage/persistent",
   ] %}
@@ -78,7 +77,7 @@ spec:
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ web_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -107,7 +106,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ web_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
