@@ -1551,9 +1551,19 @@ spec:
                 type: array
                 items:
                   type: string
+              rsyslog_args:
+                type: array
+                items:
+                  type: string
+              rsyslog_command:
+                type: array
+                items:
+                  type: string
               task_extra_env:
                 type: string
               web_extra_env:
+                type: string
+              rsyslog_extra_env:
                 type: string
               ee_extra_env:
                 type: string
