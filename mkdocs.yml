@@ -9,8 +9,6 @@ use_directory_urls: false
 
 theme:
   name: "material"
-  logo:
-  favicon:
   features:
     - content.code.copy
     - content.action.edit
@@ -40,7 +38,7 @@ nav:
   - home: index.md
   - debugging.md
   - migration.md
- 
+
 plugins:
   - autorefs
   - markdown-exec
