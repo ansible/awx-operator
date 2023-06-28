@@ -137,7 +137,6 @@ spec:
             capabilities:
               add: {{ redis_capabilities }}
 {% endif %}
-          args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
               mountPath: "/etc/redis.conf"

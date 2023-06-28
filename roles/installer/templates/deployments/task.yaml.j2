@@ -146,13 +146,13 @@ spec:
           command: {{ redis_command }}
 {% endif %}
 {% if redis_args %}
-          args: {{ redis_args }}          
+          args: {{ redis_args }}
+{% endif %}
 {% if redis_capabilities is defined and redis_capabilities %}
           securityContext:
             capabilities:
               add: {{ redis_capabilities }}
 {% endif %}
-          args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
               mountPath: "/etc/redis.conf"
@@ -389,6 +389,10 @@ spec:
 {% endif %}
 {% if redis_extra_volume_mounts -%}
             {{ redis_extra_volume_mounts | indent(width=12, first=True) }}
+<<<<<<< HEAD
+=======
+{% endif %}
+>>>>>>> f32bd4e (Updated requested changes)
 {% if termination_grace_period_seconds is defined %}
             - name: pre-stop-data
               mountPath: /var/lib/pre-stop
