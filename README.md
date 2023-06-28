@@ -721,7 +721,6 @@ spec:
       cpu: 1000m
       memory: 4Gi
       ephemeral-storage: 500M
-    requests
   task_resource_requirements:
     requests:
       cpu: 250m
