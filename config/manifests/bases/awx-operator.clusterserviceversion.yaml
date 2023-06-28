@@ -371,6 +371,11 @@ spec:
         path: postgres_storage_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Init Container resource requirements
+        path: init_container_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Replicas
         path: replicas
         x-descriptors:

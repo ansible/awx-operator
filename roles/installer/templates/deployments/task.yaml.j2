@@ -76,14 +76,14 @@ spec:
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ task_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
             - |
               hostname=$MY_POD_NAME
               receptor --cert-makereq bits=2048 commonname=$hostname dnsname=$hostname nodeid=$hostname outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
-              receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/receptor-ca.crt cakey=/etc/receptor/tls/ca/receptor-ca.key outcert=/etc/receptor/tls/receptor.crt verify=yes
+              receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/mesh-CA.crt cakey=/etc/receptor/tls/ca/mesh-CA.key outcert=/etc/receptor/tls/receptor.crt verify=yes
 {% if bundle_ca_crt  %}
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
@@ -98,11 +98,11 @@ spec:
                   fieldPath: metadata.name
           volumeMounts:
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.crt"
               subPath: "tls.crt"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.key"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.key"
               subPath: "tls.key"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
@@ -122,7 +122,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ task_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -229,7 +229,7 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              mountPath: "/etc/receptor/work_private_key.pem"
               subPath: "work-private-key.pem"
               readOnly: true
             - name: receptor-socket
@@ -310,11 +310,11 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
-              mountPath: "/etc/receptor/tls/ca/receptor-ca.crt"
+              mountPath: "/etc/receptor/tls/ca/mesh-CA.crt"
               subPath: "tls.crt"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-              mountPath: "/etc/receptor/signing/work-private-key.pem"
+              mountPath: "/etc/receptor/work_private_key.pem"
               subPath: "work-private-key.pem"
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
@@ -387,8 +387,22 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
+<<<<<<< HEAD
 {% if redis_extra_volume_mounts -%}
             {{ redis_extra_volume_mounts | indent(width=12, first=True) }}
+=======
+{% if termination_grace_period_seconds is defined %}
+            - name: pre-stop-data
+              mountPath: /var/lib/pre-stop
+            - name: pre-stop-scripts
+              mountPath: /var/lib/pre-stop/scripts
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - bash
+                - /var/lib/pre-stop/scripts/termination-waiter
+>>>>>>> devel
 {% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
