@@ -389,7 +389,6 @@ spec:
 {% endif %}
 {% if redis_extra_volume_mounts -%}
             {{ redis_extra_volume_mounts | indent(width=12, first=True) }}
-=======
 {% if termination_grace_period_seconds is defined %}
             - name: pre-stop-data
               mountPath: /var/lib/pre-stop
