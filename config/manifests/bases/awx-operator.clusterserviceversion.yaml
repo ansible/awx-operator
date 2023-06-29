@@ -409,7 +409,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: Rsyslog Container Resource requirements
+      - displayName: Rsyslog Container Resource Requirements
         path: rsyslog_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
