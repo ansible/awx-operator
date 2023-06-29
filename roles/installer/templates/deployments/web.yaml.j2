@@ -266,8 +266,18 @@ spec:
 {% if rsyslog_command %}
           command: {{ rsyslog_command }}
 {% endif %}
+
 {% if rsyslog_args %}
           args: {{ rsyslog_args }}
+{% endif %}
+{% if rsyslog_host_network %}
+          hostNetwork: {{ rsyslog_host_network }}
+{% endif %}
+{% if rsyslog_dns_policy %}
+         dnsPolicy: {{ rsyslog_dns_policy }}
+{% endif %}
+{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }}
+         dnsConfig: {{ rsyslog_dns_config }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
           volumeMounts:
