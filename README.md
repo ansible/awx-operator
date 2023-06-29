@@ -1025,6 +1025,28 @@ data:
       INSIGHTS_URL_BASE = "example.org"
       AWX_CLEANUP_PATHS = True
 ```
+
+Example configuration for Redis ConfigMap
+
+```
+`yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <resourcename>-extra-config
+  namespace: <target namespace>
+data:
+  redis.conf: |
+     daemonize yes
+     unixsocket /var/run/redis/redis.sock
+     unixsocketperm 777
+     port 0
+     bind 127.0.0.1
+     maxmemory 2mb
+     maxmemory-policy allkeys-lru
+
+```
 Example spec file for volumes and volume mounts
 
 ```yaml
@@ -1046,6 +1068,15 @@ Example spec file for volumes and volume mounts
               - key: custom.py
                 path: custom.py
             name: <resourcename>-extra-config
+
+        - name: redis-cfg
+          configMap:
+           defaultMode: 420
+           items:
+            - key: redis.conf
+              path: redis.cong
+           name: redis-config
+
         - name: shared-volume
           persistentVolumeClaim:
             claimName: my-external-volume-claim
@@ -1070,6 +1101,12 @@ Example spec file for volumes and volume mounts
           subPath: custom.py
         - name: shared-volume
           mountPath: /shared
+
+      redis_extra_volume_mounts: |
+        - name: redis.cfg
+           mountPath: /etc/redis.conf
+           subPath: redis.conf
+
 ```
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
