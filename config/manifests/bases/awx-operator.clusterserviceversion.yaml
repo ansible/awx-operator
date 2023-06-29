@@ -409,11 +409,26 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - displayName: Rsyslog Container Resource Requirements
+      - displayName: Rsyslog Container Resource requirements
         path: rsyslog_resource_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Rsyslog dnsPolicy Container requirements
+        path: rsyslog_dns_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Rsyslog dnsConfig Container Requirements
+        path: rsyslog_dns_config
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Rsyslog host network Container Requirements
+        path: rsyslog_host_network
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - description: The PostgreSQL container is not used when an external DB is configured
         displayName: PostgreSQL Container Resource Requirements
         path: postgres_resource_requirements

@@ -1543,6 +1543,30 @@ spec:
                         type: string
                     type: object
                 type: object
+              rsyslog_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              rsyslog_dns_Policy:
+                type: string
+              rsyslog_host_network:
+                type: boolean
               service_account_annotations:
                 description: ServiceAccount annotations
                 type: string
