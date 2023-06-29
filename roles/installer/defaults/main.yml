@@ -286,6 +286,8 @@ web_command: []
 rsyslog_args:
   - /usr/bin/launch_awx_rsyslog.sh
 rsyslog_command: []
+redis_args: ''
+redis_command: ["redis-server", "/etc/redis.conf"]
 
 task_resource_requirements:
   requests:
@@ -336,6 +338,7 @@ init_container_resource_requirements:
 task_extra_env: ''
 web_extra_env: ''
 ee_extra_env: ''
+redis_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
 # E.g.:
@@ -345,6 +348,7 @@ ee_extra_env: ''
 task_extra_volume_mounts: ''
 web_extra_volume_mounts: ''
 ee_extra_volume_mounts: ''
+redis_extra_volume_mounts: ''
 
 # Add a nodeSelector for the Postgres pods.
 # It must match a node's labels for the pod to be scheduled on that node.

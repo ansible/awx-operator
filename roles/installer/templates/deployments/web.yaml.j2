@@ -126,12 +126,17 @@ spec:
         - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: redis
+ {% if redis_command %}
+          command: {{ redis_command }}
+{% endif %}
+{% if redis_args %}
+          args: {{ redis_args }}
+{% endif %}         
 {% if redis_capabilities is defined and redis_capabilities %}
           securityContext:
             capabilities:
               add: {{ redis_capabilities }}
 {% endif %}
-          args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
               mountPath: "/etc/redis.conf"
@@ -145,6 +150,12 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
           imagePullPolicy: '{{ image_pull_policy }}'
+{% if redis_extra_volume_mounts -%}
+            {{ redis_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% if redis_extra_env -%}
+            {{ redis_extra_env | indent(width=12, first=True) }}
+{% endif %}            
 {% if web_command %}
           command: {{ web_command }}
 {% endif %}
