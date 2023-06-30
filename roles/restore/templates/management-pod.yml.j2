@@ -10,7 +10,7 @@ spec:
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
     image: "{{ _postgres_image }}"
-    imagePullPolicy: Always
+    imagePullPolicy: "{{ image_pull_policy }}"
     command: ["sleep", "infinity"]
     volumeMounts:
     - name: {{ ansible_operator_meta.name }}-backup
