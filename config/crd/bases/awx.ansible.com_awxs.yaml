@@ -1563,7 +1563,7 @@ spec:
                       type: string
                     type: array
                 type: object
-              rsyslog_dns_Policy:
+              rsyslog_dns_policy:
                 type: string
               rsyslog_host_network:
                 type: boolean
