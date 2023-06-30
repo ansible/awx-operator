@@ -716,23 +716,29 @@ spec:
     requests:
       cpu: 250m
       memory: 2Gi
+      ephemeral-storage: 100M
     limits:
       cpu: 1000m
       memory: 4Gi
+      ephemeral-storage: 500M
   task_resource_requirements:
     requests:
       cpu: 250m
       memory: 1Gi
+      ephemeral-storage: 100M
     limits:
       cpu: 2000m
       memory: 2Gi
+      ephemeral-storage: 500M
   ee_resource_requirements:
     requests:
       cpu: 250m
       memory: 100Mi
+      ephemeral-storage: 100M
     limits:
       cpu: 500m
       memory: 2Gi
+      ephemeral-storage: 500M
 ```
 
 #### Priority Classes

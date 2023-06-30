@@ -1368,6 +1368,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1376,6 +1378,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1390,6 +1394,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1398,6 +1404,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1412,6 +1420,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1420,6 +1430,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1456,6 +1468,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1464,6 +1478,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1478,6 +1494,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1486,6 +1504,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1500,6 +1520,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1508,6 +1530,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
