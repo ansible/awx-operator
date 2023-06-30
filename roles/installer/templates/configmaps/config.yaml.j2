@@ -135,7 +135,7 @@ data:
             server_name _;
 
             # Redirect all HTTP links to the matching HTTPS page
-            return 301 https://$host$request_uri;
+            return 301 https://$host:8053$request_uri;
         }
         {% endif %}
 
