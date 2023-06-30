@@ -1368,7 +1368,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1379,7 +1379,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
@@ -1394,7 +1394,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1405,7 +1405,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
@@ -1420,7 +1420,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1431,7 +1431,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
@@ -1468,7 +1468,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1479,7 +1479,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
@@ -1494,7 +1494,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1505,7 +1505,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
@@ -1520,7 +1520,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                   limits:
@@ -1531,7 +1531,7 @@ spec:
                         type: string
                       storage:
                         type: string
-                      ephemeral_storage:
+                      ephemeral-storage:
                         type: string
                     type: object
                 type: object
