@@ -14,7 +14,6 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!--ts-->
 * [AWX Operator](#awx-operator)
 * [Table of Contents](#table-of-contents)
-   * [Purpose](#purpose)
    * [Usage](#usage)
       * [Creating a minikube cluster for testing](#creating-a-minikube-cluster-for-testing)
       * [Basic Install](#basic-install)
@@ -69,10 +68,6 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 <!--te-->
-
-## Purpose
-
-This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
 
 ## Usage
 
