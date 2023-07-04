@@ -9,3 +9,4 @@ gh-pages/
 /.cr-release-packages
 .vscode/
 __pycache__
+/site

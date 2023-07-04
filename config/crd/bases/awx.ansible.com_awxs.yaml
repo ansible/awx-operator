@@ -1380,6 +1380,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1388,6 +1390,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1402,6 +1406,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1410,6 +1416,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1424,6 +1432,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1432,6 +1442,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1468,6 +1480,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1476,6 +1490,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1490,6 +1506,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1498,6 +1516,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1512,6 +1532,8 @@ spec:
                         type: string
                       storage:
                         type: string
+                      ephemeral_storage:
+                        type: string
                     type: object
                   limits:
                     properties:
@@ -1520,6 +1542,8 @@ spec:
                       memory:
                         type: string
                       storage:
+                        type: string
+                      ephemeral_storage:
                         type: string
                     type: object
                 type: object
@@ -1563,9 +1587,19 @@ spec:
                 type: array
                 items:
                   type: string
+              rsyslog_args:
+                type: array
+                items:
+                  type: string
+              rsyslog_command:
+                type: array
+                items:
+                  type: string
               task_extra_env:
                 type: string
               web_extra_env:
+                type: string
+              rsyslog_extra_env:
                 type: string
               ee_extra_env:
                 type: string
@@ -1577,6 +1611,9 @@ spec:
                 type: string
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
+                type: string
+              rsyslog_extra_volume_mounts:
+                description: Specify volume mounts to be added to the Rsyslog container
                 type: string
               redis_image:
                 description: Registry path to the redis container to use
