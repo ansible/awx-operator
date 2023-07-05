@@ -129,6 +129,16 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
 {% endif %}
+{% if init_host_network %}
+          hostNetwork: {{ init_host_network }}
+{% endif %}
+{% if init_dns_policy %}
+         dnsPolicy: {{ init_dns_policy }}
+{% endif %}
+{% if init_dns_policy == 'None' and init_dns_config is defined }}
+         dnsConfig: {{ init_dns_config }}
+{% endif %}
+
       containers:
         - image: '{{ _redis_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -137,6 +147,15 @@ spec:
           securityContext:
             capabilities:
               add: {{ redis_capabilities }}
+{% endif %}
+{% if redis_host_network %}
+          hostNetwork: {{ redis_host_network }}
+{% endif %}
+{% if redis_dns_policy %}
+         dnsPolicy: {{ redis_dns_policy }}
+{% endif %}
+{% if redis_dns_policy == 'None' and redis_dns_config is defined }}
+         dnsConfig: {{ redis_dns_config }}
 {% endif %}
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
@@ -371,6 +390,15 @@ spec:
             items:
               - key: bundle-ca.crt
                 path: 'bundle-ca.crt'
+{% endif %}
+{% if web_host_network %}
+          hostNetwork: {{ web_host_network }}
+{% endif %}
+{% if web_dns_policy %}
+         dnsPolicy: {{ web_dns_policy }}
+{% endif %}
+{% if web_dns_policy == 'None' and web_dns_config is defined }}
+         dnsConfig: {{ web_dns_config }}
 {% endif %}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ ansible_operator_meta.name }}-nginx-certs"

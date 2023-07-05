@@ -1567,6 +1567,126 @@ spec:
                 type: string
               rsyslog_host_network:
                 type: boolean
+              redis_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              redis_dns_policy:
+                type: string
+              redis_host_network:
+                type: boolean
+              ee_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              ee_dns_policy:
+                type: string
+              ee_host_network:
+                type: boolean
+              web_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              web_dns_policy:
+                type: string
+              web_host_network:
+                type: boolean
+              task_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              task_dns_policy:
+                type: string
+              task_host_network:
+                type: boolean
+              init_dns_config:
+                properties:
+                  nameservers:
+                    items:
+                      type: string
+                    type: array
+                  options:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                      type: object
+                    type: array
+                  searches:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              init_dns_policy:
+                type: string
+              init_host_network:
+                type: boolean
               service_account_annotations:
                 description: ServiceAccount annotations
                 type: string

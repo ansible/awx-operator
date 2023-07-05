@@ -333,6 +333,16 @@ init_container_resource_requirements:
     memory: 128Mi
 rsyslog_host_network: false
 rsyslog_dns_config: Default
+redis_host_network: false
+redis_dns_config: Default
+ee_host_network: false
+ee_dns_config: Default
+init_host_network: false
+init_dns_config: Default
+web_host_network: false
+web_dns_config: Default
+task_host_network: false
+task_dns_config: Default
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
