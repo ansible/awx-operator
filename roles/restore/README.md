@@ -101,6 +101,12 @@ backup_pvc: myoldtower-backup-claim
 backup_dir: /backups/tower-openshift-backup-2021-04-02-03:25:08
 ```
 
+Variable to define Pull policy.You can pass other options like `Always`, `always`, `Never`, `never`, `IfNotPresent`, `ifnotpresent`.
+
+```
+image_pull_policy: 'IfNotPresent'
+```
+
 Variable to define resources limits and request for restore CR.
 
 ```

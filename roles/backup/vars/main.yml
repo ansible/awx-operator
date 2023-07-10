@@ -5,3 +5,4 @@ _postgres_image_version: 13
 backup_complete: false
 database_type: "unmanaged"
 supported_pg_version: 13
+image_pull_policy: IfNotPresent

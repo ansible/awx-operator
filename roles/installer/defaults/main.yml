@@ -321,6 +321,11 @@ rsyslog_resource_requirements:
     cpu: 100m
     memory: 128Mi
 
+init_container_resource_requirements:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 # Add extra environment variables to the AWX task/web containers. Specify as
 # literal block. E.g.:
 # task_extra_env: |
@@ -330,6 +335,7 @@ rsyslog_resource_requirements:
 #     value: bing
 task_extra_env: ''
 web_extra_env: ''
+rsyslog_extra_env: ''
 ee_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
@@ -339,6 +345,7 @@ ee_extra_env: ''
 #     mountPath: /some/path
 task_extra_volume_mounts: ''
 web_extra_volume_mounts: ''
+rsyslog_extra_volume_mounts: ''
 ee_extra_volume_mounts: ''
 
 # Add a nodeSelector for the Postgres pods.

@@ -10,7 +10,7 @@ spec:
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
     image: "{{ _postgres_image }}"
-    imagePullPolicy: Always
+    imagePullPolicy: "{{ image_pull_policy }}"
     command: ["sleep", "infinity"]
     volumeMounts:
     - name: {{ ansible_operator_meta.name }}-backup
@@ -20,6 +20,10 @@ spec:
     resources:
       {{ backup_resource_requirements | to_nice_yaml(indent=2) | indent(width=6, first=False) }}
 {%- endif %}
+{% if db_management_pod_node_selector %}
+  nodeSelector:
+        {{ db_management_pod_node_selector | indent(width=8) }}
+{% endif %}
   volumes:
     - name: {{ ansible_operator_meta.name }}-backup
       persistentVolumeClaim:

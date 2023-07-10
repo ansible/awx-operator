@@ -82,6 +82,12 @@ It is also possible to tie the lifetime of the backup files to that of the AWXBa
 clean_backup_on_delete: true
 ```
 
+Variable to define Pull policy.You can pass other options like `Always`, `always`, `Never`, `never`, `IfNotPresent`, `ifnotpresent`.
+
+```
+image_pull_policy: 'IfNotPresent'
+```
+
 Variable to define resources limits and request for backup CR.
 ```
 backup_resource_requirements:
