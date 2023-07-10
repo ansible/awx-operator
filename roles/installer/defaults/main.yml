@@ -447,3 +447,5 @@ ipv6_disabled: false
 #         hostnames:
 #         - hostname
 host_aliases: ''
+
+receptor_log_level: info
