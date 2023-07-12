@@ -129,15 +129,6 @@ spec:
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
 {% endif %}
-{% if init_host_network %}
-          hostNetwork: {{ init_host_network }}
-{% endif %}
-{% if init_dns_policy %}
-         dnsPolicy: {{ init_dns_policy }}
-{% endif %}
-{% if init_dns_policy == 'None' and init_dns_config is defined }}
-         dnsConfig: {{ init_dns_config }}
-{% endif %}
 
       containers:
         - image: '{{ _redis_image }}'
