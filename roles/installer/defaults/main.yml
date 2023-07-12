@@ -337,8 +337,6 @@ redis_host_network: false
 redis_dns_config: Default
 ee_host_network: false
 ee_dns_config: Default
-init_host_network: false
-init_dns_config: Default
 web_host_network: false
 web_dns_config: Default
 task_host_network: false
