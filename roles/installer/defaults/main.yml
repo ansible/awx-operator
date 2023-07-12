@@ -256,7 +256,7 @@ _image_version: "{{ lookup('env', 'DEFAULT_AWX_VERSION') or 'latest' }}"
 _redis_image: docker.io/redis
 _redis_image_version: 7
 _postgres_image: postgres
-_postgres_image_version: 13
+_postgres_image_version: 15
 image_pull_policy: IfNotPresent
 image_pull_secrets: []
 

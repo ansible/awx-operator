@@ -12,7 +12,7 @@ example, specifying `task_tolerations` will allow the AWX task pod to be schedul
 | Name                             | Description                              | Default  |
 | -------------------------------- | ---------------------------------------- | -------  |
 | postgres_image                   | Path of the image to pull                | postgres |
-| postgres_image_version           | Image version to pull                    | 13       |
+| postgres_image_version           | Image version to pull                    | 15       |
 | node_selector                    | AWX pods' nodeSelector                   | ''       |
 | web_node_selector                | AWX web pods' nodeSelector               | ''       |
 | task_node_selector               | AWX task pods' nodeSelector              | ''       |

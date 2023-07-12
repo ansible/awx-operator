@@ -123,7 +123,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_awx
 
-- name: Check if postgres pod is running and version 12
+- name: Check if postgres pod is running an older version
   block:
     - name: Set path to PG_VERSION file for given container image
       set_fact:
@@ -139,13 +139,13 @@
           """
       register: _old_pg_version
 
-    - name: Upgrade data dir from Postgres 12 to 13 if applicable
+    - name: Upgrade data dir from old Postgres to {{ supported_pg_version }} if applicable
       include_tasks: upgrade_postgres.yml
       when:
-        - _old_pg_version.stdout | default('0') | trim == '12'
+        - _old_pg_version.stdout | default('0') | trim < supported_pg_version
   when:
     - managed_database
-    - this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default('none') != '12'
+    - this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default('none') < supported_pg_version
     - old_postgres_pod['resources'] | length  # upgrade is complete and old pg pod has been removed
 
 - block:
@@ -167,7 +167,7 @@
       kubernetes.core.k8s_scale:
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ ansible_operator_meta.name }}-postgres-13"
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
         replicas: 0
         wait: yes
@@ -177,7 +177,7 @@
         state: absent
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ ansible_operator_meta.name }}-postgres-13"
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
         wait: yes
       when: create_statefulset_result.error == 422

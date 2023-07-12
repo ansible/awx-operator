@@ -1,9 +1,9 @@
 ---
 
 # Upgrade Posgres (Managed Databases only)
-#  * If postgres version is not 12, and not an external postgres instance (when managed_database is yes),
+#  * If postgres version is not supported_pg_version, and not an external postgres instance (when managed_database is yes),
 #    then run this playbook with include_tasks from database_configuration.yml
-#  * Data will be streamed via a pg_dump from the postgres 12 pod to the postgres 13
+#  * Data will be streamed via a pg_dump from the postgres 12/13 pod to the postgres supported_pg_version
 #    pod via a pg_restore.
 
 
@@ -118,7 +118,7 @@
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
-    upgraded_postgres_version: '13'
+    upgraded_postgres_version: '{{ supported_pg_version }}'
 
 # Cleanup old Postgres resources
 - name: Remove old Postgres StatefulSet

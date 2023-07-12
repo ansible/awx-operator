@@ -2,7 +2,7 @@
 
 #### Postgres Version
 
-The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 13. You can find this default for a given version by at the default value for [_postgres_image_version](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml#L243).
+The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 15. You can find this default for a given version by at the default value for [_postgres_image_version](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml#L243).
 
 We only have coverage for the default version of Postgres. Newer versions of Postgres (14+) will likely work, but should only be configured as an external database. If your database is managed by the awx-operator (default if you don't specify a `postgres_configuration_secret`), then you should not override the default version as this may cause issues when awx-operator tries to upgrade your postgresql pod.
 
@@ -58,7 +58,7 @@ The following variables are customizable for the managed PostgreSQL service
 
 | Name                                          | Description                                   | Default                            |
 | --------------------------------------------- | --------------------------------------------- | ---------------------------------- |
-| postgres_image                                | Path of the image to pull                     | postgres:12                        |
+| postgres_image                                | Path of the image to pull                     | postgres:15                        |
 | postgres_init_container_resource_requirements | Database init container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi} |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}           |
