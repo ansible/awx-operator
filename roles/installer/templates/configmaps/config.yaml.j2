@@ -276,3 +276,24 @@ data:
     - work-signing:
         privatekey: /etc/receptor/work_private_key.pem
         tokenexpiration: 1m
+  uwsgi_conf: |
+    [uwsgi]
+    socket = 127.0.0.1:8050
+    processes = {{ uwsgi_processes }}
+    listen = {{ uwsgi_listen_queue_size }}
+    master = true
+    vacuum = true
+    no-orphans = true
+    lazy-apps = true
+    manage-script-name = true
+    master-fifo = /var/lib/awx/awxfifo
+    max-requests = 1000
+    buffer-size = 32768
+    
+    if-env = UWSGI_MOUNT_PATH
+    mount = %(_)=awx.wsgi:application
+    endif =
+    
+    if-not-env = UWSGI_MOUNT_PATH
+    mount = /=awx.wsgi:application
+    endif =

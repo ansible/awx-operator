@@ -1600,6 +1600,12 @@ spec:
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
                 type: string
+              uwsgi_processes:
+                description: Set the number of uwsgi processes to run in a web container
+                type: integer
+              uwsgi_listen_queue_size:
+                description: Set the socket listen queue size for uwsgi
+                type: integer
               rsyslog_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Rsyslog container
                 type: string
