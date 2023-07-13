@@ -17,6 +17,14 @@ no_log: true
 # Variable to set when you want backups to be cleaned up when the CRD object is deleted
 clean_backup_on_delete: false
 
+
+# Add a nodeSelector for the Postgres pods to backup.
+# Specify as literal block. E.g.:
+# db_management_pod_node_selector: |
+#   kubernetes.io/arch: amd64
+#   kubernetes.io/os: linux
+db_management_pod_node_selector: ''
+
 # Variable to signal that this role is being run as a finalizer
 finalizer_run: false
 
@@ -37,6 +45,6 @@ additional_labels: []
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
 
-# Number of hours worth of events table partitions to precreate before starting backup to avoid pg_dump locks.
+# Number of whole hours worth of events table partitions to precreate before starting backup to avoid pg_dump locks.
 precreate_partition_hours: 3
 ...
