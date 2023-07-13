@@ -316,7 +316,7 @@ spec:
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
-              mountPath: "/var/run/awx-rsyslog"   
+              mountPath: "/var/run/awx-rsyslog"
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
