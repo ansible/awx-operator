@@ -133,7 +133,17 @@ $ alias kubectl="minikube kubectl --"
 
 Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
-First, create a file called `kustomization.yaml` with the following content:
+There is a make target you can run:
+```
+make deploy
+```
+
+If you have a custom operator image you have built, you can specify it with:
+```
+IMG=quay.io/$YOURNAMESPACE/awx-operator:$YOURTAG make deploy
+```
+
+Otherwise, you can manually create a file called `kustomization.yaml` with the following content:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
