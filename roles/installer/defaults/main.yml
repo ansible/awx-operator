@@ -449,3 +449,17 @@ ipv6_disabled: false
 host_aliases: ''
 
 receptor_log_level: info
+
+# UWSGI default values
+uwsgi_processes: 5
+# NOTE: to increase this value, net.core.somaxconn must also be increased
+# see https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/#setting-sysctls-for-a-pod
+# Also see https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/#enabling-unsafe-sysctls for how
+# to allow setting this sysctl, which requires kubelet configuration to add to allowlist
+uwsgi_listen_queue_size: 128
+
+# NGINX default values
+nginx_worker_processes: 1
+nginx_worker_connections: "{{ uwsgi_listen_queue_size }}"
+nginx_worker_cpu_affinity: 'auto'
+nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
