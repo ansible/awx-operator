@@ -84,6 +84,9 @@ data:
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
 
+    RECEPTOR_LOG_LEVEL = '{{ receptor_log_level }}'
+
+
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
 {% endfor %}
@@ -236,7 +239,7 @@ data:
     bind 127.0.0.1
   receptor_conf: |
     ---
-    - log-level: info
+    - log-level: {{ receptor_log_level }}
     - local-only: null
     - node:
        firewallrules:
