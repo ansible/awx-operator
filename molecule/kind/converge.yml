@@ -15,6 +15,7 @@
           - urllib3==1.26.15
           - docker
           - docker-compose
+          - pyyaml==5.3.1
         state: present
 
     - name: Build operator image
