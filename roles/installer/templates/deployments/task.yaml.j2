@@ -393,6 +393,9 @@ spec:
 =======
 {% endif %}
 >>>>>>> f32bd4e (Updated requested changes)
+{% if redis_extra_env -%}
+            {{ redis_extra_env | indent(width=12, first=True) }}
+{% endif %}  
 {% if termination_grace_period_seconds is defined %}
             - name: pre-stop-data
               mountPath: /var/lib/pre-stop
