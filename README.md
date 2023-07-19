@@ -998,7 +998,7 @@ In a scenario where custom volumes and volume mounts are required to either over
 | extra_volumes                      | Specify extra volumes to add to the application pod      | ''      |
 | web_extra_volume_mounts            | Specify volume mounts to be added to Web container       | ''      |
 | task_extra_volume_mounts           | Specify volume mounts to be added to Task container      | ''      |
-| ee_extra_volume_mounts            | Specify volume mounts to be added to Execution container | ''       |
+| ee_extra_volume_mounts             | Specify volume mounts to be added to Execution container | ''       |
 | redis_extra_volume_mounts          | Specify volume mounts to be added to redis container.    | ''      |
 | init_container_extra_volume_mounts | Specify volume mounts to be added to Init container      | ''      |
 | init_container_extra_commands      | Specify additional commands for Init container           | ''      |
