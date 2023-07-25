@@ -12,6 +12,9 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
+
+NOTE:  we are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
+
 * [AWX Operator](#awx-operator)
 * [Table of Contents](#table-of-contents)
    * [Usage](#usage)
