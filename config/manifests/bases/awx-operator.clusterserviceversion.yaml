@@ -833,6 +833,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Custom Security Context
+        path: security_context_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       - displayName: API Extra Settings
         path: extra_settings
         x-descriptors:

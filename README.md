@@ -31,6 +31,7 @@ NOTE:  we are in the process of moving this readme into official docs in the /do
          * [Managed PostgreSQL Service](#managed-postgresql-service)
       * [Advanced Configuration](#advanced-configuration)
          * [Deploying a specific version of AWX](#deploying-a-specific-version-of-awx)
+         * [Container security context](#container-security-context)
          * [Redis container capabilities](#redis-container-capabilities)
          * [Privileged Tasks](#privileged-tasks)
          * [Containers Resource Requirements](#containers-resource-requirements)
@@ -651,7 +652,25 @@ spec:
 
 **Note**: The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
 
+#### Container security context
+To change/add the security context for a specified container, add your items as key-value pairs under the name of the container in question. Possible container names are `redis`, `init`, `ee`, `task`, `web`, `rsyslog`. 
+
+```yaml
+---
+spec:
+  security_context_settings:
+    redis:
+      capabilities:
+        add:
+          - CHOWN
+          - SETUID
+          - SETGID
+      runAsUser: 1000
+      runAsGroup: 1000
+```
+
 #### Redis container capabilities
+> :warning: The `redis_capabilities` option is deprecated. Please use `security_context_settings` to set any securityContext related settings such as container capabilites.
 
 Depending on your kubernetes cluster and settings you might need to grant some capabilities to the redis container so it can start. Set the `redis_capabilities` option so the capabilities are added in the deployment.
 
