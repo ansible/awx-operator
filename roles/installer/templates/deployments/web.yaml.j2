@@ -26,6 +26,7 @@ spec:
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
       annotations:
+        kubectl.kubernetes.io/default-container: '{{ ansible_operator_meta.name }}-web'
 {% for template in [
     "configmaps/config",
     "secrets/app_credentials",
