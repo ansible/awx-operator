@@ -20,15 +20,15 @@ spec:
     kubernetes.io/ingress.class: nginx
   web_resource_requirements:
     requests:
-      cpu: 50m
+      cpu: 20m
       memory: 32M
   task_resource_requirements:
     requests:
-      cpu: 50m
+      cpu: 20m
       memory: 32M
   ee_resource_requirements:
     requests:
-      cpu: 50m
+      cpu: 20m
       memory: 16M
   no_log: false
   postgres_resource_requirements: {}
@@ -37,3 +37,6 @@ spec:
   additional_labels:
   - my/team
   - my/service
+{% if additional_fields is defined %}
+  {{ additional_fields | to_nice_yaml | indent(2) }}
+{% endif %}

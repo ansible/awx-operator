@@ -5,18 +5,6 @@
   gather_facts: no
 
   tasks:
-    # Remove after this if fixed: https://github.com/ansible-collections/community.docker/issues/611
-    - name: Install docker
-      become: yes
-      pip:
-        name:
-          - websocket-client==0.59.0
-          - requests==2.28.2
-          - urllib3==1.26.15
-          - docker
-          - docker-compose
-        state: present
-
     - name: Build operator image
       community.docker.docker_image:
         build:
@@ -29,11 +17,16 @@
         push: no
         source: build
         force_source: yes
+      tags:
+        - always
 
     - name: Load operator image into kind cluster
       command: kind load docker-image --name osdk-test '{{ operator_image }}'
       register: result
       changed_when: '"not yet present" in result.stdout'
+      tags:
+        - always
+
 
     - name: Load awx image into kind cluster
       command: kind load docker-image --name osdk-test '{{ awx_image }}:{{ awx_version }}'
@@ -42,5 +35,7 @@
       when:
         - awx_image is defined
         - awx_image != ''
+      tags:
+        - always
 
 - import_playbook: ../default/converge.yml

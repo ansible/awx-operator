@@ -402,6 +402,42 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: Uwsgi Listen Queue Length
+        path: uwsgi_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Uwsgi Processes
+        path: uwsgi_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Processes
+        path: nginx_worker_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Connections
+        path: nginx_worker_connections
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Process CPU Affinity
+        path: nginx_worker_cpu_affinity
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:string
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Listen Queue Length
+        path: nginx_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Task Replicas
         path: task_replicas
         x-descriptors:

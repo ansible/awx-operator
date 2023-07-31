@@ -6,6 +6,8 @@
     chdir: '{{ config_dir }}/testing'
   register: resources
   changed_when: false
+  tags:
+    - always
 
 - name: Set resources to {{ state }}
   k8s:
@@ -13,3 +15,5 @@
     state: '{{ state }}'
     wait: yes
   loop: '{{ resources.stdout | from_yaml_all | list }}'
+  tags:
+    - always

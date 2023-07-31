@@ -15,6 +15,8 @@
           include_tasks: '{{ item }}'
           with_fileglob:
             - tasks/*_test.yml
+          tags:
+            - always
       rescue:
         - name: Retrieve relevant resources
           k8s_info:
@@ -31,6 +33,8 @@
             - api_version: v1
               kind: ConfigMap
           register: debug_resources
+          tags:
+            - always
 
         - name: Retrieve Pod logs
           k8s_log:
@@ -39,15 +43,21 @@
             container: awx-manager
           loop: "{{ q('k8s', api_version='v1', kind='Pod', namespace=namespace, label_selector=ctrl_label) }}"
           register: debug_logs
+          tags:
+            - always
 
         - name: Output gathered resources
           debug:
             var: debug_resources
+          tags:
+            - always
 
         - name: Output gathered logs
           debug:
             var: item.log_lines
           loop: '{{ debug_logs.results }}'
+          tags:
+            - always
 
         - name: Re-emit failure
           vars:
@@ -55,3 +65,5 @@
               result: '{{ ansible_failed_result }}'
           fail:
             msg: '{{ failed_task }}'
+          tags:
+            - always
