@@ -74,11 +74,13 @@ spec:
 {% endif %}
 {% endfor %}
   tls:
-{%- for item in ingress_hosts if item.tls_secret %}   
+{% for item in ingress_hosts %}
+{% if 'tls_secret' in item %}
     - hosts:
       - {{ item.hostname }}
       secretName: {{ item.tls_secret }}
-{%- endfor %}
+{% endif %}
+{% endfor %}
 {% endif %}
 {% endif %}
 
