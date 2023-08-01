@@ -36,7 +36,7 @@ theme:
 
 nav:
   - installation:
-      - home: installation/index.md
+      - Installation: installation/index.md
       - installation/basic-install.md
       - installation/creating-a-minikube-cluster-for-testing.md
       - installation/helm-install-on-existing-cluster.md
