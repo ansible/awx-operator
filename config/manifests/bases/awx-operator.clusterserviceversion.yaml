@@ -70,6 +70,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
       - displayName: No Log Configuration
         path: no_log
         x-descriptors:
@@ -140,6 +145,11 @@ spec:
         path: postgres_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
       - displayName: Restore Management Pod Resource Requirements
         path: restore_resource_requirements
         x-descriptors:
@@ -376,6 +386,11 @@ spec:
         path: postgres_storage_requirements
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Init Container resource requirements
+        path: init_container_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Replicas
         path: replicas
         x-descriptors:
@@ -386,6 +401,42 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: Uwsgi Listen Queue Length
+        path: uwsgi_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Uwsgi Processes
+        path: uwsgi_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Processes
+        path: nginx_worker_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Connections
+        path: nginx_worker_connections
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Process CPU Affinity
+        path: nginx_worker_cpu_affinity
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:string
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Listen Queue Length
+        path: nginx_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Task Replicas
         path: task_replicas
         x-descriptors:
@@ -648,6 +699,28 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Rsyslog Args
+        path: rsyslog_args
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Rsyslog Command
+        path: rsyslog_command
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Environment variables to be added to Rsyslog container
+        displayName: Rsyslog Extra Env
+        path: rsyslog_extra_env
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Rsyslog container
+        displayName: Rsyslog Extra Volume Mounts
+        path: rsyslog_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Specify extra volumes to add to the application pod
         displayName: Extra Volumes
         path: extra_volumes
@@ -757,6 +830,11 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Session Cookie Secure Setting
         path: session_cookie_secure
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Receptor Log Level
+        path: receptor_log_level
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden

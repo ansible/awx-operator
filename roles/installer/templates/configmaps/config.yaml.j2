@@ -84,16 +84,20 @@ data:
     BROADCAST_WEBSOCKET_PROTOCOL = 'http'
 
 
+    RECEPTOR_LOG_LEVEL = '{{ receptor_log_level }}'
+
+
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
 {% endfor %}
 
   nginx_conf: |
-    worker_processes  1;
+    worker_processes  {{ nginx_worker_processes }};
+    worker_cpu_affinity  {{ nginx_worker_cpu_affinity }};
     pid        /tmp/nginx.pid;
 
     events {
-        worker_connections  1024;
+        worker_connections {% if nginx_worker_connections > 1024 %}{{ nginx_worker_connections }}{% else %}1024{% endif %};
     }
 
     http {
@@ -128,22 +132,22 @@ data:
 
         {% if route_tls_termination_mechanism | lower == 'passthrough' %}
         server {
-            listen 8052 default_server;
+            listen 8052 default_server{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% if not ipv6_disabled %}
-            listen [::]:8052 default_server;
+            listen [::]:8052 default_server{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% endif %}
             server_name _;
 
             # Redirect all HTTP links to the matching HTTPS page
-            return 301 https://$host$request_uri;
+            return 301 https://$host:8053$request_uri;
         }
         {% endif %}
 
         server {
         {% if route_tls_termination_mechanism | lower == 'passthrough' %}
-            listen 8053 ssl;
+            listen 8053 ssl{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% if not ipv6_disabled %}
-            listen [::]:8053 ssl;
+            listen [::]:8053 ssl{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% endif %}
 
             ssl_certificate /etc/nginx/pki/web.crt;
@@ -154,9 +158,9 @@ data:
             ssl_ciphers PROFILE=SYSTEM;
             ssl_prefer_server_ciphers on;
         {% else %}
-            listen 8052 default_server;
+            listen 8052 default_server{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% if not ipv6_disabled %}
-            listen [::]:8052 default_server;
+            listen [::]:8052 default_server{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% endif %}
         {% endif %}
 
@@ -236,7 +240,7 @@ data:
     bind 127.0.0.1
   receptor_conf: |
     ---
-    - log-level: info
+    - log-level: {{ receptor_log_level }}
     - local-only: null
     - node:
        firewallrules:
@@ -273,3 +277,24 @@ data:
     - work-signing:
         privatekey: /etc/receptor/work_private_key.pem
         tokenexpiration: 1m
+  uwsgi_conf: |
+    [uwsgi]
+    socket = 127.0.0.1:8050
+    processes = {{ uwsgi_processes }}
+    listen = {{ uwsgi_listen_queue_size }}
+    master = true
+    vacuum = true
+    no-orphans = true
+    lazy-apps = true
+    manage-script-name = true
+    master-fifo = /var/lib/awx/awxfifo
+    max-requests = 1000
+    buffer-size = 32768
+    
+    if-env = UWSGI_MOUNT_PATH
+    mount = %(_)=awx.wsgi:application
+    endif =
+    
+    if-not-env = UWSGI_MOUNT_PATH
+    mount = /=awx.wsgi:application
+    endif =

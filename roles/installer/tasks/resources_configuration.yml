@@ -285,5 +285,7 @@
 
 - name: Verify the resource pod name is populated.
   assert:
-    that: awx_task_pod_name != ''
+    that:
+      - awx_task_pod_name != ''
     fail_msg: "Could not find the tower pod's name."
+  when: task_replicas | int > 0 or (task_replicas == '' and replicas > 0)

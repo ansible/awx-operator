@@ -88,6 +88,7 @@
     command: >-
       bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
   changed_when: false
+  when: awx_task_pod_name != ''
   register: database_check
 
 - name: Migrate the database if the K8s resources were updated.  # noqa 305
@@ -99,11 +100,13 @@
       bash -c "awx-manage migrate --noinput"
   register: migrate_result
   when:
+  - awx_task_pod_name != ''
   - database_check is defined
   - (database_check.stdout|trim) != '0'
 
 - name: Initialize Django
   include_tasks: initialize_django.yml
+  when: awx_task_pod_name != ''
 
 - name: Update status variables
   include_tasks: update_status.yml

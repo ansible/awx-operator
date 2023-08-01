@@ -1,0 +1,13 @@
+---
+- name: Create or update the awx.ansible.com/v1alpha1.AWX
+  k8s:
+    state: present
+    namespace: '{{ namespace }}'
+    definition: "{{ lookup('template', 'awx_cr_molecule.yml.j2') | from_yaml }}"
+    apply: true
+    wait: yes
+    wait_timeout: 900
+    wait_condition:
+      type: Running
+      reason: Successful
+      status: "True"

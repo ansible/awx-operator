@@ -9,9 +9,9 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
-{% if web_replicas %}
+{% if web_replicas != '' %}
   replicas: {{ web_replicas }}
-{% elif replicas %}
+{% elif replicas != '' %}
   replicas: {{ replicas }}
 {% endif %}
   selector:
@@ -26,9 +26,9 @@ spec:
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
       annotations:
+        kubectl.kubernetes.io/default-container: '{{ ansible_operator_meta.name }}-web'
 {% for template in [
     "configmaps/config",
-    "configmaps/pre_stop_scripts",
     "secrets/app_credentials",
     "storage/persistent",
   ] %}
@@ -50,6 +50,12 @@ spec:
         {{ annotations | indent(width=8) }}
 {% endif %}
     spec:
+{% if uwsgi_listen_queue_size is defined and uwsgi_listen_queue_size|int > 128 %}
+      securityContext:
+        sysctls:
+        - name: net.core.somaxconn
+          value: "{{ uwsgi_listen_queue_size }}"
+{% endif %}
       serviceAccountName: '{{ ansible_operator_meta.name }}'
 {% if image_pull_secret is defined %}
       imagePullSecrets:
@@ -78,7 +84,7 @@ spec:
         - name: init
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ web_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -107,7 +113,7 @@ spec:
         - name: init-projects
           image: '{{ _init_projects_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
-          resources: {{ web_resource_requirements }}
+          resources: {{ init_container_resource_requirements }}
           command:
             - /bin/sh
             - -c
@@ -166,6 +172,10 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
+            - name: {{ ansible_operator_meta.name }}-uwsgi-config
+              mountPath: "/etc/tower/uwsgi.ini"
+              subPath: uwsgi.conf
+              readOnly: true
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/execution_environments.py"
               subPath: execution_environments.py
@@ -289,12 +299,18 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
+{% if rsyslog_extra_volume_mounts -%}
+            {{ rsyslog_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
           env:
             - name: SUPERVISOR_CONFIG_PATH
               value: "/etc/supervisord_rsyslog.conf"
 {% if development_mode | bool %}
             - name: AWX_KUBE_DEVEL
               value: "1"
+{% endif %}
+{% if rsyslog_extra_env -%}
+            {{ rsyslog_extra_env | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ rsyslog_resource_requirements }}
 {% if web_node_selector %}
@@ -394,6 +410,12 @@ spec:
             items:
               - key: redis_conf
                 path: redis.conf
+        - name: {{ ansible_operator_meta.name }}-uwsgi-config
+          configMap:
+            name: {{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap
+            items:
+              - key: uwsgi_conf
+                path: uwsgi.conf
         - name: {{ ansible_operator_meta.name }}-redis-socket
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-redis-data
