@@ -35,6 +35,7 @@ theme:
         name: Switch to light mode
 
 nav:
+  - index.md
   - Installation:
       - Installation: installation/index.md
       - installation/basic-install.md
@@ -44,6 +45,10 @@ nav:
       - user-guide/admin-user-account-configuration.md
       - user-guide/network-and-tls-configuration.md
       - user-guide/database-configuration.md
+  - Upgrade:
+      - upgrade/upgrading.md
+  - Uninstall:
+      - uninstall/uninstall.md
   - Advanced Configuration:
       - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
       - user-guide/advanced-configuration/redis-container-capabilities.md
@@ -69,10 +74,7 @@ nav:
       - user-guide/advanced-configuration/disable-ipv6.md
       - user-guide/advanced-configuration/debugging.md
       - user-guide/advanced-configuration/migration.md
-  - Upgrade:
-      - upgrade/upgrading.md
-  - Uninstall:
-      - uninstall/uninstall.md
+
   - Contributors Guide:
       - contributors-guide/contributing.md
       - contributors-guide/release-process.md
