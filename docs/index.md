@@ -1,1 +1,3 @@
-# Welcome to the documentation of ansible awx-operator
+# Ansible AWX Operator Documentation
+
+This operator is meant to provide a more Kubernetes-native installation method for AWX via an AWX Custom Resource Definition (CRD).
