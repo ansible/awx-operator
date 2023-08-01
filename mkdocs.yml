@@ -1,5 +1,5 @@
 ---
-site_name: Ansible AWX Operator Documentation 
+site_name: Ansible AWX Operator Documentation
 site_url: https://awx-operator.readthedocs.io/
 repo_url: https://github.com/ansible/awx-operator
 edit_uri: blob/devel/docs/
