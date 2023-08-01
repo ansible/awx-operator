@@ -50,6 +50,7 @@ nav:
       - user-guide/advanced-configuration/privileged-tasks.md
       - user-guide/advanced-configuration/containers-resource-requirements.md
       - user-guide/advanced-configuration/priority-classes.md
+      - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
       - user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md
       - user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md
       - user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md
@@ -68,6 +69,16 @@ nav:
       - user-guide/advanced-configuration/disable-ipv6.md
       - user-guide/advanced-configuration/debugging.md
       - user-guide/advanced-configuration/migration.md
+  - Upgrade:
+      - upgrade/upgrading.md
+  - Uninstall:
+      - uninstall/uninstall.md
+  - Contributors Guide:
+      - contributors-guide/contributing.md
+      - contributors-guide/release-process.md
+      - contributors-guide/author.md
+      - contributors-guide/code-of-conduct.md
+      - contributors-guide/get-involved.md
 
 plugins:
   - autorefs
