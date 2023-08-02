@@ -1,7 +1,7 @@
 ---
 deployment_type: "awx"
 _postgres_image: quay.io/sclorg/postgresql-15-c9s
-_postgres_image_version: 15
+_postgres_image_version: latest
 backup_complete: false
 database_type: "unmanaged"
 supported_pg_version: 15

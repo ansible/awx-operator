@@ -2,7 +2,7 @@
 
 deployment_type: "awx"
 _postgres_image: quay.io/sclorg/postgresql-15-c9s
-_postgres_image_version: 15
+_postgres_image_version: latest
 
 backup_api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 backup_kind: 'AWXBackup'

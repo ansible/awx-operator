@@ -145,7 +145,8 @@
         - _old_pg_version.stdout | default('0') | trim < supported_pg_version
   when:
     - managed_database
-    - this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default('none') < supported_pg_version
+    - "'upgradedPostgresVersion' is in this_awx['resources'][0]['status']"
+    - (this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default(false)) | ternary (this_awx['resources'][0]['status']['upgradedPostgresVersion'] < supported_pg_version, false)
     - old_postgres_pod['resources'] | length  # upgrade is complete and old pg pod has been removed
 
 - block:
