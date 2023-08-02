@@ -36,23 +36,27 @@ theme:
 
 nav:
   - index.md
+  - Contributors Guide:
+      - contributors-guide/contributing.md
+      - contributors-guide/release-process.md
+      - contributors-guide/author.md
+      - contributors-guide/code-of-conduct.md
+      - contributors-guide/get-involved.md
   - Installation:
       - Installation: installation/index.md
       - installation/basic-install.md
       - installation/creating-a-minikube-cluster-for-testing.md
       - installation/helm-install-on-existing-cluster.md
+  - Migrate:
+      - migration/migration.md
+  - Uninstall:
+      - uninstall/uninstall.md
   - User Guide:
       - user-guide/admin-user-account-configuration.md
       - user-guide/network-and-tls-configuration.md
       - user-guide/database-configuration.md
   - Upgrade:
       - upgrade/upgrading.md
-  - Uninstall:
-      - uninstall/uninstall.md
-  - Migrate:
-      - migration/migration.md
-  - Debug:
-      - debugging/debugging.md
   - Advanced Configuration:
       - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
       - user-guide/advanced-configuration/redis-container-capabilities.md
@@ -76,13 +80,9 @@ nav:
       - user-guide/advanced-configuration/labeling-operator-managed-objects.md
       - user-guide/advanced-configuration/pods-termination-grace-period.md
       - user-guide/advanced-configuration/disable-ipv6.md
-  - Contributors Guide:
-      - contributors-guide/contributing.md
-      - contributors-guide/release-process.md
-      - contributors-guide/author.md
-      - contributors-guide/code-of-conduct.md
-      - contributors-guide/get-involved.md
-
+  - Troubleshooting:
+      - debugging/debugging.md
+      
 exclude_docs:
   README.md
 
