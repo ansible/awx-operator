@@ -12,23 +12,74 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
 
-NOTE:  we are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
+**Note**: We are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
 
 
 Table of Contents
 =================
 
-* [AWX Operator](#awx-operator)
-   * [Contributing](#contributing)
-   * [Release Process](#release-process)
-   * [Author](#author)
-   * [Code of Conduct](#code-of-conduct)
-   * [Get Involved](#get-involved)
+- [AWX Operator](#awx-operator)
+- [Table of Contents](#table-of-contents)
+  - [Install and Configuration](#install-and-configuration)
+  - [Contributing](#contributing)
+  - [Release Process](#release-process)
+  - [Author](#author)
+  - [Code of Conduct](#code-of-conduct)
+  - [Get Involved](#get-involved)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 <!--te-->
 
+
+
+## Install and Configuration
+
+All of our usage and configuration docs are nested in the `docs/` directory. Below is a Table of Contents for those.
+
+- Introduction
+  - [Introduction](./docs/introduction.md)
+- Contributors Guide
+  - [Code of Conduct](./docs/code-of-conduct.md)
+  - [Get Involved](./docs/get-involved.md)
+  - [Contributing](./docs/contributing.md)
+  - [Release Process](./docs/release-process.md)
+  - [Authors](./docs/author.md)
+- Installation
+  - [Basic Install](./docs/basic-install.md)
+  - [Creating a Minikube cluster for testing](./docs/creating-a-minikube-cluster-for-testing.md)
+  - [Installation](./docs/installation.md)
+  - [Helm Install](./docs/helm-install-on-existing-cluster.md)
+- [Migration](./docs/migration.md)
+- [Uninstall](./docs/uninstall.md)
+- User Guide
+  - [Admin User Configuration](./docs/admin-user-account-configuration.md)
+  - [Database Configuration](./docs/database-configuration.md)
+  - [Network and TLS Configuration](./docs/network-and-tls-configuration.md)
+  - Advanced Configuration
+    - [No Log](./docs/no-log.md)
+    - [Deploy a Specific Version of AWX](./docs/deploying-a-specific-version-of-awx.md)
+    - [Resource Requirements](./docs/containers-resource-requirements.md)
+    - [Extra Settings](./docs/extra-settings.md)
+    - [Environment Variables](./docs/exporting-environment-variables-to-containers.md)
+    - [Custom Labels](./docs/labeling-operator-managed-objects.md)
+    - [Custom Volumes](./docs/custom-volume-and-volume-mount-options.md)
+    - [Scaling Deployments](./docs/scaling-the-web-and-task-pods-independently.md)
+    - [Auto Update Upon Operator Upgrade](./docs/auto-upgrade.md)
+    - [Termination Grace Period](./docs/pods-termination-grace-period.md)
+    - [Node Selector for Deployments](./docs/assigning-awx-pods-to-specific-nodes.md)
+    - [Default EE from Private Registries](./docs/default-execution-environments-from-private-registries.md)
+    - [CSRF Cookie Secure](./docs/csrf-cookie-secure-setting.md)
+    - [Disable IPv6](./docs/disable-ipv6.md)
+    - [LDAP](./docs/enabling-ldap-integration-at-awx-bootstrap.md)
+    - [Priority Clases](./docs/priority-classes.md)
+    - [Priveleged Tasks](./docs/privileged-tasks.md)
+    - [Redis Container Capabilities](./docs/redis-container-capabilities.md)
+    - [Trusting a Custom Certificate Authority](./docs/trusting-a-custom-certificate-authority.md)
+    - [Service Account](./docs/service-account.md)
+    - [Persisting the Projects Directory](./docs/persisting-projects-directory.md)
+- Troubleshooting
+  - [General Debugging](./docs/debugging.md)
 
 
 ## Contributing
