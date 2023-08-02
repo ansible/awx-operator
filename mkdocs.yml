@@ -49,6 +49,8 @@ nav:
       - upgrade/upgrading.md
   - Uninstall:
       - uninstall/uninstall.md
+  - Migrate:
+    - migration/migration.md  
   - Advanced Configuration:
       - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
       - user-guide/advanced-configuration/redis-container-capabilities.md
@@ -73,8 +75,6 @@ nav:
       - user-guide/advanced-configuration/pods-termination-grace-period.md
       - user-guide/advanced-configuration/disable-ipv6.md
       - user-guide/advanced-configuration/debugging.md
-      - user-guide/advanced-configuration/migration.md
-
   - Contributors Guide:
       - contributors-guide/contributing.md
       - contributors-guide/release-process.md
@@ -82,6 +82,9 @@ nav:
       - contributors-guide/code-of-conduct.md
       - contributors-guide/get-involved.md
 
+exclude_docs:
+  README.md
+  
 plugins:
   - autorefs
   - markdown-exec
