@@ -48,7 +48,7 @@ spec:
 
 #### Migrating data from an old AWX instance
 
-For instructions on how to migrate from an older version of AWX, see [migration.md](/docs/migration/migration.md).
+For instructions on how to migrate from an older version of AWX, see [migration.md](../migration/migration.md).
 
 #### Managed PostgreSQL Service
 
