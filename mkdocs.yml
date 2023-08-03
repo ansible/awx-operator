@@ -82,7 +82,7 @@ nav:
       - user-guide/advanced-configuration/disable-ipv6.md
   - Troubleshooting:
       - troubleshooting/debugging.md
-    
+
 exclude_docs:
   README.md
 
