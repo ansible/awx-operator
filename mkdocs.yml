@@ -4,7 +4,7 @@ site_url: https://awx-operator.readthedocs.io/
 repo_url: https://github.com/ansible/awx-operator
 edit_uri: blob/devel/docs/
 docs_dir: docs
-strict: true
+strict: false
 use_directory_urls: false
 
 theme:
@@ -82,9 +82,11 @@ nav:
       - user-guide/advanced-configuration/disable-ipv6.md
   - Troubleshooting:
       - debugging/debugging.md
-      
-exclude_docs:
-  README.md
+
+plugins:
+  - exclude:
+      glob:
+        - README.md
 
 plugins:
   - autorefs
