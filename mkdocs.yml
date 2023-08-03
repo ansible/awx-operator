@@ -1,5 +1,5 @@
 ---
-site_name: awx-operator
+site_name: Ansible AWX Operator Documentation
 site_url: https://awx-operator.readthedocs.io/
 repo_url: https://github.com/ansible/awx-operator
 edit_uri: blob/devel/docs/
@@ -8,7 +8,7 @@ strict: true
 use_directory_urls: false
 
 theme:
-  name: "material"
+  name: "ansible"
   features:
     - content.code.copy
     - content.action.edit
@@ -35,9 +35,56 @@ theme:
         name: Switch to light mode
 
 nav:
-  - home: index.md
-  - debugging.md
-  - migration.md
+  - index.md
+  - Contributors Guide:
+      - contributors-guide/contributing.md
+      - contributors-guide/release-process.md
+      - contributors-guide/author.md
+      - contributors-guide/code-of-conduct.md
+      - contributors-guide/get-involved.md
+  - Installation:
+      - Installation: installation/index.md
+      - installation/basic-install.md
+      - installation/creating-a-minikube-cluster-for-testing.md
+      - installation/helm-install-on-existing-cluster.md
+  - Migrate:
+      - migration/migration.md
+  - Uninstall:
+      - uninstall/uninstall.md
+  - User Guide:
+      - user-guide/admin-user-account-configuration.md
+      - user-guide/network-and-tls-configuration.md
+      - user-guide/database-configuration.md
+  - Upgrade:
+      - upgrade/upgrading.md
+  - Advanced Configuration:
+      - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
+      - user-guide/advanced-configuration/redis-container-capabilities.md
+      - user-guide/advanced-configuration/privileged-tasks.md
+      - user-guide/advanced-configuration/containers-resource-requirements.md
+      - user-guide/advanced-configuration/priority-classes.md
+      - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
+      - user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md
+      - user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md
+      - user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md
+      - user-guide/advanced-configuration/persisting-projects-directory.md
+      - user-guide/advanced-configuration/custom-volume-and-volume-mount-options.md
+      - user-guide/advanced-configuration/default-execution-environments-from-private-registries.md
+      - user-guide/advanced-configuration/exporting-environment-variables-to-containers.md
+      - user-guide/advanced-configuration/csrf-cookie-secure-setting.md
+      - user-guide/advanced-configuration/session-cookie-secure-setting.md
+      - user-guide/advanced-configuration/extra-settings.md
+      - user-guide/advanced-configuration/no-log.md
+      - user-guide/advanced-configuration/auto-upgrade.md
+      - user-guide/advanced-configuration/service-account.md
+      - user-guide/advanced-configuration/labeling-operator-managed-objects.md
+      - user-guide/advanced-configuration/pods-termination-grace-period.md
+      - user-guide/advanced-configuration/disable-ipv6.md
+  - Troubleshooting:
+      - troubleshooting/debugging.md
+
+exclude_docs:
+  README.md
 
 plugins:
   - autorefs

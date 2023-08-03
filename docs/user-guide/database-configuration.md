@@ -2,7 +2,7 @@
 
 #### Postgres Version
 
-The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 13. You can find this default for a given version by at the default value for [_postgres_image_version](./roles/installer/defaults/main.yml#L138).
+The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 13. You can find this default for a given version by at the default value for [_postgres_image_version](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml#L243).
 
 We only have coverage for the default version of Postgres. Newer versions of Postgres (14+) will likely work, but should only be configured as an external database. If your database is managed by the awx-operator (default if you don't specify a `postgres_configuration_secret`), then you should not override the default version as this may cause issues when awx-operator tries to upgrade your postgresql pod.
 
@@ -48,7 +48,7 @@ spec:
 
 #### Migrating data from an old AWX instance
 
-For instructions on how to migrate from an older version of AWX, see [migration.md](/docs/migration/migration.md).
+For instructions on how to migrate from an older version of AWX, see [migration.md](../migration/migration.md).
 
 #### Managed PostgreSQL Service
 
