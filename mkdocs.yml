@@ -81,8 +81,8 @@ nav:
       - user-guide/advanced-configuration/pods-termination-grace-period.md
       - user-guide/advanced-configuration/disable-ipv6.md
   - Troubleshooting:
-      - debugging/debugging.md
-      
+      - troubleshooting/debugging.md
+    
 exclude_docs:
   README.md
 

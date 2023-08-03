@@ -1,7 +1,8 @@
 # Building the Ansible AWX Operator Docs
 
-To make a local copy of the AWX Operator docs:
+To build the AWX Operator docs locally:
 
-1. cd to the /docs directory. 
-2. pip install --user -r requirements.txt
-3. mkdocs build
+1. Clone the AWX operator repository. 
+2. From the root directory:
+    a.  pip install --user -r docs/requirements.txt
+    b.  mkdocs build
