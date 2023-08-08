@@ -6,13 +6,15 @@ Have questions about this document or anything not covered here? Please file a n
 
 ## Table of contents
 
-* [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
-* [Submmiting your Work](#submitting-your-work)
-* [Testing](#testing)
-    * [Testing in Docker](#testing-in-docker)
-    * [Testing in Minikube](#testing-in-minikube)
-* [Generating a bundle](#generating-a-bundle)
-* [Reporting Issues](#reporting-issues)
+- [AWX-Operator Contributing Guidelines](#awx-operator-contributing-guidelines)
+  - [Table of contents](#table-of-contents)
+  - [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
+  - [Submmiting your work](#submmiting-your-work)
+  - [Testing](#testing)
+      - [Testing in Kind](#testing-in-kind)
+      - [Testing in Minikube](#testing-in-minikube)
+  - [Generating a bundle](#generating-a-bundle)
+  - [Reporting Issues](#reporting-issues)
 
 
 ## Things to know prior to submitting code
@@ -44,12 +46,12 @@ Have questions about this document or anything not covered here? Please file a n
 
 ## Testing
 
-This Operator includes a [Molecule](https://molecule.readthedocs.io/en/stable/)-based test environment, which can be executed standalone in Docker (e.g. in CI or in a single Docker container anywhere), or inside any kind of Kubernetes cluster (e.g. Minikube).
+This Operator includes a [Molecule](https://ansible.readthedocs.io/projects/molecule/)-based test environment, which can be executed standalone in Docker (e.g. in CI or in a single Docker container anywhere), or inside any kind of Kubernetes cluster (e.g. Minikube).
 
 You need to make sure you have Molecule installed before running the following commands. You can install Molecule with:
 
 ```sh
-#> pip install 'molecule[docker]'
+#> python -m pip install molecule-plugins[docker]
 ```
 
 Running `molecule test` sets up a clean environment, builds the operator, runs all configured tests on an example operator instance, then tears down the environment (at least in the case of Docker).

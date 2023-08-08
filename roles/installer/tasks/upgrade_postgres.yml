@@ -62,9 +62,19 @@
   set_fact:
     postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
 
+- name: Get the name of the service for the old postgres pod
+  k8s_info:
+    kind: Service
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - "app.kubernetes.io/component=database"
+      - "app.kubernetes.io/instance={{ old_postgres_pod.metadata.labels['app.kubernetes.io/instance'] }}"
+      - "app.kubernetes.io/managed-by=awx-operator"
+  register: old_postgres_svc
+
 - name: Set full resolvable host name for postgres pod
   set_fact:
-    resolvable_db_host: "{{ ansible_operator_meta.name }}-postgres.{{ ansible_operator_meta.namespace }}.svc"  # yamllint disable-line rule:line-length
+    resolvable_db_host: "{{ old_postgres_svc['resources'][0]['metadata']['name'] }}.{{ ansible_operator_meta.namespace }}.svc"  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
 
 - name: Set pg_dump command
@@ -126,23 +136,32 @@
     kind: StatefulSet
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "{{ ansible_operator_meta.name }}-postgres"
+    name: "{{ item }}"
     state: absent
     wait: true
+  loop:
+    - "{{ ansible_operator_meta.name }}-postgres"
+    - "{{ ansible_operator_meta.name }}-postgres-13"
 
 - name: Remove old Postgres Service
   k8s:
     kind: Service
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "{{ ansible_operator_meta.name }}-postgres"
+    name: "{{ item }}"
     state: absent
+  loop:
+    - "{{ ansible_operator_meta.name }}-postgres"
+    - "{{ ansible_operator_meta.name }}-postgres-13"
 
 - name: Remove old persistent volume claim
   k8s:
     kind: PersistentVolumeClaim
     api_version: v1
     namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "postgres-{{ ansible_operator_meta.name }}-postgres-0"
+    name: "{{ item }}"
     state: absent
+  loop:
+    - "postgres-{{ ansible_operator_meta.name }}-postgres-0"
+    - "postgres-{{ ansible_operator_meta.name }}-postgres-13-0"
   when: postgres_keep_pvc_after_upgrade

@@ -5,3 +5,5 @@ ldap_cacert_ca_crt: ''
 bundle_ca_crt: ''
 projects_existing_claim: ''
 supported_pg_version: 15
+_previous_upgraded_pg_version: 0
+old_postgres_pod: []
