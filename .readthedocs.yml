@@ -14,4 +14,4 @@ mkdocs:
 
 python:
   install:
-  - requirements: ./docs_requirements.txt
+  - requirements: ./docs/requirements.txt
