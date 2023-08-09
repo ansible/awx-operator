@@ -416,6 +416,14 @@ ldap_password_secret: ''
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
 
+# Secret to lookup that provides the private key and certificate to connect
+# to an external database
+postgres_client_ssl_secret: ''
+
+postgres_client_certificate: /etc/postgresql/tls/client/client.crt
+
+postgres_client_key: /etc/postgresql/tls/client/client.key
+
 # Whether secrets should be garbage collected
 # on teardown
 #
