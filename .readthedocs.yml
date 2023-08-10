@@ -4,10 +4,6 @@
 # RTD API version
 version: 2
 
-formats:
-  - epub
-  - pdf
-
 build:
   os: ubuntu-22.04
   tools:
@@ -18,4 +14,4 @@ mkdocs:
 
 python:
   install:
-    - requirements: ./docs/requirements.txt
+  - requirements: ./docs/requirements.txt
