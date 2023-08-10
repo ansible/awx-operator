@@ -61,6 +61,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: PostgreSQL Security Context Settings
+        path: postgres.security_context_settings
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden      
       - displayName: PostgreSQL Image
         path: postgres_image
         x-descriptors:

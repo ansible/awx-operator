@@ -1779,6 +1779,10 @@ spec:
               session_cookie_secure:
                 description: Set session cookie secure mode for web
                 type: string
+              postgres_security_context_settings:
+                description: Key/values that will be set under the pod-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               receptor_log_level:
                 description: Set log level of receptor service
                 type: string
