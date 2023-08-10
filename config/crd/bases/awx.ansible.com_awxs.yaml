@@ -1771,6 +1771,10 @@ spec:
                 description: Key/values that will be set under the pod-level securityContext field
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
+              postgres_security_context_settings:
+                description: Key/values that will be set under the pod-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               auto_upgrade:
                 description: Should AWX instances be automatically upgraded when operator gets upgraded
                 type: boolean
