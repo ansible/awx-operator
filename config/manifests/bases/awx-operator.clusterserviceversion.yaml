@@ -70,11 +70,30 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden    
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
       - displayName: No Log Configuration
         path: no_log
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on AWX resource?
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Additional labels defined on the resource, which should be propagated
+          to child resources
+        path: additional_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Node Selector for backup management pod
+        path: db_management_pod_node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       statusDescriptors:
       - description: Persistent volume claim name used during backup
         displayName: Backup Claim
@@ -140,6 +159,11 @@ spec:
         path: postgres_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Image Pull Policy
+        path: image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
       - displayName: Restore Management Pod Resource Requirements
         path: restore_resource_requirements
         x-descriptors:
@@ -150,6 +174,20 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Set default labels on AWX resource?
+        path: set_self_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Additional labels defined on the resource, which should be propagated
+          to child resources
+        path: additional_labels
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Node Selector for backup management pod
+        path: db_management_pod_node_selector
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore Status
@@ -391,6 +429,42 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
+      - displayName: Uwsgi Listen Queue Length
+        path: uwsgi_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Uwsgi Processes
+        path: uwsgi_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Processes
+        path: nginx_worker_processes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Connections
+        path: nginx_worker_connections
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Worker Process CPU Affinity
+        path: nginx_worker_cpu_affinity
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:string
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: NGINX Listen Queue Length
+        path: nginx_listen_queue_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Task Replicas
         path: task_replicas
         x-descriptors:
@@ -784,6 +858,11 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Session Cookie Secure Setting
         path: session_cookie_secure
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Receptor Log Level
+        path: receptor_log_level
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
