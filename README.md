@@ -48,7 +48,6 @@ All of our usage and configuration docs are nested in the `docs/` directory. Bel
 - Installation
   - [Basic Install](./docs/installation/basic-install.md)
   - [Creating a Minikube cluster for testing](./docs/creating-a-minikube-cluster-for-testing.md)
-  - [Installation](./docs/installation/installation.md)
   - [Helm Install](./docs/installation/helm-install-on-existing-cluster.md)
 - [Migration](./docs/migration/migration.md)
 - [Uninstall](./docs/uninstall/uninstall.md)
