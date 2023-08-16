@@ -2,7 +2,7 @@
 
 For those that wish to use [Helm](https://helm.sh/) to install the awx-operator to an existing K8s cluster:
 
-The helm chart is generated from the `helm-chart` Makefile section using the starter files in `.helm/starter`. Consult [the documentation](.helm/starter/README.md) on how to customize the AWX resource with your own values.
+The helm chart is generated from the `helm-chart` Makefile section using the starter files in `.helm/starter`. Consult [the documentation](https://github.com/ansible/awx-operator/blob/devel/.helm/starter/README.md) on how to customize the AWX resource with your own values.
 
 ```bash
 $ helm repo add awx-operator https://ansible.github.io/awx-operator/

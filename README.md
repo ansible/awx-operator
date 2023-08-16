@@ -8,75 +8,78 @@
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
-# Table of Contents
 <!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
 
-NOTE:  we are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
+**Note**: We are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
 
-* [AWX Operator](#awx-operator)
-* [Table of Contents](#table-of-contents)
-   * [Usage](#usage)
-      * [Disable IPV6](#disable-ipv6)
-      * [Add Execution Nodes](#adding-execution-nodes)
-          * [Custom Receptor CA](#custom-receptor-ca)
-   * [Contributing](#contributing)
-   * [Release Process](#release-process)
-   * [Author](#author)
-   * [Code of Conduct](#code-of-conduct)
-   * [Get Involved](#get-involved)
+
+Table of Contents
+=================
+
+- [AWX Operator](#awx-operator)
+- [Table of Contents](#table-of-contents)
+  - [Install and Configuration](#install-and-configuration)
+  - [Contributing](#contributing)
+  - [Release Process](#release-process)
+  - [Author](#author)
+  - [Code of Conduct](#code-of-conduct)
+  - [Get Involved](#get-involved)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 <!--te-->
 
 
-### Disable IPV6
-Starting with AWX Operator release 0.24.0,[IPV6 was enabled in ngnix configuration](https://github.com/ansible/awx-operator/pull/950) which causes
-upgrades and installs to fail in environments where IPv6 is not allowed. Starting in 1.1.1 release, you can set the `ipv6_disabled` flag on the AWX
-spec. If you need to use an AWX operator version between 0.24.0 and 1.1.1 in an IPv6 disabled environment, it is suggested to enabled ipv6 on worker
-nodes.
 
-In order to disable ipv6 on ngnix configuration (awx-web container), add following to the AWX spec.
+## Install and Configuration
 
-The following variables are customizable 
+All of our usage and configuration docs are nested in the `docs/` directory. Below is a Table of Contents for those.
 
-| Name          | Description            | Default |
-| ------------- | ---------------------- | ------- |
-| ipv6_disabled | Flag to disable ipv6   | false   |
+- Introduction
+  - [Introduction](./docs/introduction/introduction.md)
+- Contributors Guide
+  - [Code of Conduct](./docs/contributors-guide/code-of-conduct.md)
+  - [Get Involved](./docs/contributors-guide/get-involved.md)
+  - [Contributing](./docs/contributors-guide/contributing.md)
+  - [Release Process](./docs/contributors-guide/release-process.md)
+  - [Authors](./docs/contributors-guide/author.md)
+- Installation
+  - [Basic Install](./docs/installation/basic-install.md)
+  - [Creating a Minikube cluster for testing](./docs/creating-a-minikube-cluster-for-testing.md)
+  - [Helm Install](./docs/installation/helm-install-on-existing-cluster.md)
+- [Migration](./docs/migration/migration.md)
+- [Uninstall](./docs/uninstall/uninstall.md)
+- User Guide
+  - [Admin User Configuration](./docs/user-guide/admin-user-account-configuration.md)
+  - [Database Configuration](./docs/user-guide/database-configuration.md)
+  - [Network and TLS Configuration](./docs/user-guide/network-and-tls-configuration.md)
+  - Advanced Configuration
+    - [No Log](./docs/no-log.md)
+    - [Deploy a Specific Version of AWX](./docs/user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md)
+    - [Resource Requirements](./docs/user-guide/advanced-configuration/containers-resource-requirements.md)
+    - [Extra Settings](./docs/user-guide/advanced-configuration/extra-settings.md)
+    - [Environment Variables](./docs/user-guide/advanced-configuration/exporting-environment-variables-to-containers.md)
+    - [Custom Labels](./docs/user-guide/advanced-configuration/labeling-operator-managed-objects.md)
+    - [Custom Volumes](./docs/user-guide/advanced-configuration/custom-volume-and-volume-mount-options.md)
+    - [Scaling Deployments](./docs/user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md)
+    - [Auto Update Upon Operator Upgrade](./docs/user-guide/advanced-configuration/auto-upgrade.md)
+    - [Termination Grace Period](./docs/user-guide/advanced-configuration/pods-termination-grace-period.md)
+    - [Node Selector for Deployments](./docs/user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md)
+    - [Default EE from Private Registries](./docs/user-guide/advanced-configuration/default-execution-environments-from-private-registries.md)
+    - [CSRF Cookie Secure](./docs/user-guide/advanced-configuration/csrf-cookie-secure-setting.md)
+    - [Disable IPv6](./docs/user-guide/advanced-configuration/disable-ipv6.md)
+    - [LDAP](./docs/user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md)
+    - [Priority Clases](./docs/user-guide/advanced-configuration/priority-classes.md)
+    - [Priveleged Tasks](./docs/user-guide/advanced-configuration/privileged-tasks.md)
+    - [Redis Container Capabilities](./docs/user-guide/advanced-configuration/redis-container-capabilities.md)
+    - [Trusting a Custom Certificate Authority](./docs/user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md)
+    - [Service Account](./docs/user-guide/advanced-configuration/service-account.md)
+    - [Persisting the Projects Directory](./docs/user-guide/advanced-configuration/persisting-projects-directory.md)
+- Troubleshooting
+  - [General Debugging](./docs/troubleshooting/debugging.md)
 
-```yaml
-spec:
-  ipv6_disabled: true
-```
-
-### Adding Execution Nodes
-Starting with AWX Operator v0.30.0 and AWX v21.7.0, standalone execution nodes can be added to your deployments.
-See [AWX execution nodes docs](https://github.com/ansible/awx/blob/devel/docs/execution_nodes.md) for information about this feature.
-
-#### Custom Receptor CA
-The control nodes on the K8S cluster will communicate with execution nodes via mutual TLS TCP connections, running via Receptor.
-Execution nodes will verify incoming connections by ensuring the x509 certificate was issued by a trusted Certificate Authority (CA).
-
-A user may wish to provide their own CA for this validation. If no CA is provided, AWX Operator will automatically generate one using OpenSSL.
-
-Given custom `ca.crt` and `ca.key` stored locally, run the following,
-
-```bash
-kubectl create secret tls awx-demo-receptor-ca \
-   --cert=/path/to/ca.crt --key=/path/to/ca.key
-```
-
-The secret should be named `{AWX Custom Resource name}-receptor-ca`. In the above the AWX CR name is "awx-demo". Please replace "awx-demo" with your AWX Custom Resource name.
-
-If this secret is created after AWX is deployed, run the following to restart the deployment,
-
-```bash
-kubectl rollout restart deployment awx-demo
-```
-
-**Important Note**, changing the receptor CA will break connections to any existing execution nodes. These nodes will enter an `unavailable` state, and jobs will not be able to run on them. Users will need to download and re-run the install bundle for each execution node. This will replace the TLS certificate files with those signed by the new CA. The execution nodes should then appear in a `ready` state after a few minutes.
 
 ## Contributing
 
