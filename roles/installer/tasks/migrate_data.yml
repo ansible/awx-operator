@@ -59,14 +59,49 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |
-      bash -c """
+      bash -c "
+      (while true; do echo 'Migrating data from old database...'; sleep 60; done) & keep_alive_pid=$!
       set -e -o pipefail
       PGPASSWORD='{{ awx_old_postgres_pass }}' {{ pgdump }} | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
+      echo 'Killing keep alive process...'
+      kill $keep_alive_pid || true
+      wait
       echo 'Successful'
-      """
+      "
   no_log: "{{ no_log }}"
   register: data_migration
-  failed_when: "'Successful' not in data_migration.stdout"
+
+# Previous step result in defunct processes in the Postgres pod that need to be cleaned up
+# Restarting the Postgres pod will clean up the defunct processes
+- name: Delete postgres pod to restart postgres
+  k8s:
+    state: absent
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: "{{ postgres_pod_name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+
+- name: Get new postgres pod information
+  k8s_info:
+    kind: Pod
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    name: "{{ postgres_pod_name }}"
+    field_selectors:
+      - status.phase=Running
+  register: postgres_pod
+  until:
+    - "postgres_pod['resources'] | length"
+    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+    - "postgres_pod['resources'][0]['status']['containerStatuses'][0]['ready'] == true"
+  delay: 5
+  retries: 60
+
+- name: Fail when data migration is not successful
+  fail:
+    msg: "Failed to migrate data from old database to new database"
+  when: data_migration.stdout.find('Successful') == -1
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:
