@@ -147,7 +147,7 @@ spec:
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
-              mountPath: "/data"
+              mountPath: "/var/lib/redis/data"
           resources: {{ redis_resource_requirements }}
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
