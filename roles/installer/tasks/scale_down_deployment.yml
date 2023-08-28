@@ -16,6 +16,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     replicas: 0
     wait: yes
+    wait_timeout: "{{ termination_grace_period_seconds | default(120) }}"
   loop:
     - "{{ ansible_operator_meta.name }}-task"
     - "{{ ansible_operator_meta.name }}-web"
