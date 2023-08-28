@@ -157,7 +157,7 @@ spec:
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: "{{ ansible_operator_meta.name }}-redis-data"
-              mountPath: "/var/lib/redis/data"
+              mountPath: "/data"
 {% if termination_grace_period_seconds is defined %}
             - name: pre-stop-data
               mountPath: /var/lib/pre-stop
