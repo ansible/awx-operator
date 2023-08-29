@@ -13,6 +13,26 @@
     awx_old_postgres_host: "{{ old_pg_config['resources'][0]['data']['host'] | b64decode }}"
   no_log: "{{ no_log }}"
 
+- name: Patch Postgres StatefulSet to add password env variable
+  k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        template:
+          spec:
+            containers:
+              - name: postgres
+                env:
+                  - name: PGPASSWORD_OLD
+                    value: '{{ awx_old_postgres_pass }}'
+  merge_type:
+    - strategic-merge
+
 - name: Set Default label selector for custom resource generated postgres
   set_fact:
     postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
@@ -76,7 +96,7 @@
       trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
       echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
-      PGPASSWORD='{{ awx_old_postgres_pass }}' {{ pgdump }} | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
+      PGPASSWORD=\"$PGPASSWORD_OLD\" {{ pgdump }} |  PGPASSWORD=\"$POSTGRES_PASSWORD\" {{ pg_restore }}
       set +e +o pipefail
       echo 'Successful'
       "
