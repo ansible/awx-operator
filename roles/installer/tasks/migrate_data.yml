@@ -76,7 +76,7 @@
       trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
       echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
-      PGPASSWORD='{{ awx_old_postgres_pass }}' {{ pgdump }} | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
+      PGPASSWORD=\"$PGPASSWORD_OLD\" {{ pgdump }} |  PGPASSWORD=\"$POSTGRES_PASSWORD\" {{ pg_restore }}
       set +e +o pipefail
       echo 'Successful'
       "
