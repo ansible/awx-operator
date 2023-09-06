@@ -72,7 +72,7 @@ spec:
                 description: Secret where the old database configuration can be found for data migration
                 type: string
                 maxLength: 255
-                pattern: '^[a-zA-Z0-9][-a-zA-Z0-9]{0,253}[a-zA-Z0-9]$'                
+                pattern: '^[a-zA-Z0-9][-a-zA-Z0-9]{0,253}[a-zA-Z0-9]$'
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for data migration
                 type: string
