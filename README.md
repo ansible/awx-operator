@@ -12,12 +12,12 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
 
+
 # AWX Operator Documentation
 
 The AWX Operator documentation is now available at https://awx-operator.readthedocs.io/en/latest/
 
 For docs changes, create PRs on the appropriate files in the /docs folder.
-
 
 
 ## Contributing
