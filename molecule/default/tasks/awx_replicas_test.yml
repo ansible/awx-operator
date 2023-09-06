@@ -1,64 +1,64 @@
 ---
 - block:
-  - debug:
-      msg: test - web_replicas and task_replicas should override replicas
+    - debug:
+        msg: test - web_replicas and task_replicas should override replicas
 
-  - include_tasks: apply_awx_spec.yml
-    vars:
-      additional_fields:
-        replicas: 2
-        web_replicas: 0
-        task_replicas: 0
+    - include_tasks: apply_awx_spec.yml
+      vars:
+        additional_fields:
+          replicas: 2
+          web_replicas: 0
+          task_replicas: 0
 
-  - include_tasks: _test_case_replicas.yml
-    vars:
-      expected_web_replicas: 0
-      expected_task_replicas: 0
-
-####
-
-  - debug:
-      msg: test - replicas should act as a default
-
-  - include_tasks: apply_awx_spec.yml
-    vars:
-      additional_fields:
-        replicas: 2
-        web_replicas: 1
-
-  - include_tasks: _test_case_replicas.yml
-    vars:
-      expected_web_replicas: 1
-      expected_task_replicas: 2
+    - include_tasks: _test_case_replicas.yml
+      vars:
+        expected_web_replicas: 0
+        expected_task_replicas: 0
 
 ####
 
-  - debug:
-      msg: test - replicas=0 should kill all pods
+    - debug:
+        msg: test - replicas should act as a default
 
-  - include_tasks: apply_awx_spec.yml
-    vars:
-      additional_fields:
-        replicas: 0
+    - include_tasks: apply_awx_spec.yml
+      vars:
+        additional_fields:
+          replicas: 2
+          web_replicas: 1
 
-  - include_tasks: _test_case_replicas.yml
-    vars:
-      expected_web_replicas: 0
-      expected_task_replicas: 0
+    - include_tasks: _test_case_replicas.yml
+      vars:
+        expected_web_replicas: 1
+        expected_task_replicas: 2
 
 ####
 
-  - debug:
-      msg: test - replicas=3 should give 3 of each
+    - debug:
+        msg: test - replicas=0 should kill all pods
 
-  - include_tasks: apply_awx_spec.yml
-    vars:
-      additional_fields:
-        replicas: 3
+    - include_tasks: apply_awx_spec.yml
+      vars:
+        additional_fields:
+          replicas: 0
 
-  - include_tasks: _test_case_replicas.yml
-    vars:
-      expected_web_replicas: 3
-      expected_task_replicas: 3
+    - include_tasks: _test_case_replicas.yml
+      vars:
+        expected_web_replicas: 0
+        expected_task_replicas: 0
+
+####
+
+    - debug:
+        msg: test - replicas=3 should give 3 of each
+
+    - include_tasks: apply_awx_spec.yml
+      vars:
+        additional_fields:
+          replicas: 3
+
+    - include_tasks: _test_case_replicas.yml
+      vars:
+        expected_web_replicas: 3
+        expected_task_replicas: 3
   tags:
     - replicas

@@ -38,13 +38,13 @@ jobs:
           exit 0
 
       - name: Checkout awx
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/awx
           path: awx
 
       - name: Checkout awx-operator
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/awx-operator
           path: awx-operator

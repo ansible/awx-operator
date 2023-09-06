@@ -18,9 +18,9 @@ jobs:
     env:
       DOCKER_API_VERSION: "1.41"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 
@@ -45,12 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     name: helm
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.2.0
+        uses: helm/kind-action@v1.8.0
 
       - name: Build operator image and load into kind
         run: |
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check no_log statements
         run: |
