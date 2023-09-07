@@ -12,7 +12,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
 
-**Note**: We are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
+**Note**: We are in the process of moving this README into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
 
 
 Table of Contents
