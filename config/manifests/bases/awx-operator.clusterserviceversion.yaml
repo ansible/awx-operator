@@ -675,6 +675,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
         - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Task Command
         path: task_command
         x-descriptors:
