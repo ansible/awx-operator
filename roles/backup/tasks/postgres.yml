@@ -86,7 +86,7 @@
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
+    container: "{{ deployment_name }}-task"
     command: awx-manage precreate_partitions --count='{{ precreate_partition_hours }}'
   when: precreate_partition_hours > 0
   register: result
