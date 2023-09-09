@@ -47,7 +47,7 @@ All of our usage and configuration docs are nested in the `docs/` directory. Bel
   - [Authors](./docs/contributors-guide/author.md)
 - Installation
   - [Basic Install](./docs/installation/basic-install.md)
-  - [Creating a Minikube cluster for testing](./docs/creating-a-minikube-cluster-for-testing.md)
+  - [Creating a Minikube cluster for testing](./docs/installation/creating-a-minikube-cluster-for-testing.md)
   - [Helm Install](./docs/installation/helm-install-on-existing-cluster.md)
 - [Migration](./docs/migration/migration.md)
 - [Uninstall](./docs/uninstall/uninstall.md)
@@ -56,7 +56,7 @@ All of our usage and configuration docs are nested in the `docs/` directory. Bel
   - [Database Configuration](./docs/user-guide/database-configuration.md)
   - [Network and TLS Configuration](./docs/user-guide/network-and-tls-configuration.md)
   - Advanced Configuration
-    - [No Log](./docs/no-log.md)
+    - [No Log](./docs/user-guide/advanced-configuration/no-log.md)
     - [Deploy a Specific Version of AWX](./docs/user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md)
     - [Resource Requirements](./docs/user-guide/advanced-configuration/containers-resource-requirements.md)
     - [Extra Settings](./docs/user-guide/advanced-configuration/extra-settings.md)

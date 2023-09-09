@@ -59,14 +59,29 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ postgres_pod_name }}"
     command: |
-      bash -c """
+      bash -c "
+      function end_keepalive {
+        rc=$?
+        rm -f \"$1\"
+        kill $(cat /proc/$2/task/$2/children 2>/dev/null) 2>/dev/null || true
+        wait $2 || true
+        exit $rc
+      }
+      keepalive_file=\"$(mktemp)\"
+      while [[ -f \"$keepalive_file\" ]]; do
+        echo 'Migrating data from old database...'
+        sleep 60
+      done &
+      keepalive_pid=$!
+      trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
+      echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
-      PGPASSWORD='{{ awx_old_postgres_pass }}' {{ pgdump }} | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
+      PGPASSWORD=\"$PGPASSWORD_OLD\" {{ pgdump }} | PGPASSWORD=\"$POSTGRES_PASSWORD\" {{ pg_restore }}
+      set +e +o pipefail
       echo 'Successful'
-      """
+      "
   no_log: "{{ no_log }}"
   register: data_migration
-  failed_when: "'Successful' not in data_migration.stdout"
 
 - name: Set flag signifying that this instance has been migrated
   set_fact:

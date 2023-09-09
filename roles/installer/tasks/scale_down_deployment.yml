@@ -1,12 +1,14 @@
 ---
-
 - name: Check for presence of Deployment
   k8s_info:
     api_version: apps/v1
     kind: Deployment
-    name: "{{ ansible_operator_meta.name }}"
     namespace: "{{ ansible_operator_meta.namespace }}"
-  register: this_deployment
+    label_selectors:
+      - 'app.kubernetes.io/part-of={{ ansible_operator_meta.name }}'
+      - 'app.kubernetes.io/managed-by={{ deployment_type }}-operator'
+      - 'app.kubernetes.io/component={{ deployment_type }}'
+  register: _deployments
 
 - name: Scale down Deployment for migration
   kubernetes.core.k8s_scale:
@@ -16,7 +18,5 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     replicas: 0
     wait: yes
-  loop:
-    - "{{ ansible_operator_meta.name }}-task"
-    - "{{ ansible_operator_meta.name }}-web"
-  when: this_deployment['resources'] | length
+  loop: "{{ _deployments.resources | map(attribute='metadata.name') | list }}"
+  when: _deployments.resources | length
