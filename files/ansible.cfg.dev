@@ -1,0 +1,7 @@
+[defaults]
+roles_path = /opt/ansible/roles
+library = /usr/share/ansible/openshift
+callbacks_enabled = timer, profile_tasks, profile_roles
+stdout_callback = yaml
+callback_whitelist = profile_tasks, timer, profile_roles
+display_failed_stderr = True

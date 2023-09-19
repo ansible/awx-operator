@@ -8,6 +8,33 @@ When the operator is deploying AWX, it is running the `installer` role inside th
 kubectl logs deployments/awx-operator-controller-manager -c awx-manager -f
 ```
 
+### Improving the Operator Logs
+
+To show more verbose logs, set the `ANSIBLE_VERBOSITY` env var to 2 (or higher) and `ANSIBLE_DEBUG_LOGS` to `true`. We have enabled the `yaml` stdout_callback in the operator's ansible.cfg, so this will now provide nicely formatted logs. You can do this easily with the following command.
+
+```
+kubectl set env deployment/awx-operator-controller-manager ANSIBLE_VERBOSITY=2
+```
+
+> Note: Setting verbosity to 3 is quite verbose, but may have more information to help with debugging in some cases.
+
+Furthermore, you can easily enable timing and performance metrics by copying in the ansible.cfg.dev config and rebuilding the operator image with it.
+
+```
+# Copy over custom ansible.cfg
+cp files/ansible.cfg.dev files/ansible.cfg
+
+# Build Operator image
+export QUAY_USER=youruser
+export TAG=dev
+make docker-build docker-push IMG=quay.io/$QUAY_USER/awx-operator:$TAG
+
+# Deploy
+export NAMESPACE=awx-dev
+make deploy IMG=quay.io/$QUAY_USER/awx-operator:$TAG NAMESPACE=$NAMESPACE
+
+```
+
 ### Inspect k8s Resources
 
 Past that, it is often useful to inspect various resources the AWX Operator manages like:
