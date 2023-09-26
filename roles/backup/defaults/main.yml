@@ -44,4 +44,7 @@ additional_labels: []
 
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
+
+# Number of whole hours worth of events table partitions to precreate before starting backup to avoid pg_dump locks.
+precreate_partition_hours: 3
 ...
