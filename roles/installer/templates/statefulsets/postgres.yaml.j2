@@ -51,11 +51,9 @@ spec:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
-{% if postgres.security_context_settings is defined %}
+{% if postgres_security_context_settings|length %}
           securityContext:
-{% if postgres.security_context_settings|length %}
-      {{ postgres_security_context_settings | to_nice_yaml | indent(8) }}
-{% endif %}
+            {{ postgres_security_context_settings | to_nice_yaml | indent(8) }}
 {% endif %}
 {% if postgres_extra_args %}
           args: {{ postgres_extra_args }}
