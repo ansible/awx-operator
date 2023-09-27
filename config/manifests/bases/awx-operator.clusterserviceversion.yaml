@@ -62,7 +62,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: PostgreSQL Security Context Settings
-        path: postgres.security_context_settings
+        path: postgres_security_context_settings
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden      
