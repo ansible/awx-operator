@@ -53,7 +53,7 @@ spec:
           name: postgres
 {% if postgres_security_context_settings|length %}
           securityContext:
-            {{ postgres_security_context_settings | to_nice_yaml | indent(8) }}
+            {{ postgres_security_context_settings | to_nice_yaml | indent(12) }}
 {% endif %}
 {% if postgres_extra_args %}
           args: {{ postgres_extra_args }}

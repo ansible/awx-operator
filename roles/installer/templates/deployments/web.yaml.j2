@@ -341,6 +341,10 @@ spec:
       affinity:
         {{ affinity | to_nice_yaml | indent(width=8) }}
 {% endif %}
+{% if security_context_settings|length %}
+      securityContext:
+        {{ security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
       volumes:
         - name: "{{ ansible_operator_meta.name }}-receptor-ca"
           secret:

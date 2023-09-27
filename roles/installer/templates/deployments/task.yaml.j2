@@ -442,7 +442,7 @@ spec:
         fsGroup: 1000
 {% endif %}
 {% if security_context_settings|length %}
-        {{ security_context_settings | to_nice_yaml | indent(8) }}
+        {{ security_context_settings | to_nice_yaml | indent(10) }}
 {% endif %}
 {% endif %}
 {% if termination_grace_period_seconds is defined %}
