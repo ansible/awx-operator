@@ -76,6 +76,7 @@ All of our usage and configuration docs are nested in the `docs/` directory. Bel
     - [Redis Container Capabilities](./docs/user-guide/advanced-configuration/redis-container-capabilities.md)
     - [Trusting a Custom Certificate Authority](./docs/user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md)
     - [Service Account](./docs/user-guide/advanced-configuration/service-account.md)
+    - [Security Context](./docs/user-guide/advanced-configuration/security-context.md)
     - [Persisting the Projects Directory](./docs/user-guide/advanced-configuration/persisting-projects-directory.md)
 - Troubleshooting
   - [General Debugging](./docs/troubleshooting/debugging.md)
