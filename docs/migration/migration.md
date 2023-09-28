@@ -41,7 +41,7 @@ stringData:
 type: Opaque
 ```
 
-> For `host`, a URL resolvable by the cluster could look something like `postgresql.<namespace>.svc.cluster.local`, where `<namespace>` is filled in with the namespace of the AWX deployment you are migrating data from.
+> For `host`, a URL resolvable by the cluster could look something like `postgresql.<namespace>.svc.<cluster domain>`, where `<namespace>` is filled in with the namespace of the AWX deployment you are migrating data from, and `<cluster domain>` is filled in with the internal kubernretes cluster domain (In most cases it's `cluster.local`).
 
 If your AWX deployment is already using an external database server or its database is otherwise not managed
 by the AWX deployment, you can instead create the same secret as above but omit the `-old-` from the `name`.
