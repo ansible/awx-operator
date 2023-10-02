@@ -22,4 +22,8 @@
   kind: AWXRestore
   role: restore
   snakeCaseParameters: False
+- version: v1alpha1
+  group: awx.ansible.com
+  kind: AWXMeshIngress
+  playbook: playbooks/awxmeshingress.yml
 # +kubebuilder:scaffold:watch
