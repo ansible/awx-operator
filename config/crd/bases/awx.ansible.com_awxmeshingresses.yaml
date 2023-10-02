@@ -33,6 +33,12 @@ spec:
             description: Spec defines the desired state of AWXMeshIngress
             type: object
             x-kubernetes-preserve-unknown-fields: true
+            required:
+            - deployment_name
+            properties:
+              deployment_name:
+                description: Name of the AWX deployment to create the Mesh Ingress for.
+                type: string
           status:
             description: Status defines the observed state of AWXMeshIngress
             type: object

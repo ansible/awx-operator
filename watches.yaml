@@ -25,5 +25,5 @@
 - version: v1alpha1
   group: awx.ansible.com
   kind: AWXMeshIngress
-  playbook: playbooks/awxmeshingress.yml
+  role: mesh_ingress
 # +kubebuilder:scaffold:watch
