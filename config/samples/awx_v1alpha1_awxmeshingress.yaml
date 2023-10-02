@@ -1,0 +1,12 @@
+apiVersion: awx.ansible.com/v1alpha1
+kind: AWXMeshIngress
+metadata:
+  labels:
+    app.kubernetes.io/name: awxmeshingress
+    app.kubernetes.io/instance: awxmeshingress-sample
+    app.kubernetes.io/part-of: awx-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: awx-operator
+  name: awxmeshingress-sample
+spec:
+  # TODO(user): Add fields here
