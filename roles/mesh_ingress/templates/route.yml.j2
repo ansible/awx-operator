@@ -1,0 +1,19 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
+spec:
+  port:
+    targetPort: ws
+  tls:
+    insecureEdgeTerminationPolicy: None
+    termination: passthrough
+  to:
+    kind: Service
+    name: {{ ansible_operator_meta.name }}
+    weight: 100
+  wildcardPolicy: None
