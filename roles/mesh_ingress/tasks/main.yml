@@ -38,6 +38,8 @@
     wait_timeout: "120"
   register: route
 
+# TODO: need to wait until the route is ready before we can get the hostname
+
 - name: Set external_hostname
   set_fact:
     external_hostname: "{{ route.result.status.ingress[0].host }}"
