@@ -1,6 +1,0 @@
-apiVersion: awx.ansible.com/v1alpha1
-kind: AWXMeshIngress
-metadata:
-  name: awxmeshingress-sample
-spec:
-  deployment_name: example-awx
