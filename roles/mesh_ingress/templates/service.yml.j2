@@ -11,4 +11,4 @@ spec:
     port: 27199
     targetPort: 27199
   selector:
-    statefulset.kubernetes.io/pod-name: {{ ansible_operator_meta.name }}-0
+    app.kubernetes.io/name: {{ ansible_operator_meta.name }}

@@ -64,7 +64,7 @@
   - service_account
   - receptor_conf.configmap
   - service
-  - statefulset
+  - deployment
 
 - name: Get the current resource task pod information.
   k8s_info:
