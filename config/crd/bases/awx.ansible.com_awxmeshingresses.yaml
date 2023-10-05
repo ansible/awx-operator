@@ -41,6 +41,12 @@ spec:
               deployment_name:
                 description: Name of the AWX deployment to create the Mesh Ingress for.
                 type: string
+              external_hostname:
+                description: External hostname to use for the Mesh Ingress.
+                type: string
+              external_ipaddress:
+                description: External IP address to use for the Mesh Ingress.
+                type: string
           status:
             description: Status defines the observed state of AWXMeshIngress
             type: object
