@@ -19,7 +19,8 @@ spec:
         - |
           internal_hostname={{ ansible_operator_meta.name }}
           external_hostname={{ external_hostname }}
-          receptor --cert-makereq bits=2048 commonname=$internal_hostname dnsname=$internal_hostname dnsname=$external_hostname nodeid=$internal_hostname outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
+          external_ipaddress={{ external_ipaddress }}
+          receptor --cert-makereq bits=2048 commonname=$internal_hostname dnsname=$internal_hostname dnsname=$external_hostname nodeid=$internal_hostname ipaddress=$external_ipaddress outreq=/etc/receptor/tls/receptor.req outkey=/etc/receptor/tls/receptor.key
           receptor --cert-signreq req=/etc/receptor/tls/receptor.req cacert=/etc/receptor/tls/ca/mesh-CA.crt cakey=/etc/receptor/tls/ca/mesh-CA.key outcert=/etc/receptor/tls/receptor.crt verify=yes
           exec receptor --config /etc/receptor/receptor.conf
         image: '{{ _control_plane_ee_image }}'
