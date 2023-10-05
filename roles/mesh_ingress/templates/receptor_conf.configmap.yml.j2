@@ -7,9 +7,11 @@ metadata:
 data:
   receptor_conf: |
     ---
-    - node: 
+    - node:
         id: {{ ansible_operator_meta.name }}
     - log-level: debug
+    - control-service:
+        service: control
     - ws-listener:
         port: 27199
         tls: tlsserver
