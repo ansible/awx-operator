@@ -46,12 +46,12 @@ make bundle-build bundle-push BUNDLE_IMG=$BUNDLE_IMG IMG=$IMG
 make catalog-build catalog-push CATALOG_IMG=$CATALOG_IMG BUNDLE_IMGS=$BUNDLE_IMG BUNDLE_IMG=$BUNDLE_IMG IMG=$IMG
 
 # Set containerImage & namespace variables in CSV
-sed -i -e "s|containerImage: quay.io/ansible/awx-operator:devel|containerImage: quay.io/ansible/awx-operator:${VERSION}|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
-sed -i -e "s|namespace: placeholder|namespace: awx|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
+sed -i.bak -e "s|containerImage: quay.io/ansible/awx-operator:devel|containerImage: quay.io/ansible/awx-operator:${VERSION}|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
+sed -i.bak -e "s|namespace: placeholder|namespace: awx|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
 
 # Add replaces to dependency graph for upgrade path
 if ! grep -qF 'replaces: awx-operator.v${PREV_VERSION}' bundle/manifests/awx-operator.clusterserviceversion.yaml; then
-  sed -i -e "/version: ${VERSION}/a \\
+  sed -i.bak -e "/version: ${VERSION}/a \\
   replaces: awx-operator.v$PREV_VERSION" bundle/manifests/awx-operator.clusterserviceversion.yaml
 fi
 
@@ -60,9 +60,12 @@ mv bundle/manifests/awx-operator.clusterserviceversion.yaml bundle/manifests/awx
 
 # Set Openshift Support Range (bump minKubeVersion in CSV when changing)
 if ! grep -qF 'openshift.versions' bundle/metadata/annotations.yaml; then
-  sed -i -e "/annotations:/a \\
+  sed -i.bak -e "/annotations:/a \\
   com.redhat.openshift.versions: v4.11" bundle/metadata/annotations.yaml
 fi
+
+# Remove .bak files from bundle result from sed commands
+find bundle -name "*.bak" -type f -delete
 
 # -- Put up community-operators PR
 cd $OPERATOR_PATH
