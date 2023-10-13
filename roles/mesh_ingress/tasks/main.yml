@@ -98,7 +98,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
     container: "{{ deployment_name }}-task"
-    command: "awx-manage provision_instance --hostname {{ ansible_operator_meta.name }} --node_type hop --listener_port 6667 --peers_from_control_nodes"
+    command: "awx-manage provision_instance --hostname {{ ansible_operator_meta.name }} --node_type hop"
   register: result
 
 - name: Add internal receptor address
@@ -106,7 +106,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
     container: "{{ deployment_name }}-task"
-    command: "awx-manage add_receptor_address --hostname {{ ansible_operator_meta.name  }} --address {{ ansible_operator_meta.name }} --port 27199 --protocol ws --is_internal"
+    command: "awx-manage add_receptor_address --hostname {{ ansible_operator_meta.name  }} --address {{ ansible_operator_meta.name }} --port 27199 --protocol ws --is_internal --peers_from_control_nodes"
 
 
 - name: Add external receptor address
@@ -114,4 +114,4 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
     container: "{{ deployment_name }}-task"
-    command: "awx-manage add_receptor_address --hostname {{ ansible_operator_meta.name }} --address {{ external_hostname }} --protocol ws"
+    command: "awx-manage add_receptor_address --hostname {{ ansible_operator_meta.name }} --address {{ external_hostname }} --port 27199 --protocol ws"
