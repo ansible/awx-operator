@@ -15,7 +15,7 @@
 #
 # Usage:
 #   First, check out awx-operator tag you intend to release, in this case, 1.0.0
-#   $ VERSION=1.1.2 PREV_VERSION=1.1.1 FORK=<your-fork> ./publish-operator.sh
+#   $ VERSION=1.1.2 PREV_VERSION=1.1.1 FORK=<your-fork> ./hack/publish-to-operator-hub.sh
 #
 # Remember to change update the VERSION and PREV_VERSION before running!!!
 
@@ -61,7 +61,7 @@ mv bundle/manifests/awx-operator.clusterserviceversion.yaml bundle/manifests/awx
 # Set Openshift Support Range (bump minKubeVersion in CSV when changing)
 if ! grep -qF 'openshift.versions' bundle/metadata/annotations.yaml; then
   sed -i -e "/annotations:/a \\
-  com.redhat.openshift.versions: v4.10-v4.13\n" bundle/metadata/annotations.yaml
+  com.redhat.openshift.versions: v4.11" bundle/metadata/annotations.yaml
 fi
 
 # -- Put up community-operators PR
