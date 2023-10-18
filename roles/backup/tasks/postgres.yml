@@ -76,6 +76,7 @@
     pod: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       bash -c "chmod 660 {{ backup_dir }}/tower.db && chown :root {{ backup_dir }}/tower.db"
+  when: set_permissions_on_backup_dump | bool
 
 - name: Set full resolvable host name for postgres pod
   set_fact:

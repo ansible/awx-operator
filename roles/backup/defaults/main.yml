@@ -17,6 +17,9 @@ no_log: true
 # Variable to set when you want backups to be cleaned up when the CRD object is deleted
 clean_backup_on_delete: false
 
+# Change produced backup dump file mode to '600' and permissions to ':root'
+# set to false to rely of defaults configured on db-management backup pod's securityContext
+set_permissions_on_backup_dump: true
 
 # Add a nodeSelector for the Postgres pods to backup.
 # Specify as literal block. E.g.:

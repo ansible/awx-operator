@@ -78,6 +78,10 @@ spec:
               clean_backup_on_delete:
                 description: Flag to indicate if backup should be deleted on PVC if AWXBackup object is deleted
                 type: boolean
+              set_permissions_on_backup_dump:
+                description: Flag to indicate if backup dump file mode should be set with '600' with ownership to ':root'
+                type: boolean
+                default: true
               pg_dump_suffix:
                 description: Additional parameters for the pg_dump command
                 type: string
