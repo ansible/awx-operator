@@ -9,7 +9,7 @@ After the draft release is created, publish it and the [Promote AWX Operator ima
 - Publish image to Quay
 - Release Helm chart
 
-After the GHA is complete, the final step is to run the [publish-to-operator-hub.sh](./hack/publish-to-operator-hub.sh) script, which will create a PR in the following repos to add the new awx-operator bundle version to OperatorHub:
+After the GHA is complete, the final step is to run the [publish-to-operator-hub.sh](https://github.com/ansible/awx-operator/blob/devel/hack/publish-to-operator-hub.sh) script, which will create a PR in the following repos to add the new awx-operator bundle version to OperatorHub:
 * https://github.com/k8s-operatorhub/community-operators (community operator index)
 * https://github.com/redhat-openshift-ecosystem/community-operators-prod (operator index shipped with Openshift)
 
