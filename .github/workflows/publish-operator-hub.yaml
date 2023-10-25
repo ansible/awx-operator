@@ -27,7 +27,6 @@ on:
         description: 'GitHub organization for community-operator-prod project. default: redhat-openshift-ecosystem'
         required: true
         default: 'redhat-openshift-ecosystem'
-
 jobs:
   promote:
     runs-on: ubuntu-latest
@@ -46,12 +45,23 @@ jobs:
         run: |
           echo ${{ secrets.QUAY_TOKEN }} | docker login ${{github.event.inputs.image_registry}} -u ${{ secrets.QUAY_USER }} --password-stdin
 
+      - name: Checkout awx-operator at workflow branch
+        uses: actions/checkout@v4
+        with:
+          path: awx-operator
+
       - name: Checkout awx-opearator at TAG_NAME
         uses: actions/checkout@v4
         with:
           fetch-tags: true
           ref: ${{ env.TAG_NAME }}
           path: awx-operator-${{ env.TAG_NAME }}
+
+      - name: Copy scripts to awx-operator-${{ env.TAG_NAME }}
+        run: |
+          cp -f \
+            awx-operator/hack/publish-to-operator-hub.sh \
+            awx-operator-${{ env.TAG_NAME }}/hack/publish-to-operator-hub.sh
 
       - name: Build and publish bundle to operator-hub
         working-directory: awx-operator-${{ env.TAG_NAME }}
