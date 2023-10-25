@@ -19,34 +19,33 @@
 #
 # Remember to change update the VERSION and PREV_VERSION before running!!!
 
-
 set -e
 
-VERSION=${VERSION:-blah2}
-PREV_VERSION=${PREV_VERSION:-blah1}
+VERSION=${VERSION:-$(make print-VERSION)}
+PREV_VERSION=${PREV_VERSION:-$(make print-PREV_VERSION)}
+
 BRANCH=publish-awx-operator-$VERSION
-FORK=${FORK:-fork}
+FORK=${FORK:-awx-auto}
+GITHUB_TOKEN=${GITHUB_TOKEN:-$AWX_AUTO_GITHUB_TOKEN}
 
-IMG=quay.io/ansible/awx-operator:$VERSION
-CATALOG_IMG=quay.io/ansible/awx-operator-catalog:$VERSION
-BUNDLE_IMG=quay.io/ansible/awx-operator-bundle:$VERSION
+IMG_REPOSITORY=${IMG_REPOSITORY:-quay.io/ansible}
 
-# Set path variables
-OPERATOR_PATH=${OPERATOR_PATH:-~/awx-operator}
+OPERATOR_IMG=$IMG_REPOSITORY/awx-operator:$VERSION
+CATALOG_IMG=$IMG_REPOSITORY/awx-operator-catalog:$VERSION
+BUNDLE_IMG=$IMG_REPOSITORY/awx-operator-bundle:$VERSION
 
-# Build & Push Operator Image  # Not needed because it is done as part of the GHA release automation
-# make docker-build docker-push IMG=$IMG
+COMMUNITY_OPERATOR_GITHUB_ORG=${COMMUNITY_OPERATOR_GITHUB_ORG:-k8s-operatorhub}
+COMMUNITY_OPERATOR_PROD_GITHUB_ORG=${COMMUNITY_OPERATOR_PROD_GITHUB_ORG:-redhat-openshift-ecosystem}
 
 # Build bundle directory
-rm -rf bundle/
-make bundle IMG=$IMG
+make bundle IMG=$OPERATOR_IMG
 
 # Build bundle and catalog images
-make bundle-build bundle-push BUNDLE_IMG=$BUNDLE_IMG IMG=$IMG
-make catalog-build catalog-push CATALOG_IMG=$CATALOG_IMG BUNDLE_IMGS=$BUNDLE_IMG BUNDLE_IMG=$BUNDLE_IMG IMG=$IMG
+make bundle-build bundle-push BUNDLE_IMG=$BUNDLE_IMG IMG=$OPERATOR_IMG
+make catalog-build catalog-push CATALOG_IMG=$CATALOG_IMG BUNDLE_IMGS=$BUNDLE_IMG BUNDLE_IMG=$BUNDLE_IMG IMG=$OPERATOR_IMG
 
 # Set containerImage & namespace variables in CSV
-sed -i.bak -e "s|containerImage: quay.io/ansible/awx-operator:devel|containerImage: quay.io/ansible/awx-operator:${VERSION}|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
+sed -i.bak -e "s|containerImage: quay.io/ansible/awx-operator:devel|containerImage: ${OPERATOR_IMG}|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
 sed -i.bak -e "s|namespace: placeholder|namespace: awx|g" bundle/manifests/awx-operator.clusterserviceversion.yaml
 
 # Add replaces to dependency graph for upgrade path
@@ -67,17 +66,13 @@ fi
 # Remove .bak files from bundle result from sed commands
 find bundle -name "*.bak" -type f -delete
 
-# -- Put up community-operators PR
-cd $OPERATOR_PATH
-git clone git@github.com:k8s-operatorhub/community-operators.git
+echo "-- Create branch on community-operators fork --"
+git clone https://github.com/$COMMUNITY_OPERATOR_GITHUB_ORG/community-operators.git
 
 mkdir -p community-operators/operators/awx-operator/$VERSION/
 cp -r bundle/* community-operators/operators/awx-operator/$VERSION/
-cd community-operators/operators/awx-operator/$VERSION/
-pwd
-ls -la
+pushd community-operators/operators/awx-operator/$VERSION/
 
-# Commit and push PR
 git checkout -b $BRANCH
 git add ./
 git status
@@ -86,26 +81,26 @@ message='operator [N] [CI] awx-operator'
 commitMessage="${message} ${VERSION}"
 git commit -m "$commitMessage" -s
 
-git remote add upstream git@github.com:$FORK/community-operators.git
+git remote add upstream https://$GITHUB_TOKEN@github.com/$FORK/community-operators.git
+
+git push upstream --delete $BRANCH || true
 git push upstream $BRANCH
 
+gh pr create \
+  --title "operator awx-operator (${VERSION})" \
+  --body "operator awx-operator (${VERSION})" \
+  --base main \
+  --head $FORK:$BRANCH \
+  --repo $COMMUNITY_OPERATOR_GITHUB_ORG/community-operators
+popd
 
-# -- Put up community-operators-prod PR
-# Reset directory
-cd $OPERATOR_PATH
-
-pwd
-
-git clone git@github.com:redhat-openshift-ecosystem/community-operators-prod.git
+echo "-- Create branch on community-operators-prod fork --"
+git clone https://github.com/$COMMUNITY_OPERATOR_PROD_GITHUB_ORG/community-operators-prod.git
 
 mkdir -p community-operators-prod/operators/awx-operator/$VERSION/
 cp -r bundle/* community-operators-prod/operators/awx-operator/$VERSION/
-cd community-operators-prod/operators/awx-operator/$VERSION/
+pushd community-operators-prod/operators/awx-operator/$VERSION/
 
-pwd
-ls -la
-
-# Commit and push PR
 git checkout -b $BRANCH
 git add ./
 git status
@@ -114,15 +109,24 @@ message='operator [N] [CI] awx-operator'
 commitMessage="${message} ${VERSION}"
 git commit -m "$commitMessage" -s
 
-git remote add upstream git@github.com:$FORK/community-operators-prod.git
+git remote add upstream https://$GITHUB_TOKEN@github.com/$FORK/community-operators-prod.git
+
+git push upstream --delete $BRANCH || true
 git push upstream $BRANCH
 
+gh pr create \
+  --title "operator awx-operator (${VERSION})" \
+  --body "operator awx-operator (${VERSION})" \
+  --base main \
+  --head $FORK:$BRANCH \
+  --repo $COMMUNITY_OPERATOR_PROD_GITHUB_ORG/community-operators-prod
+popd
 
-# -- Print Links to Branches
-echo "Commnity Operators: https://github.com/$FORK/community-operators/pull/new/$BRANCH"
-echo "Commnity Operators Prod: https://github.com/$FORK/community-operators-prod/pull/new/$BRANCH"
+# # -- Print Links to Branches
+# echo "Commnity Operators: https://github.com/$FORK/community-operators/pull/new/$BRANCH"
+# echo "Commnity Operators Prod: https://github.com/$FORK/community-operators-prod/pull/new/$BRANCH"
 
 # -- Cleanup
-
-rm -rf $OPERATOR_PATH/community-operators
-rm -rf $OPERATOR_PATH/community-operators-prod
+# rm -rf community-operators
+# rm -rf community-operators-prod
+# rm -rf bundle
