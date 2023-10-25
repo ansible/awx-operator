@@ -152,6 +152,13 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
           imagePullPolicy: '{{ image_pull_policy }}'
+          startupProbe:
+            httpGet:
+              path: /api/v2/ping/
+              port: 8052
+              scheme: HTTP
+            periodSeconds: 10
+            failureThreshold: 60
 {% if web_command %}
           command: {{ web_command }}
 {% endif %}
