@@ -121,12 +121,3 @@ gh pr create \
   --head $FORK:$BRANCH \
   --repo $COMMUNITY_OPERATOR_PROD_GITHUB_ORG/community-operators-prod
 popd
-
-# # -- Print Links to Branches
-# echo "Commnity Operators: https://github.com/$FORK/community-operators/pull/new/$BRANCH"
-# echo "Commnity Operators Prod: https://github.com/$FORK/community-operators-prod/pull/new/$BRANCH"
-
-# -- Cleanup
-# rm -rf community-operators
-# rm -rf community-operators-prod
-# rm -rf bundle
