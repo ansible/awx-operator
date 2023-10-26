@@ -96,8 +96,26 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "awx-manage migrate --noinput"
+    command: |
+      bash -c "
+      function end_keepalive {
+        rc=$?
+        rm -f \"$1\"
+        kill $(cat /proc/$2/task/$2/children 2>/dev/null) 2>/dev/null || true
+        wait $2 || true
+        exit $rc
+      }
+      keepalive_file=\"$(mktemp)\"
+      while [[ -f \"$keepalive_file\" ]]; do
+        echo 'Database schema migration in progress...'
+        sleep 60
+      done &
+      keepalive_pid=$!
+      trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
+      echo keepalive_pid: $keepalive_pid
+      awx-manage migrate --noinput
+      echo 'Successful'
+      "
   register: migrate_result
   when:
   - awx_task_pod_name != ''
