@@ -29,25 +29,6 @@ jobs:
         run: |
           echo "IMAGE_TAG_BASE=ghcr.io/${OWNER_LC}/awx-operator" >>${GITHUB_ENV}
 
-      - name: Set ARCH environment variable
-        run: |
-          echo "ARCH=$(case $(uname -m) in x86_64) echo -n amd64 ;; aarch64) echo -n arm64 ;; *) echo -n $(uname -m) ;; esac)" >>${GITHUB_ENV}
-
-      - name: Set OS environment variable
-        run: |
-          echo "OS=$(uname | awk '{print tolower($0)}')" >>${GITHUB_ENV}
-
-      - name: Install operator-sdk
-        run: |
-          echo "Installing operator-sdk ${OPERATOR_SDK_DL_URL}" && \
-          curl -LO ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH} && \
-          chmod +x operator-sdk_${OS}_${ARCH} && \
-          sudo mkdir -p /usr/local/bin/ && \
-          sudo mv operator-sdk_${OS}_${ARCH} /usr/local/bin/operator-sdk && \
-          operator-sdk version
-        env:
-          OPERATOR_SDK_DL_URL: https://github.com/operator-framework/operator-sdk/releases/download/v1.26.0
-
       - name: Log in to registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin

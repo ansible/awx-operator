@@ -1,0 +1,76 @@
+name: Publish AWX Operator on operator-hub
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Name for the tag of the release.'
+        required: true
+      operator_hub_fork:
+        description: 'Fork of operator-hub where the PR will be created from. default: awx-auto'
+        required: true
+        default: 'awx-auto'
+      image_registry:
+        description: 'Image registry where the image is published to. default: quay.io'
+        required: true
+        default: 'quay.io'
+      image_registry_organization:
+        description: 'Image registry organization where the image is published to. default: ansible'
+        required: true
+        default: 'ansible'
+      community_operator_github_org:
+        description: 'Github organization for community-opeartor project. default: k8s-operatorhub'
+        required: true
+        default: 'k8s-operatorhub'
+      community_operator_prod_github_org:
+        description: 'GitHub organization for community-operator-prod project. default: redhat-openshift-ecosystem'
+        required: true
+        default: 'redhat-openshift-ecosystem'
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set TAG_NAME from workflow_dispatch event
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "TAG_NAME=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
+      - name: Set TAG_NAME for release event
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Log in to image registry
+        run: |
+          echo ${{ secrets.QUAY_TOKEN }} | docker login ${{github.event.inputs.image_registry}} -u ${{ secrets.QUAY_USER }} --password-stdin
+
+      - name: Checkout awx-operator at workflow branch
+        uses: actions/checkout@v4
+        with:
+          path: awx-operator
+
+      - name: Checkout awx-opearator at TAG_NAME
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          ref: ${{ env.TAG_NAME }}
+          path: awx-operator-${{ env.TAG_NAME }}
+
+      - name: Copy scripts to awx-operator-${{ env.TAG_NAME }}
+        run: |
+          cp -f \
+            awx-operator/hack/publish-to-operator-hub.sh \
+            awx-operator-${{ env.TAG_NAME }}/hack/publish-to-operator-hub.sh
+
+      - name: Build and publish bundle to operator-hub
+        working-directory: awx-operator-${{ env.TAG_NAME }}
+        env:
+          IMG_REPOSITORY: ${{ github.event.inputs.image_registry }}/${{ github.event.inputs.image_registry_organization }}
+          GITHUB_TOKEN: ${{ secrets.AWX_AUTO_GITHUB_TOKEN }}
+          COMMUNITY_OPERATOR_GITHUB_ORG: ${{ github.event.inputs.community_operator_github_org }}
+          COMMUNITY_OPERATOR_PROD_GITHUB_ORG: ${{ github.event.inputs.community_operator_prod_github_org }}
+        run: |
+          git config --global user.email "awx-automation@redhat.com"
+          git config --global user.name "AWX Automation"
+          ./hack/publish-to-operator-hub.sh
