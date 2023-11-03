@@ -1,4 +1,6 @@
 deployment_type: awx
 
+set_self_owneref: true
+
 _control_plane_ee_image: quay.io/ansible/awx-ee:latest
 _image_pull_policy: Always
