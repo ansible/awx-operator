@@ -24,6 +24,26 @@
   set_fact:
     awx_spec: "{{ awx_instance.resources[0].spec }}"
 
+- name: Set owner_reference of AWXMeshIngress to related AWX instance
+  k8s:
+    state: present
+    definition:
+      apiVersion: awx.ansible.com/v1beta1
+      kind: AWX
+      name: "{{ deployment_name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
+      metadata:
+        name: "{{ deployment_name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        ownerReferences:
+        - apiVersion: awx.ansible.com/v1beta1
+          blockOwnerDeletion: true
+          controller: true
+          kind: AWX
+          name: "{{ deployment_name }}"
+          uid: "{{ awx_instance.resources[0].metadata.uid }}"
+  when: set_self_owneref | bool
+
 - name: Set user provided control plane ee image
   set_fact:
     _custom_control_plane_ee_image: "{{ awx_spec.control_plane_ee_image }}"
@@ -48,6 +68,7 @@
   when: is_openshift | bool
 
 # TODO: need to wait until the route is ready before we can get the hostname
+# right now this will rereconcile until the route is ready
 
 - name: Set external_hostname
   set_fact:

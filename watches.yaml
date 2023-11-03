@@ -22,6 +22,7 @@
   kind: AWXRestore
   role: restore
   snakeCaseParameters: False
+
 - version: v1alpha1
   group: awx.ansible.com
   kind: AWXMeshIngress
