@@ -1,5 +1,13 @@
 ### Basic Install
 
+After cloning this repository, you must choose the tag to run:
+```sh
+git clone git@github.com:ansible/awx-operator.git
+cd awx-operator
+git tag
+git checkout tags/<tag>
+```
+
 Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
 There is a make target you can run:
@@ -12,7 +20,7 @@ If you have a custom operator image you have built, you can specify it with:
 IMG=quay.io/$YOURNAMESPACE/awx-operator:$YOURTAG make deploy
 ```
 
-Otherwise, you can manually create a file called `kustomization.yaml` with the following content:
+Otherwise, you must manually create a file called `kustomization.yaml` with the following content:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -67,7 +75,7 @@ So we don't have to keep repeating `-n awx`, let's set the current namespace for
 $ kubectl config set-context --current --namespace=awx
 ```
 
-Next, create a file named `awx-demo.yaml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
+Next, create a file named `awx-demo.yml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
 
 **Note:** If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
@@ -104,7 +112,7 @@ Make sure to add this new file to the list of "resources" in your `kustomization
 resources:
   - github.com/ansible/awx-operator/config/default?ref=<tag>
   # Add this extra line:
-  - awx-demo.yaml
+  - awx-demo.yml
 ...
 ```
 
