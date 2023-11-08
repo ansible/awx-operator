@@ -3,11 +3,26 @@ name: Promote AWX Operator image
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Name for the tag of the release.'
+        required: true
 
 jobs:
   promote:
     runs-on: ubuntu-latest
     steps:
+      - name: Set TAG_NAME for workflow_dispatch event
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "TAG_NAME=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
+      - name: Set TAG_NAME for release event
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v3
         with:
           depth: 0
@@ -22,10 +37,10 @@ jobs:
 
       - name: Re-tag and promote awx-operator image
         run: |
-          docker pull ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
-          docker tag ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }} quay.io/${{ github.repository }}:${{ github.event.release.tag_name }}
-          docker tag ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }} quay.io/${{ github.repository }}:latest
-          docker push quay.io/${{ github.repository }}:${{ github.event.release.tag_name }}
+          docker pull ghcr.io/${{ github.repository }}:${TAG_NAME}
+          docker tag ghcr.io/${{ github.repository }}:${TAG_NAME} quay.io/${{ github.repository }}:${TAG_NAME}
+          docker tag ghcr.io/${{ github.repository }}:${TAG_NAME} quay.io/${{ github.repository }}:latest
+          docker push quay.io/${{ github.repository }}:${TAG_NAME}
           docker push quay.io/${{ github.repository }}:latest
 
       - name: Release Helm chart
@@ -33,7 +48,7 @@ jobs:
           ansible-playbook ansible/helm-release.yml -v \
             -e operator_image=quay.io/${{ github.repository }} \
             -e chart_owner=${{ github.repository_owner }} \
-            -e tag=${{ github.event.release.tag_name }} \
+            -e tag=${TAG_NAME} \
             -e gh_token=${{ secrets.GITHUB_TOKEN }} \
             -e gh_user=${{ github.actor }} \
             -e repo_type=https
