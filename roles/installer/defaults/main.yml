@@ -233,6 +233,12 @@ ee_pull_credentials_secret: ''
 #     emptyDir: {}
 extra_volumes: ''
 
+# Add extra volumes to the Postgres pod. Specify as literal block. E.g.:
+# postgres_extra_volumes: |
+#   - name: my-volume
+#     emptyDir: {}
+postgres_extra_volumes: ''
+
 # Use these image versions for Ansible AWX.
 
 _image: quay.io/ansible/awx
@@ -340,13 +346,14 @@ ee_extra_env: ''
 
 # Mount extra volumes on the AWX task/web containers. Specify as literal block.
 # E.g.:
-# task_extra_volume_mounts: ''
+# task_extra_volume_mounts: |
 #   - name: my-volume
 #     mountPath: /some/path
 task_extra_volume_mounts: ''
 web_extra_volume_mounts: ''
 rsyslog_extra_volume_mounts: ''
 ee_extra_volume_mounts: ''
+postgres_extra_volume_mounts: ''
 
 # Add a nodeSelector for the Postgres pods.
 # It must match a node's labels for the pod to be scheduled on that node.

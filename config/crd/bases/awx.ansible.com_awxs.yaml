@@ -1608,6 +1608,9 @@ spec:
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
                 type: string
+              postgres_extra_volume_mounts:
+                description: Specify volume mounts to be added to Postgres container
+                type: string
               uwsgi_processes:
                 description: Set the number of uwsgi processes to run in a web container
                 type: integer
@@ -1715,6 +1718,9 @@ spec:
                 type: array
                 items:
                   type: string
+              postgres_extra_volumes:
+                description: Specify extra volumes to add to the application pod
+                type: string
               postgres_keepalives:
                 description: Controls whether client-side TCP keepalives are used for Postgres connections.
                 default: true

@@ -583,6 +583,18 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: Postgres Extra Volumes
+        description: Specify extra volumes to add to the postgres pod
+        path: postgres_extra_volumes
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to Postgres container
+        displayName: Postgres Extra Volume Mounts
+        path: postgres_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Enable Postgres Keepalives
         path: postgres_keepalives
         x-descriptors:
