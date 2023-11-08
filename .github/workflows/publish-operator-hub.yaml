@@ -34,7 +34,7 @@ jobs:
       - name: Set GITHUB_ENV from workflow_dispatch event
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          echo "TAG_NAME=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY=${{ github.event.inputs.image_registry }}" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY_ORGANIZATION=${{ github.event.inputs.image_registry_organization }}" >> $GITHUB_ENV
           echo "COMMUNITY_OPERATOR_GITHUB_ORG=${{ github.event.inputs.community_operator_github_org }}" >> $GITHUB_ENV
@@ -43,7 +43,7 @@ jobs:
       - name: Set GITHUB_ENV for release event
         if: ${{ github.event_name == 'release' }}
         run: |
-          echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY=quay.io" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY_ORGANIZATION=ansible" >> $GITHUB_ENV
           echo "COMMUNITY_OPERATOR_GITHUB_ORG=k8s-operatorhub" >> $GITHUB_ENV
@@ -58,24 +58,25 @@ jobs:
         with:
           path: awx-operator
 
-      - name: Checkout awx-opearator at TAG_NAME
+      - name: Checkout awx-opearator at ${{ env.VERSION }}
         uses: actions/checkout@v4
         with:
           fetch-tags: true
-          ref: ${{ env.TAG_NAME }}
-          path: awx-operator-${{ env.TAG_NAME }}
+          ref: ${{ env.VERSION }}
+          path: awx-operator-${{ env.VERSION }}
+          fetch-depth: 0 # fetch all history so that git describe works
 
-      - name: Copy scripts to awx-operator-${{ env.TAG_NAME }}
+      - name: Copy scripts to awx-operator-${{ env.VERSION }}
         run: |
           cp -f \
             awx-operator/hack/publish-to-operator-hub.sh \
-            awx-operator-${{ env.TAG_NAME }}/hack/publish-to-operator-hub.sh
+            awx-operator-${{ env.VERSION }}/hack/publish-to-operator-hub.sh
           cp -f \
             awx-operator/Makefile \
-            awx-operator-${{ env.TAG_NAME }}/Makefile
+            awx-operator-${{ env.VERSION }}/Makefile
 
       - name: Build and publish bundle to operator-hub
-        working-directory: awx-operator-${{ env.TAG_NAME }}
+        working-directory: awx-operator-${{ env.VERSION }}
         env:
           IMG_REPOSITORY: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REGISTRY_ORGANIZATION }}
           GITHUB_TOKEN: ${{ secrets.AWX_AUTO_GITHUB_TOKEN }}
