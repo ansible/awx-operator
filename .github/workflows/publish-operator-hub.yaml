@@ -70,6 +70,9 @@ jobs:
           cp -f \
             awx-operator/hack/publish-to-operator-hub.sh \
             awx-operator-${{ env.TAG_NAME }}/hack/publish-to-operator-hub.sh
+          cp -f \
+            awx-operator/Makefile \
+            awx-operator-${{ env.TAG_NAME }}/Makefile
 
       - name: Build and publish bundle to operator-hub
         working-directory: awx-operator-${{ env.TAG_NAME }}
