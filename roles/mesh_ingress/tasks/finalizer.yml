@@ -1,0 +1,33 @@
+---
+- name: Get the current resource task pod information.
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    label_selectors:
+      - "app.kubernetes.io/name={{ deployment_name }}-task"
+      - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
+      - "app.kubernetes.io/component={{ deployment_type }}"
+    field_selectors:
+      - status.phase=Running
+  register: awx_task_pod
+
+- name: Set the resource pod as a variable.
+  set_fact:
+    awx_task_pod: >-
+      {{ awx_task_pod['resources']
+         | rejectattr('metadata.deletionTimestamp', 'defined')
+         | sort(attribute='metadata.creationTimestamp')
+         | first | default({}) }}
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    awx_task_pod_name: "{{ awx_task_pod['metadata']['name'] | default('') }}"
+
+- name: Deprovision mesh ingress instance in AWX
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_task_pod_name }}"
+    container: "{{ deployment_name }}-task"
+    command: "awx-manage deprovision_instance --hostname {{ ansible_operator_meta.name }}"
+  register: result
