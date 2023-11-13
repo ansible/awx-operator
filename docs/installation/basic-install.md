@@ -6,6 +6,18 @@ git clone git@github.com:ansible/awx-operator.git
 cd awx-operator
 git tag
 git checkout tags/<tag>
+
+# For instance:
+git checkout tags/2.7.2
+```
+
+If you work from a fork and made modifications since the tag was issued, you must provide the VERSION number to deploy. Otherwise the operator will get stuck in "ImagePullBackOff" state:
+
+```sh
+export VERSION=<tag>
+
+# For instance:
+export VERSION=2.7.2
 ```
 
 Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
