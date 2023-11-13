@@ -20,7 +20,7 @@ If you have a custom operator image you have built, you can specify it with:
 IMG=quay.io/$YOURNAMESPACE/awx-operator:$YOURTAG make deploy
 ```
 
-Otherwise, you must manually create a file called `kustomization.yaml` with the following content:
+Otherwise, you can manually create a file called `kustomization.yaml` with the following content:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
