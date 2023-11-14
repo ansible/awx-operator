@@ -1680,12 +1680,19 @@ spec:
                     properties:
                       storage:
                         type: string
+                        default: 8Gi
                     type: object
+                    x-kubernetes-validations:
+                    - rule: "self == oldSelf"
+                      message: "The postgres_storage_requirements.requests field is immutable and cannot be changed once set."
                   limits:
                     properties:
                       storage:
                         type: string
                     type: object
+                    x-kubernetes-validations:
+                    - rule: "self == oldSelf"
+                      message: "The postgres_storage_requirements.limits field is immutable and cannot be changed once set."
                 type: object
               postgres_resource_requirements:
                 description: Resource requirements for the PostgreSQL container
