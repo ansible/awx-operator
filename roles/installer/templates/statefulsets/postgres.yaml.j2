@@ -33,7 +33,7 @@ spec:
         app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     spec:
 {% if image_pull_secret is defined %}
       imagePullSecrets:
@@ -137,7 +137,15 @@ spec:
 {% if postgres_storage_class is defined %}
         storageClassName: '{{ postgres_storage_class }}'
 {% endif %}
-        resources: {{ postgres_storage_requirements }}
+{% if postgres_storage_requirements.limit or postgres_storage_requirements.requests %}
+        resources:
+{% if postgres_storage_requirements.limit %}
+          limit: {{ postgres_storage_requirements.limit }}
+{% endif %}
+{% if postgres_storage_requirements.requests %}
+          request: {{ postgres_storage_requirements.requests }}
+{% endif %}
+{% endif %}
 
 # Postgres Service.
 ---
