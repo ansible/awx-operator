@@ -124,8 +124,10 @@
       trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
       echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
-      {{ pg_drop_db }}
-      {{ pg_create_db }}
+      if {{ force_drop_db }}; then
+        {{ pg_drop_db }}
+        {{ pg_create_db }}
+      fi
       cat {{ backup_dir }}/tower.db | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
       set +e +o pipefail
       echo 'Successful'
