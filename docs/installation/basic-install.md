@@ -2,6 +2,8 @@
 
 Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
 
+> Some things may need to be configured slightly differently for different Kubernetes flavors for the networking aspects. When installing on Kind, see the [kind install docs](./kind-install.md) for more details.
+
 There is a make target you can run:
 ```
 make deploy
