@@ -90,6 +90,10 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              precreate_partition_hours:
+                description: Number of hours worth of events table partitions to precreate before backup to avoid pg_dump locks.
+                type: integer
+                format: int32
               image_pull_policy:
                 description: The image pull policy
                 type: string

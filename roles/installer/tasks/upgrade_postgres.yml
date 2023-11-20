@@ -101,7 +101,7 @@
       }
       keepalive_file=\"$(mktemp)\"
       while [[ -f \"$keepalive_file\" ]]; do
-        echo 'Migrating data to new PostgreSQL {{ supported_postgres_version }} Database...'
+        echo 'Migrating data to new PostgreSQL {{ supported_pg_version }} Database...'
         sleep 60
       done &
       keepalive_pid=$!
