@@ -33,7 +33,7 @@ spec:
         app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator' 
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     spec:
 {% if image_pull_secret is defined %}
       imagePullSecrets:
@@ -112,6 +112,9 @@ spec:
             - name: postgres-{{ supported_pg_version }}
               mountPath: '{{ postgres_data_path | dirname }}'
               subPath: '{{ postgres_data_path | dirname | basename }}'
+{% if postgres_extra_volume_mounts -%}
+            {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
           resources: {{ postgres_resource_requirements }}
 {% if postgres_selector %}
       nodeSelector:
@@ -120,6 +123,10 @@ spec:
 {% if postgres_tolerations %}
       tolerations:
         {{ postgres_tolerations | indent(width=8) }}
+{% endif %}
+{% if postgres_extra_volumes %}
+      volumes:
+        {{ postgres_extra_volumes | indent(width=8, first=False) }}
 {% endif %}
   volumeClaimTemplates:
     - metadata:
@@ -130,7 +137,15 @@ spec:
 {% if postgres_storage_class is defined %}
         storageClassName: '{{ postgres_storage_class }}'
 {% endif %}
-        resources: {{ postgres_storage_requirements }}
+        resources:
+{% if postgres_storage_requirements.limits.storage | default("", true) %}
+          limits:
+            storage: {{ postgres_storage_requirements.limits.storage }}
+{% endif %}
+{% if postgres_storage_requirements.requests.storage | default("", true) %}
+          requests:
+            storage: {{ postgres_storage_requirements.requests.storage }}
+{% endif %}
 
 # Postgres Service.
 ---

@@ -12,75 +12,11 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 <!-- gh-md-toc --insert README.md -->
 <!--ts-->
 
-**Note**: We are in the process of moving this readme into official docs in the /docs folder. Please go there to find additional sections during this interim move phase.
+# AWX Operator Documentation
 
+The AWX Operator documentation is now available at https://awx-operator.readthedocs.io/en/latest/
 
-Table of Contents
-=================
-
-- [AWX Operator](#awx-operator)
-- [Table of Contents](#table-of-contents)
-  - [Install and Configuration](#install-and-configuration)
-  - [Contributing](#contributing)
-  - [Release Process](#release-process)
-  - [Author](#author)
-  - [Code of Conduct](#code-of-conduct)
-  - [Get Involved](#get-involved)
-
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-
-<!--te-->
-
-
-
-## Install and Configuration
-
-All of our usage and configuration docs are nested in the `docs/` directory. Below is a Table of Contents for those.
-
-- Introduction
-  - [Introduction](./docs/introduction/introduction.md)
-- Contributors Guide
-  - [Code of Conduct](./docs/contributors-guide/code-of-conduct.md)
-  - [Get Involved](./docs/contributors-guide/get-involved.md)
-  - [Contributing](./docs/contributors-guide/contributing.md)
-  - [Release Process](./docs/contributors-guide/release-process.md)
-  - [Authors](./docs/contributors-guide/author.md)
-- Installation
-  - [Basic Install](./docs/installation/basic-install.md)
-  - [Creating a Minikube cluster for testing](./docs/installation/creating-a-minikube-cluster-for-testing.md)
-  - [Helm Install](./docs/installation/helm-install-on-existing-cluster.md)
-- [Migration](./docs/migration/migration.md)
-- [Uninstall](./docs/uninstall/uninstall.md)
-- User Guide
-  - [Admin User Configuration](./docs/user-guide/admin-user-account-configuration.md)
-  - [Database Configuration](./docs/user-guide/database-configuration.md)
-  - [Network and TLS Configuration](./docs/user-guide/network-and-tls-configuration.md)
-  - Advanced Configuration
-    - [No Log](./docs/user-guide/advanced-configuration/no-log.md)
-    - [Deploy a Specific Version of AWX](./docs/user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md)
-    - [Resource Requirements](./docs/user-guide/advanced-configuration/containers-resource-requirements.md)
-    - [Extra Settings](./docs/user-guide/advanced-configuration/extra-settings.md)
-    - [Environment Variables](./docs/user-guide/advanced-configuration/exporting-environment-variables-to-containers.md)
-    - [Custom Labels](./docs/user-guide/advanced-configuration/labeling-operator-managed-objects.md)
-    - [Custom Volumes](./docs/user-guide/advanced-configuration/custom-volume-and-volume-mount-options.md)
-    - [Scaling Deployments](./docs/user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md)
-    - [Auto Update Upon Operator Upgrade](./docs/user-guide/advanced-configuration/auto-upgrade.md)
-    - [Termination Grace Period](./docs/user-guide/advanced-configuration/pods-termination-grace-period.md)
-    - [Node Selector for Deployments](./docs/user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md)
-    - [Default EE from Private Registries](./docs/user-guide/advanced-configuration/default-execution-environments-from-private-registries.md)
-    - [CSRF Cookie Secure](./docs/user-guide/advanced-configuration/csrf-cookie-secure-setting.md)
-    - [Disable IPv6](./docs/user-guide/advanced-configuration/disable-ipv6.md)
-    - [LDAP](./docs/user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md)
-    - [Priority Clases](./docs/user-guide/advanced-configuration/priority-classes.md)
-    - [Priveleged Tasks](./docs/user-guide/advanced-configuration/privileged-tasks.md)
-    - [Redis Container Capabilities](./docs/user-guide/advanced-configuration/redis-container-capabilities.md)
-    - [Trusting a Custom Certificate Authority](./docs/user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md)
-    - [Service Account](./docs/user-guide/advanced-configuration/service-account.md)
-    - [Security Context](./docs/user-guide/advanced-configuration/security-context.md)
-    - [Persisting the Projects Directory](./docs/user-guide/advanced-configuration/persisting-projects-directory.md)
-- Troubleshooting
-  - [General Debugging](./docs/troubleshooting/debugging.md)
-
+For docs changes, create PRs on the appropriate files in the /docs folder.
 
 ## Contributing
 
