@@ -198,6 +198,7 @@ spec:
         path: force_drop_db
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore Status
