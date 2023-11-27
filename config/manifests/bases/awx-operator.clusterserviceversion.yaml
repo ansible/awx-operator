@@ -194,6 +194,11 @@ spec:
         path: db_management_pod_node_selector
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Force drop database before restore
+        path: force_drop_db
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       statusDescriptors:
       - description: The state of the restore
         displayName: Restore Status
