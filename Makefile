@@ -162,7 +162,7 @@ ifeq (,$(shell which operator-sdk 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.31.0/operator-sdk_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.32.0/operator-sdk_$(OS)_$(ARCHA) ;\
 	chmod +x $(OPERATOR_SDK) ;\
 	}
 else
@@ -178,7 +178,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.31.0/ansible-operator_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.32.0/ansible-operator_$(OS)_$(ARCHA) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else

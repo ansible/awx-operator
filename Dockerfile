@@ -1,8 +1,8 @@
-FROM quay.io/operator-framework/ansible-operator:v1.31.0
+FROM quay.io/operator-framework/ansible-operator:v1.32.0
 
-USER 0
-
-RUN dnf install -y openssl
+USER root
+RUN dnf update --security --bugfix -y && \
+    dnf install -y openssl
 
 USER 1001
 
