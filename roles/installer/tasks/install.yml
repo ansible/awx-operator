@@ -77,6 +77,20 @@
   - ingress_type | lower == 'route'
   - route_tls_secret != ''
 
+- name: Wait for {{ deployment_type }}restore to complete
+  kubernetes.core.k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ deployment_type }}restore"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: restore_status_check
+  until:
+    # yamllint disable-line rule:line-length
+    - (restore_status_check.resources | length == 0) or (restore_status_check.resources | selectattr('spec.deployment_name', 'equalto', ansible_operator_meta.name) | map(attribute='status') | selectattr('restoreComplete', 'defined') | map(attribute='restoreComplete') | list | length > 0)
+  delay: 10
+  retries: 8640
+  ignore_errors: yes
+  changed_when: false
+
 - name: Include resources configuration tasks
   include_tasks: resources_configuration.yml
 
@@ -91,7 +105,7 @@
   when: awx_task_pod_name != ''
   register: database_check
 
-- name: Migrate the database if the K8s resources were updated.  # noqa 305
+- name: Migrate the database if the K8s resources were updated  # noqa 305
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
     pod: "{{ awx_task_pod_name }}"
