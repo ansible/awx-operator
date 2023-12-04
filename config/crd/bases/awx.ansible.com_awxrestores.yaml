@@ -121,6 +121,10 @@ spec:
                 description: Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
                 type: boolean
                 default: true
+              force_drop_db:
+                description: Force drop the database before restoring. USE WITH CAUTION!
+                type: boolean
+                default: false
           status:
             type: object
             x-kubernetes-preserve-unknown-fields: true

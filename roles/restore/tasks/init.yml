@@ -34,7 +34,7 @@
         backup_pvc: "{{ this_backup['resources'][0]['status']['backupClaim'] }}"
         backup_dir: "{{ this_backup['resources'][0]['status']['backupDirectory'] }}"
   when:
-    - backup_name != '' or backup_name is defined
+    - backup_name is defined and backup_name != ''
 
 # Check to make sure provided pvc exists, error loudly if not.  Otherwise, the management pod will just stay in pending state forever.
 - name: Check provided PVC exists
