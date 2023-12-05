@@ -1,6 +1,10 @@
 ### Upgrading
 
-To upgrade AWX, it is recommended to upgrade the awx-operator to the version that maps to the desired version of AWX.  To find the version of AWX that will be installed by the awx-operator by default, check the version specified in the `image_version` variable in `roles/installer/defaults/main.yml` for that particular release.
+To upgrade AWX, it is recommended to upgrade the awx-operator to the version that maps to the desired version of AWX.  To find the version of AWX that will be installed by the awx-operator by default, check the version specified in the `DEFAULT_AWX_VERSION` variable for that particular release. You can do so by running the following command
+```shell
+AWX_OPERATOR_VERSION=2.8.0
+docker run --entrypoint="" quay.io/ansible/awx-operator:$AWX_OPERATOR_VERSION bash -c "env | grep DEFAULT_AWX_VERSION"
+```
 
 Apply the awx-operator.yml for that release to upgrade the operator, and in turn also upgrade your AWX deployment.
 
