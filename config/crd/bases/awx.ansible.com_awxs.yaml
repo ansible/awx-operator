@@ -1908,6 +1908,9 @@ spec:
               receptor_log_level:
                 description: Set log level of receptor service
                 type: string
+              receptor_datadir:
+                description: Set directory for receptor logs
+                type: string
               extra_settings:
                 description: Extra settings to specify for AWX
                 items:
