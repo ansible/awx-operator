@@ -65,7 +65,6 @@
     wait: yes
     wait_timeout: "120"
   register: route
-  when: is_openshift | bool
 
 # TODO: need to wait until the route is ready before we can get the hostname
 # right now this will rereconcile until the route is ready
