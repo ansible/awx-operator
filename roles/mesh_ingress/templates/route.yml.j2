@@ -33,6 +33,33 @@ spec:
 {% endif %}
 {% endif %}
 
+{% if ingress_type|lower == "ingressroutetcp" %}
+---
+{% if ingress_api_version is defined %}
+apiVersion: '{{ ingress_api_version }}'
+{% endif %}
+kind: IngressRouteTCP
+metadata:
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
+  annotations:
+{% if ingress_annotations %}
+    {{ ingress_annotations | indent(width=4) }}
+{% endif %}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - services:
+      - name: {{ ansible_operator_meta.name }}
+        port: 27199
+{% if external_hostname %}
+      match: HostSNI(`{{ external_hostname }}`)
+{% endif %}
+  tls:
+    passthrough: true
+{% endif %}
+
 {% if ingress_type|lower == "route" %}
 ---
 apiVersion: route.openshift.io/v1

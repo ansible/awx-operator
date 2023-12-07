@@ -54,6 +54,8 @@ spec:
                 - none
                 - Ingress
                 - ingress
+                - IngressRouteTCP
+                - ingressroutetcp
                 - Route
                 - route
               ingress_api_version:
