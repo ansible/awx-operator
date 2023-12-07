@@ -991,7 +991,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Receptor Persistant Data Directory
+      - displayName: Receptor Data Directory
         path: receptor_datadir
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
