@@ -211,6 +211,50 @@ spec:
               web_tolerations:
                 description: node tolerations for the web pods
                 type: string
+              task_liveness_probe:
+                description: Specify liveness Probe for awx-task container in awx-task deployment
+                type: object
+                properties:
+                  failureThreshold:
+                    type: integer
+                  initialDelaySeconds:
+                    type: integer
+                  periodSeconds:
+                    type: integer
+                  successThreshold:
+                    type: integer
+                  timeoutSeconds:
+                    type: integer
+                  exec:
+                    properties:
+                      command:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+              web_liveness_probe:
+                description: Specify liveness Probe for awx-web container in awx-web deployment
+                type: object
+                properties:
+                  failureThreshold:
+                    type: integer
+                  initialDelaySeconds:
+                    type: integer
+                  periodSeconds:
+                    type: integer
+                  successThreshold:
+                    type: integer
+                  timeoutSeconds:
+                    type: integer
+                  httpGet:
+                    properties:
+                      path:
+                        type: string
+                      port:
+                        type: integer
+                      scheme:
+                        type: string
+                    type: object
               affinity:
                 description: If specified, the pod's scheduling constraints
                 properties:

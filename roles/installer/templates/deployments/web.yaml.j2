@@ -152,6 +152,9 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-web'
           imagePullPolicy: '{{ image_pull_policy }}'
+{% if web_liveness_probe %}
+          livenessProbe: {{ web_liveness_probe }}
+{% endif %}
 {% if web_command %}
           command: {{ web_command }}
 {% endif %}

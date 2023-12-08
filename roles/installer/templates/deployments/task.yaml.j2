@@ -179,6 +179,9 @@ spec:
         - image: '{{ _image }}'
           name: '{{ ansible_operator_meta.name }}-task'
           imagePullPolicy: '{{ image_pull_policy }}'
+{% if task_liveness_probe %}
+          livenessProbe: {{ task_liveness_probe }}
+{% endif %}
 {% if task_privileged == true %}
           securityContext:
             privileged: true
