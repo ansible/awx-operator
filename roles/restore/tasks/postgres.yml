@@ -82,25 +82,34 @@
       -p {{ awx_postgres_port }}
   no_log: "{{ no_log }}"
 
-- name: Set drop db command
-  set_fact:
-    pg_drop_db: >-
-      echo 'DROP DATABASE {{ awx_postgres_database }} WITH (FORCE);' | PGPASSWORD='{{ awx_postgres_pass }}' psql
-      -U {{ awx_postgres_user }}
-      -h {{ resolvable_db_host }}
-      -d postgres
-      -p {{ awx_postgres_port }}
-  no_log: "{{ no_log }}"
+- name: Force drop and create database if force_drop_db is true
+  block:
+    - name: Set drop db command
+      set_fact:
+        pg_drop_db: >-
+          echo 'DROP DATABASE {{ awx_postgres_database }} WITH (FORCE);' | PGPASSWORD='{{ awx_postgres_pass }}' psql
+          -U {{ awx_postgres_user }}
+          -h {{ resolvable_db_host }}
+          -d postgres
+          -p {{ awx_postgres_port }} ;
+      no_log: "{{ no_log }}"
 
-- name: Set create db command
-  set_fact:
-    pg_create_db: >-
-      echo 'CREATE DATABASE {{ awx_postgres_database }} WITH OWNER = {{ awx_postgres_user }};' | PGPASSWORD='{{ awx_postgres_pass }}' psql
-      -U {{ awx_postgres_user }}
-      -h {{ resolvable_db_host }}
-      -d postgres
-      -p {{ awx_postgres_port }}
-  no_log: "{{ no_log }}"
+    - name: Set create db command
+      set_fact:
+        pg_create_db: >-
+          echo 'CREATE DATABASE {{ awx_postgres_database }} WITH OWNER = {{ awx_postgres_user }};' | PGPASSWORD='{{ awx_postgres_pass }}' psql
+          -U {{ awx_postgres_user }}
+          -h {{ resolvable_db_host }}
+          -d postgres
+          -p {{ awx_postgres_port }} ;
+      no_log: "{{ no_log }}"
+
+    - name: Set complete pg restore command
+      set_fact:
+        pg_drop_create: >-
+          {{ pg_drop_db }}
+          {{ pg_create_db }}
+  when: force_drop_db
 
 - name: Restore database dump to the new postgresql container
   k8s_exec:
@@ -124,14 +133,11 @@
       trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
       echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
-      if {{ force_drop_db }}; then
-        {{ pg_drop_db }}
-        {{ pg_create_db }}
-      fi
+      {{ pg_drop_create }}
       cat {{ backup_dir }}/tower.db | PGPASSWORD='{{ awx_postgres_pass }}' {{ pg_restore }}
+      PG_RC=$?
       set +e +o pipefail
-      echo 'Successful'
+      exit $PG_RC
       "
   register: data_migration
   no_log: "{{ no_log }}"
-  failed_when: "'Successful' not in data_migration.stdout"
