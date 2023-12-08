@@ -490,7 +490,7 @@ host_aliases: ''
 
 receptor_log_level: info
 
-receptor_datadir: /var/run/receptor/
+receptor_datadir: /var/lib/receptor/
 
 # UWSGI default values
 uwsgi_processes: 5
