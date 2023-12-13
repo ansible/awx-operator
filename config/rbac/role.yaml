@@ -124,3 +124,16 @@ rules:
       - awxrestores
     verbs:
       - '*'
+  - apiGroups:
+      - traefik.containo.us
+      - traefik.io
+    resources:
+      - ingressroutetcps
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+      - patch
+      - update
+      - watch
