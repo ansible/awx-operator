@@ -154,7 +154,7 @@ spec:
 {% if redis_dns_policy %}
          dnsPolicy: {{ redis_dns_policy }}
 {% endif %}
-{% if redis_dns_policy == 'None' and redis_dns_config is defined }}
+{% if redis_dns_policy == 'None' and redis_dns_config is defined }
          dnsConfig: {{ redis_dns_config }}
 {% endif %}
 
@@ -202,7 +202,7 @@ spec:
 {% if task_dns_policy %}
          dnsPolicy: {{ task_dns_policy }}
 {% endif %}
-{% if task_dns_policy == 'None' and task_dns_config is defined }}
+{% if task_dns_policy == 'None' and task_dns_config is defined }
          dnsConfig: {{ task_dns_config }}
 {% endif %}
 {% if task_args %}
@@ -347,7 +347,7 @@ spec:
 {% if ee_dns_policy %}
          dnsPolicy: {{ ee_dns_policy }}
 {% endif %}
-{% if ee_dns_policy == 'None' and ee_dns_config is defined }}
+{% if ee_dns_policy == 'None' and ee_dns_config is defined }
          dnsConfig: {{ ee_dns_config }}
 {% endif %}
 
@@ -384,7 +384,7 @@ spec:
 {% if rsyslog_dns_policy %}
          dnsPolicy: {{ rsyslog_dns_policy }}
 {% endif %}
-{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }}
+{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }
          dnsConfig: {{ rsyslog_dns_config }}
 {% endif %}
 {% if rsyslog_args %}
