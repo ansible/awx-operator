@@ -145,7 +145,7 @@ spec:
 {% if redis_dns_policy %}
          dnsPolicy: {{ redis_dns_policy }}
 {% endif %}
-{% if redis_dns_policy == 'None' and redis_dns_config is defined }}
+{% if redis_dns_policy == 'None' and redis_dns_config is defined }
          dnsConfig: {{ redis_dns_config }}
 {% endif %}
           args: ["redis-server", "/etc/redis.conf"]
@@ -286,7 +286,7 @@ spec:
 {% if rsyslog_dns_policy %}
          dnsPolicy: {{ rsyslog_dns_policy }}
 {% endif %}
-{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }}
+{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }
          dnsConfig: {{ rsyslog_dns_config }}
 {% endif %}
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -388,7 +388,7 @@ spec:
 {% if web_dns_policy %}
          dnsPolicy: {{ web_dns_policy }}
 {% endif %}
-{% if web_dns_policy == 'None' and web_dns_config is defined }}
+{% if web_dns_policy == 'None' and web_dns_config is defined }
          dnsConfig: {{ web_dns_config }}
 {% endif %}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
