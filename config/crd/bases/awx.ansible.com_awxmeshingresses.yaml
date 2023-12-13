@@ -47,6 +47,29 @@ spec:
               external_ipaddress:
                 description: External IP address to use for the Mesh Ingress.
                 type: string
+              ingress_type:
+                description: The ingress type to use to reach the deployed instance
+                type: string
+                enum:
+                - none
+                - Ingress
+                - ingress
+                - IngressRouteTCP
+                - ingressroutetcp
+                - Route
+                - route
+              ingress_api_version:
+                description: The Ingress API version to use
+                type: string
+              ingress_annotations:
+                description: Annotations to add to the Ingress Controller
+                type: string
+              ingress_class_name:
+                description: The name of ingress class to use instead of the cluster default.
+                type: string
+              ingress_controller:
+                description: Special configuration for specific Ingress Controllers
+                type: string
           status:
             description: Status defines the observed state of AWXMeshIngress
             type: object

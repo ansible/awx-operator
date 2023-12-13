@@ -1,3 +1,66 @@
+{% if ingress_type|lower == "ingress" %}
+---
+{% if ingress_api_version is defined %}
+apiVersion: '{{ ingress_api_version }}'
+{% endif %}
+kind: Ingress
+metadata:
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
+  annotations:
+{% if ingress_annotations %}
+    {{ ingress_annotations | indent(width=4) }}
+{% endif %}
+{% if ingress_controller|lower == "nginx" %}
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+{% endif %}
+spec:
+{% if ingress_class_name %}
+  ingressClassName: '{{ ingress_class_name }}'
+{% endif %}
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ ansible_operator_meta.name }}
+                port:
+                  number: 27199
+{% if external_hostname %}
+      host: {{ external_hostname }}
+{% endif %}
+{% endif %}
+
+{% if ingress_type|lower == "ingressroutetcp" %}
+---
+{% if ingress_api_version is defined %}
+apiVersion: '{{ ingress_api_version }}'
+{% endif %}
+kind: IngressRouteTCP
+metadata:
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
+  annotations:
+{% if ingress_annotations %}
+    {{ ingress_annotations | indent(width=4) }}
+{% endif %}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - services:
+      - name: {{ ansible_operator_meta.name }}
+        port: 27199
+{% if external_hostname %}
+      match: HostSNI(`{{ external_hostname }}`)
+{% endif %}
+  tls:
+    passthrough: true
+{% endif %}
+
+{% if ingress_type|lower == "route" %}
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -17,3 +80,4 @@ spec:
     name: {{ ansible_operator_meta.name }}
     weight: 100
   wildcardPolicy: None
+{% endif %}
