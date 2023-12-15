@@ -107,6 +107,13 @@ Variable to define Pull policy.You can pass other options like `Always`, `always
 image_pull_policy: 'IfNotPresent'
 ```
 
+Variable to define image pull secrets for the management pod.
+
+```
+image_pull_secrets:
+  - regcred
+```
+
 Variable to define resources limits and request for restore CR.
 
 ```
