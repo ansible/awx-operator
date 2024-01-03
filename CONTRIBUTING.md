@@ -25,7 +25,7 @@ Have questions about this document or anything not covered here? Please file a n
 
 
 ## Submmiting your work
-1. From your fork `devel` branch, create a new brach to stage your changes.
+1. From your fork `devel` branch, create a new branch to stage your changes.
 ```sh
 #> git checkout -b <branch-name>
 ```
