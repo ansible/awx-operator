@@ -64,7 +64,7 @@ jobs:
           fetch-tags: true
           ref: ${{ env.VERSION }}
           path: awx-operator-${{ env.VERSION }}
-          fetch-depth: 0 # fetch all history so that git describe works
+          fetch-depth: 0  # fetch all history so that git describe works
 
       - name: Copy scripts to awx-operator-${{ env.VERSION }}
         run: |

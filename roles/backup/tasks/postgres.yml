@@ -70,13 +70,6 @@
     command: >-
       touch {{ backup_dir }}/tower.db
 
-- name: Set permissions on file for database dump
-  k8s_exec:
-    namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ ansible_operator_meta.name }}-db-management"
-    command: >-
-      bash -c "chmod 660 {{ backup_dir }}/tower.db && chown :root {{ backup_dir }}/tower.db"
-
 - name: Set full resolvable host name for postgres pod
   set_fact:
     resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc", awx_postgres_host) }}'  # yamllint disable-line rule:line-length

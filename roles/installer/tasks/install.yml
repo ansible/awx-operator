@@ -84,8 +84,8 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: restore_status_check
   until:
-    # yamllint disable-line rule:line-length
-    - (restore_status_check.resources | length == 0) or (restore_status_check.resources | selectattr('spec.deployment_name', 'equalto', ansible_operator_meta.name) | map(attribute='status') | selectattr('restoreComplete', 'defined') | map(attribute='restoreComplete') | list | length > 0)
+  # yamllint disable-line rule:line-length
+  - (restore_status_check.resources | length == 0) or (restore_status_check.resources | selectattr('spec.deployment_name', 'equalto', ansible_operator_meta.name) | map(attribute='status') | selectattr('restoreComplete', 'defined') | map(attribute='restoreComplete') | list | length > 0)
   delay: 10
   retries: 8640
   ignore_errors: yes

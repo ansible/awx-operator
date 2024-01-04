@@ -32,6 +32,63 @@ These sub-headers aim to be a more intuitive entrypoint into customizing your de
 ### External Postgres
 The `AWX.postgres` section simplifies the creation of the external postgres secret. If enabled, the configs provided will automatically be placed in a `postgres-config` secret and linked to the `AWX` resource. For proper secret management, the `AWX.postgres.password` value, and any other sensitive values, can be passed in at the command line rather than specified in code. Use the `--set` argument with `helm install`. Supplying the password this way is not recommended for production use, but may be helpful for initial PoC.
 
+### Additional Kubernetes Resources
+The `AWX.extraDeploy` section allows the creation of additional Kubernetes resources. This simplifies setups requiring additional objects that are used by AWX, e.g. using `ExternalSecrets` to create Kubernetes secrets.
+
+Resources are passed as an array, either as YAML or strings (literal "|"). The resources are passed through `tpl`, so templating is possible. Example:
+
+```yaml
+AWX:
+  # enable use of awx-deploy template
+  ...
+
+  # configurations for external postgres instance
+  postgres:
+    enabled: false
+    ...
+
+extraDeploy:
+  - |
+    apiVersion: external-secrets.io/v1beta1
+    kind: ExternalSecret
+    metadata:
+      name: {{ .Release.Name }}-postgres-secret-string-example
+      namespace: {{ .Release.Namespace }}
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      secretStoreRef:
+        name: vault
+        kind: ClusterSecretStore
+      refreshInterval: "1h"
+      target:
+        name: postgres-configuration-secret-string-example
+        creationPolicy: "Owner"
+        deletionPolicy: "Delete"
+      dataFrom:
+        - extract:
+            key: awx/postgres-configuration-secret
+
+  - apiVersion: external-secrets.io/v1beta1
+    kind: ExternalSecret
+    metadata:
+      name: "{{ .Release.Name }}-postgres-secret-yaml-example"
+      namespace: "{{ .Release.Namespace }}"
+      labels:
+        app: "{{ .Release.Name }}"
+    spec:
+      secretStoreRef:
+        name: vault
+        kind: ClusterSecretStore
+      refreshInterval: "1h"
+      target:
+        name: postgres-configuration-secret-yaml-example
+        creationPolicy: "Owner"
+        deletionPolicy: "Delete"
+      dataFrom:
+        - extract:
+            key: awx/postgres-configuration-secret
+```
 
 ## Values Summary
 
@@ -43,6 +100,10 @@ The `AWX.postgres` section simplifies the creation of the external postgres secr
 | `AWX.spec` | specs to directly configure the AWX resource | `{}` |
 | `AWX.postgres` | configurations for the external postgres secret | - |
 
+### extraDeploy
+| Value | Description | Default |
+|---|---|---|
+| `extraDeploy` | array of additional resources to be deployed (supports YAML or literal "\|") | - |
 
 # Contributing
 
@@ -63,5 +124,3 @@ The chart is currently hosted on the gh-pages branch of the repo. During the rel
 Instead of CR, we use `helm repo index` to generate an index from all locally pulled chart versions. Since we build from scratch every time, the timestamps of all entries will be updated. This could be improved by using yq or something similar to detect which tags are already in the index.yaml file, and only merge in tags that are not present.
 
 Not using CR could be addressed in the future by keeping the chart built as a part of releases, as long as CR compares the chart to previous release packages rather than previous commits. If the latter is the case, then we would not have the necessary history for comparison.
-
-
