@@ -58,21 +58,26 @@
   set_fact:
     _image_pull_policy: "{{ awx_spec.image_pull_policy | default(_image_pull_policy, true) }}"
 
-- name: Apply Route resource
+- name: Default ingress_type to Route if OpenShift
+  set_fact:
+    ingress_type: route
+  when: is_openshift | bool and ingress_type == 'none'
+
+- name: Apply Ingress resource
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'route.yml.j2') }}"
+    definition: "{{ lookup('template', 'ingress.yml.j2') }}"
     wait: yes
     wait_timeout: "120"
-  register: route
+  register: ingress
 
 # TODO: need to wait until the route is ready before we can get the hostname
 # right now this will rereconcile until the route is ready
 
 - name: Set external_hostname
   set_fact:
-    external_hostname: "{{ route.result.status.ingress[0].host }}"
-  when: is_openshift | bool
+    external_hostname: "{{ ingress.result.status.ingress[0].host }}"
+  when: ingress_type == 'route'
 
 - name: Create other resources
   k8s:
