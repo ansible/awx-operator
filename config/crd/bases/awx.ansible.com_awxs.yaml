@@ -54,8 +54,8 @@ spec:
                 description: Username to use for the admin account
                 type: string
                 default: admin
-              hostname:
-                description: The hostname of the instance
+              hostname:  # deprecated
+                description: (Deprecated) The hostname of the instance
                 type: string
               admin_email:
                 description: The admin user email
@@ -123,12 +123,24 @@ spec:
               ingress_annotations:
                 description: Annotations to add to the Ingress Controller
                 type: string
-              ingress_tls_secret:
-                description: Secret where the Ingress TLS secret can be found
+              ingress_tls_secret:  # deprecated
+                description: (Deprecated) Secret where the Ingress TLS secret can be found
                 type: string
               ingress_class_name:
                 description: The name of ingress class to use instead of the cluster default.
                 type: string
+              ingress_hosts:
+                description: Ingress hostnames of the instance
+                type: array
+                items:
+                  type: object
+                  properties:
+                    hostname:
+                      description: Hostname of the instance
+                      type: string
+                    tls_secret:
+                      description: Secret where the Ingress TLS secret can be found
+                      type: string
               ingress_controller:
                 description: Special configuration for specific Ingress Controllers
                 type: string
