@@ -9,7 +9,7 @@
 
 - name: Check for presence of awx-task Deployment
   k8s_info:
-    api_version: v1
+    api_version: apps/v1
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}-task"
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -17,7 +17,7 @@
 
 - name: Check for presence of awx-web Deployment
   k8s_info:
-    api_version: v1
+    api_version: apps/v1
     kind: Deployment
     name: "{{ ansible_operator_meta.name }}-web"
     namespace: "{{ ansible_operator_meta.namespace }}"

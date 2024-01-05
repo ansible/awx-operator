@@ -32,7 +32,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | --------------------- | ---------------------------------------- | ------- |
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
-| loadbalancer_ip        | Assign Loadbalancer IP                   | ''      |  
+| loadbalancer_ip       | Assign Loadbalancer IP                   | ''      |
 
 ```yaml
 ---
@@ -86,22 +86,26 @@ spec:
 
 The following variables are customizable when `ingress_type=ingress`. The `ingress` type creates an Ingress resource as [documented](https://kubernetes.io/docs/concepts/services-networking/ingress/) which can be shared with many other Ingress Controllers as [listed](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 
-| Name                | Description                              | Default                     |
-| ------------------- | ---------------------------------------- | --------------------------- |
-| ingress_annotations | Ingress annotations                      | Empty string                |
-| ingress_tls_secret  | Secret that contains the TLS information | Empty string                |
-| ingress_class_name  | Define the ingress class name            | Cluster default             |
-| hostname            | Define the FQDN                          | {{ meta.name }}.example.com |
-| ingress_path        | Define the ingress path to the service   | /                           |
-| ingress_path_type   | Define the type of the path (for LBs)    | Prefix                      |
-| ingress_api_version | Define the Ingress resource apiVersion   | 'networking.k8s.io/v1'      |
+| Name                               | Description                                                                        | Default                     |
+| ---------------------------------- | ---------------------------------------------------------------------------------- | --------------------------- |
+| ingress_annotations                | Ingress annotations                                                                | Empty string                |
+| ingress_tls_secret _(deprecated)_  | Secret that contains the TLS information                                           | Empty string                |
+| ingress_class_name                 | Define the ingress class name                                                      | Cluster default             |
+| hostname _(deprecated)_            | Define the FQDN                                                                    | {{ meta.name }}.example.com |
+| ingress_hosts                      | Define one or multiple FQDN with optional Secret that contains the TLS information | Empty string                |
+| ingress_path                       | Define the ingress path to the service                                             | /                           |
+| ingress_path_type                  | Define the type of the path (for LBs)                                              | Prefix                      |
+| ingress_api_version                | Define the Ingress resource apiVersion                                             | 'networking.k8s.io/v1'      |
 
 ```yaml
 ---
 spec:
   ...
   ingress_type: ingress
-  hostname: awx-demo.example.com
+  ingress_hosts:
+    - hostname: awx-demo.example.com
+    - hostname: awx-demo.sample.com
+      tls_secret: sample-tls-secret
   ingress_annotations: |
     environment: testing
 ```
@@ -119,7 +123,10 @@ Some Ingress Controllers need a special configuration to fully support AWX, add 
 spec:
   ...
   ingress_type: ingress
-  hostname: awx-demo.example.com
+  ingress_hosts:
+    - hostname: awx-demo.example.com
+    - hostname: awx-demo.sample.com
+      tls_secret: sample-tls-secret
   ingress_controller: contour
 ```
 
