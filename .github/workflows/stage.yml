@@ -53,17 +53,19 @@ jobs:
         run: |
           python3 -m pip install docker
 
-      - name: Log in to GHCR
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build and stage awx-operator
-        working-directory: awx-operator
+      - name: Log into registry ghcr.io
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Stage awx-operator
         run: |
-          BUILD_ARGS="--build-arg DEFAULT_AWX_VERSION=${{ github.event.inputs.default_awx_version }} \
-                      --build-arg OPERATOR_VERSION=${{ github.event.inputs.version }}" \
-          IMAGE_TAG_BASE=ghcr.io/${{ github.repository_owner }}/awx-operator \
-          VERSION=${{ github.event.inputs.version }} make docker-build docker-push
+          docker buildx imagetools create ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} --tag ghcr.io/${{ github.repository_owner }}/awx-operator:${{ github.event.inputs.version }}
+
 
       - name: Run test deployment
         working-directory: awx-operator
