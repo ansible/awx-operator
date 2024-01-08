@@ -27,21 +27,32 @@ jobs:
         with:
           depth: 0
 
-      - name: Log in to GHCR
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Log in to Quay
-        run: |
-          echo ${{ secrets.QUAY_TOKEN }} | docker login quay.io -u ${{ secrets.QUAY_USER }} --password-stdin
+      - name: Log into registry ghcr.io
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Re-tag and promote awx-operator image
+
+      - name: Log into registry quay.io
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: quay.io/ansible/
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_TOKEN }}
+
+
+      - name: Pull Stored Image and Publish to quay.io/${{ github.repository }}:${TAG_NAME}
         run: |
-          docker pull ghcr.io/${{ github.repository }}:${TAG_NAME}
-          docker tag ghcr.io/${{ github.repository }}:${TAG_NAME} quay.io/${{ github.repository }}:${TAG_NAME}
-          docker tag ghcr.io/${{ github.repository }}:${TAG_NAME} quay.io/${{ github.repository }}:latest
-          docker push quay.io/${{ github.repository }}:${TAG_NAME}
-          docker push quay.io/${{ github.repository }}:latest
+          docker buildx imagetools create ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${TAG_NAME} --tag quay.io/ansible/${{ github.repository }}:${TAG_NAME}
+
+
+      - name: Pull Stored Image and Publish to quay.io/${{ github.repository }}:latest
+        run: |
+          docker buildx imagetools create ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${TAG_NAME} --tag quay.io/ansible/${{ github.repository }}:latest
+
 
       - name: Release Helm chart
         run: |
