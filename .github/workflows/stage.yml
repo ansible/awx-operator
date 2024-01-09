@@ -64,8 +64,10 @@ jobs:
 
       - name: Stage awx-operator
         run: |
-          docker buildx imagetools create ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} --tag ghcr.io/${{ github.repository_owner }}/awx-operator:${{ github.event.inputs.version }}
-
+          BUILD_ARGS="--build-arg DEFAULT_AWX_VERSION=${{ github.event.inputs.default_awx_version }} \
+              --build-arg OPERATOR_VERSION=${{ github.event.inputs.version }}" \
+          IMG=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.event.inputs.version }} \
+          make docker-buildx
 
       - name: Run test deployment
         working-directory: awx-operator
