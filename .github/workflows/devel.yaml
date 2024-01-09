@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Log into registry ghcr.io
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -22,7 +22,7 @@ jobs:
 
 
       - name: Log into registry quay.io
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
         with:
           registry: quay.io/ansible/
           username: ${{ secrets.QUAY_USER }}
@@ -36,5 +36,7 @@ jobs:
 
       - name: Publish Image to quay.io/ansible/awx-operator:devel
         run: |
-          docker buildx imagetools create ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} --tag quay.io/ansible/${{ github.repository }}:devel
+          docker buildx imagetools create \
+            ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} \
+            --tag quay.io/ansible/${{ github.repository }}:devel
 
