@@ -39,4 +39,3 @@ jobs:
           docker buildx imagetools create \
             ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} \
             --tag quay.io/ansible/${{ github.repository }}:devel
-
