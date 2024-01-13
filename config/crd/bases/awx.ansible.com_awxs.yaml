@@ -1767,6 +1767,9 @@ spec:
               bundle_cacert_secret:
                 description: Secret where can be found the trusted Certificate Authority Bundle
                 type: string
+              postgres_client_ssl_secret:
+                description: Secret where can be found the postgres ssl related credentials
+                type: string
               projects_persistence:
                 description: Whether or not the /var/lib/projects directory will be persistent
                 default: false

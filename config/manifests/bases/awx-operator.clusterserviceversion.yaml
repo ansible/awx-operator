@@ -237,6 +237,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Database Client Certificate Secret
+        path: postgres_client_ssl_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       - displayName: Old Database Configuration Secret
         path: old_postgres_configuration_secret
         x-descriptors:

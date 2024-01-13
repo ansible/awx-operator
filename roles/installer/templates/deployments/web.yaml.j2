@@ -93,6 +93,11 @@ spec:
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
               update-ca-trust
 {% endif %}
+{% if postgres_client_ssl_secret %}
+              cp /etc/postgresql/tls/secret/tls.crt /etc/postgresql/tls/client/client.crt
+              cp /etc/postgresql/tls/secret/tls.key /etc/postgresql/tls/client/client.key
+              chmod 0600 /etc/postgresql/tls/client/client.key
+{% endif %}
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
@@ -128,6 +133,13 @@ spec:
           volumeMounts:
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
+{% endif %}
+{% if postgres_client_ssl_secret %}
+            - name: "postgres-client-cert"
+              mountPath: "/etc/postgresql/tls/secret"
+              readOnly: true
+            - name: "{{ ansible_operator_meta.name }}-postgresql-client-tls"
+              mountPath: "/etc/postgresql/tls/client/"
 {% endif %}
       containers:
         - image: '{{ _redis_image }}'
@@ -171,6 +183,10 @@ spec:
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
+{% endif %}
+{% if postgres_client_ssl_secret %}
+            - name: "{{ ansible_operator_meta.name }}-postgresql-client-tls"
+              mountPath: "/etc/postgresql/tls/client/"
 {% endif %}
             - name: {{ ansible_operator_meta.name }}-uwsgi-config
               mountPath: "/etc/tower/uwsgi.ini"
@@ -295,6 +311,10 @@ spec:
               subPath: bundle-ca.crt
               readOnly: true
 {% endif %}
+{% if postgres_client_ssl_secret %}
+            - name: "{{ ansible_operator_meta.name }}-postgresql-client-tls"
+              mountPath: "/etc/postgresql/tls/client/"
+{% endif %}
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -361,6 +381,11 @@ spec:
             items:
               - key: bundle-ca.crt
                 path: 'bundle-ca.crt'
+{% endif %}
+{% if postgres_client_ssl_secret %}
+        - name: "postgres-client-cert"
+          secret:
+            secretName: "{{ postgres_client_ssl_secret }}"
 {% endif %}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
         - name: "{{ ansible_operator_meta.name }}-nginx-certs"
@@ -434,6 +459,10 @@ spec:
             items:
               - key: receptor_conf
                 path: receptor.conf
+{% if postgres_client_ssl_secret %}
+        - name: "{{ ansible_operator_meta.name }}-postgresql-client-tls"
+          emptyDir: {}
+{% endif %}
 {% if projects_persistence|bool %}
         - name: "{{ ansible_operator_meta.name }}-projects"
           persistentVolumeClaim:

@@ -46,6 +46,16 @@ spec:
   postgres_configuration_secret: <name-of-your-secret>
 ```
 
+In order to specify client SSL credentials to authenticate to the external database, put the certificate and private key in a secret. You can specify it on your spec :
+```yaml
+---
+spec:
+  ...
+  postgres_configuration_secret: <name-of-your-secret>
+  postgres_client_ssl_secret: <name-of-your-client-secret>
+```
+> Don't forget to add the CA certificate in the [`bundle_cacert_secret`](advanced-configuration/trusting-a-custom-certificate-authority.md).
+
 #### Migrating data from an old AWX instance
 
 For instructions on how to migrate from an older version of AWX, see [migration.md](../migration/migration.md).
