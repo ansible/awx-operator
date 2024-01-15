@@ -99,4 +99,4 @@ spec:
 
 If the cluster you are deploying in has a ResoruceQuota, you will need to configure resource limits for all of the pods deployed in that cluster. This can be done for AWX pods on the AWX spec in the manner shown above.
 
-There is an example you can use in [`config/samples/awx_v1beta1_awx_resource_limits.yaml`](../../../config/samples/awx_v1beta1_awx_resource_limits.yaml).
+There is an example you can use in [`awx_v1beta1_awx_resource_limits.yaml`](https://raw.githubusercontent.com/ansible/awx-operator/devel/config/samples/awx_v1beta1_awx.yaml).
