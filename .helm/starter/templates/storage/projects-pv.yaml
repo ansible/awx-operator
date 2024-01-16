@@ -1,0 +1,32 @@
+{{- if and ($.Values.AWX.spec.projects_persistence) (eq (($.Values.AWX.spec).projects_existing_claim | default "") "") -}}
+{{- if (($.Values.customVolumes).projects).enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "projects.persistentVolumeName" $ }}
+{{- with $.Values.customVolumes.projects }}
+spec:
+  accessModes:
+    - {{ default "ReadWriteOnce" (default $.Values.AWX.spec.projects_storage_access_mode .accessModes) }}
+  persistentVolumeReclaimPolicy: {{ default "Retain" .reclaimPolicy | quote }}
+  capacity:
+    storage: {{ default "8Gi" (default $.Values.AWX.spec.projects_storage_size .size) | quote }}
+  storageClassName: {{ include "projects.storageClassName" $ }}
+  hostPath:
+    path: {{ required "customVolumes.projects.hostPath is required!" .hostPath | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "projects.persistentVolumeClaim" $ }} 
+spec:
+  accessModes:
+    - {{ default "ReadWriteOnce" (default $.Values.AWX.spec.projects_storage_access_mode .accessModes) }}
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ default "8Gi" (default $.Values.AWX.spec.projects_storage_size .size) | quote }}
+  storageClassName: {{ include "projects.storageClassName" $ }}
+{{- end }}  
+{{- end }}
+{{- end }}
