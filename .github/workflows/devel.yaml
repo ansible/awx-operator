@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Fail if QUAY_REGISTRY not set
+        run: |
+          if [[ -z "${{ vars.QUAY_REGISTRY }}" ]]; then
+            echo "QUAY_REGISTRY not set. Please set QUAY_REGISTRY in variable GitHub Actions variables."
+            exit 1
+          fi
+
       - name: Log into registry ghcr.io
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
         with:
@@ -24,18 +31,18 @@ jobs:
       - name: Log into registry quay.io
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
         with:
-          registry: quay.io/ansible/
+          registry: ${{ vars.QUAY_REGISTRY }}
           username: ${{ secrets.QUAY_USER }}
           password: ${{ secrets.QUAY_TOKEN }}
 
 
       - name: Build and Store Image @ghcr
         run: |
-          IMG=ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} make docker-buildx
+          IMG=ghcr.io/${{ github.repository }}:${{ github.sha }} make docker-buildx
 
 
-      - name: Publish Image to quay.io/ansible/awx-operator:devel
+      - name: Publish Image to quay.io
         run: |
           docker buildx imagetools create \
-            ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ github.sha }} \
-            --tag quay.io/ansible/${{ github.repository }}:devel
+            ghcr.io/${{ github.repository }}:${{ github.sha }} \
+            --tag ${{ vars.QUAY_REGISTRY }}/awx-operator:devel
