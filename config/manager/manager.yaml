@@ -39,6 +39,7 @@ spec:
         - --leader-elect
         - --leader-election-id=awx-operator
         image: controller:latest
+        imagePullPolicy: Always
         name: awx-manager
         env:
         - name: ANSIBLE_GATHERING

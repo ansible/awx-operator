@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ ansible_operator_meta.name }}
+  namespace: {{ ansible_operator_meta.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ ansible_operator_meta.name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ ansible_operator_meta.name }}
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - |
+          internal_hostname={{ ansible_operator_meta.name }}
+{% if external_hostname is defined %}
+          external_hostname={{ external_hostname }}
+{% endif %}
+{% if external_ipaddress is defined %}
+          external_ipaddress={{ external_ipaddress }}
+{% endif %}
+          receptor --cert-makereq bits=2048 \
+            commonname=$internal_hostname \
+            dnsname=$internal_hostname \
+            nodeid=$internal_hostname \
+{% if external_hostname is defined %}
+            dnsname=$external_hostname \
+{% endif %}
+{% if external_ipaddress is defined %}
+            ipaddress=$external_ipaddress \
+{% endif %}
+            outreq=/etc/receptor/tls/receptor.req \
+            outkey=/etc/receptor/tls/receptor.key
+          receptor --cert-signreq \
+            req=/etc/receptor/tls/receptor.req \
+            cacert=/etc/receptor/tls/ca/mesh-CA.crt \
+            cakey=/etc/receptor/tls/ca/mesh-CA.key \
+            outcert=/etc/receptor/tls/receptor.crt \
+            verify=yes
+          exec receptor --config /etc/receptor/receptor.conf
+        image: '{{ _control_plane_ee_image }}'
+        imagePullPolicy: '{{ _image_pull_policy }}'
+        name: {{ ansible_operator_meta.name }}-mesh-ingress
+        volumeMounts:
+        - mountPath: /etc/receptor/receptor.conf
+          name: {{ ansible_operator_meta.name }}-receptor-config
+          subPath: receptor.conf
+        - mountPath: /etc/receptor/tls/ca/mesh-CA.crt
+          name: {{ ansible_operator_meta.name }}-receptor-ca
+          readOnly: true
+          subPath: tls.crt
+        - mountPath: /etc/receptor/tls/ca/mesh-CA.key
+          name: {{ ansible_operator_meta.name }}-receptor-ca
+          readOnly: true
+          subPath: tls.key
+        - mountPath: /etc/receptor/tls/
+          name: {{ ansible_operator_meta.name }}-receptor-tls
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccount: {{ ansible_operator_meta.name }}
+      volumes:
+      - name: {{ ansible_operator_meta.name }}-receptor-tls
+      - name: {{ ansible_operator_meta.name }}-receptor-ca
+        secret:
+          defaultMode: 420
+          secretName: {{ deployment_name }}-receptor-ca
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: receptor_conf
+            path: receptor.conf
+          name: {{ ansible_operator_meta.name }}-receptor-config
+        name: {{ ansible_operator_meta.name }}-receptor-config

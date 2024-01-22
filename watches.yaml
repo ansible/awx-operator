@@ -22,4 +22,15 @@
   kind: AWXRestore
   role: restore
   snakeCaseParameters: False
+
+- version: v1alpha1
+  group: awx.ansible.com
+  kind: AWXMeshIngress
+  role: mesh_ingress
+  snakeCaseParameters: False
+  finalizer:
+    name: awx.ansible.com/awx-mesh-ingress-finalizer
+    role: mesh_ingress
+    vars:
+      finalizer_run: true
 # +kubebuilder:scaffold:watch

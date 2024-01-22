@@ -1,0 +1,12 @@
+---
+- name: Lowercase the ingress_type
+  set_fact:
+    ingress_type: "{{ ingress_type | lower }}"
+
+- name: Run creation tasks
+  include_tasks: creation.yml
+  when: not finalizer_run
+
+- name: Run finalizer tasks
+  include_tasks: finalizer.yml
+  when: finalizer_run
