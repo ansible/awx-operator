@@ -4,6 +4,10 @@ USER root
 RUN dnf update --security --bugfix -y && \
     dnf install -y openssl
 
+# Install kustomize
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+RUN mv kustomize /usr/local/bin/
+
 USER 1001
 
 ARG DEFAULT_AWX_VERSION
