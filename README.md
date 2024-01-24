@@ -14,7 +14,7 @@ An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built w
 
 # AWX Operator Documentation
 
-The AWX Operator documentation is now available at https://awx-operator.readthedocs.io/en/latest/
+The AWX Operator documentation is now available at https://awx-operator.readthedocs.io/
 
 For docs changes, create PRs on the appropriate files in the /docs folder.
 
