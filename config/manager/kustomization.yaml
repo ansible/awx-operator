@@ -5,13 +5,13 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- files:
+- name: awx-manager-config
+  files:
   - controller_manager_config.yaml
-  name: awx-manager-config
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: quay.io/haoliu/awx-operator
-  newTag: 2.10.0-3-g5be4c130
+  newName: quay.io/ansible/awx-operator
+  newTag: latest
