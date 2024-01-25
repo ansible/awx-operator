@@ -1,0 +1,72 @@
+---
+# description: construct resource definitions for deployment or statefulset by combining template with customized pod definition
+# options:
+#   template_file:
+#     description: path to the template file as the base of the definition to be constructed
+#     type: string
+#     example: source.j2.yaml
+#   custom_pod_template:
+#     description: custom pod specification
+#     type: dictionary
+#     example:
+#       metadata:
+#         annotations:
+#           custom_annotation: annotation
+#       spec:
+#         containers:
+#           - name: awx-task
+#             env:
+#               - name: CUSTOM_ENV
+#                 value: custom_env
+#   constructed_resource_definition_variable:
+#     description: name of the variable that fully constructed resource definition will be stored
+#     type: string
+#     example: constructed_definition
+
+- name: Load template file
+  ansible.builtin.set_fact:
+    _resource_template: "{{ lookup('template', template_file) | ansible.builtin.from_yaml }}"
+
+- name: Construct resource definition
+  ansible.builtin.set_fact:
+    "{{ constructed_resource_definition_variable }}": >-
+      {{
+        _resource_template
+        | ansible.builtin.combine(_resource_override, list_merge="append", recursive=true)
+        | ansible.builtin.combine(_containers_override, list_merge="replace", recursive=true)
+      }}
+  vars:
+    _resource_override:
+      spec:
+        template: "{{ custom_pod_template }}"
+    _containers_override:
+      spec:
+        template:
+          spec:
+            initContainers: >-
+              {{
+                _resource_template.spec.template.spec.initContainers
+                | default([])
+                | community.general.lists_mergeby(
+                    custom_pod_template.spec.initContainers | default([]),
+                    "name",
+                    list_merge="append",
+                    recursive=True
+                  )
+              }}
+            containers: >-
+              {{ _resource_template.spec.template.spec.containers
+                | default([])
+                | community.general.lists_mergeby(
+                    custom_pod_template.spec.containers | default([]),
+                    "name",
+                    list_merge="append",
+                    recursive=True
+                  )
+              }}
+
+# TODO: comment this out
+- name: Dump deployment specification to /tmp
+  ansible.builtin.copy:
+    content: "{{ vars[constructed_resource_definition_variable] | ansible.builtin.to_nice_yaml(indent=2) }}"
+    dest: "{{ ('/tmp', constructed_resource_definition_variable + '.yaml') | ansible.builtin.path_join }}"

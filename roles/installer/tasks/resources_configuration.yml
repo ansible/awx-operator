@@ -245,15 +245,33 @@
   set_fact:
     _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_AWX_REDIS')) | default(_default_redis_image, true) }}"
 
+- name: Construct task deployment definition
+  ansible.builtin.include_tasks:
+    file: construct_resource_definition.yml
+  vars:
+    template_file: "deployments/task.yaml.j2"
+    custom_pod_template: "{{ task_pod_template | default({}) }}"
+    constructed_resource_definition_variable: task_deployment_definition
+
+- name: Construct web deployment definition
+  ansible.builtin.include_tasks:
+    file: construct_resource_definition.yml
+  vars:
+    template_file: "deployments/web.yaml.j2"
+    custom_pod_template: "{{ web_pod_template | default({}) }}"
+    constructed_resource_definition_variable: web_deployment_definition
+
 - name: Apply deployment resources
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'deployments/{{ item }}.yaml.j2') }}"
+    definition: "{{ item }}"
     wait: yes
     wait_timeout: "{{ (120 * replicas) or 120 }}"
   loop:
-    - task
-    - web
+    - "{{ task_deployment_definition }}"
+    - "{{ web_deployment_definition }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
   register: this_deployment_result
 
 - block:

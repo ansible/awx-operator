@@ -1839,6 +1839,18 @@ spec:
                 description: Disable web container's nginx ipv6 listener
                 type: boolean
                 default: false
+              task_pod_template:
+                description: Custom pod specification for task pod
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              web_pod_template:
+                description: Custom pod specification for web pod
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              postgres_pod_template:
+                description: Custom pod specification for postgres pod
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
             type: object
           status:
             properties:
