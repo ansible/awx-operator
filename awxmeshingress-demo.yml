@@ -1,7 +1,7 @@
 ---
-apiVersion: awx.ansible.com/v1beta1
+apiVersion: awx.ansible.com/v1alpha1
 kind: AWXMeshIngress
 metadata:
-  name: awx-demo
+  name: awx-mesh-ingress-demo
 spec:
   deployment_name: awx-demo
