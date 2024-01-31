@@ -319,6 +319,8 @@ spec:
               mountPath: "/var/run/receptor"
             - name: "{{ ansible_operator_meta.name }}-projects"
               mountPath: "/var/lib/awx/projects"
+            - name: "{{ ansible_operator_meta.name }}-receptor-tmp-volume"
+              mountPath: /tmp
 {% if ee_extra_volume_mounts -%}
             {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
@@ -449,6 +451,9 @@ spec:
       terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
 {% endif %}
       volumes:
+        - name: "{{ ansible_operator_meta.name }}-receptor-tmp-volume"
+          emptyDir:
+          medium: Memory
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
           emptyDir: {}
