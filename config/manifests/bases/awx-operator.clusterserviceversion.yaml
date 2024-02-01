@@ -10,6 +10,7 @@ metadata:
     description: AWX provides a web-based user interface, REST API, and task engine
       built on top of Ansible.
     repository: https://github.com/ansible/awx-operator
+    support: forum.ansible.com
   name: awx-operator.v0.0.0
   namespace: placeholder
 spec:
