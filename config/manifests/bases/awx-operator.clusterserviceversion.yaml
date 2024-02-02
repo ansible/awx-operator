@@ -17,6 +17,49 @@ spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
+    - description: Deploy a instance of AWX Mesh ingress to allow inbound connection
+        to the AWX Receptor Mesh.
+      displayName: AWX Mesh Ingress
+      kind: AWXMeshIngress
+      name: awxmeshingresses.awx.ansible.com
+      specDescriptors:
+      - displayName: Deployment Name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: External Hostname
+        path: external_hostname
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: External IP Address
+        path: external_ipaddress
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Type
+        path: ingress_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:none
+        - urn:alm:descriptor:com.tectonic.ui:select:Ingress
+        - urn:alm:descriptor:com.tectonic.ui:select:IngressRouteTCP
+        - urn:alm:descriptor:com.tectonic.ui:select:Route
+      - displayName: Ingress API Version
+        path: ingress_api_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Annotations
+        path: ingress_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Class Name
+        path: ingress_class_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Controller
+        path: ingress_controller
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      statusDescriptors: {}
+      version: v1alpha1
     - description: Back up a deployment of the awx, including jobs, inventories, and
         credentials
       displayName: AWX Backup
