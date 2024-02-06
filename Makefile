@@ -332,8 +332,9 @@ helm-chart: helm-chart-generate
 .PHONY: helm-chart-generate
 helm-chart-generate: kustomize helm kubectl-slice yq charts
 	@echo "== KUSTOMIZE: Set image and chart label =="
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/manager && $(KUSTOMIZE) edit set image controller="{{ .Values.operator_image }}:{{ .Values.operator_version }}"
 	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
+	cd config/default && $(KUSTOMIZE) edit set image rbac_proxy="{{ .Values.rbac_proxy_image }}:{{ .Values.rbac_proxy_version }}"
 	cd config/default && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
 
 	@echo "== Gather Helm Chart Metadata =="

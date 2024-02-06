@@ -1,3 +1,13 @@
+# images for the operator itself, not the AWX deployment
+# For airgapped installs, modify both those and the AWX.spec - you can pass the 
+# variables as defined in https://github.com/ansible/awx-operator/blob/devel/roles/installer/tasks/resources_configuration.yml
+operator_image: quay.io/ansible/awx-operator
+operator_version: latest
+
+
+rbac_proxy_image: gcr.io/kubebuilder/kube-rbac-proxy
+rbac_proxy_version: v0.15.0
+
 AWX:
   # enable use of awx-deploy template
   enabled: false
