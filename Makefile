@@ -342,9 +342,9 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	# create new chart metadata in Chart.yaml
 	cd charts && \
 		$(HELM) create awx-operator --starter $(shell pwd)/.helm/starter ;\
-		$(YQ) -i '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
-		$(YQ) -i '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
-		$(YQ) -i '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
+		$(YQ) -i -y '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
+		$(YQ) -i -y '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
+		$(YQ) -i -y '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
 
 	@echo "Generated chart metadata:"
 	@cat charts/$(CHART_NAME)/Chart.yaml
@@ -364,20 +364,20 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	@echo "== Build Templates and CRDS =="
 	# Delete metadata.namespace, release namespace will be automatically inserted by helm
 	for file in charts/$(CHART_NAME)/raw-files/*; do\
-		$(YQ) -i 'del(.metadata.namespace)' $${file};\
+		$(YQ) -i -y 'del(.metadata.namespace)' $${file};\
 	done
 	# Correct namespace for rolebinding to be release namespace, this must be explicit
 	for file in charts/$(CHART_NAME)/raw-files/*rolebinding*; do\
-		$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $${file};\
+		$(YQ) -i -y '.subjects[0].namespace = "{{ .Release.Namespace }}"' $${file};\
 	done
 	# Correct .metadata.name for cluster scoped resources
 	cluster_scoped_files="charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml charts/$(CHART_NAME)/raw-files/clusterrole-awx-operator-metrics-reader.yaml charts/$(CHART_NAME)/raw-files/clusterrole-awx-operator-proxy-role.yaml";\
 	for file in $${cluster_scoped_files}; do\
-		$(YQ) -i '.metadata.name += "-{{ .Release.Name }}"' $${file};\
+		$(YQ) -i -y '.metadata.name += "-{{ .Release.Name }}"' $${file};\
 	done
 
 	# Correct the reference for the clusterrolebinding
-	$(YQ) -i '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
+	$(YQ) -i -y '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
 	# move all custom resource definitions to crds folder
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
