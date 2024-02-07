@@ -81,6 +81,7 @@ nav:
       - user-guide/advanced-configuration/labeling-operator-managed-objects.md
       - user-guide/advanced-configuration/pods-termination-grace-period.md
       - user-guide/advanced-configuration/disable-ipv6.md
+      - user-guide/advanced-configuration/mesh-ingress.md
   - Troubleshooting:
       - troubleshooting/debugging.md
 
