@@ -102,6 +102,101 @@ extraDeploy:
             key: awx/postgres-configuration-secret
 ```
 
+### Custom secrets
+The `customSecrets` section simplifies the creation of our custom secrets used during AWX deployment. Supplying the passwords this way is not recommended for production use, but may be helpful for initial PoC.
+
+If enabled, the configs provided will automatically used to create the respective secrets and linked at the CR spec level. For proper secret management, the sensitive values can be passed in at the command line rather than specified in code. Use the `--set` argument with `helm install`.
+
+Example:
+
+```yaml
+AWX:
+  # enable use of awx-deploy template
+  ...
+
+  # configurations for external postgres instance
+  postgres:
+    enabled: false
+    ...
+
+  customSecrets:
+    enabled: true
+    admin:
+      enabled: true
+      password: mysuperlongpassword
+      secretName: my-admin-password
+    secretKey:
+      enabled: true
+      key: supersecuresecretkey
+      secretName: my-awx-secret-key
+    ingressTls:
+      enabled: true
+      selfSignedCert: true
+      key: unset
+      certificate: unset
+    routeTls:
+      enabled: false
+      key: <contentoftheprivatekey>
+      certificate: <contentofthepublickey>
+    ldapCacert:
+      enabled: false
+      crt: <contentofmybundlecacrt>
+    ldap:
+      enabled: true
+      password: yourldapdnpassword
+    bundleCacert:
+      enabled: false
+      crt: <contentofmybundlecacrt>
+    eePullCredentials:
+      enabled: false
+      url: unset
+      username: unset
+      password: unset
+      sslVerify: true
+      secretName: my-ee-pull-credentials
+    cpPullCredentials:
+      enabled: false
+      dockerconfig:
+        - registry: https://index.docker.io/v1/
+          username: unset
+          password: unset
+      secretName: my-cp-pull-credentials
+```
+
+### Custom volumes
+The `customVolumes` section simplifies the creation of Persistent Volumes used when you want to store your databases and projects files on the cluster's Node. Since their backends are `hostPath`, the size specified are just like a label and there is no actual capacity limitation.
+
+You have to prepare directories for these volumes. For example:
+
+```bash
+sudo mkdir -p /data/postgres-13
+sudo mkdir -p /data/projects
+sudo chmod 755 /data/postgres-13
+sudo chown 1000:0 /data/projects
+```
+
+Example:
+
+```yaml
+AWX:
+  # enable use of awx-deploy template
+  ...
+
+  # configurations for external postgres instance
+  postgres:
+    enabled: false
+    ...
+
+  customVolumes:
+    postgres:
+      enabled: true
+      hostPath: /data/postgres-13
+    projects:
+      enabled: true
+      hostPath: /data/projects
+      size: 1Gi
+```
+
 ## Values Summary
 
 ### AWX
@@ -116,6 +211,116 @@ extraDeploy:
 | Value | Description | Default |
 |---|---|---|
 | `extraDeploy` | array of additional resources to be deployed (supports YAML or literal "\|") | - |
+
+### customSecrets
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.enabled` | Enable the secret resources configuration | `false` |
+| `customSecrets.admin` | Configurations for the secret that contains the admin user password | - |
+| `customSecrets.secretKey` | Configurations for the secret that contains the symmetric key for encryption | - |
+| `customSecrets.ingressTls` | Configurations for the secret that contains the TLS information when `ingress_type=ingress` | - |
+| `customSecrets.routeTls` |  Configurations for the secret that contains the TLS information when `ingress_type=route` (`route_tls_secret`) | - |
+| `customSecrets.ldapCacert` | Configurations for the secret that contains the LDAP Certificate Authority | - |
+| `customSecrets.ldap` | Configurations for the secret that contains the LDAP BIND DN password | - |
+| `customSecrets.bundleCacert` | Configurations for the secret that contains the Certificate Authority | - |
+| `customSecrets.eePullCredentials` | Configurations for the secret that contains the pull credentials for registered ees can be found | - |
+| `customSecrets.cpPullCredentials` | Configurations for the secret that contains the image pull credentials for app and database containers | - |
+
+
+Below the addition variables to customize the secret configuration.
+
+#### Admin user password secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.admin.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.admin.password` | Admin user password | - |
+| `customSecrets.admin.secretName` | Name of secret for `admin_password_secret` | `<resourcename>-admin-password>` |
+
+#### Secret Key secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.secretKey.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.secretKey.key` | Key is used to encrypt sensitive data in the database | - |
+| `customSecrets.secretKey.secretName` | Name of secret for `secret_key_secret` | `<resourcename>-secret-key` |
+
+#### Ingress TLS secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.ingressTls.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.ingressTls.selfSignedCert` | If `true`, an self-signed TLS certificate for `AWX.spec.hostname` will be create by helm | `false` |
+| `customSecrets.ingressTls.key` | Private key to use for TLS/SSL | - |
+| `customSecrets.ingressTls.certificate` | Certificate to use for TLS/SSL | - |
+| `customSecrets.ingressTls.secretName` | Name of secret for `ingress_tls_secret` | `<resourcename>-ingress-tls` |
+| `customSecrets.ingressTls.labels` | Array of labels for the secret | - |
+
+#### Route TLS secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.routeTls.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.routeTls.key` | Private key to use for TLS/SSL | - |
+| `customSecrets.routeTls.certificate` | Certificate to use for TLS/SSL | - |
+| `customSecrets.routeTls.secretName` | Name of secret for `route_tls_secret` | `<resourcename>-route-tls` |
+
+#### LDAP Certificate Authority secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.ldapCacert.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.ldapCacert.crt` | Bundle of CA Root Certificates | - |
+| `customSecrets.ldapCacert.secretName` | Name of secret for `ldap_cacert_secret` | `<resourcename>-custom-certs` |
+
+#### LDAP BIND DN Password secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.ldap.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.ldap.password` | LDAP BIND DN password | - |
+| `customSecrets.ldap.secretName` | Name of secret for `ldap_password_secret` | `<resourcename>-ldap-password` |
+
+#### Certificate Authority secret configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.bundleCacert.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.bundleCacert.crt` | Bundle of CA Root Certificates | - |
+| `customSecrets.bundleCacert.secretName` | Name of secret for `bundle_cacert_secret` | `<resourcename>-custom-certs` |
+
+#### Default EE pull secrets configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.eePullCredentials.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.eePullCredentials.url` | Registry url | - |
+| `customSecrets.eePullCredentials.username` | Username to connect as | - |
+| `customSecrets.eePullCredentials.password` | Password to connect with | - |
+| `customSecrets.eePullCredentials.sslVerify` | Whether verify ssl connection or not. | `true` |
+| `customSecrets.eePullCredentials.secretName` | Name of secret for `ee_pull_credentials_secret` | `<resourcename>-ee-pull-credentials` |
+
+#### Control Plane pull secrets configuration
+| Value | Description | Default |
+|---|---|---|
+| `customSecrets.cpPullCredentials.enabled` | If `true`, secret will be created | `false` |
+| `customSecrets.cpPullCredentials.dockerconfig` | Array of configurations for the Docker credentials that are used for accessing a registry | - |
+| `customSecrets.cpPullCredentials.dockerconfig[].registry` | Server location for Docker registry | `https://index.docker.io/v1/` |
+| `customSecrets.cpPullCredentials.dockerconfig[].username` | Username to connect as | - |
+| `customSecrets.cpPullCredentials.dockerconfig[].password` | Password to connect with | - |
+| `customSecrets.cpPullCredentials.secretName` |  Name of secret for `image_pull_secrets`| `<resoucename>-cp-pull-credentials` |
+
+### customVolumes
+
+#### Persistent Volume for databases postgres
+| Value | Description | Default |
+|---|---|---|
+| `customVolumes.postgres.enabled` | Enable the PV resource configuration for the postgres databases | `false` |
+| `customVolumes.postgres.hostPath` | Directory location on host | - |
+| `customVolumes.postgres.size` | Size of the volume | `8Gi` |
+| `customVolumes.postgres.accessModes` | Volume access mode | `ReadWriteOnce` |
+| `customVolumes.postgres.storageClassName` | PersistentVolume storage class name for `postgres_storage_class` | `<resourcename>-postgres-volume` |
+
+#### Persistent Volume for projects files
+| Value | Description | Default |
+|---|---|---|
+| `customVolumes.projects.enabled` | Enable the PVC and PVC resources configuration for the projects files | `false` |
+| `customVolumes.projects.hostPath` | Directory location on host | - |
+| `customVolumes.projects.size` |  Size of the volume | `8Gi` |
+| `customVolumes.projects.accessModes` | Volume access mode | `ReadWriteOnce` |
+| `customVolumes.postgres.storageClassName` | PersistentVolume storage class name | `<resourcename>-projects-volume` |
 
 # Contributing
 
