@@ -8,10 +8,12 @@ To configure your AWX resource using this chart, create your own `yaml` values f
 In your values config, enable `AWX.enabled` and add `AWX.spec` values based on the awx operator's [documentation](https://github.com/ansible/awx-operator/blob/devel/README.md). Consult the docs below for additional functionality.
 
 ### Installing
-The operator's [helm install](https://github.com/ansible/awx-operator/blob/devel/README.md#helm-install-on-existing-cluster) guide provides key installation instructions.
+
+The operator's [helm install](https://ansible.readthedocs.io/projects/awx-operator/en/latest/installation/helm-install-on-existing-cluster.html) guide provides key installation instructions.
 
 Example:
-```
+
+```bash
 helm install my-awx-operator awx-operator/awx-operator -n awx --create-namespace -f myvalues.yaml
 ```
 
@@ -23,6 +25,16 @@ Argument breakdown:
 * `--create-namespace` specifies that helm should create the namespace before installing
 
 To update an existing installation, use `helm upgrade` instead of `install`. The rest of the syntax remains the same.
+
+### Caveats on upgrading existing installation
+
+There is no support at this time for upgrading or deleting CRDs using Helm.  See [helm documentation](https://helm.sh/docs/chart_best_practices/custom_resource_definitions/#some-caveats-and-explanations) for additional detail.
+
+When upgrading to releases with CRD changes use the following command to update the CRDs
+
+```bash
+kubectl apply --server-side -k github.com/ansible/awx-operator/config/crd?ref=<VERSION>
+```
 
 ## Configuration
 The goal of adding helm configurations is to abstract out and simplify the creation of multi-resource configs. The `AWX.spec` field maps directly to the spec configs of the `AWX` resource that the operator provides, which are detailed in the [main README](https://github.com/ansible/awx-operator/blob/devel/README.md). Other sub-config can be added with the goal of simplifying more involved setups that require additional resources to be specified.
