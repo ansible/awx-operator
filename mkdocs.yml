@@ -67,6 +67,7 @@ nav:
       - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
       - user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md
       - user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md
+      - user-guide/advanced-configuration/custom-receptor-certs.md
       - user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md
       - user-guide/advanced-configuration/persisting-projects-directory.md
       - user-guide/advanced-configuration/custom-volume-and-volume-mount-options.md
