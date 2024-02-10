@@ -58,7 +58,6 @@ spec:
         path: ingress_controller
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      statusDescriptors: {}
       version: v1alpha1
     - description: Back up a deployment of the awx, including jobs, inventories, and
         credentials
@@ -637,8 +636,8 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Postgres Extra Volumes
-        description: Specify extra volumes to add to the postgres pod
+      - description: Specify extra volumes to add to the postgres pod
+        displayName: Postgres Extra Volumes
         path: postgres_extra_volumes
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
