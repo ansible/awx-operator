@@ -4,7 +4,7 @@ The mesh ingress allows users to peer external execution and hop nodes into the 
 This guide focuses on how to enable and configure the mesh ingress.
 For more information about remote execution and hop nodes and how to create them, refer to the [Managing Capacity With Instances](https://ansible.readthedocs.io/projects/awx/en/latest/administration/instances.html) chapter of the AWX Administration Guide.
 
-## Pre-requists
+## Prerequisites
 
 - AWX operator version > 2.11.0
 - AWX > 23.8.0
