@@ -47,6 +47,11 @@ After AWXMeshIngress has been successfully created a new Instance with the same 
 
 The Instance should have at least 2 Listener Address
 
+In this example, the mesh ingress has two listener addresses:
+
+- one for internal, that is used for peering to by all control nodes (top)
+- one for external, that is exposed to a route so external execution nodes can peer into it (bottom))
+
 ![mesh ingress instance listener address on awx ui](mesh-ingress-instance-listener-address-on-awx-ui.png)
 
 When selecting peer for new instance the mesh ingress instance should now be present as a option.
