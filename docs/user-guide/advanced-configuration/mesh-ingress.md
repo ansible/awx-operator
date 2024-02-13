@@ -1,6 +1,6 @@
 # Mesh Ingress
 
-The mesh ingress allows user to peer external execution and hop nodes into the AWX control plane.
+The mesh ingress allows users to peer external execution and hop nodes into the AWX control plane.
 This guide focuses on how to enable and configure the mesh ingress.
 For more information about what is remote execution node and hop node and how to create them see AWX Documentation on external remote execution node and hop node. <TODO: add AWX doc link>
 
