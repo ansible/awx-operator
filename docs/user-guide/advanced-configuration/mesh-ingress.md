@@ -57,7 +57,7 @@ In this example, the mesh ingress has two listener addresses:
 When selecting peer for new instance the mesh ingress instance should now be present as a option.
 ![peering to mesh ingress on awx ui](peering-to-mesh-ingress-on-awx-ui.png)
 
-For more information about how to create external remote execution and hop node and configuring the mesh. See AWX Documentation on managing external remote execution node and hop node. <TODO: add AWX doc link>
+For more information about how to create external remote execution and hop node and configuring the mesh. See AWX Documentation on [Add a instance](https://ansible.readthedocs.io/projects/awx/en/latest/administration/instances.html#add-an-instance).
 
 ## AWXMeshIngress
 
