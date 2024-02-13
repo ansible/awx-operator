@@ -6,7 +6,7 @@ For more information about what is remote execution node and hop node and how to
 
 ## Pre-requists
 
-- AWX operator version> 2.11.0
+- AWX operator version > 2.11.0
 - AWX > 23.8.0
 
 ## Deploy and configure AWXMeshIngress
