@@ -375,6 +375,8 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	for file in $${cluster_scoped_files}; do\
 		$(YQ) -i '.metadata.name += "-{{ .Release.Name }}"' $${file};\
 	done
+	# Add tolerations and affinity to the deployment
+	$(SED_I) -E -e 's/^(      containers:)/{{- with .Values.tolerations }}\n      tolerations:\n{{- toYaml . | nindent 8 }}\n{{- end }}\n{{- with .Values.affinity }}\n      affinity:\n{{- toYaml . | nindent 8 }}\n{{- end }}\n\1/' charts/$(CHART_NAME)/raw-files/deployment-awx-operator-controller-manager.yaml
 
 	# Correct the reference for the clusterrolebinding
 	$(YQ) -i '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
