@@ -45,7 +45,7 @@ After AWXMeshIngress has been successfully created a new Instance with the same 
 
 ![mesh ingress instance on AWX UI](mesh-ingress-instance-on-awx-ui.png)
 
-The Instance should have at least 2 Listener Address
+The Instance should have at least 2 listener addresses.
 
 In this example, the mesh ingress has two listener addresses:
 
