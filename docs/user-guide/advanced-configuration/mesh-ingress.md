@@ -131,7 +131,7 @@ AWXMeshIngressStatus describe the current state of the AWXMeshIngress.
 
 AWXMeshIngressList is a collection of AWXMeshIngress.
 
-- **items** ([][AWXMeshIngress](#awxmeshingress))
+- **items** ([AWXMeshIngress](#awxmeshingress))
 
   items is the list of Ingress.
 
