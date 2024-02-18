@@ -5,6 +5,12 @@ operator_image: quay.io/ansible/awx-operator
 operator_version: latest
 
 
+# if you are using a private registry requiring authentication, replace the default imagePullSecrets here.
+# Those need to be defined already within the namespace to which you release this helm chart.
+# Keep in mind you also need to pass those for resources you define via the operator - defined in roles/installer/defaults/main.yml
+imagePullSecrets:
+  - redhat-operators-pull-secret
+
 rbac_proxy_image: gcr.io/kubebuilder/kube-rbac-proxy
 rbac_proxy_version: v0.15.0
 

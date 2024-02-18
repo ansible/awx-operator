@@ -379,6 +379,9 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 
 	# Correct the reference for the clusterrolebinding
 	$(YQ) -i -y '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
+	# Add ImagePullSecrets Helm value template to the operator Deployment
+	$(YQ) -i -y '.spec.template.spec.imagePullSecrets = "{{ .Values.imagePullSecrets }}"' charts/$(CHART_NAME)/raw-files/deployment-awx-operator-controller-manager.yaml
+
 	# move all custom resource definitions to crds folder
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
