@@ -28,3 +28,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 patches:
 - path: manager_auth_proxy_patch.yaml
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: rbac_proxy
+  newName: gcr.io/kubebuilder/kube-rbac-proxy
+  newTag: v0.15.0
