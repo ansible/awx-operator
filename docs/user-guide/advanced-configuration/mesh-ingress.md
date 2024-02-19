@@ -174,90 +174,46 @@ When selecting peer for new instance the mesh ingress instance should now be pre
 
 For more information about how to create external remote execution and hop node and configuring the mesh. See AWX Documentation on [Add a instance](https://ansible.readthedocs.io/projects/awx/en/latest/administration/instances.html#add-an-instance).
 
-## AWXMeshIngress
+## Custom Resource Definitions
+
+### AWXMeshIngress
 
 AWXMeshIngress controls the deployment and configuration of mesh ingress on AWX
 
-- **apiVersion**: awx.ansible.com/v1alpha1
+| Name                                                                                                                          | Description                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`apiVersion`**                                                                                                              | awx.ansible.com/v1alpha1                                                                                                                                            |
+| **`kind`**                                                                                                                    | AWXMeshIngress                                                                                                                                                      |
+| **`metadata`** ([ObjectMeta](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/object-meta/#ObjectMeta)) | Standard object's metadata. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata)                               |
+| **`spec`** ([AWXMeshIngressSpec](#awxmeshingressspec))                                                                        | Spec is the desired state of the AWXMeshIngress. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status)   |
+| **`status`** ([AWXMeshIngressStatus](#awxmeshingressstatus))                                                                  | Status is the current state of the AWXMeshIngress. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status) |
 
-- **kind**: AWXMeshIngress
+#### AWXMeshIngressSpec
 
-- **metadata**: ([ObjectMeta](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/object-meta/#ObjectMeta))
+AWXMeshIngressSpec is the description of the configuration for AWXMeshIngress.
 
-  Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+| Name                                     | Description                                                                                                                                                                                                                                 | Default                                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **`deployment_name`** (string), required | Name of the AWX deployment to create the Mesh Ingress for.                                                                                                                                                                                  | `awx`                                          |
+| **`ingress_type`** (string)              | Ingress type for ingress managed by the operator. Options: `none`, `Ingress`, `IngressRouteTCP`, `Route`                                                                                                                                    | `Route` (on OpenShift), `none` (on Kubernetes) |
+| **`external_hostname`** (string)         | External hostname is an optional field used for specifying the external hostname defined in an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/). This parameter is automatically generated on OpenShift          | N/A                                            |
+| **`external_ipaddress`** (string)        | External IP Address is an optional field used for specifying the external IP address defined in an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)                                                              | N/A                                            |
+| **`ingress_api_version`** (string)       | API Version for ingress managed by the operator. This parameter is ignored when `ingress_type` is `Route`                                                                                                                                   | `networking.k8s.io/v1`                         |
+| **`ingress_annotations`** (string)       | Additional annotation on the ingress managed by the operator. This parameter is ignored when `ingress_type` is `Route`                                                                                                                      | `""`                                           |
+| **`ingress_controller`** (string)        | Special configuration for specific Ingress Controllers. This parameter is ignored when `ingress_type` is `Route`                                                                                                                            | `""`                                           |
+| **`ingress_class_name`** (string)        | The name of ingress class to use instead of the cluster default. see [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec). This parameter is ignored when `ingress_type` is `Route` | `""`                                           |
 
-- **spec**: ([AWXMeshIngressSpec](#awxmeshingressspec))
-
-  spec is the desired state of the AWXMeshIngress. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
-
-- **status**: ([AWXMeshIngressStatus](#awxmeshingressstatus))
-
-  status is the current state of the AWXMeshIngress. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
-
-### AWXMeshIngressSpec
-
-AWXMeshIngress is the description of the configuration for AWXMeshIngress.
-
-- **deployment_name** (string), required
-
-  Name of the AWX deployment to create the Mesh Ingress for.
-
-- **external_hostname** (string)
-
-  External hostname is an optional field used for specifying the external hostname defined in an user managed [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
-
-- **external_ipaddress** (string)
-
-  External IP Address is an optional field used for specifying the external IP address defined in an user managed [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
-
-- **ingress_type** (string)
-
-  Ingress type for ingress managed by the operator
-  Options:
-  - none (default)
-  - Ingress
-  - IngressRouteTCP
-  - Route (default when deploy on OpenShift)
-
-- **ingress_api_version** (string)
-
-  API Version for ingress managed by the operator
-  This parameter is ignored when ingress_type=Route
-
-- **ingress_annotations** (string)
-
-  Annotation on the ingress managed by the operator
-
-- **ingress_class_name** (string)
-
-  The name of ingress class to use instead of the cluster default. see [IngressSpec](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec)
-  This parameter is ignored when `ingress_type=Route`
-
-- **ingress_controller** (string)
-
-  Special configuration for specific Ingress Controllers
-  This parameter is ignored when ingress_type=Route
-
-### AWXMeshIngressStatus
+#### AWXMeshIngressStatus
 
 AWXMeshIngressStatus describe the current state of the AWXMeshIngress.
 
-## AWXMeshIngressList
+### AWXMeshIngressList
 
 AWXMeshIngressList is a collection of AWXMeshIngress.
 
-- **items** ([AWXMeshIngress](#awxmeshingress))
-
-  items is the list of Ingress.
-
-- **apiVersion** (string)
-
-  APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-
-- **kind** (string)
-
-  Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-
-- **metadata** ([ListMeta](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/list-meta/#ListMeta))
-
-  Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+| Name                                                                                                                    | Description                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`items`** ([AWXMeshIngress](#awxmeshingress))                                                                         | items is the list of Ingress.                                                                                                                                                                                                                                                                        |
+| **`apiVersion`** (string)                                                                                               | APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources)  |
+| **`kind`** (string)                                                                                                     | Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds) |
+| **`metadata`** ([ListMeta](https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/list-meta/#ListMeta)) | Standard object's metadata. [More info](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata)                                                                                                                                                                |
