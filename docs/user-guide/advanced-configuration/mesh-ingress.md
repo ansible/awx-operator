@@ -16,9 +16,9 @@ For more information about remote execution and hop nodes and how to create them
     Defaulted to `quay.io/ansible/awx-ee:latest` and `Always`.
     Currently there is no dedicated parameter to specify the image.
 
-### On Red Hat OpenShift with operator managed Route
+### On Red Hat OpenShift with Operator managed Route
 
-To deploy an mesh ingress on OpenShift create the AWXMeshIngress resource.
+To deploy an mesh ingress on OpenShift, create the AWXMeshIngress resource.
 
 Example:
 
@@ -38,7 +38,7 @@ To deploy an mesh ingress on Kubernetes cluster which has [NGINX Ingress Control
 
 Note that AWXMeshIngress requires [SSL Passthrough](https://kubernetes.github.io/ingress-nginx/user-guide/tls/#ssl-passthrough) enabled which is disabled by default. Ensure it is enabled on your NGINX Ingress Controller.
 
-By specifying `ingress_controler` as `nginx`, AWX Operator will generate Ingress resource that has `nginx.ingress.kubernetes.io/ssl-passthrough` annotation set to `"true"`.
+By specifying `ingress_controller` as `nginx`, AWX Operator will generate Ingress resource that has `nginx.ingress.kubernetes.io/ssl-passthrough` annotation set to `"true"`.
 
 Example:
 
