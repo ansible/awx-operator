@@ -12,9 +12,9 @@ For more information about remote execution and hop nodes and how to create them
 ## Deploy and configure AWXMeshIngress
 
 !!! note
-    The mesh ingress refers `control_plane_ee_image` and `image_pull_policy` to determine image and policy to be adopted.
+    The mesh ingress refers `control_plane_ee_image` and `image_pull_policy` fields of the AWX instance to determine image and policy to be adopted.
     Defaulted to `quay.io/ansible/awx-ee:latest` and `Always`.
-    Currently there is no dedicated parameter to specify the image.
+    Currently there are no dedicated parameters to specify the image and policy.
 
 ### On Red Hat OpenShift with Operator managed Route
 
