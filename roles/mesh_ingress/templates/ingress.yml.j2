@@ -12,7 +12,7 @@ metadata:
     {{ ingress_annotations | indent(width=4) }}
 {% endif %}
 {% if ingress_controller|lower == "nginx" %}
-      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 {% endif %}
 spec:
 {% if ingress_class_name %}
