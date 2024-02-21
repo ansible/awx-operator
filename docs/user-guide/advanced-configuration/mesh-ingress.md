@@ -18,7 +18,7 @@ For more information about remote execution and hop nodes and how to create them
 
 ### On Red Hat OpenShift with Operator managed Route
 
-To deploy an mesh ingress on OpenShift, create the AWXMeshIngress resource.
+To deploy a mesh ingress on OpenShift, create the AWXMeshIngress resource on the namespace where your AWX instance is running on.
 
 Example:
 
@@ -87,7 +87,7 @@ spec:
 
 To deploy a mesh ingress on Kubernetes cluster, create the AWXMeshIngress resource on the namespace where your AWX instance is running on.
 
-Alternatively, if you wish to create your own Ingress resource, you can deploy a mesh ingress with `ingress_type` set to None and then manually create an Ingress resource with any configuration.
+Alternatively, if you wish to create your own Ingress resource, you can deploy a mesh ingress with `ingress_type` set to `none` and then manually create an Ingress resource with any configuration.
 
 In this case, the `external_hostname` is still required as it is used to generate the certificate that will be used by Receptor.
 
