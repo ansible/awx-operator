@@ -36,6 +36,29 @@ When upgrading to releases with CRD changes use the following command to update 
 kubectl apply --server-side -k github.com/ansible/awx-operator/config/crd?ref=<VERSION>
 ```
 
+If running above command results in an error like below:
+
+```text
+Apply failed with 1 conflict: conflict with "helm" using apiextensions.k8s.io/v1: .spec.versions
+Please review the fields above--they currently have other managers. Here
+are the ways you can resolve this warning:
+* If you intend to manage all of these fields, please re-run the apply
+  command with the `--force-conflicts` flag.
+* If you do not intend to manage all of the fields, please edit your
+  manifest to remove references to the fields that should keep their
+  current managers.
+* You may co-own fields by updating your manifest to match the existing
+  value; in this case, you'll become the manager if the other manager(s)
+  stop managing the field (remove it from their configuration).
+See https://kubernetes.io/docs/reference/using-api/server-side-apply/#conflicts
+```
+
+Use `--force-conflicts` flag to resolve the conflict.
+
+```bash
+kubectl apply --server-side --force-conflicts -k github.com/ansible/awx-operator/config/crd?ref=<VERSION>
+```
+
 ## Configuration
 The goal of adding helm configurations is to abstract out and simplify the creation of multi-resource configs. The `AWX.spec` field maps directly to the spec configs of the `AWX` resource that the operator provides, which are detailed in the [main README](https://github.com/ansible/awx-operator/blob/devel/README.md). Other sub-config can be added with the goal of simplifying more involved setups that require additional resources to be specified.
 
