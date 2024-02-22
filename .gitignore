@@ -10,3 +10,4 @@ gh-pages/
 .vscode/
 __pycache__
 /site
+venv/*
