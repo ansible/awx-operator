@@ -8,22 +8,6 @@
     state: absent
     force: true
 
-- name: Remove ownerReferences from secrets to avoid garbage collection
-  k8s:
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: '{{ item }}'
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        ownerReferences: null
-  loop:
-    - '{{ secret_key_secret }}'
-    - '{{ admin_password_secret }}'
-    - '{{ broadcast_websocket_secret }}'
-    - '{{ postgres_configuration_secret }}'
-  no_log: "{{ no_log }}"
-
 - name: Cleanup temp spec file
   file:
     path: "{{ tmp_spec.path }}"
