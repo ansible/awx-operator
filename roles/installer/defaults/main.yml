@@ -441,7 +441,14 @@ garbage_collect_secrets: false
 development_mode: false
 
 security_context_settings: {}
-postgres_security_context_settings: {}
+postgres_security_context_settings: {} # Deprecated
+postgres_security_context: {}
+redis_security_context: {}
+init_security_context: {}
+task_security_context: {}
+rsyslog_security_context: {}
+web_security_context: {}
+ee_security_context: {}
 
 # Set no_log settings on certain tasks
 no_log: true
