@@ -91,7 +91,7 @@ spec:
       - displayName: Backup PVC Storage Class
         path: backup_storage_class
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:io.kubernetes:StorageClass
         - urn:alm:descriptor:com.tectonic.ui:advanced
       - displayName: Precreate Partition Hours
         path: precreate_partition_hours
@@ -713,7 +713,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
-        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:io.kubernetes:StorageClass
       - description: Projects Storage Size
         displayName: Projects Storage Size
         path: projects_storage_size
