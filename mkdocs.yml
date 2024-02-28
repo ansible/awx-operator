@@ -18,6 +18,9 @@ theme:
     - navigation.indexes
     - navigation.tracking
     - toc.integrate
+    - search.highlight
+    - search.share
+    - search.suggest
   palette:
     - media: "(prefers-color-scheme: light)"
       primary: teal
@@ -92,7 +95,8 @@ exclude_docs:
 plugins:
   - autorefs
   - markdown-exec
-  - search
+  - material/search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - mkdocstrings:
       handlers:
         python:
