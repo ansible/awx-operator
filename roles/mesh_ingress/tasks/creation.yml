@@ -61,7 +61,7 @@
 - name: Default ingress_type to Route if OpenShift
   set_fact:
     ingress_type: route
-  when: is_openshift | bool and ingress_type == 'none'
+  when: is_openshift | bool and ingress_type | lower == 'none'
 
 - name: Apply Ingress resource
   k8s:
@@ -77,7 +77,7 @@
 - name: Set external_hostname
   set_fact:
     external_hostname: "{{ ingress.result.status.ingress[0].host }}"
-  when: ingress_type == 'route'
+  when: ingress_type | lower == 'route'
 
 - name: Create other resources
   k8s:
