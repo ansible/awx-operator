@@ -481,3 +481,7 @@ nginx_worker_processes: 1
 nginx_worker_connections: "{{ uwsgi_listen_queue_size }}"
 nginx_worker_cpu_affinity: 'auto'
 nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
+
+task_pod_template: {}
+web_pod_template: {}
+postgres_pod_template: {}
