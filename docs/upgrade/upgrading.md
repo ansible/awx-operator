@@ -14,7 +14,7 @@ The first part of any upgrade should be a backup. Note, there are secrets in the
 
 In the event you need to recover the backup see the [restore role documentation](https://github.com/ansible/awx-operator/tree/devel/roles/restore). *Before Restoring from a backup*, be sure to:
 * delete the old existing AWX CR
-* delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-13-<deployment-name>-postgres-13-0`
+* delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-15-<deployment-name>-postgres-15-0`
 
 **Note**: Do not delete the namespace/project, as that will delete the backup and the backup's PVC as well.
 

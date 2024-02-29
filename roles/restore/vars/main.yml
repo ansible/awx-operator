@@ -1,8 +1,8 @@
 ---
 
 deployment_type: "awx"
-_postgres_image: postgres
-_postgres_image_version: 13
+_postgres_image: quay.io/sclorg/postgresql-15-c9s
+_postgres_image_version: latest
 
 backup_api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 backup_kind: 'AWXBackup'
@@ -12,7 +12,7 @@ secret_key_secret: '{{ deployment_name }}-secret-key'
 admin_password_secret: '{{ deployment_name }}-admin-password'
 broadcast_websocket_secret: '{{ deployment_name }}-broadcast-websocket'
 postgres_configuration_secret: '{{ deployment_name }}-postgres-configuration'
-supported_pg_version: 13
+supported_pg_version: 15
 image_pull_policy: IfNotPresent
 
 # If set to true, the restore process will delete the existing database and create a new one

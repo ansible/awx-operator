@@ -61,4 +61,4 @@
         expected_web_replicas: 3
         expected_task_replicas: 3
   tags:
-    - replicas
+  - replicas
