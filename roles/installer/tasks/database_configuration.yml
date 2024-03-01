@@ -117,26 +117,26 @@
   register: _running_pods
 
 - block:
-  - name: Filter pods by name
-    set_fact:
-      filtered_old_postgres_pods: "{{ _running_pods.resources |
-        selectattr('metadata.name', 'match', ansible_operator_meta.name + '-postgres.*-0') |
-        rejectattr('metadata.name', 'search', '-' + supported_pg_version | string + '-0') |
-        list }}"
+    - name: Filter pods by name
+      set_fact:
+        filtered_old_postgres_pods: "{{ _running_pods.resources |
+          selectattr('metadata.name', 'match', ansible_operator_meta.name + '-postgres.*-0') |
+          rejectattr('metadata.name', 'search', '-' + supported_pg_version | string + '-0') |
+          list }}"
 
   # Sort pods by name in reverse order (most recent PG version first) and set
-  - name: Set info for previous postgres pod
-    set_fact:
-      sorted_old_postgres_pods: "{{ filtered_old_postgres_pods |
-        sort(attribute='metadata.name') |
-        reverse }}"
-    when: filtered_old_postgres_pods | length
+    - name: Set info for previous postgres pod
+      set_fact:
+        sorted_old_postgres_pods: "{{ filtered_old_postgres_pods |
+          sort(attribute='metadata.name') |
+          reverse }}"
+      when: filtered_old_postgres_pods | length
 
 
-  - name: Set info for previous postgres pod
-    set_fact:
-      old_postgres_pod: "{{ sorted_old_postgres_pods | first }}"
-    when: filtered_old_postgres_pods | length
+    - name: Set info for previous postgres pod
+      set_fact:
+        old_postgres_pod: "{{ sorted_old_postgres_pods | first }}"
+      when: filtered_old_postgres_pods | length
   when: _running_pods.resources | length
 
 - name: Look up details for this deployment
@@ -179,7 +179,7 @@
         - (_old_pg_version.stdout | default(0) | int ) < supported_pg_version
   when:
     - managed_database
-    - (_previous_upgraded_pg_version | default(false)) | ternary(_previous_upgraded_pg_version < supported_pg_version, true)
+    - (_previous_upgraded_pg_version | default(false)) | ternary(_previous_upgraded_pg_version | int < supported_pg_version, true)
     - old_postgres_pod | length  # If empty, then old pg pod has been removed and we can assume the upgrade is complete
 
 - block:
