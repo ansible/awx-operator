@@ -278,10 +278,10 @@ init_container_extra_commands: ''
 init_container_extra_volume_mounts: ''
 
 ee_images:
-  - name: AWX EE (latest)
-    image: quay.io/ansible/awx-ee:latest
+  - name: "AWX EE ({{ _image_version }})"
+    image: "quay.io/ansible/awx-ee:{{ _image_version }}"
 
-_control_plane_ee_image: quay.io/ansible/awx-ee:latest
+_control_plane_ee_image: "quay.io/ansible/awx-ee:{{ _image_version }}"
 
 _init_container_image: "{{ _control_plane_ee_image.split(':')[0] }}"
 _init_container_image_version: "{{ _control_plane_ee_image.split(':')[1] }}"
