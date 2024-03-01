@@ -164,4 +164,5 @@
   loop:
     - "postgres-{{ ansible_operator_meta.name }}-postgres-0"
     - "postgres-{{ ansible_operator_meta.name }}-postgres-13-0"
+    - "postgres-13-{{ ansible_operator_meta.name }}-postgres-13-0"
   when: postgres_keep_pvc_after_upgrade
