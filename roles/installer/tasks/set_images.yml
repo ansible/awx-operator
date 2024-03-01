@@ -8,8 +8,8 @@
   set_fact:
     _custom_init_container_image: "{{ init_container_image }}:{{ init_container_image_version }}"
   when:
-    - init_container_image | default([]) | length
-    - init_container_image_version is defined or init_container_image_version != ''
+    - init_container_image | default('_undefined',true) != '_undefined'
+    - init_container_image_version | default('_undefined',true) != '_undefined'
 
 - name: Set Init image URL
   set_fact:
