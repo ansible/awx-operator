@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: '{{ ansible_operator_meta.name }}-migration-{{ version }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
+spec:
+  template:
+    spec:
+      containers:
+        - name: "migration-job"
+          image: '{{ _image }}'
+          command:
+            - /usr/bin/awx-manage
+            - migrate
+            - --noinput
+          volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-application-credentials
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+      volumes:
+        - name: "{{ ansible_operator_meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+            items:
+              - key: credentials.py
+                path: 'credentials.py'
+              - key: ldap.py
+                path: 'ldap.py'
+              - key: execution_environments.py
+                path: 'execution_environments.py'
+        - name: "{{ secret_key_secret_name }}"
+          secret:
+            secretName: '{{ secret_key_secret_name }}'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: {{ ansible_operator_meta.name }}-settings
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: settings
+                path: settings.py
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 30

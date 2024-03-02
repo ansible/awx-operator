@@ -163,6 +163,31 @@ spec:
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
             - containerPort: 8053
 {% endif %}
+{% if web_liveness_period|int > 0 %}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  (exit $(/usr/bin/supervisorctl -c /etc/supervisord_task.conf status | grep -vc RUNNING))
+            initialDelaySeconds: {{ web_liveness_initial_delay }}
+            periodSeconds: {{ web_liveness_period }}
+            failureThreshold: {{ web_liveness_failure_threshold }}
+            timeoutSeconds: {{ web_liveness_timeout }}
+{% endif %}
+{% if web_readiness_period|int > 0 %}
+          readinessProbe:
+            exec:
+              httpGet:
+                path: /api/v2/ping/
+                scheme: HTTP
+                port: 8052
+            initialDelaySeconds: {{ web_readiness_initial_delay }}
+            periodSeconds: {{ web_readiness_period }}
+            failureThreshold: {{ web_readiness_failure_threshold }}
+            timeoutSeconds: {{ web_readiness_timeout }}
+{% endif %}
           volumeMounts:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"

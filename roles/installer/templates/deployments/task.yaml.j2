@@ -74,7 +74,28 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-        - name: init
+        - name: init-database
+          image: '{{ _image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ init_container_resource_requirements }}
+          command:
+            - /bin/sh
+            - -c
+            - wait-for-migrations
+          volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-application-credentials
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+        - name: init-receptor
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ init_container_resource_requirements }}
@@ -188,6 +209,30 @@ spec:
 {% endif %}
 {% if task_args %}
           args: {{ task_args }}
+{% endif %}
+{% if task_liveness_period|int > 0 %}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  (exit $(/usr/bin/supervisorctl -c /etc/supervisord_task.conf status | grep -vc RUNNING))
+            initialDelaySeconds: {{ task_liveness_initial_delay }}
+            periodSeconds: {{ task_liveness_period }}
+            failureThreshold: {{ task_liveness_failure_threshold }}
+            timeoutSeconds: {{ task_liveness_timeout }}
+{% endif %}
+{% if task_readiness_period|int > 0 %}
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/awx-manage
+                - check
+            initialDelaySeconds: {{ task_readiness_initial_delay }}
+            periodSeconds: {{ task_readiness_period }}
+            failureThreshold: {{ task_readiness_failure_threshold }}
+            timeoutSeconds: {{ task_readiness_timeout }}
 {% endif %}
           volumeMounts:
 {% if bundle_ca_crt %}
