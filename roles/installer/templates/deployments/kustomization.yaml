@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - task.yaml
+  - web.yaml
+patches:
+  - path: task_override.yaml
+  - path: web_override.yaml

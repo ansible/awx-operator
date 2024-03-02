@@ -1,0 +1,12 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: '{{ ansible_operator_meta.name }}-web'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+{% if web_pod_spec_kustomization is defined and web_pod_spec_kustomization %}
+spec:
+  template:
+    spec:
+{{ web_pod_spec_kustomization | indent(width=6, first=True) }}
+{% endif %}

@@ -245,16 +245,58 @@
   set_fact:
     _redis_image: "{{ _custom_redis_image | default(lookup('env', 'RELATED_IMAGE_AWX_REDIS')) | default(_default_redis_image, true) }}"
 
-- name: Apply deployment resources
+- name: Create directory for kustomize
+  ansible.builtin.file:
+    path: "deployments"
+    state: directory
+  register: _deployment_kustomize_dir
+
+- name: Create tmp dir for {{ item }} deployment
+  tempfile:
+    state: directory
+  register: _deployment_kustomize_dir
+
+- name: Copy over kustomization.yaml to tmp dir
+  copy:
+    src: ../templates/deployments/kustomization.yaml
+    dest: "{{ _deployment_kustomize_dir.path }}"
+
+- name: Template deployments and overrides
+  template:
+    src: deployments/{{ item }}.yaml.j2
+    dest: "{{ _deployment_kustomize_dir.path }}/{{ item }}.yaml"
+  loop:
+    - "task"
+    - "task_override"
+    - "web"
+    - "web_override"
+
+- name: Run kustomize build on task deployment and store in deployments.yaml
+  command: kustomize build {{ _deployment_kustomize_dir.path }} -o {{ _deployment_kustomize_dir.path }}/deployments.yaml
+  register: _deployments
+
+# - name: Fail always
+#   fail:
+#     msg: "DEBUG: {{ _deployments.stdout }}"
+
+- name: Apply task deployment resources
   k8s:
     apply: yes
-    definition: "{{ lookup('template', 'deployments/{{ item }}.yaml.j2') }}"
+    definition: "{{ lookup('file', '{{ _deployment_kustomize_dir.path }}/deployments.yaml') }}"
     wait: yes
     wait_timeout: "{{ (120 * replicas) or 120 }}"
-  loop:
-    - task
-    - web
   register: this_deployment_result
+
+# - name: Apply deployment resources
+#   k8s:
+#     apply: yes
+#     definition: "{{ lookup('template', 'deployments/{{ item }}.yaml.j2') }}"
+#     wait: yes
+#     wait_timeout: "{{ (120 * replicas) or 120 }}"
+#   loop:
+#     - task
+#     - web
+#   register: this_deployment_result
 
 - block:
     - name: Get the new resource pod information after updating resource.

@@ -1840,6 +1840,12 @@ spec:
                 description: Disable web container's nginx ipv6 listener
                 type: boolean
                 default: false
+              task_pod_spec_kustomization:
+                description: Kustomize
+                type: string
+              web_pod_spec_kustomization:
+                description: Kustomize
+                type: string
             type: object
           status:
             properties:
