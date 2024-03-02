@@ -78,7 +78,7 @@ spec:
   ingress_type: IngressRouteTCP
   ingress_controller: traefik
   ingress_class_name: traefik
-  ingress_api_version: traefik.io/v1alpha1
+  ingress_api_version: traefik.containo.us/v1alpha1
 
   external_hostname: <fqdn for mesh ingress>
 ```
