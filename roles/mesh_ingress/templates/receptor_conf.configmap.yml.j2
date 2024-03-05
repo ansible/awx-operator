@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ ansible_operator_meta.name }}-receptor-config
+  namespace: {{ ansible_operator_meta.namespace }}
+data:
+  receptor_conf: |
+    ---
+    - node:
+        id: {{ ansible_operator_meta.name }}
+    - log-level: debug
+    - control-service:
+        service: control
+    - ws-listener:
+        port: 27199
+        tls: tlsserver
+    - tls-server:
+        cert: /etc/receptor/tls/receptor.crt
+        key: /etc/receptor/tls/receptor.key
+        name: tlsserver
+        clientcas: /etc/receptor/tls/ca/mesh-CA.crt
+        requireclientcert: true
+        mintls13: false

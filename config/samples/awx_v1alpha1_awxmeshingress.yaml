@@ -1,0 +1,8 @@
+# Placeholder to pass CI and allow bundle generation
+---
+apiVersion: awx.ansible.com/v1alpha1
+kind: AWXMeshIngress
+metadata:
+  name: example-awx-mesh-ingress
+spec:
+  deployment_name: example-awx

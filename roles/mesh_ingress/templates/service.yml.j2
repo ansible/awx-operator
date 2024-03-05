@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ ansible_operator_meta.name }}
+  namespace: '{{ ansible_operator_meta.namespace }}'
+spec:
+  type: ClusterIP
+  ports:
+  - name: ws
+    port: 27199
+    targetPort: 27199
+  selector:
+    app.kubernetes.io/name: {{ ansible_operator_meta.name }}

@@ -19,7 +19,7 @@ This role assumes you are authenticated with an Openshift or Kubernetes cluster:
 
 *Before Restoring from a backup*, be sure to:
   - delete the old existing AWX CR
-  - delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-13-<deployment-name>-postgres-13-0`
+  - delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-<postgres version>-<deployment-name>-postgres-<postgres version>-0`
 
 **Note**: Do not delete the namespace/project, as that will delete the backup and the backup's PVC as well.
 

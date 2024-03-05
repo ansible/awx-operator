@@ -13,7 +13,7 @@ metadata:
   annotations:
 {% if ingress_annotations %}
     {{ ingress_annotations | indent(width=4) }}
-{%- endif %}
+{% endif %}
 {% if ingress_controller|lower == "contour" %}
     projectcontour.io/websocket-routes: "/websocket"
     kubernetes.io/ingress.class: contour

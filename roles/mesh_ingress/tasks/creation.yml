@@ -1,0 +1,150 @@
+---
+- name: Import common role
+  import_role:
+    name: common
+
+- name: Debug is_openshift
+  debug:
+    msg: "is_openshift={{ is_openshift }}"
+
+- name: Check for presence of AWX instance that we will use to create the Mesh Ingress for.
+  k8s_info:
+    api_version: awx.ansible.com/v1beta1
+    kind: AWX
+    name: "{{ deployment_name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: awx_instance
+
+- name: Fail if awx_deployment does not exist in the same namespace
+  fail:
+    msg: "AWX instance {{ deployment_name }} does not exist in the same namespace as the AWXMeshIngress instance."
+  when: awx_instance.resources | length == 0
+
+- name: Set awx_spec
+  set_fact:
+    awx_spec: "{{ awx_instance.resources[0].spec }}"
+
+- name: Set owner_reference of AWXMeshIngress to related AWX instance
+  k8s:
+    state: present
+    definition:
+      apiVersion: awx.ansible.com/v1beta1
+      kind: AWX
+      name: "{{ deployment_name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
+      metadata:
+        name: "{{ deployment_name }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        ownerReferences:
+        - apiVersion: awx.ansible.com/v1beta1
+          blockOwnerDeletion: true
+          controller: true
+          kind: AWX
+          name: "{{ deployment_name }}"
+          uid: "{{ awx_instance.resources[0].metadata.uid }}"
+  when: set_self_owneref | bool
+
+- name: Set user provided control plane ee image
+  set_fact:
+    _custom_control_plane_ee_image: "{{ awx_spec.control_plane_ee_image }}"
+  when:
+  - awx_spec.control_plane_ee_image | default([]) | length
+
+- name: Set Control Plane EE image URL
+  set_fact:
+    _control_plane_ee_image: "{{ _custom_control_plane_ee_image | default(lookup('env', 'RELATED_IMAGE_CONTROL_PLANE_EE')) | default(_control_plane_ee_image, true) }}"
+
+- name: Set Image Pull Policy
+  set_fact:
+    _image_pull_policy: "{{ awx_spec.image_pull_policy | default(_image_pull_policy, true) }}"
+
+- name: Default ingress_type to Route if OpenShift
+  set_fact:
+    ingress_type: route
+  when: is_openshift | bool and ingress_type | lower == 'none'
+
+- name: Apply Ingress resource
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', 'ingress.yml.j2') }}"
+    wait: yes
+    wait_timeout: "120"
+  register: ingress
+
+# TODO: need to wait until the route is ready before we can get the hostname
+# right now this will rereconcile until the route is ready
+
+- name: Set external_hostname
+  set_fact:
+    external_hostname: "{{ ingress.result.status.ingress[0].host }}"
+  when: ingress_type | lower == 'route'
+
+- name: Create other resources
+  k8s:
+    apply: yes
+    definition: "{{ lookup('template', '{{ item }}.yml.j2') }}"
+    wait: yes
+    wait_timeout: "120"
+  loop:
+  - service_account
+  - receptor_conf.configmap
+  - service
+  - deployment
+
+- name: Get the current resource task pod information.
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    label_selectors:
+    - "app.kubernetes.io/name={{ deployment_name }}-task"
+    - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
+    - "app.kubernetes.io/component={{ deployment_type }}"
+    field_selectors:
+    - status.phase=Running
+  register: awx_task_pod
+
+- name: Set the resource pod as a variable.
+  set_fact:
+    awx_task_pod: >-
+      {{ awx_task_pod['resources']
+         | rejectattr('metadata.deletionTimestamp', 'defined')
+         | sort(attribute='metadata.creationTimestamp')
+         | first | default({}) }}
+
+- name: Set the resource pod name as a variable.
+  set_fact:
+    awx_task_pod_name: "{{ awx_task_pod['metadata']['name'] | default('') }}"
+
+- name: Add new instance to AWX
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_task_pod_name }}"
+    container: "{{ deployment_name }}-task"
+    command: |
+      awx-manage provision_instance
+        --hostname {{ ansible_operator_meta.name }}
+        --node_type hop
+
+- name: Add internal receptor address
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_task_pod_name }}"
+    container: "{{ deployment_name }}-task"
+    command: |
+      awx-manage add_receptor_address
+        --instance {{ ansible_operator_meta.name }}
+        --address {{ ansible_operator_meta.name }}
+        --port 27199 --protocol ws
+        --peers_from_control_nodes --is_internal --canonical
+
+- name: Add external receptor address
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_task_pod_name }}"
+    container: "{{ deployment_name }}-task"
+    command: |
+      awx-manage add_receptor_address
+        --instance {{ ansible_operator_meta.name }}
+        --address {{ external_hostname }}
+        --port 443 --protocol ws

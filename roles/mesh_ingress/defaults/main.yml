@@ -1,0 +1,15 @@
+---
+deployment_type: awx
+
+ingress_type: none
+ingress_api_version: 'networking.k8s.io/v1'
+ingress_annotations: ''
+ingress_class_name: ''
+ingress_controller: ''
+
+set_self_owneref: true
+
+_control_plane_ee_image: quay.io/ansible/awx-ee:latest
+_image_pull_policy: Always
+
+finalizer_run: false

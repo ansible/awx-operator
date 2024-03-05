@@ -37,12 +37,6 @@ jobs:
 
           exit 0
 
-      - name: Checkout awx
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository_owner }}/awx
-          path: awx
-
       - name: Checkout awx-operator
         uses: actions/checkout@v3
         with:
@@ -53,17 +47,20 @@ jobs:
         run: |
           python3 -m pip install docker
 
-      - name: Log in to GHCR
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Log into registry ghcr.io
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and stage awx-operator
+      - name: Stage awx-operator
         working-directory: awx-operator
         run: |
           BUILD_ARGS="--build-arg DEFAULT_AWX_VERSION=${{ github.event.inputs.default_awx_version }} \
-                      --build-arg OPERATOR_VERSION=${{ github.event.inputs.version }}" \
-          IMAGE_TAG_BASE=ghcr.io/${{ github.repository_owner }}/awx-operator \
-          VERSION=${{ github.event.inputs.version }} make docker-build docker-push
+              --build-arg OPERATOR_VERSION=${{ github.event.inputs.version }}" \
+          IMG=ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }} \
+          make docker-buildx
 
       - name: Run test deployment
         working-directory: awx-operator
@@ -76,10 +73,12 @@ jobs:
         env:
           AWX_TEST_VERSION: ${{ github.event.inputs.default_awx_version }}
 
-      - name: Create draft release
-        working-directory: awx
-        run: |
-          ansible-playbook tools/ansible/stage.yml \
-            -e version=${{ github.event.inputs.version }} \
-            -e repo=${{ github.repository_owner }}/awx-operator \
-            -e github_token=${{ secrets.GITHUB_TOKEN }}
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
+          draft: true

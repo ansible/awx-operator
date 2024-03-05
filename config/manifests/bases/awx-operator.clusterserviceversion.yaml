@@ -10,12 +10,55 @@ metadata:
     description: AWX provides a web-based user interface, REST API, and task engine
       built on top of Ansible.
     repository: https://github.com/ansible/awx-operator
+    support: forum.ansible.com
   name: awx-operator.v0.0.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
+    - description: Deploy a instance of AWX Mesh ingress to allow inbound connection
+        to the AWX Receptor Mesh.
+      displayName: AWX Mesh Ingress
+      kind: AWXMeshIngress
+      name: awxmeshingresses.awx.ansible.com
+      specDescriptors:
+      - displayName: Deployment Name
+        path: deployment_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: External Hostname
+        path: external_hostname
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: External IP Address
+        path: external_ipaddress
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Type
+        path: ingress_type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:none
+        - urn:alm:descriptor:com.tectonic.ui:select:Ingress
+        - urn:alm:descriptor:com.tectonic.ui:select:IngressRouteTCP
+        - urn:alm:descriptor:com.tectonic.ui:select:Route
+      - displayName: Ingress API Version
+        path: ingress_api_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Annotations
+        path: ingress_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Class Name
+        path: ingress_class_name
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Ingress Controller
+        path: ingress_controller
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+      version: v1alpha1
     - description: Back up a deployment of the awx, including jobs, inventories, and
         credentials
       displayName: AWX Backup
@@ -48,7 +91,7 @@ spec:
       - displayName: Backup PVC Storage Class
         path: backup_storage_class
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:io.kubernetes:StorageClass
         - urn:alm:descriptor:com.tectonic.ui:advanced
       - displayName: Precreate Partition Hours
         path: precreate_partition_hours
@@ -603,8 +646,8 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Postgres Extra Volumes
-        description: Specify extra volumes to add to the postgres pod
+      - description: Specify extra volumes to add to the postgres pod
+        displayName: Postgres Extra Volumes
         path: postgres_extra_volumes
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -680,7 +723,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:projects_use_existing_claim:_No_
-        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:io.kubernetes:StorageClass
       - description: Projects Storage Size
         displayName: Projects Storage Size
         path: projects_storage_size
@@ -904,11 +947,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: API Extra Settings
+      - displayName: Extra Settings
         path: extra_settings
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: No Log Configuration
         path: no_log
         x-descriptors:
