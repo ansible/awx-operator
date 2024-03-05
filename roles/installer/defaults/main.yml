@@ -52,6 +52,7 @@ ingress_hosts: ''
 
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
+loadbalancer_class: ''
 service_annotations: ''
 
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768

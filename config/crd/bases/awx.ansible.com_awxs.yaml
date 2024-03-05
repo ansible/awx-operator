@@ -159,6 +159,10 @@ spec:
                 description: Assign LoadBalancer IP address
                 type: string
                 default: ''
+              loadbalancer_class:
+                description: Class of LoadBalancer to use
+                type: string
+                default: ''
               route_host:
                 description: The DNS to use to points to the instance
                 type: string
