@@ -94,51 +94,13 @@
 - name: Include resources configuration tasks
   include_tasks: resources_configuration.yml
 
-- name: Check for pending migrations
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_task_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
-    command: >-
-      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
-  changed_when: false
-  when: awx_task_pod_name != ''
-  register: database_check
-
-- name: Migrate the database if the K8s resources were updated  # noqa 305
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_task_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
-    command: |
-      bash -c "
-      function end_keepalive {
-        rc=$?
-        rm -f \"$1\"
-        kill $(cat /proc/$2/task/$2/children 2>/dev/null) 2>/dev/null || true
-        wait $2 || true
-        exit $rc
-      }
-      keepalive_file=\"$(mktemp)\"
-      while [[ -f \"$keepalive_file\" ]]; do
-        echo 'Database schema migration in progress...'
-        sleep 60
-      done &
-      keepalive_pid=$!
-      trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
-      echo keepalive_pid: $keepalive_pid
-      awx-manage migrate --noinput
-      echo 'Successful'
-      "
-  register: migrate_result
-  when:
-  - awx_task_pod_name != ''
-  - database_check is defined
-  - (database_check.stdout|trim) != '0'
+- name: Migrate database to the latest schema
+  include_tasks: migrate_schema.yml
+  when: awx_web_pod_name != ''
 
 - name: Initialize Django
   include_tasks: initialize_django.yml
-  when: awx_task_pod_name != ''
+  when: awx_web_pod_name != ''
 
 - name: Update status variables
   include_tasks: update_status.yml

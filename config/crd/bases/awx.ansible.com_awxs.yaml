@@ -1571,6 +1571,86 @@ spec:
                 description: Number of task instance replicas
                 type: integer
                 format: int32
+              web_liveness_initial_delay:
+                description: Initial delay before starting liveness checks on web pod
+                type: integer
+                default: 5
+                format: int32
+              task_liveness_initial_delay:
+                description: Initial delay before starting liveness checks on task pod
+                type: integer
+                default: 5
+                format: int32
+              web_liveness_period:
+                description: Time period in seconds between each liveness check for the web pod
+                type: integer
+                default: 0
+                format: int32
+              task_liveness_period:
+                description: Time period in seconds between each liveness check for the task pod
+                type: integer
+                default: 0
+                format: int32
+              web_liveness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of web pod
+                type: integer
+                default: 3
+                format: int32
+              task_liveness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of task pod
+                type: integer
+                default: 3
+                format: int32
+              web_liveness_timeout:
+                description: Number of seconds to wait for a probe response from web pod
+                type: integer
+                default: 1
+                format: int32
+              task_liveness_timeout:
+                description: Number of seconds to wait for a probe response from task pod
+                type: integer
+                default: 1
+                format: int32
+              web_readiness_initial_delay:
+                description: Initial delay before starting readiness checks on web pod
+                type: integer
+                default: 20
+                format: int32
+              task_readiness_initial_delay:
+                description: Initial delay before starting readiness checks on task pod
+                type: integer
+                default: 20
+                format: int32
+              web_readiness_period:
+                description: Time period in seconds between each readiness check for the web pod
+                type: integer
+                default: 0
+                format: int32
+              task_readiness_period:
+                description: Time period in seconds between each readiness check for the task pod
+                type: integer
+                default: 0
+                format: int32
+              web_readiness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of web pod
+                type: integer
+                default: 3
+                format: int32
+              task_readiness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of task pod
+                type: integer
+                default: 3
+                format: int32
+              web_readiness_timeout:
+                description: Number of seconds to wait for a probe response from web pod
+                type: integer
+                default: 1
+                format: int32
+              task_readiness_timeout:
+                description: Number of seconds to wait for a probe response from task pod
+                type: integer
+                default: 1
+                format: int32
               garbage_collect_secrets:
                 description: Whether or not to remove secrets upon instance removal
                 default: false
