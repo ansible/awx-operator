@@ -1,10 +1,10 @@
 ### Database Configuration
 
-#### Postgres Version
+#### PostgreSQL Version
 
-The default Postgres version for the version of AWX bundled with the latest version of the awx-operator is Postgres 15. You can find this default for a given version by at the default value for [_postgres_image_version](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml#L243).
+The default PostgreSQL version for the version of AWX bundled with the latest version of the awx-operator is PostgreSQL 15. You can find this default for a given version by at the default value for [supported_pg_version](https://github.com/ansible/awx-operator/blob/ffba1b4712a0b03f1faedfa70e3a9ef0d443e4a6/roles/installer/vars/main.yml#L7).
 
-We only have coverage for the default version of Postgres. Newer versions of Postgres (14+) will likely work, but should only be configured as an external database. If your database is managed by the awx-operator (default if you don't specify a `postgres_configuration_secret`), then you should not override the default version as this may cause issues when awx-operator tries to upgrade your postgresql pod.
+We only have coverage for the default version of PostgreSQL. Newer versions of PostgreSQL will likely work, but should only be configured as an external database. If your database is managed by the awx-operator (default if you don't specify a `postgres_configuration_secret`), then you should not override the default version as this may cause issues when awx-operator tries to upgrade your postgresql pod.
 
 #### External PostgreSQL Service
 
@@ -90,4 +90,4 @@ spec:
     - 'max_connections=1000'
 ```
 
-**Note**: If `postgres_storage_class` is not defined, Postgres will store it's data on a volume using the default storage class for your cluster.
+**Note**: If `postgres_storage_class` is not defined, PostgreSQL will store it's data on a volume using the default storage class for your cluster.
