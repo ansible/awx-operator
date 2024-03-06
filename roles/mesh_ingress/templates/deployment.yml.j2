@@ -24,7 +24,8 @@ spec:
 {% if external_ipaddress is defined %}
           external_ipaddress={{ external_ipaddress }}
 {% endif %}
-          receptor --cert-makereq bits=2048 \
+          receptor --cert-makereq \
+            bits=2048 \
             commonname=$internal_hostname \
             dnsname=$internal_hostname \
             nodeid=$internal_hostname \
@@ -41,6 +42,7 @@ spec:
             cacert=/etc/receptor/tls/ca/mesh-CA.crt \
             cakey=/etc/receptor/tls/ca/mesh-CA.key \
             outcert=/etc/receptor/tls/receptor.crt \
+            notafter=$(date --iso-8601=seconds --utc --date "10 years") \
             verify=yes
           exec receptor --config /etc/receptor/receptor.conf
         image: '{{ _control_plane_ee_image }}'
