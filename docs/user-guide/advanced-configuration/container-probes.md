@@ -8,6 +8,7 @@ The liveness probe queries the status of the supervisor daemon of the container.
 detects one of the services in a state other than "RUNNING".
 
 | Name         | Description                        | Default |
+| -------------| -----------------------------------|---------|
 | web_liveness_period | Time period in seconds between each probe check.  The value of 0 disables the probe. | 0    |
 | web_liveness_initial_delay | Initial delay before starting probes in seconds | 5   |
 | web_liveness_failure_threshold| Number of consecutive failure events to identify failure of container | 3    |
@@ -19,7 +20,7 @@ detects one of the services in a state other than "RUNNING".
 
 #### Web Container Readiness Check
 
-This is a HTTP check against the status endpoint to confirm the system is still able to respond to web requests.
+This is an HTTP check against the status endpoint to confirm the system is still able to respond to web requests.
 
 | Name         | Description                        | Default |
 | -------------| ---------------------------------- | ------- |
