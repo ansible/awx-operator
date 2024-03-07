@@ -28,7 +28,7 @@ spec:
                 name: {{ ansible_operator_meta.name }}
                 port:
                   number: 27199
-{% if external_hostname %}
+{% if external_hostname is defined %}
       host: {{ external_hostname }}
 {% endif %}
 {% endif %}
@@ -53,7 +53,7 @@ spec:
     - services:
       - name: {{ ansible_operator_meta.name }}
         port: 27199
-{% if external_hostname %}
+{% if external_hostname is defined %}
       match: HostSNI(`{{ external_hostname }}`)
 {% endif %}
   tls:
