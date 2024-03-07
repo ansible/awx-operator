@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ deployment_type }}-metrics-claim
+  namespace: {{ ansible_operator_meta.namespace }}
+  ownerReferences: null
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ metrics_storage_size | default('5Gi') }}

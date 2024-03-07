@@ -102,6 +102,10 @@
   include_tasks: initialize_django.yml
   when: awx_web_pod_name != ''
 
+- name: Enable optional metrics
+  include_tasks: enable_metrics.yml
+  when: metrics_enabled
+
 - name: Update status variables
   include_tasks: update_status.yml
 

@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: CronJob
+metadata:
+  name: {{ ansible_operator_meta.name }}-metrics-report
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-metrics-report'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+spec:
+  schedule: "{{ _metrics_cronjob_report_schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ ansible_operator_meta.name }}-metrics-report
+            image: "{{ _metrics_image }}"
+            imagePullPolicy: "{{ image_pull_policy }}"
+            command:
+              - /bin/sh
+              - -c
+              - metrics-utility build_report
+            envFrom:
+            - configMapRef:
+                name: {{ _metrics_configmap }}
+            volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-metrics
+              mountPath: /metrics
+              readOnly: false
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+          volumes:
+          - name: {{ ansible_operator_meta.name }}-metrics
+            persistentVolumeClaim:
+              claimName: {{ _metrics_pvc_claim }}
+              readOnly: false
+          - name: "{{ ansible_operator_meta.name }}-application-credentials"
+            secret:
+              secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+              items:
+                - key: credentials.py
+                  path: 'credentials.py'
+          - name: {{ ansible_operator_meta.name }}-settings
+            configMap:
+              name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+              items:
+                - key: settings
+                  path: settings.py
+          restartPolicy: OnFailure
