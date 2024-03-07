@@ -41,6 +41,11 @@ spec:
               deployment_name:
                 description: Name of the AWX deployment to create the Mesh Ingress for.
                 type: string
+              image_pull_secrets:
+                description: Image pull secrets for Mesh Ingress containers.
+                type: array
+                items:
+                  type: string
               external_hostname:
                 description: External hostname to use for the Mesh Ingress.
                 type: string
