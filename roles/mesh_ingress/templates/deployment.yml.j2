@@ -12,6 +12,12 @@ spec:
       labels:
         app.kubernetes.io/name: {{ ansible_operator_meta.name }}
     spec:
+{% if image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
+{% endif %}
       containers:
       - args:
         - /bin/sh

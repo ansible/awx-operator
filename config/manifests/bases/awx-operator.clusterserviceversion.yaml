@@ -58,6 +58,11 @@ spec:
         path: ingress_controller
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Image Pull Secrets
+        path: image_pull_secrets
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
       version: v1alpha1
     - description: Back up a deployment of the awx, including jobs, inventories, and
         credentials
