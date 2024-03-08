@@ -69,7 +69,7 @@
     label_selectors:
       - "app.kubernetes.io/component=database"
       - "app.kubernetes.io/instance={{ old_postgres_pod.metadata.labels['app.kubernetes.io/instance'] }}"
-      - "app.kubernetes.io/managed-by=awx-operator"
+      - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
   register: old_postgres_svc
 
 - name: Set full resolvable host name for postgres pod
