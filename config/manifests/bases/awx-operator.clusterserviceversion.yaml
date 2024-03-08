@@ -1050,6 +1050,31 @@ spec:
         path: image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Enable Metrics-Utility?
+        path: metrics_enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - displayName: Metrics-Utility Image
+        path: metrics_image
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Metrics-Utlity Image Version
+        path: metrics_image_version
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Metrics-Utlity ConfigMap
+        path: metrics_configmap
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Metrics-Utlity Gather Data CronJob Schedule
+        path: metrics_cronjob_gather_schedule
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+      - displayName: Metrics-Utlity Report CronJob Schedule
+        path: metrics_cronjob_report_schedule
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       version: v1beta1
   description: |
     AWX is designed to help accelerate and scale your business through automation.
