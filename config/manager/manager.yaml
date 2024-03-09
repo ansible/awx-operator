@@ -38,7 +38,7 @@ spec:
       - args:
         - --leader-elect
         - --leader-election-id=awx-operator
-        image: controller:latest
+        image: controller
         imagePullPolicy: Always
         name: awx-manager
         env:
