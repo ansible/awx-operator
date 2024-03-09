@@ -104,7 +104,7 @@
 
 - name: Enable optional metrics-utility
   include_tasks: enable_metrics_utility.yml
-  when: metrics_utility_enabled
+  when: metrics_utility_enabled | bool
 
 - name: Update status variables
   include_tasks: update_status.yml
