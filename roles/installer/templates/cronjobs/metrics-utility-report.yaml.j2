@@ -11,6 +11,7 @@ spec:
   schedule: "{{ _metrics_utility_cronjob_report_schedule }}"
   jobTemplate:
     spec:
+      backoffLimit: 2
       template:
         spec:
           containers:
