@@ -1050,31 +1050,51 @@ spec:
         path: image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
-      - displayName: Enable Metrics-Utility?
-        path: metrics_enabled
+      - displayName: Metrics-Utility Enabled
+        path: metrics_utility_enabled
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Metrics-Utility Image
-        path: metrics_image
+        path: metrics_utility_image
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Metrics-Utlity Image Version
-        path: metrics_image_version
+        path: metrics_utility_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Metrics-Utility Image PullPolicy
+        path: metrics_utility_image_pull_policy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
       - displayName: Metrics-Utlity ConfigMap
-        path: metrics_configmap
+        path: metrics_utility_configmap
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:selector:core:v1:ConfigMap
       - displayName: Metrics-Utlity Gather Data CronJob Schedule
-        path: metrics_cronjob_gather_schedule
+        path: metrics_utility_cronjob_gather_schedule
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Metrics-Utlity Report CronJob Schedule
-        path: metrics_cronjob_report_schedule
+        path: metrics_utility_cronjob_report_schedule
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Metrics-Utlity PVC Claim
+        path: metrics_utility_pvc_claim
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text        
+      - displayName: Metrics-Utlity PVC Claim Size
+        path: metrics_utility_pvc_claim_size
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
       version: v1beta1
   description: |
     AWX is designed to help accelerate and scale your business through automation.

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ deployment_type }}-metrics-claim
+  name: {{ _metrics_utility_pvc_claim }}
   namespace: {{ ansible_operator_meta.namespace }}
   ownerReferences: null
   labels:
@@ -12,4 +12,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ metrics_storage_size | default('5Gi') }}
+      storage: {{ _metrics_utility_pvc_claim_size }}
