@@ -83,6 +83,11 @@ spec:
   external_hostname: <fqdn for mesh ingress>
 ```
 
+!!! tip
+    AWX Operator supports both API groups `traefik.io` and `traefik.containo.us` in `ingress_api_version` for Traefik, but it is recommended to use `traefik.io` since `traefik.containo.us` is deprecated in Traefik v2.10 and is removed in Traefik v3. Refer to [Traefik documentation](https://doc.traefik.io/traefik/migration/v2/#v210) for more information about deprecation.
+
+    If you can't see any IngressRouteTCP resources by `kubectl` command after deploying mesh ingress, you should fully qualify the resource name with API group, `kubectl get ingressroutetcp.traefik.io` or `kubectl get traefik.containo.us` for example.
+
 ### On Kubernetes with User managed Ingress
 
 To deploy a mesh ingress on Kubernetes cluster, create the AWXMeshIngress resource on the namespace where your AWX instance is running on.
