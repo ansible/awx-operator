@@ -95,6 +95,10 @@ spec:
               mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
         - name: init-receptor
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
