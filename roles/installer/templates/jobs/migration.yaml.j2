@@ -13,7 +13,7 @@ spec:
         - name: "migration-job"
           image: '{{ _image }}'
           command:
-            - /usr/bin/awx-manage
+            - awx-manage
             - migrate
             - --noinput
           volumeMounts:
@@ -29,6 +29,10 @@ spec:
               mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
       volumes:
         - name: "{{ ansible_operator_meta.name }}-application-credentials"
           secret:
@@ -52,6 +56,11 @@ spec:
             items:
               - key: settings
                 path: settings.py
+{% if development_mode | bool %}
+        - name: awx-devel
+          hostPath:
+            path: /awx_devel
+{% endif %}
       dnsPolicy: ClusterFirst
       restartPolicy: Never
       terminationGracePeriodSeconds: 30
