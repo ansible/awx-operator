@@ -13,3 +13,6 @@ spec:
   resources:
     requests:
       storage: {{ _metrics_utility_pvc_claim_size }}
+{% if metrics_utility_pvc_claim_storage_class is defined %}
+  storageClassName: {{ metrics_utility_pvc_claim_storage_class }}
+{% endif %}

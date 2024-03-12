@@ -1095,6 +1095,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Metrics-Utlity PVC Claim Storage Class
+        path: metrics_utility_pvc_claim_storage_class
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:StorageClass
       version: v1beta1
   description: |
     AWX is designed to help accelerate and scale your business through automation.

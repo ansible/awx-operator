@@ -5,23 +5,19 @@
     name: "{{ _metrics_utility_pvc_claim }}"
     kind: PersistentVolumeClaim
     namespace: "{{ ansible_operator_meta.namespace }}"
-  register: provided_pvc
   when:
     - _metrics_utility_pvc_claim | length
-
 
 - name: Create PVC for metrics-utility
   kubernetes.core.k8s:
     kind: PersistentVolumeClaim
     definition: "{{ lookup('template', 'storage/metrics-utility.yaml.j2') }}"
 
-
 - name: Create Kubernetes CronJobs for metrics-utility
   kubernetes.core.k8s:
-    name: "{{ ansible_operator_meta.name }}-{{ item }}"
-    kind: CronJob
-    definition: "{{ lookup('template', 'cronjobs/{{ item }}.yaml.j2') }}"
+    definition: "{{ lookup('template', item) }}"
+    apply: true
     wait: true
   loop:
-    - metrics-utility-gather
-    - metrics-utlity-report
+    - cronjobs/metrics-utility-gather.yaml.j2
+    - cronjobs/metrics-utility-report.yaml.j2

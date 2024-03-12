@@ -1935,7 +1935,7 @@ spec:
                 type: string
               metrics_utility_image_pull_policy:
                 description: Metrics-Utility Image PullPolicy
-                type: string                
+                type: string
               metrics_utility_configmap:
                 description: Metrics-Utlity ConfigMap
                 type: string
@@ -1954,6 +1954,9 @@ spec:
                 description: Metrics-Utlity PVC Claim Size
                 type: string
                 default: 5Gi
+              metrics_utility_pvc_claim_storage_class:
+                description: Metrics-Utlity PVC Claim Storage Class
+                type: string
             type: object
           status:
             properties:
