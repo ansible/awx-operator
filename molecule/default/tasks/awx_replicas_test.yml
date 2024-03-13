@@ -49,16 +49,16 @@
 ####
 
     - debug:
-        msg: test - replicas=3 should give 3 of each
+        msg: test - replicas=2 should give 2 of each
 
     - include_tasks: apply_awx_spec.yml
       vars:
         additional_fields:
-          replicas: 3
+          replicas: 2
 
     - include_tasks: _test_case_replicas.yml
       vars:
-        expected_web_replicas: 3
-        expected_task_replicas: 3
+        expected_web_replicas: 2
+        expected_task_replicas: 2
   tags:
     - replicas
