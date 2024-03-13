@@ -401,7 +401,7 @@ postgres_init_container_resource_requirements:
     memory: 64Mi
 # Assign a preexisting priority class to the postgres pod
 postgres_priority_class: ''
-postgres_data_path: '/var/lib/postgresql/data/pgdata'
+postgres_data_path: '/var/lib/pgsql/data/pgdata'
 
 # Persistence to the AWX project data folder
 # Whether or not the /var/lib/projects directory will be persistent
