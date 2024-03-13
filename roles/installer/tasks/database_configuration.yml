@@ -166,7 +166,11 @@
         pod: "{{ old_postgres_pod['metadata']['name'] }}"
         command: |
           bash -c """
-          cat {{ path_to_pg_version }}
+          if [ -f {{ path_to_pg_version }} ]; then
+            cat {{ path_to_pg_version }}
+          elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
+            cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
+          fi
           """
       register: _old_pg_version
 
