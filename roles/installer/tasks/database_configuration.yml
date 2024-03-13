@@ -156,17 +156,17 @@
 
 - name: Check if postgres pod is running an older version
   block:
-    - name: Set path to PG_VERSION file for given container image
-      set_fact:
-        path_to_pg_version: '{{ postgres_data_path }}/PG_VERSION'
-
     - name: Get old PostgreSQL version
       k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
         pod: "{{ old_postgres_pod['metadata']['name'] }}"
         command: |
           bash -c """
-          cat {{ path_to_pg_version }}
+          if [ -f "{{ postgres_data_path }}/PG_VERSION" ]; then
+            cat "{{ postgres_data_path }}/PG_VERSION"
+          elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
+            cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
+          fi
           """
       register: _old_pg_version
 
