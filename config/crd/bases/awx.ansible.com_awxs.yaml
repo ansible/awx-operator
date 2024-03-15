@@ -1748,6 +1748,9 @@ spec:
               init_container_extra_commands:
                 description: Extra commands for the init container
                 type: string
+              init_postgres_extra_commands:
+                description: Extra commands for the init postgres container
+                type: string
               init_container_extra_volume_mounts:
                 description: Specify volume mounts to be added to the init container
                 type: string
@@ -1867,6 +1870,7 @@ spec:
               projects_storage_class:
                 description: Storage class for the /var/lib/projects PersistentVolumeClaim
                 type: string
+
               projects_storage_size:
                 description: Size for the /var/lib/projects PersistentVolumeClaim
                 default: 8Gi
