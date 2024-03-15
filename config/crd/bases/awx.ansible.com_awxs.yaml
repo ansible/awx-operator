@@ -1459,28 +1459,6 @@ spec:
                         type: string
                     type: object
                 type: object
-              postgres_init_container_resource_requirements:
-                description: Resource requirements for the postgres init container
-                properties:
-                  requests:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                      storage:
-                        type: string
-                    type: object
-                  limits:
-                    properties:
-                      cpu:
-                        type: string
-                      memory:
-                        type: string
-                      storage:
-                        type: string
-                    type: object
-                type: object
               redis_resource_requirements:
                 description: Resource requirements for the redis container
                 properties:
@@ -1811,6 +1789,12 @@ spec:
                 type: array
                 items:
                   type: string
+              postgres_data_volume_init:
+                description: Sets permissions on the /var/lib/postgresql/data for postgres container using an init container (not Openshift)
+                type: boolean
+              postgres_init_container_commands:
+                description: Customize the postgres init container commands (Non Openshift)
+                type: string
               postgres_extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string

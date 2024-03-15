@@ -60,7 +60,6 @@ The following variables are customizable for the managed PostgreSQL service
 | --------------------------------------------- | --------------------------------------------- | --------------------------------------- |
 | postgres_image                                | Path of the image to pull                     | quay.io/sclorg/postgresql-15-c9s        |
 | postgres_image_version                        | Image version to pull                         | latest                                  |
-| postgres_init_container_resource_requirements | Database init container resource requirements | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}                |
 | postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                            |
@@ -99,3 +98,22 @@ We recommend you use the default image sclorg image. If you are coming from a de
 You can no longer configure a custom `postgres_data_path` because it is hardcoded in the quay.io/sclorg/postgresql-15-c9s image.
 
 If you override the postgres image to use a custom postgres image like postgres:15 for example, the default data directory path may be different. These images cannot be used interchangeably.
+
+#### Initialize Postgres data volume
+
+When using a hostPath backed PVC and some other storage classes like longhorn storagfe, the postgres data directory needs to be accessible by the user in the postgres pod (UID 26).
+
+To initialize this directory with the correct permissions, configure the following setting, which will use an init container to set the permissions in the postgres volume.
+
+```yaml
+spec:
+  postgres_data_volume_init: true
+```
+
+Should you need to modify the init container commands, there is an example below.
+
+```yaml
+postgres_init_container_commands: |
+  chown 26:0 /var/lib/pgsql/data
+  chmod 700 /var/lib/pgsql/data
+```

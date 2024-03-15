@@ -31,7 +31,6 @@ The resource requirements for both, the task and the web containers are configur
 | postgres_resource_requirements   | Postgres container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
 | rsyslog_resource_requirements   | Rsyslog container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
 | init_container_resource_requirements   | Init Container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
-| postgres_init_container_resource_requirements   | Postgres Init Container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
 
 
 Example of customization could be:
@@ -82,13 +81,6 @@ spec:
     requests:
       cpu: 100m
       memory: 128Mi
-    limits:
-      cpu: 1000m
-      memory: 2Gi
-  postgres_init_container_resource_requirements:
-    requests:
-      cpu: 10m
-      memory: 64Mi
     limits:
       cpu: 1000m
       memory: 2Gi
