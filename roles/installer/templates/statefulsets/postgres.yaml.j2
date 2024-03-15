@@ -47,6 +47,26 @@ spec:
 {% if postgres_priority_class is defined %}
       priorityClassName: '{{ postgres_priority_class }}'
 {% endif %}
+{% if postgres_init_container_extra_commands is defined %}
+      initContainers:
+        - name: init
+          image: '{{ _postgres_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          securityContext:
+            runAsUser: 0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              {{ postgres_init_container_extra_commands | indent(width=14) }}
+          volumeMounts:
+            - name: postgres-{{ supported_pg_version }}
+              mountPath: '{{ _postgres_data_path | dirname }}'
+              subPath: '{{ _postgres_data_path | dirname | basename }}'
+{% if postgres_extra_volume_mounts %}
+            {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% endif %}
       containers:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -113,7 +133,7 @@ spec:
             - name: postgres-{{ supported_pg_version }}
               mountPath: '{{ _postgres_data_path | dirname }}'
               subPath: '{{ _postgres_data_path | dirname | basename }}'
-{% if postgres_extra_volume_mounts -%}
+{% if postgres_extra_volume_mounts %}
             {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ postgres_resource_requirements }}

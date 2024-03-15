@@ -1811,6 +1811,9 @@ spec:
                 type: array
                 items:
                   type: string
+              postgres_init_container_extra_commands:
+                description: Extra commands for the init postgres container
+                type: string
               postgres_extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string

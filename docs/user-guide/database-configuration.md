@@ -99,3 +99,15 @@ We recommend you use the default image sclorg image. If you are coming from a de
 You can no longer configure a custom `postgres_data_path` because it is hardcoded in the quay.io/sclorg/postgresql-15-c9s image.
 
 If you override the postgres image to use a custom postgres image like postgres:15 for example, the default data directory path may be different. These images cannot be used interchangeably.
+
+#### Postgres init extra commands
+
+Users can define arbitrary commands to run from a postgres init container.
+
+For example this may be useful for setting permissions and ownership of the postgres data directory.
+
+```yaml
+postgres_init_container_extra_commands: |
+  chown 26:0 /var/lib/pgsql/data
+  chmod 700 /var/lib/pgsql/data
+```
