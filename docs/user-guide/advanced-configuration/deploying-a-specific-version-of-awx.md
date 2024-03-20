@@ -28,7 +28,10 @@ spec:
   ee_images:
     - name: my-custom-awx-ee
       image: myorg/my-custom-awx-ee
+  control_plane_ee_image: myorg/my-custom-awx-ee:latest
   init_container_image: myorg/my-custom-awx-ee
+  init_container_image_version: latest
+  init_projects_container_image: myorg/my-mirrored-centos:stream9
 ```
 
 **Note**: The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
