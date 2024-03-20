@@ -1923,6 +1923,40 @@ spec:
                 description: Disable web container's nginx ipv6 listener
                 type: boolean
                 default: false
+              metrics_utility_enabled:
+                description: Enable metrics utility
+                type: boolean
+                default: false
+              metrics_utility_image:
+                description: Metrics-Utility Image
+                type: string
+              metrics_utility_image_version:
+                description: Metrics-Utility Image Version
+                type: string
+              metrics_utility_image_pull_policy:
+                description: Metrics-Utility Image PullPolicy
+                type: string
+              metrics_utility_configmap:
+                description: Metrics-Utlity ConfigMap
+                type: string
+              metrics_utility_cronjob_gather_schedule:
+                description: Metrics-Utlity Gather Data CronJob Schedule
+                type: string
+                default: '@hourly'
+              metrics_utility_cronjob_report_schedule:
+                description: Metrics-Utlity Report CronJob Schedule
+                type: string
+                default: '@monthly'
+              metrics_utility_pvc_claim:
+                description: Metrics-Utlity PVC Claim
+                type: string
+              metrics_utility_pvc_claim_size:
+                description: Metrics-Utlity PVC Claim Size
+                type: string
+                default: 5Gi
+              metrics_utility_pvc_claim_storage_class:
+                description: Metrics-Utlity PVC Claim Storage Class
+                type: string
             type: object
           status:
             properties:

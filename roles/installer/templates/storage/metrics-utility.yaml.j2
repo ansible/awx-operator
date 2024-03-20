@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ _metrics_utility_pvc_claim }}
+  namespace: {{ ansible_operator_meta.namespace }}
+  ownerReferences: null
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ _metrics_utility_pvc_claim_size }}
+{% if metrics_utility_pvc_claim_storage_class is defined %}
+  storageClassName: {{ metrics_utility_pvc_claim_storage_class }}
+{% endif %}
