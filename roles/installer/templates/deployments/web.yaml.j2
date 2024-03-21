@@ -178,11 +178,10 @@ spec:
 {% endif %}
 {% if web_readiness_period|int > 0 %}
           readinessProbe:
-            exec:
-              httpGet:
-                path: /api/v2/ping/
-                scheme: HTTP
-                port: 8052
+            httpGet:
+              path: /api/v2/ping/
+              scheme: HTTP
+              port: 8052
             initialDelaySeconds: {{ web_readiness_initial_delay }}
             periodSeconds: {{ web_readiness_period }}
             failureThreshold: {{ web_readiness_failure_threshold }}
