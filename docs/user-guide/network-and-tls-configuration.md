@@ -56,11 +56,13 @@ The HTTPS Load Balancer also uses SSL termination at the Load Balancer level and
 
   * NodePort
 
-The following variables are customizable only when `service_type=NodePort`
+The following variables are customizable only when `service_type=NodePort`. To be able to use HTTPS as protocol you must also specify 'nodeport_tls_secret' secret containing `web.crt` and `web.key` that will be used for https inside container by nginx.
 
-| Name          | Description            | Default |
-| ------------- | ---------------------- | ------- |
-| nodeport_port | Port used for NodePort | 30080   |
+| Name                | Description                              | Default      |
+| ------------------- | ---------------------------------------- | ------------ |
+| nodeport_port       | Port used for NodePort                   | 30080        |
+| nodeport_protocol   | Protocol to use for NodePort             | http         |
+| nodeport_tls_secret | Secret that contains the TLS information | Empty string |
 
 ```yaml
 ---
@@ -69,6 +71,16 @@ spec:
   service_type: NodePort
   nodeport_port: 30080
 ```
+```yaml
+---
+spec:
+  ...
+  service_type: NodePort
+  nodeport_port: 30443
+  nodeport_protocol: https
+  nodeport_tls_secret: sample-tls-secret
+```
+
 #### Ingress Type
 
 By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, when the `ingress_type` is not specified, it will default to `none` and nothing ingress-wise will be created.
