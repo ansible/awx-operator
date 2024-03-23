@@ -97,7 +97,7 @@ print-%: ## Print any variable from the Makefile. Use as `make print-VARIABLE`
 
 .PHONY: run
 run: ansible-operator ## Run against the configured Kubernetes cluster in ~/.kube/config
-	ANSIBLE_ROLES_PATH="$(ANSIBLE_ROLES_PATH):$(shell pwd)/roles" $(ANSIBLE_OPERATOR) run
+	ANSIBLE_ROLES_PATH="$(ANSIBLE_ROLES_PATH):$(shell pwd)/roles" $(ANSIBLE_OPERATOR) run --zap-encoder=console
 
 .PHONY: docker-build
 docker-build: ## Build docker image with the manager.
