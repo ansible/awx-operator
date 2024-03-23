@@ -27,6 +27,7 @@
             development_mode: "{{ development_mode | default(omit) | bool }}"
             image_pull_policy: "{{ image_pull_policy | default(omit) }}"
             nodeport_port: "{{ nodeport_port | default(omit) }}"
+            no_log: "{{ no_log | default(omit) | bool }}"
             # ee_images:
             #   - name: test-ee
             #     image: quay.io/<user>/awx-ee

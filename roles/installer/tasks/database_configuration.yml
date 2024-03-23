@@ -85,13 +85,26 @@
 
 - name: Set PostgreSQL Configuration
   set_fact:
-    pg_config: '{{ _generated_pg_config_resources["resources"] | default([]) | length | ternary(_generated_pg_config_resources, _pg_config) }}'
+    pg_config: "{{ postgres_configuration_secret | length | ternary(_pg_config, _generated_pg_config_resources) }}"
   no_log: "{{ no_log }}"
 
 - name: Set actual postgres configuration secret used
   set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
+- name: Remove ownerReferences
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ __postgres_configuration_secret }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        ownerReferences: null
+  no_log: "{{ no_log }}"
+  when:
+    - not garbage_collect_secrets | bool
+    - _generated_pg_config_resources["resources"] | default([]) | length
 - name: Store Database Configuration
   set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
