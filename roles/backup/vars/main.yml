@@ -6,3 +6,4 @@ backup_complete: false
 database_type: "unmanaged"
 supported_pg_version: 15
 image_pull_policy: IfNotPresent
+image_pull_secrets: []

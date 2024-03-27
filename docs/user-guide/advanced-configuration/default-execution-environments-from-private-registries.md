@@ -24,7 +24,7 @@ The images listed in "ee_images" will be added as globally available Execution E
 
 You can create `image_pull_secret`
 ```
-kubectl create secret <resoucename>-cp-pull-credentials regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+kubectl create secret docker-registry <resoucename>-cp-pull-credentials --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
 If you need more control (for example, to set a namespace or a label on the new secret) then you can customize the Secret before storing it
 
