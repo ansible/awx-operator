@@ -1034,6 +1034,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
       - displayName: Metrics-Utlity Image Version
         path: metrics_utility_image_version
         x-descriptors:
