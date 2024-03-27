@@ -99,3 +99,5 @@ jobs:
             echo "${no_log}"
             exit 1
           fi
+  nox-sessions:
+    uses: ./.github/workflows/reusable-nox.yml
