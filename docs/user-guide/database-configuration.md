@@ -63,7 +63,7 @@ The following variables are customizable for the managed PostgreSQL service
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}                |
 | postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                            |
-| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata`       |
+| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/pgsql/data/pgdata`            |
 | postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                            |
 
 Example of customization could be:
