@@ -266,6 +266,11 @@
         field_selectors:
           - status.phase=Running
       register: _new_pod
+      until:
+        - "_new_pod['resources'] | length"
+        - "_new_pod['resources'] | rejectattr('metadata.deletionTimestamp', 'defined') | length"
+      retries: 60
+      delay: 5
 
     - name: Update new resource pod as a variable.
       set_fact:
