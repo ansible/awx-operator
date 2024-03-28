@@ -63,8 +63,9 @@ The following variables are customizable for the managed PostgreSQL service
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}                |
 | postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                            |
-| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata`       |
 | postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                            |
+
+> Note: You can not longer configure a custom `postgres_data_dir` because it is hardcoded in the quay.io/sclorg/postgresql-15-c9s image.
 
 Example of customization could be:
 

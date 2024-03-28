@@ -637,7 +637,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:io.kubernetes:StorageClass
         - urn:alm:descriptor:com.tectonic.ui:advanced
-      - displayName: Postgres Datapath
+      - displayName: Postgres Datapath (Deprecated)
         path: postgres_data_path
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
