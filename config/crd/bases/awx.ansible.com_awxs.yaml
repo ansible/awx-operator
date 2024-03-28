@@ -1807,9 +1807,6 @@ spec:
               postgres_priority_class:
                 description: Assign a preexisting priority class to the postgres pod
                 type: string
-              postgres_data_path:
-                description: Path where the PostgreSQL data are located
-                type: string
               postgres_extra_args:
                 type: array
                 items:
