@@ -162,8 +162,8 @@
         pod: "{{ old_postgres_pod['metadata']['name'] }}"
         command: |
           bash -c """
-          if [ -f "{{ postgres_data_path }}/PG_VERSION" ]; then
-            cat "{{ postgres_data_path }}/PG_VERSION"
+          if [ -f "{{ _postgres_data_path }}/PG_VERSION" ]; then
+            cat "{{ _postgres_data_path }}/PG_VERSION"
           elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
             cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
           fi
