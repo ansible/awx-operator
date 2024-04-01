@@ -114,13 +114,14 @@ docker-push: ## Push docker image with the manager.
 # - be able to push the image for your registry (i.e. if you do not inform a valid value via IMG=<myregistry/image:<tag>> than the export will fail)
 # To properly provided solutions that supports more than one platform you should use this option.
 PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
+# Set DOCKER_BUILDX_PUSH to "true" to push the image, set to any other value to load image to docker instead of pushing
+DOCKER_BUILDX_PUSH ?= false
 .PHONY: docker-buildx
 docker-buildx: ## Build and push docker image for the manager for cross-platform support
-	- docker buildx create --name project-v3-builder
-	docker buildx use project-v3-builder
-	- docker buildx build --push $(BUILD_ARGS) --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
-	- docker buildx rm project-v3-builder
-
+	- docker buildx create --name awx-operator-v3-builder
+	docker buildx use awx-operator-v3-builder
+	- docker buildx build $(if $(filter true,$(DOCKER_BUILDX_PUSH)),--push,--load) $(BUILD_ARGS) --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
+	- docker buildx rm awx-operator-v3-builder
 
 ##@ Deployment
 
