@@ -58,12 +58,12 @@ The following variables are customizable for the managed PostgreSQL service
 
 | Name                                          | Description                                   | Default                                 |
 | --------------------------------------------- | --------------------------------------------- | --------------------------------------- |
-| postgres_image                                | Path of the image to pull                     | quay.io/sclorg/postgresql-15-c9s:latest |
+| postgres_image                                | Path of the image to pull                     | quay.io/sclorg/postgresql-15-c9s        |
+| postgres_image_version                        | Image version to pull                         | latest                                  |
 | postgres_init_container_resource_requirements | Database init container resource requirements | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi}      |
 | postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}                |
 | postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                            |
-| postgres_data_path                            | PostgreSQL data path                          | `/var/lib/postgresql/data/pgdata`       |
 | postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                            |
 
 Example of customization could be:
@@ -91,3 +91,11 @@ spec:
 ```
 
 **Note**: If `postgres_storage_class` is not defined, PostgreSQL will store it's data on a volume using the default storage class for your cluster.
+
+#### Note about overriding the postgres image
+
+We recommend you use the default image sclorg image. If you are coming from a deployment using the old postgres image from dockerhub (postgres:13), upgrading from awx-operator version 2.12.2 and below to 2.15.0+ will handle migrating your data to the new postgresql image (postgresql-15-c9s).
+
+You can no longer configure a custom `postgres_data_path` because it is hardcoded in the quay.io/sclorg/postgresql-15-c9s image.
+
+If you override the postgres image to use a custom postgres image like postgres:15 for example, the default data directory path may be different. These images cannot be used interchangeably.
