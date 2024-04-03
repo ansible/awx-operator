@@ -456,12 +456,21 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
-      - description: The PostgreSQL init container is not used when an external DB
-          is configured
+      - description: Sets permissions on the /var/lib/pgsql/data for postgres container using an init container (not Openshift)
+        displayName: PostgreSQL initialize data volume
+        path: postgres_data_volume_init
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Customize the postgres init container commands (Non Openshift)
+        displayName: PostgreSQL Init Container Commands
+        path: postgres_init_container_commands
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: (Deprecated, use postgres_resource_requirements parameter instead)
         displayName: PostgreSQL Init Container Resource Requirements
         path: postgres_init_container_resource_requirements
         x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - displayName: Redis Container Resource Requirements
         path: redis_resource_requirements

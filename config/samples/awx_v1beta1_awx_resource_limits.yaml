@@ -46,10 +46,3 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
-  postgres_init_container_resource_requirements:
-    requests:
-      cpu: 10m
-      memory: 64Mi
-    limits:
-      cpu: 1000m
-      memory: 2Gi

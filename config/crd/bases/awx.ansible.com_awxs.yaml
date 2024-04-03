@@ -1460,7 +1460,7 @@ spec:
                     type: object
                 type: object
               postgres_init_container_resource_requirements:
-                description: Resource requirements for the postgres init container
+                description: (Deprecated, use postgres_resource_requirements parameter) Resource requirements for the postgres init container
                 properties:
                   requests:
                     properties:
@@ -1811,6 +1811,12 @@ spec:
                 type: array
                 items:
                   type: string
+              postgres_data_volume_init:
+                description: Sets permissions on the /var/lib/pgdata/data for postgres container using an init container (not Openshift)
+                type: boolean
+              postgres_init_container_commands:
+                description: Customize the postgres init container commands (Non Openshift)
+                type: string
               postgres_extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string

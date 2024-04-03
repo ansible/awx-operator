@@ -395,10 +395,7 @@ postgres_resource_requirements:
   requests:
     cpu: 10m
     memory: 64Mi
-postgres_init_container_resource_requirements:
-  requests:
-    cpu: 10m
-    memory: 64Mi
+
 # Assign a preexisting priority class to the postgres pod
 postgres_priority_class: ''
 
@@ -411,6 +408,11 @@ projects_existing_claim: ''
 #
 # Define postgres configuration arguments to use
 postgres_extra_args: ''
+
+postgres_data_volume_init: false
+postgres_init_container_commands: |
+  chown 26:0 /var/lib/pgsql/data
+  chmod 700 /var/lib/pgsql/data
 
 # Configure postgres connection keepalive
 postgres_keepalives: true
