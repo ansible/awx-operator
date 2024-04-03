@@ -2,6 +2,17 @@
 These parameters control the usage of liveness and readiness container probes for
 the web and task containers.
 
+> [!ALERT]
+> All of probes are disabled by default for now, to enable it, set the *_period parameters.  For example:
+
+```
+
+web_liveness_period: 15
+web_readiness_period: 15
+task_liveness_period: 15
+task_readiness_period: 15
+```
+
 #### Web / Task Container Liveness Check
 
 The liveness probe queries the status of the supervisor daemon of the container.  The probe will fail if it

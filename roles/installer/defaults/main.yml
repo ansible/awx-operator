@@ -296,6 +296,11 @@ replicas: 1
 web_replicas: ''
 task_replicas: ''
 
+web_liveness_period: 0
+web_readiness_period: 0
+task_liveness_period: 0
+task_readiness_period: 0
+
 task_args:
   - /usr/bin/launch_awx_task.sh
 task_command: []
