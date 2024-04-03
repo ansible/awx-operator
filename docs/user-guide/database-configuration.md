@@ -56,14 +56,14 @@ If you don't have access to an external PostgreSQL service, the AWX operator can
 
 The following variables are customizable for the managed PostgreSQL service
 
-| Name                                          | Description                                   | Default                                 |
-| --------------------------------------------- | --------------------------------------------- | --------------------------------------- |
-| postgres_image                                | Path of the image to pull                     | quay.io/sclorg/postgresql-15-c9s        |
-| postgres_image_version                        | Image version to pull                         | latest                                  |
-| postgres_resource_requirements                | PostgreSQL container resource requirements    | requests: {cpu: 10m, memory: 64Mi}      |
-| postgres_storage_requirements                 | PostgreSQL container storage requirements     | requests: {storage: 8Gi}                |
-| postgres_storage_class                        | PostgreSQL PV storage class                   | Empty string                            |
-| postgres_priority_class                       | Priority class used for PostgreSQL pod        | Empty string                            |
+| Name                                          | Description                                                     | Default                                 |
+| --------------------------------------------- | --------------------------------------------------------------- | --------------------------------------- |
+| postgres_image                                | Path of the image to pull                                       | quay.io/sclorg/postgresql-15-c9s        |
+| postgres_image_version                        | Image version to pull                                           | latest                                  |
+| postgres_resource_requirements                | PostgreSQL container (and initContainer) resource requirements  | requests: {cpu: 10m, memory: 64Mi}      |
+| postgres_storage_requirements                 | PostgreSQL container storage requirements                       | requests: {storage: 8Gi}                |
+| postgres_storage_class                        | PostgreSQL PV storage class                                     | Empty string                            |
+| postgres_priority_class                       | Priority class used for PostgreSQL pod                          | Empty string                            |
 
 Example of customization could be:
 

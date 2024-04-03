@@ -47,7 +47,7 @@ spec:
 {% if postgres_priority_class is defined %}
       priorityClassName: '{{ postgres_priority_class }}'
 {% endif %}
-{% if postgres_data_volume_init is defined and not is_openshift %}
+{% if postgres_data_volume_init and not is_openshift %}
       initContainers:
         - name: init
           image: '{{ _postgres_image }}'
@@ -59,7 +59,7 @@ spec:
             - -c
             - |
               {{ postgres_init_container_commands | indent(width=14) }}
-          resources: {{ postgres_resource_requirements }}
+          resources: {{ postgres_init_container_resource_requirements | default(postgres_resource_requirements) }}
           volumeMounts:
             - name: postgres-{{ supported_pg_version }}
               mountPath: '{{ _postgres_data_path | dirname }}'
