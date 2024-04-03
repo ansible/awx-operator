@@ -70,7 +70,7 @@ metadata:
   name: {{ ansible_operator_meta.name }}
   namespace: {{ ansible_operator_meta.namespace }}
 spec:
-{% if external_hostname %}
+{% if external_hostname is defined %}
   host: {{ external_hostname }}
 {% endif %}
   port:
