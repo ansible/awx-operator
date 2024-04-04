@@ -404,6 +404,8 @@ postgres_resource_requirements:
 # Assign a preexisting priority class to the postgres pod
 postgres_priority_class: ''
 
+postgres_pod_security_context: {}
+
 # Persistence to the AWX project data folder
 # Whether or not the /var/lib/projects directory will be persistent
 projects_persistence: false

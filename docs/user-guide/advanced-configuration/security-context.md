@@ -1,11 +1,12 @@
-#### Service Account
+#### Security Context
 
 It is possible to modify some `SecurityContext` proprieties of the various deployments and stateful sets if needed.
 
-| Name                               | Description                                  | Default |
-| ---------------------------------- | -------------------------------------------- | ------- |
-| security_context_settings          | SecurityContext for Task and Web deployments | {}      |
-| postgres_security_context_settings | SecurityContext for Task and Web deployments | {}      |
+| Name                               | Description                                   | Default |
+| ---------------------------------- | --------------------------------------------- | ------- |
+| security_context_settings          | SecurityContext for Task and Web deployments  | {}      |
+| postgres_pod_security_context      | PodSecurityContext for PostgreSQL StatefulSet | {}      |
+| postgres_security_context_settings | SecurityContext for PostgreSQL StatefulSet    | {}      |
 
 
 Example configuration securityContext for the Task and Web deployments:
@@ -18,7 +19,6 @@ spec:
         drop:
         - ALL
 ```
-
 
 ```yaml
 spec:

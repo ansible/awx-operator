@@ -47,6 +47,10 @@ spec:
 {% if postgres_priority_class is defined %}
       priorityClassName: '{{ postgres_priority_class }}'
 {% endif %}
+{% if postgres_pod_security_context %}
+      securityContext:
+        {{ postgres_pod_security_context | to_nice_yaml | indent(width=8) }}
+{% endif %}
 {% if postgres_data_volume_init and not is_openshift %}
       initContainers:
         - name: init
