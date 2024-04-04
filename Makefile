@@ -62,6 +62,7 @@ NAMESPACE ?= awx
 
 # Helm variables
 CHART_NAME ?= awx-operator
+CHART_NAME_SPLIT ?= awx-operator-split
 CHART_DESCRIPTION ?= A Helm chart for the AWX Operator
 CHART_OWNER ?= $(GH_REPO_OWNER)
 CHART_REPO ?= awx-operator
@@ -440,3 +441,24 @@ helm-index:
 	$(HELM) repo index .cr-release-packages --url https://github.com/$(CHART_OWNER)/$(CHART_REPO)/releases/download/ --merge $(CHART_DIR)/index.yaml
 
 	mv .cr-release-packages/index.yaml $(CHART_DIR)/index.yaml
+
+
+.PHONY: helm-chart-split
+helm-chart-split: helm-chart-generate
+	@echo "== Split charts and CRDs =="
+	mkdir -p  charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/templates
+	mkdir -p  charts/$(CHART_NAME_SPLIT)/chart/templates
+	cp config/splitted-chart/values-cdrs.yaml charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/values.yaml
+	cp config/splitted-chart/Chart-cdrs.yaml charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/Chart.yaml
+	$(YQ) -i '.appVersion = "$(VERSION)"' charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/Chart.yaml
+	cp charts/$(CHART_NAME)/crds/* charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/templates/
+	for file in charts/$(CHART_NAME_SPLIT)/chart/charts/cdrs/templates/custom*yaml ; do\
+		$(YQ) -i '.metadata.annotations = "{{ toYaml .Values.annotations | nindent 2 }}"'  $${file};\
+	done
+	cp charts/$(CHART_NAME)/README.md charts/$(CHART_NAME_SPLIT)/chart/
+	cp -r charts/$(CHART_NAME)/templates charts/$(CHART_NAME_SPLIT)/chart/
+	cp charts/$(CHART_NAME)/Chart.yaml charts/$(CHART_NAME_SPLIT)/chart/
+	cat config/splitted-chart/dependencies.yaml >> charts/$(CHART_NAME_SPLIT)/chart/Chart.yaml
+	$(YQ) -i '.version = "$(VERSION)"' charts/$(CHART_NAME_SPLIT)/chart/Chart.yaml
+	cp config/splitted-chart/values.yaml charts/$(CHART_NAME_SPLIT)/chart/values.yaml
+	cat charts/$(CHART_NAME)/values.yaml >> charts/$(CHART_NAME_SPLIT)/chart/values.yaml

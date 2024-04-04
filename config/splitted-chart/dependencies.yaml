@@ -1,0 +1,4 @@
+dependencies:
+  - name: crds
+    condition: crds.enabled
+    version: 0.0.0

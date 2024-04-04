@@ -1,0 +1,3 @@
+---
+# annotations -- (dict) Optional annotations to include in the CRDs
+annotations: {}
