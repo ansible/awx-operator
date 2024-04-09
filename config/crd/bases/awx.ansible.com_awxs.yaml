@@ -1940,26 +1940,36 @@ spec:
                 description: Metrics-Utility Image PullPolicy
                 type: string
               metrics_utility_configmap:
-                description: Metrics-Utlity ConfigMap
+                description: Metrics-Utility ConfigMap
+                type: string
+              metrics_utility_secret:
+                description: Metrics-Utility Secret
                 type: string
               metrics_utility_cronjob_gather_schedule:
-                description: Metrics-Utlity Gather Data CronJob Schedule
+                description: Metrics-Utility Gather Data CronJob Schedule
                 type: string
                 default: '@hourly'
               metrics_utility_cronjob_report_schedule:
-                description: Metrics-Utlity Report CronJob Schedule
+                description: Metrics-Utility Report CronJob Schedule
                 type: string
                 default: '@monthly'
+              metrics_utility_ship_target:
+                description: Metrics-Utility Ship Target
+                type: string
               metrics_utility_pvc_claim:
-                description: Metrics-Utlity PVC Claim
+                description: Metrics-Utility PVC Claim
                 type: string
               metrics_utility_pvc_claim_size:
-                description: Metrics-Utlity PVC Claim Size
+                description: Metrics-Utility PVC Claim Size
                 type: string
                 default: 5Gi
               metrics_utility_pvc_claim_storage_class:
-                description: Metrics-Utlity PVC Claim Storage Class
+                description: Metrics-Utility PVC Claim Storage Class
                 type: string
+              metrics_utility_console_enabled:
+                description: Enable metrics utility shipping to Red Hat Hybrid Cloud Console
+                type: boolean
+                default: false
             type: object
           status:
             properties:
