@@ -47,3 +47,6 @@ We welcome your feedback and ideas. The AWX operator uses the same mailing list 
 
 - Join the [Ansible AWX channel on Matrix](https://matrix.to/#/#awx:ansible.com)
 - Join the [Ansible Community Forum](https://forum.ansible.com)
+
+
+<trigger ci>
