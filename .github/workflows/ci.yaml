@@ -17,6 +17,7 @@ jobs:
           - -t replicas
     env:
       DOCKER_API_VERSION: "1.41"
+      DEBUG_OUTPUT_DIR: /tmp/awx_operator_molecule_test
     steps:
       - uses: actions/checkout@v3
 
@@ -37,10 +38,18 @@ jobs:
           MOLECULE_VERBOSITY: 3
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+          STORE_DEBUG_OUTPUT: true
         run: |
           sudo rm -f $(which kustomize)
           make kustomize
           KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind -- ${{ matrix.ansible_args }}
+
+      - name: Upload artifacts for failed tests if Run Molecule fails
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: awx_operator_molecule_test
+          path: ${{ env.DEBUG_OUTPUT_DIR }}
   helm:
     runs-on: ubuntu-latest
     name: helm

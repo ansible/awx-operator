@@ -35,6 +35,8 @@ provisioner:
         operator_pull_policy: "Never"
         kubeconfig: "{{ lookup('env', 'KUBECONFIG') }}"
         kustomize: ${KUSTOMIZE_PATH:-kustomize}
+        store_debug_output: ${STORE_DEBUG_OUTPUT:-false}
+        debug_output_dir: ${DEBUG_OUTPUT_DIR:-"/tmp/awx_operator_molecule_test"}
   env:
     K8S_AUTH_KUBECONFIG: ${MOLECULE_EPHEMERAL_DIRECTORY}/kubeconfig
     KUBECONFIG: ${MOLECULE_EPHEMERAL_DIRECTORY}/kubeconfig

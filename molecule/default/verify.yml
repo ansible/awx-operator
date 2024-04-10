@@ -10,53 +10,41 @@
     ctrl_label: control-plane=controller-manager
 
   tasks:
-    - block:
+    - name: Perform awx tests
+      block:
         - name: Import all test files from tasks/
-          include_tasks: '{{ item }}'
+          ansible.builtin.include_tasks: '{{ item }}'
           with_fileglob:
             - tasks/awx_test.yml
             - tasks/awx_replicas_test.yml
           tags:
             - always
       rescue:
-        - name: Retrieve relevant resources
-          k8s_info:
-            api_version: '{{ item.api_version }}'
-            kind: '{{ item.kind }}'
+        - name: Create debug output directory
+          ansible.builtin.file:
+            path: '{{ debug_output_dir }}'
+            state: directory
+          tags:
+            - always
+
+        - name: Gather and output K8s resources
+          ansible.builtin.include_tasks: utils/output_k8s_resources.yml
+          tags:
+            - always
+
+        - name: Get all pods
+          kubernetes.core.k8s_info:
+            api_version: v1
+            kind: Pod
             namespace: '{{ namespace }}'
-          loop:
-            - api_version: v1
-              kind: Pod
-            - api_version: apps/v1
-              kind: Deployment
-            - api_version: v1
-              kind: Secret
-            - api_version: v1
-              kind: ConfigMap
-          register: debug_resources
+          register: all_pods
           tags:
             - always
 
-        - name: Retrieve Pod logs
-          k8s_log:
-            name: '{{ item.metadata.name }}'
-            namespace: '{{ namespace }}'
-            container: awx-manager
-          loop: "{{ q('k8s', api_version='v1', kind='Pod', namespace=namespace, label_selector=ctrl_label) }}"
-          register: debug_logs
-          tags:
-            - always
-
-        - name: Output gathered resources
-          debug:
-            var: debug_resources
-          tags:
-            - always
-
-        - name: Output gathered logs
-          debug:
-            var: item.log_lines
-          loop: '{{ debug_logs.results }}'
+        - name: Get all container logs for all pods
+          ansible.builtin.include_tasks: utils/output_all_container_logs_for_pod.yml
+          loop: '{{ all_pods.resources }}'
+          ignore_errors: yes
           tags:
             - always
 
@@ -64,7 +52,7 @@
           vars:
             failed_task:
               result: '{{ ansible_failed_result }}'
-          fail:
+          ansible.builtin.fail:
             msg: '{{ failed_task }}'
           tags:
             - always

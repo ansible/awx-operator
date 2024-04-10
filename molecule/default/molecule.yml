@@ -31,6 +31,8 @@ provisioner:
         operator_image: ${OPERATOR_IMAGE:-""}
         operator_pull_policy: ${OPERATOR_PULL_POLICY:-"Always"}
         kustomize: ${KUSTOMIZE_PATH:-kustomize}
+        store_debug_output: ${STORE_DEBUG_OUTPUT:-false}
+        debug_output_dir: ${DEBUG_OUTPUT_DIR:-"/tmp/awx_operator_molecule_test"}
   env:
     K8S_AUTH_KUBECONFIG: ${KUBECONFIG:-"~/.kube/config"}
 verifier:
