@@ -14,6 +14,12 @@ spec:
 {% if awx_version %}
   image_version: {{ awx_version }}
 {% endif %}
+{% if awx_ee_image %}
+  control_plane_ee_image: {{ awx_ee_image }}
+  ee_images:
+  - image: {{ awx_ee_image }}
+    name: AWX EE
+{% endif %}
   ingress_type: ingress
   ingress_path: /awx
   ingress_annotations: |

@@ -21,6 +21,7 @@ provisioner:
         namespace: ${TEST_OPERATOR_NAMESPACE:-osdk-test}
     host_vars:
       localhost:
+        awx_ee_image: ${AWX_EE_TEST_IMAGE:-""}
         awx_image: ${AWX_TEST_IMAGE:-""}
         awx_version: ${AWX_TEST_VERSION:-""}
         default_awx_version: "{{ lookup('url', 'https://api.github.com/repos/ansible/awx/releases/latest') | from_json | json_query('tag_name') }}"
