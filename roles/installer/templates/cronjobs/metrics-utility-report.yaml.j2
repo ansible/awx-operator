@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ ansible_operator_meta.name }}-metrics-utility-report
+  name: {{ ansible_operator_meta.name }}-{{ cronjob_name }}
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
-    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-metrics-utility-report'
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-{{ cronjob_name }}'
     {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
@@ -16,7 +16,7 @@ spec:
       template:
         metadata:
           labels:
-            app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-metrics-utility-report'
+            app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-{{ cronjob_name }}'
             {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=12) | trim }}
             {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=12) | trim }}
         spec:
@@ -30,7 +30,7 @@ spec:
 {% endfor %}
 {% endif %}
           containers:
-          - name: {{ ansible_operator_meta.name }}-metrics-utility-report
+          - name: {{ ansible_operator_meta.name }}-{{ cronjob_name }}
             image: "{{ _metrics_utility_image }}"
             imagePullPolicy: "{{ image_pull_policy }}"
             resources:
@@ -44,6 +44,10 @@ spec:
             envFrom:
             - configMapRef:
                 name: {{ _metrics_utility_configmap }}
+{% if _metrics_utility_secret is defined %}
+            - secretRef:
+                name: {{ _metrics_utility_secret }}
+{% endif %}
             volumeMounts:
             - name: {{ ansible_operator_meta.name }}-metrics-utility
               mountPath: /metrics-utility

@@ -1039,7 +1039,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity Image Version
+      - displayName: Metrics-Utility Image Version
         path: metrics_utility_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
@@ -1051,41 +1051,59 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:imagePullPolicy
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity ConfigMap
+      - displayName: Metrics-Utility ConfigMap
         path: metrics_utility_configmap
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:ConfigMap
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity Gather Data CronJob Schedule
+      - displayName: Metrics-Utility Secret
+        path: metrics_utility_secret
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
+      - displayName: Metrics-Utility Gather Data CronJob Schedule
         path: metrics_utility_cronjob_gather_schedule
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity Report CronJob Schedule
+      - displayName: Metrics-Utility Report CronJob Schedule
         path: metrics_utility_cronjob_report_schedule
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity PVC Claim
+      - displayName: Metrics-Utility Ship Target
+        path: metrics_utility_ship_target
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
+      - displayName: Metrics-Utility PVC Claim
         path: metrics_utility_pvc_claim
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity PVC Claim Size
+      - displayName: Metrics-Utility PVC Claim Size
         path: metrics_utility_pvc_claim_size
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
-      - displayName: Metrics-Utlity PVC Claim Storage Class
+      - displayName: Metrics-Utility PVC Claim Storage Class
         path: metrics_utility_pvc_claim_storage_class
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:StorageClass
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
+      - displayName: Metrics-Utility Enabled Shipping to Red Hat Hybrid Cloud Console
+        path: metrics_utility_console_enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
       statusDescriptors:
       - description: Route to access the instance deployed
