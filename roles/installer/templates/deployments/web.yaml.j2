@@ -44,11 +44,12 @@ spec:
   ] %}
         checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% endfor %}
-{% if web_annotations %}
-        {{ web_annotations | indent(width=8) }}
-{% elif annotations %}
-        {{ annotations | indent(width=8) }}
-{% endif %}
+{% for annotation in web_annotations %}
+        {{ annotation | indent(width=8) }}
+{% endfor %}
+{% for annotation in  annotations %}
+        {{ annotation | indent(width=8) }}
+{% endfor %}
     spec:
 {% if uwsgi_listen_queue_size is defined and uwsgi_listen_queue_size|int > 128 %}
       securityContext:
