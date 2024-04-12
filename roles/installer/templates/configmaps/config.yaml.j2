@@ -184,6 +184,10 @@ data:
                 alias /var/lib/awx/public/static/;
             }
 
+            location {{ (ingress_path + '/locales').replace('//', '/') }} {
+                alias /var/lib/awx/public/static/awx/locales;
+            }
+
             location {{ (ingress_path + '/favicon.ico').replace('//', '/') }} {
                 alias /var/lib/awx/public/static/media/favicon.ico;
             }
