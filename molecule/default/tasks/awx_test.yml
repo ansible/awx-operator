@@ -1,98 +1,8 @@
 ---
 - include_tasks: apply_awx_spec.yml
 
-- name: Obtain generated admin password
-  k8s_info:
-    namespace: '{{ namespace }}'
-    kind: Secret
-    name: example-awx-admin-password
-  register: admin_pw_secret
-
-- block:
-    - name: Get web pod details
-      k8s_info:
-        namespace: '{{ namespace }}'
-        kind: Pod
-        label_selectors:
-          - app.kubernetes.io/name = example-awx-web
-      register: awx_web_pod
-      when: not awx_version
-
-    - name: Get task pod details
-      k8s_info:
-        namespace: '{{ namespace }}'
-        kind: Pod
-        label_selectors:
-          - app.kubernetes.io/name = example-awx-task
-      register: awx_task_pod
-      when: not awx_version
-
-    - name: Extract tags from images from web pod
-      set_fact:
-        web_image_tags: |
-          {{ awx_web_pod.resources[0].spec.containers |
-             map(attribute='image') |
-             map('regex_search', default_awx_version) }}
-      when: not awx_version
-
-    - name: Extract tags from images from task pod
-      set_fact:
-        task_image_tags: |
-          {{ awx_task_pod.resources[0].spec.containers |
-             map(attribute='image') |
-             map('regex_search', default_awx_version) }}
-      when: not awx_version
-
-    - fail:
-        msg: |
-          It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
-          This is an environment variable that is set via build arg when releasing awx-operator.
-      when:
-        - not awx_version
-        - default_awx_version not in web_image_tags
-        - default_awx_version not in task_image_tags
-
-    - name: Launch Demo Job Template
-      awx.awx.job_launch:
-        name: Demo Job Template
-        wait: yes
-        validate_certs: no
-        controller_host: localhost/awx/
-        controller_username: admin
-        controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
-  rescue:
-    - name: Get list of project updates and jobs
-      uri:
-        url: "http://localhost/awx/api/v2/{{ resource }}/"
-        user: admin
-        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
-        force_basic_auth: yes
-      register: job_lists
-      loop:
-        - project_updates
-        - jobs
-      loop_control:
-        loop_var: resource
-
-    - name: Get all job and project details
-      uri:
-        url: "http://localhost{{ endpoint }}"
-        user: admin
-        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
-        force_basic_auth: yes
-      loop: |
-        {{ job_lists.results | map(attribute='json') | map(attribute='results') | flatten | map(attribute='url') }}
-      loop_control:
-        loop_var: endpoint
-
-    - name: Re-emit failure
-      vars:
-        failed_task:
-          result: '{{ ansible_failed_result }}'
-      fail:
-        msg: '{{ failed_task }}'
-
-- block:
+- name: Validate AWX deployment
+  block:
     - name: Look up details for this AWX instance
       k8s_info:
         namespace: "{{ namespace }}"
@@ -117,67 +27,165 @@
           - app.kubernetes.io/name = example-awx-task
       register: awx_task_pod
 
-    - name: Extract additional_labels from AWX spec
-      set_fact:
-        awx_additional_labels: >-
-          {{ this_awx.resources[0].metadata.labels
-             | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
-             | list
-          }}
+    - name: Validate DEFAULT_AWX_VERSION
+      block:
+      - name: Extract tags from images from web pod
+        set_fact:
+          web_image_tags: |
+            {{ awx_web_pod.resources[0].spec.containers |
+              map(attribute='image') |
+              map('regex_search', default_awx_version) }}
+      - name: Extract tags from images from task pod
+        set_fact:
+          task_image_tags: |
+            {{ awx_task_pod.resources[0].spec.containers |
+              map(attribute='image') |
+              map('regex_search', default_awx_version) }}
+      - fail:
+          msg: |
+            It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
+            This is an environment variable that is set via build arg when releasing awx-operator.
+        when:
+          - default_awx_version not in web_image_tags
+          - default_awx_version not in task_image_tags
+      when: not awx_version
 
-    - name: Extract additional_labels from AWX web Pod
-      set_fact:
-        awx_web_pod_additional_labels: >-
-          {{ awx_web_pod.resources[0].metadata.labels
-             | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
-             | list
-          }}
-
-    - name: Extract additional_labels from AWX task Pod
-      set_fact:
-        awx_task_pod_additional_labels: >-
-          {{ awx_task_pod.resources[0].metadata.labels
+    - name: Validate additional_labels
+      block:
+      - name: Extract additional_labels from AWX spec
+        set_fact:
+          awx_additional_labels: >-
+            {{ this_awx.resources[0].metadata.labels
               | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
               | list
-          }}
+            }}
 
-    - name: Assert AWX web Pod contains additional_labels
-      ansible.builtin.assert:
-        that:
-          - awx_web_pod_additional_labels == awx_additional_labels
+      - name: Extract additional_labels from AWX web Pod
+        set_fact:
+          awx_web_pod_additional_labels: >-
+            {{ awx_web_pod.resources[0].metadata.labels
+              | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+              | list
+            }}
 
-    - name: Assert AWX task Pod contains additional_labels
-      ansible.builtin.assert:
-        that:
-          - awx_task_pod_additional_labels == awx_additional_labels
+      - name: Extract additional_labels from AWX task Pod
+        set_fact:
+          awx_task_pod_additional_labels: >-
+            {{ awx_task_pod.resources[0].metadata.labels
+                | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+                | list
+            }}
 
-    - name: Extract web Pod labels which shouldn't have been propagated to it from AWX
-      set_fact:
-        awx_web_pod_extra_labels: >-
-          {{ awx_web_pod.resources[0].metadata.labels
-             | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
-             | list
-          }}
+      - name: Assert AWX web Pod contains additional_labels
+        ansible.builtin.assert:
+          that:
+            - awx_web_pod_additional_labels == awx_additional_labels
 
-    - name: AWX web Pod doesn't contain AWX labels not in additional_labels
-      ansible.builtin.assert:
-        that:
-          - awx_web_pod_extra_labels == []
+      - name: Assert AWX task Pod contains additional_labels
+        ansible.builtin.assert:
+          that:
+            - awx_task_pod_additional_labels == awx_additional_labels
 
-    - name: Extract task Pod labels which shouldn't have been propagated to it from AWX
-      set_fact:
-        awx_task_pod_extra_labels: >-
-          {{ awx_task_pod.resources[0].metadata.labels
-             | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
-             | list
-          }}
+      - name: Extract web Pod labels which shouldn't have been propagated to it from AWX
+        set_fact:
+          awx_web_pod_extra_labels: >-
+            {{ awx_web_pod.resources[0].metadata.labels
+              | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
+              | list
+            }}
 
-    - name: AWX task Pod doesn't contain AWX labels not in additional_labels
-      ansible.builtin.assert:
-        that:
-          - awx_task_pod_extra_labels == []
+      - name: AWX web Pod doesn't contain AWX labels not in additional_labels
+        ansible.builtin.assert:
+          that:
+            - awx_web_pod_extra_labels == []
+
+      - name: Extract task Pod labels which shouldn't have been propagated to it from AWX
+        set_fact:
+          awx_task_pod_extra_labels: >-
+            {{ awx_task_pod.resources[0].metadata.labels
+              | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
+              | list
+            }}
+
+      - name: AWX task Pod doesn't contain AWX labels not in additional_labels
+        ansible.builtin.assert:
+          that:
+            - awx_task_pod_extra_labels == []
 
   rescue:
+    - name: Re-emit failure
+      vars:
+        failed_task:
+          result: '{{ ansible_failed_result }}'
+      fail:
+        msg: '{{ failed_task }}'
+
+- name: Obtain generated admin password
+  k8s_info:
+    namespace: '{{ namespace }}'
+    kind: Secret
+    name: example-awx-admin-password
+  register: admin_pw_secret
+
+- name: Validate demo job launch
+  block:
+    - name: Launch Demo Job Template
+      awx.awx.job_launch:
+        name: Demo Job Template
+        wait: yes
+        validate_certs: no
+        controller_host: localhost/awx/
+        controller_username: admin
+        controller_password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+
+  rescue:
+    - name: Get list of project updates and jobs
+      uri:
+        url: "http://localhost/awx/api/v2/{{ resource }}/"
+        user: admin
+        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+      register: job_lists
+      loop:
+        - project_updates
+        - jobs
+      loop_control:
+        loop_var: resource
+
+    - name: Store job_lists debug output
+      copy:
+        content: "{{ job_lists | to_nice_json }}"
+        dest: "{{ debug_output_dir }}/job_lists.json"
+      when: store_debug_output | default(false)
+
+    - name: Get all job and project details
+      uri:
+        url: "http://localhost{{ endpoint }}"
+        user: admin
+        password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+        force_basic_auth: yes
+      loop: |
+        {{ job_lists.results | map(attribute='json') | map(attribute='results') | flatten | map(attribute='url') }}
+      loop_control:
+        loop_var: endpoint
+      register: job_details
+
+    - name: Store job_details debug output
+      copy:
+        content: "{{ job_details | to_nice_json }}"
+        dest: "{{ debug_output_dir }}/job_details.json"
+      when: store_debug_output | default(false)
+
+    ## TODO: figure out why this doesn't work
+    # - name: Store debug outputs
+    #   copy:
+    #     content: '{{ item }}'
+    #     dest: "{{ debug_output_dir }}/{{ item }}.json"
+    #   loop:
+    #     - job_lists
+    #     - job_details
+    #   when: store_debug_output | default(false)
+
     - name: Re-emit failure
       vars:
         failed_task:

@@ -1,0 +1,29 @@
+---
+- name: Retrieve relevant k8s resources
+  kubernetes.core.k8s_info:
+    api_version: '{{ item.api_version }}'
+    kind: '{{ item.kind }}'
+    namespace: '{{ namespace }}'
+  loop:
+    - api_version: v1
+      kind: Pod
+    - api_version: apps/v1
+      kind: Deployment
+    - api_version: v1
+      kind: Secret
+    - api_version: v1
+      kind: ConfigMap
+    - api_version: "awx.ansible.com/v1beta1"
+      kind: AWX
+  register: debug_resources
+
+- name: debug print item.kind and item.metadata.name
+  debug:
+    msg: '{{ item.kind }}-{{ item.metadata.name }}'
+  loop: "{{ debug_resources.results | map(attribute='resources') | flatten }}"
+
+- name: Output gathered resource to files
+  ansible.builtin.copy:
+    content: '{{ item | to_nice_json }}'
+    dest: '{{ debug_output_dir }}/{{ item.kind }}-{{ item.metadata.name }}.json'
+  loop: "{{ debug_resources.results | map(attribute='resources') | flatten }}"
