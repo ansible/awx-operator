@@ -26,59 +26,64 @@ metadata:
   namespace: <target namespace>
 data:
   ansible.cfg: |
-     [defaults]
-     remote_tmp = /tmp
-     [ssh_connection]
-     ssh_args = -C -o ControlMaster=auto -o ControlPersist=60s
+    [defaults]
+    remote_tmp = /tmp
+    [ssh_connection]
+    ssh_args = -C -o ControlMaster=auto -o ControlPersist=60s
   custom.py:  |
-      INSIGHTS_URL_BASE = "example.org"
-      AWX_CLEANUP_PATHS = True
+    INSIGHTS_URL_BASE = "example.org"
+    AWX_CLEANUP_PATHS = True
 ```
 Example spec file for volumes and volume mounts
 
 ```yaml
 ---
-    spec:
-    ...
-      extra_volumes: |
-        - name: ansible-cfg
-          configMap:
-            defaultMode: 420
-            items:
-              - key: ansible.cfg
-                path: ansible.cfg
-            name: <resourcename>-extra-config
-        - name: custom-py
-          configMap:
-            defaultMode: 420
-            items:
-              - key: custom.py
-                path: custom.py
-            name: <resourcename>-extra-config
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: my-external-volume-claim
+spec:
+  ...
+  extra_volumes: |
+    - name: ansible-cfg
+      configMap:
+        defaultMode: 420
+        items:
+          - key: ansible.cfg
+            path: ansible.cfg
+        name: <resourcename>-extra-config
+    - name: custom-py
+      configMap:
+        defaultMode: 420
+        items:
+          - key: custom.py
+            path: custom.py
+        name: <resourcename>-extra-config
+    - name: shared-volume
+      persistentVolumeClaim:
+        claimName: my-external-volume-claim
 
-      init_container_extra_volume_mounts: |
-        - name: shared-volume
-          mountPath: /shared
+  init_container_extra_volume_mounts: |
+    - name: shared-volume
+      mountPath: /shared
 
-      init_container_extra_commands: |
-        # set proper permissions (rwx) for the awx user
-        chmod 775 /shared
-        chgrp 1000 /shared
+  init_container_extra_commands: |
+    # set proper permissions (rwx) for the awx user
+    chmod 775 /shared
+    chgrp 1000 /shared
 
-      ee_extra_volume_mounts: |
-        - name: ansible-cfg
-          mountPath: /etc/ansible/ansible.cfg
-          subPath: ansible.cfg
+  ee_extra_volume_mounts: |
+    - name: ansible-cfg
+      mountPath: /etc/ansible/ansible.cfg
+      subPath: ansible.cfg
 
-      task_extra_volume_mounts: |
-        - name: custom-py
-          mountPath: /etc/tower/conf.d/custom.py
-          subPath: custom.py
-        - name: shared-volume
-          mountPath: /shared
+  web_extra_volume_mounts: |
+    - name: custom-py
+      mountPath: /etc/tower/conf.d/custom.py
+      subPath: custom.py
+
+  task_extra_volume_mounts: |
+    - name: custom-py
+      mountPath: /etc/tower/conf.d/custom.py
+      subPath: custom.py
+    - name: shared-volume
+      mountPath: /shared
 ```
 
 > :warning: **Volume and VolumeMount names cannot contain underscores(_)**
@@ -143,7 +148,9 @@ $ oc create configmap favicon-configmap --from-file favicon.ico
 Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
 
 ```yaml
+---
 spec:
+  ...
   extra_volumes: |
     - name: favicon
       configMap:
