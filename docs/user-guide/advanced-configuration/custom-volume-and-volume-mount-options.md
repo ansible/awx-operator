@@ -13,7 +13,8 @@ In a scenario where custom volumes and volume mounts are required to either over
 | init_container_extra_commands      | Specify additional commands for Init container           | ''      |
 
 
-> :warning: The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
+!!! warning
+    The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
 
 Example configuration for ConfigMap
 
