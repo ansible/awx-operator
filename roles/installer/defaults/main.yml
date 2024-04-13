@@ -383,7 +383,7 @@ postgres_extra_volume_mounts: ''
 postgres_selector: ''
 
 # Specify whether or not to keep the old PVC after PostgreSQL upgrades
-postgres_keep_pvc_after_upgrade: True
+postgres_keep_pvc_after_upgrade: true
 
 # Add node tolerations for the Postgres pods.
 # Specify as literal block. E.g.:

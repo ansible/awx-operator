@@ -22,13 +22,13 @@ In the event you need to recover the backup see the [restore role documentation]
 #### PostgreSQL Upgrade Considerations
 
 If there is a PostgreSQL major version upgrade, after the data directory on the PVC is migrated to the new version, the old PVC is kept by default.
-This provides the ability to roll back if needed, but can take up extra storage space in your cluster unnecessarily. You can configure it to be deleted automatically
+This provides the ability to roll back if needed, but can take up extra storage space in your cluster unnecessarily. By default, the postgres pvc from the previous version will remain unless you manually remove it, or have the `postgres_keep_pvc_after_upgrade` parameter set to false. You can configure it to be deleted automatically
 after a successful upgrade by setting the following variable on the AWX spec. 
 
 
 ```yaml
   spec:
-    postgres_keep_pvc_after_upgrade: False
+    postgres_keep_pvc_after_upgrade: false # this will delete your old database
 ```
 
 
