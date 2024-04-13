@@ -87,7 +87,8 @@ spec:
       mountPath: /shared
 ```
 
-> :warning: **Volume and VolumeMount names cannot contain underscores(_)**
+!!! warning
+    **Volume and VolumeMount names cannot contain underscores(_)**
 
 ##### Custom UWSGI Configuration
 We allow the customization of two UWSGI parameters:
