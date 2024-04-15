@@ -50,6 +50,7 @@ idna==3.6
 jinja2==3.1.3
     # via
     #   mkdocs
+    #   mkdocs-macros-plugin
     #   mkdocs-material
     #   mkdocstrings
 jsmin==3.0.1
@@ -88,17 +89,20 @@ mkdocs==1.5.3
     #   mkdocs-autorefs
     #   mkdocs-gen-files
     #   mkdocs-htmlproofer-plugin
+    #   mkdocs-macros-plugin
     #   mkdocs-material
     #   mkdocs-minify-plugin
     #   mkdocs-monorepo-plugin
     #   mkdocstrings
-mkdocs-ansible==24.2.1
-    # via -r docs/requirements.in
+mkdocs-ansible==24.3.0
+    # via -r requirements.in
 mkdocs-autorefs==0.5.0
     # via mkdocstrings
 mkdocs-gen-files==0.5.0
     # via mkdocs-ansible
 mkdocs-htmlproofer-plugin==1.0.0
+    # via mkdocs-ansible
+mkdocs-macros-plugin==1.0.5
     # via mkdocs-ansible
 mkdocs-material==9.2.6
     # via mkdocs-ansible
@@ -145,12 +149,15 @@ pymdown-extensions==10.0.1
 pyquery==2.0.0
     # via readtime
 python-dateutil==2.8.2
-    # via ghp-import
+    # via
+    #   ghp-import
+    #   mkdocs-macros-plugin
 python-slugify==8.0.4
     # via mkdocs-monorepo-plugin
 pyyaml==6.0.1
     # via
     #   mkdocs
+    #   mkdocs-macros-plugin
     #   pymdown-extensions
     #   pyyaml-env-tag
 pyyaml-env-tag==0.1
@@ -168,6 +175,8 @@ six==1.16.0
     # via python-dateutil
 soupsieve==2.5
     # via beautifulsoup4
+termcolor==2.4.0
+    # via mkdocs-macros-plugin
 text-unidecode==1.3
     # via python-slugify
 tinycss2==1.2.1
