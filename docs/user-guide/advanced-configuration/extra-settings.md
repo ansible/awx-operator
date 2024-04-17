@@ -24,3 +24,7 @@ Example configuration of `extra_settings` parameter
 ```
 
 Note for some settings, such as `LOG_AGGREGATOR_LEVEL`, the value may need double quotes.
+
+!!! tip
+    Alternatively, you can pass any additional settings by mounting ConfigMaps or Secrets of the python files (`*.py`) that contain custom settings to under `/etc/tower/conf.d/` in the web and task pods.
+    See the example of `custom.py` in the [Custom Volume and Volume Mount Options](custom-volume-and-volume-mount-options.md) section.
