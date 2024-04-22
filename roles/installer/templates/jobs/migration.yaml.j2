@@ -29,22 +29,7 @@ spec:
               mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
-{% if extra_settings_files.configmaps is defined and extra_settings_files.configmaps | length %}
-{% for configmap in extra_settings_files.configmaps %}
-            - name: {{ ansible_operator_meta.name }}-{{ configmap.key | replace('_', '-') | replace('.', '-') | lower }}-configmap
-              mountPath: "/etc/tower/conf.d/{{ configmap.key }}"
-              subPath: {{ configmap.key }}
-              readOnly: true
-{% endfor %}
-{% endif %}
-{% if extra_settings_files.secrets is defined and extra_settings_files.secrets | length %}
-{% for secret in extra_settings_files.secrets %}
-            - name: {{ ansible_operator_meta.name }}-{{ secret.key | replace('_', '-') | replace('.', '-') | lower }}-secret
-              mountPath: "/etc/tower/conf.d/{{ secret.key }}"
-              subPath: {{ secret.key }}
-              readOnly: true
-{% endfor %}
-{% endif %}
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -110,26 +95,7 @@ spec:
             items:
               - key: settings
                 path: settings.py
-{% if extra_settings_files.configmaps is defined and extra_settings_files.configmaps | length %}
-{% for configmap in extra_settings_files.configmaps %}
-        - name: {{ ansible_operator_meta.name }}-{{ configmap.key | replace('_', '-') | replace('.', '-') | lower }}-configmap
-          configMap:
-            name: {{ configmap.name }}
-            items:
-              - key: {{ configmap.key }}
-                path: {{ configmap.key }}
-{% endfor %}
-{% endif %}
-{% if extra_settings_files.secrets is defined and extra_settings_files.secrets | length %}
-{% for secret in extra_settings_files.secrets %}
-        - name: {{ ansible_operator_meta.name }}-{{ secret.key | replace('_', '-') | replace('.', '-') | lower }}-secret
-          secret:
-            secretName: {{ secret.name }}
-            items:
-              - key: {{ secret.key }}
-                path: {{ secret.key }}
-{% endfor %}
-{% endif %}
+        {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=8) | trim }}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:
