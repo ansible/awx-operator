@@ -1904,6 +1904,28 @@ spec:
                       x-kubernetes-preserve-unknown-fields: true
                   type: object
                 type: array
+              extra_settings_files:
+                description: Extra ConfigMaps or Secrets of settings files to specify for AWX
+                properties:
+                  configmaps:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+                      type: object
+                    type: array
+                  secrets:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+                      type: object
+                    type: array
+                type: object
               no_log:
                 description: Configure no_log for no_log tasks
                 type: boolean
