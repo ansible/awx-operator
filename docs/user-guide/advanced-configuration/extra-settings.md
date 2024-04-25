@@ -74,12 +74,12 @@ REDHAT_PASSWORD = "my-super-secure-redhat-password123!"
 ```bash title="Create ConfigMap and Secret"
 # Create ConfigMap
 kubectl create configmap my-custom-settings \
-  --from-file=custom_job_settings.py=/PATH/TO/YOUR/custom_job_settings.py \
-  --from-file=custom_system_settings.py=/PATH/TO/YOUR/custom_system_settings.py
+  --from-file /PATH/TO/YOUR/custom_job_settings.py \
+  --from-file /PATH/TO/YOUR/custom_system_settings.py
 
 # Create Secret
 kubectl create secret generic my-custom-passwords \
-  --from-file=custom_passwords.py=/PATH/TO/YOUR/custom_passwords.py
+  --from-file /PATH/TO/YOUR/custom_passwords.py
 ```
 
 Then specify them in the AWX CR spec. Here is an example configuration of `extra_settings_files` parameter.
