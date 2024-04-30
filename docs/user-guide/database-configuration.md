@@ -27,6 +27,7 @@ stringData:
   username: <username to connect as>
   password: <password to connect with>
   sslmode: prefer
+  target_session_attrs: read-write
   type: unmanaged
 type: Opaque
 ```
@@ -36,6 +37,8 @@ type: Opaque
 > It is possible to set a specific username, password, port, or database, but still have the database managed by the operator. In this case, when creating the postgres-configuration secret, the `type: managed` field should be added.
 
 **Note**: The variable `sslmode` is valid for `external` databases only. The allowed values are: `prefer`, `disable`, `allow`, `require`, `verify-ca`, `verify-full`.
+
+**Note**: The variable `target_session_attrs` is only useful for `clustered external` databases. The allowed values are: `any` (default), `read-write`, `read-only`, `primary`, `standby` and `prefer-standby`, whereby only `read-write` and `primary` really make sense in AWX use, as you want to connect to a database node that offers write support.
 
 Once the secret is created, you can specify it on your spec:
 
