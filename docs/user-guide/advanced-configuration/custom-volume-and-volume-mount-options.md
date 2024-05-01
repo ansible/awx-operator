@@ -137,14 +137,57 @@ configuration.
 * [listen](https://nginx.org/en/docs/http/ngx_http_core_module.html#listen) with `nginx_listen_queue_size` (default same as uwsgi listen queue size)
 
 
-##### Custom Favicon
+##### Custom Logos
 
-You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+You can use custom volume mounts to mount in your own logos to be displayed instead of the AWX logo.
+There are two different logos, one to be displayed on page headers, and one for the login screen.
 
-First, Create the configmap from a local favicon.ico file.
+First, create configmaps for the logos from local `logo-login.svg` and `logo-header.svg` files.
 
 ```bash
-$ oc create configmap favicon-configmap --from-file favicon.ico
+$ kubectl create configmap logo-login-configmap --from-file logo-login.svg
+$ kubectl create configmap logo-header-configmap --from-file logo-header.svg
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+---
+spec:
+  ...
+  extra_volumes: |
+    - name: logo-login
+      configMap:
+        defaultMode: 420
+        items:
+          - key: logo-login.svg
+            path: logo-login.svg
+        name: logo-login-configmap
+    - name: logo-header
+      configMap:
+        defaultMode: 420
+        items:
+          - key: logo-header.svg
+            path: logo-header.svg
+        name: logo-header-configmap
+  web_extra_volume_mounts: |
+    - name: logo-login
+      mountPath: /var/lib/awx/public/static/media/logo-login.svg
+      subPath: logo-login.svg
+    - name: logo-header
+      mountPath: /var/lib/awx/public/static/media/logo-header.svg
+      subPath: logo-header.svg
+```
+
+
+##### Custom Favicon
+
+You can also use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, create the configmap from a local `favicon.ico` file.
+
+```bash
+$ kubectl create configmap favicon-configmap --from-file favicon.ico
 ```
 
 Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
