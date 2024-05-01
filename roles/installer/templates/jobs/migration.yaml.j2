@@ -43,6 +43,34 @@ spec:
         - name: {{ secret }}
 {% endfor %}
 {% endif %}
+{% if task_node_selector %}
+      nodeSelector:
+        {{ task_node_selector | indent(width=8) }}
+{% elif node_selector %}
+      nodeSelector:
+        {{ node_selector | indent(width=8) }}
+{% endif %}
+{% if task_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ task_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ topology_spread_constraints | indent(width=8) }}
+{% endif %}
+{% if task_tolerations %}
+      tolerations:
+        {{ task_tolerations | indent(width=8) }}
+{% elif tolerations %}
+      tolerations:
+        {{ tolerations | indent(width=8) }}
+{% endif %}
+{% if task_affinity %}
+      affinity:
+        {{ task_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
+{% endif %}
       volumes:
         - name: "{{ ansible_operator_meta.name }}-application-credentials"
           secret:
