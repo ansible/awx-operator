@@ -58,6 +58,11 @@ spec:
         path: ingress_controller
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Optional API URLPATTERN Prefix
+        path: api_urlpattern_prefix
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Image Pull Secrets
         path: image_pull_secrets
         x-descriptors:
