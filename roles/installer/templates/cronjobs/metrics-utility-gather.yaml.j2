@@ -59,6 +59,10 @@ spec:
               mountPath: "/etc/tower/conf.d/credentials.py"
               subPath: credentials.py
               readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
             - name: {{ ansible_operator_meta.name }}-settings
               mountPath: /etc/tower/settings.py
               subPath: settings.py
@@ -74,6 +78,12 @@ spec:
               items:
                 - key: credentials.py
                   path: 'credentials.py'
+          - name: "{{ secret_key_secret_name }}"
+            secret:
+              secretName: '{{ secret_key_secret_name }}'
+              items:
+                - key: secret_key
+                  path: SECRET_KEY
           - name: {{ ansible_operator_meta.name }}-settings
             configMap:
               name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'

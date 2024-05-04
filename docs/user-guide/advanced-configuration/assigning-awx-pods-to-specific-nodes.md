@@ -88,3 +88,8 @@ spec:
               - S2
           topologyKey: topology.kubernetes.io/zone
 ```
+
+#### Special Note on DB-Migration Job Scheduling
+
+For the **db-migration job**, which applies database migrations at cluster startup, you can specify scheduling settings using the `task_*` configurations such as `task_node_selector`, `task_tolerations`, etc.  
+If these task-specific settings are not defined, the job will automatically use the global AWX configurations like `node_selector` and `tolerations`.

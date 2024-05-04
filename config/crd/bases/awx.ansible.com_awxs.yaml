@@ -144,6 +144,9 @@ spec:
               ingress_controller:
                 description: Special configuration for specific Ingress Controllers
                 type: string
+              api_urlpattern_prefix:
+                description: An optional configuration to add a prefix in the API URL path
+                type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string

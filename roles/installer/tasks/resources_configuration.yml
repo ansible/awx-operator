@@ -267,8 +267,8 @@
           - status.phase=Running
       register: _new_pod
       until:
-        - "_new_pod['resources'] | length"
-        - "_new_pod['resources'] | rejectattr('metadata.deletionTimestamp', 'defined') | length"
+        - _new_pod['resources'] | length
+        - _new_pod['resources'] | rejectattr('metadata.deletionTimestamp', 'defined') | list | length
       retries: 60
       delay: 5
 
