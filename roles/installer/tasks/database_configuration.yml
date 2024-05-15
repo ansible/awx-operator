@@ -100,6 +100,7 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+    awx_postgres_target_session_attrs: "{{ pg_config['resources'][0]['data']['target_session_attrs'] | default('') | b64decode }}"
   no_log: "{{ no_log }}"
 
 - name: Set database as managed
