@@ -1,4 +1,4 @@
-## Extra Settings
+# Extra Settings
 
 With `extra_settings` and `extra_settings_files`, you can pass multiple custom settings to AWX via the AWX Operator.
 
@@ -7,7 +7,10 @@ With `extra_settings` and `extra_settings_files`, you can pass multiple custom s
 
     If you need to change the setting after the initial deployment, you need to change it on the AWX CR spec (for `extra_settings`) or corresponding ConfigMap or Secret (for `extra_settings_files`). After updating ConfigMap or Secret, you need to restart the AWX pods to apply the changes.
 
-### Add extra settings with `extra_settings`
+!!! note
+    If the same setting is set in both `extra_settings` and `extra_settings_files`, the setting in `extra_settings_files` will take precedence.
+
+## Add extra settings with `extra_settings`
 
 You can pass extra settings by specifying the pair of the setting name and value as the `extra_settings` parameter.
 
@@ -34,7 +37,7 @@ spec:
 
 Note for some settings, such as `LOG_AGGREGATOR_LEVEL`, the value may need double quotes.
 
-### Add extra settings with `extra_settings_files`
+## Add extra settings with `extra_settings_files`
 
 You can pass extra settings by specifying the additional settings files in the ConfigMaps or Secrets as the `extra_settings_files` parameter.
 
@@ -43,6 +46,9 @@ The settings files passed via `extra_settings_files` will be mounted as the file
 | Name                 | Description          | Default   |
 | -------------------- | -------------------- | --------- |
 | extra_settings_files | Extra settings files | `{}`      |
+
+!!! note
+    If the same setting is set in multiple files in `extra_settings_files`, it would be difficult to predict which would be adopted since these files are loaded in arbitrary order that [`glob`](https://docs.python.org/3/library/glob.html) returns. For a reliable setting, do not include the same key in more than one file.
 
 Create ConfigMaps or Secrets that contain custom settings files (`*.py`).
 
