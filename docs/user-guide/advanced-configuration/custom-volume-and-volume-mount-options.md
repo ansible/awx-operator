@@ -1,4 +1,4 @@
-## Custom Volume and Volume Mount Options
+# Custom Volume and Volume Mount Options
 
 In a scenario where custom volumes and volume mounts are required to either overwrite defaults or mount configuration files.
 
@@ -68,11 +68,7 @@ spec:
 !!! warning
     **Volume and VolumeMount names cannot contain underscores(_)**
 
-### Custom AWX Configuration
-
-Refer to the [Extra Settings](./extra-settings.md) documentation for customizing the AWX configuration.
-
-### Custom UWSGI Configuration
+## Custom UWSGI Configuration
 
 We allow the customization of two UWSGI parameters:
 
@@ -93,7 +89,7 @@ requests (more than 128) tend to come in a short period of time, but can all be
 handled before any other time outs may apply. Also see related nginx
 configuration.
 
-### Custom Nginx Configuration
+## Custom Nginx Configuration
 
 Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it is possible to extend the nginx.conf.
 
@@ -120,7 +116,7 @@ configuration.
 * [worker_connections](http://nginx.org/en/docs/ngx_core_module.html#worker_connections) with `nginx_worker_connections` (minimum of 1024)
 * [listen](https://nginx.org/en/docs/http/ngx_http_core_module.html#listen) with `nginx_listen_queue_size` (default same as uwsgi listen queue size)
 
-### Custom Logos
+## Custom Logos
 
 You can use custom volume mounts to mount in your own logos to be displayed instead of the AWX logo.
 There are two different logos, one to be displayed on page headers, and one for the login screen.
@@ -162,7 +158,7 @@ spec:
       subPath: logo-header.svg
 ```
 
-### Custom Favicon
+## Custom Favicon
 
 You can also use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
 
@@ -191,3 +187,7 @@ spec:
       mountPath: /var/lib/awx/public/static/media/favicon.ico
       subPath: favicon.ico
 ```
+
+## Custom AWX Configuration
+
+Refer to the [Extra Settings](./extra-settings.md) documentation for customizing the AWX configuration.
