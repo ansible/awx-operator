@@ -98,6 +98,7 @@
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
+    container: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       bash -c "stat {{ backup_dir }}"
   register: stat_backup_dir
