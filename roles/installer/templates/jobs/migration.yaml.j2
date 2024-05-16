@@ -15,9 +15,6 @@ spec:
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ init_container_resource_requirements }}
-          securityContext:
-            runAsUser: 0
-            runAsGroup: 0
           command:
             - /bin/sh
             - -c
