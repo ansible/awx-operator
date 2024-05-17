@@ -1,5 +1,10 @@
 ---
 
+- name: Combine spec_overrides with spec
+  set_fact:
+    spec: "{{ spec | default({}) | combine(spec_overrides) }}"
+  no_log: "{{ no_log }}"
+
 - name: Deploy AWX
   k8s:
     state: "{{ state | default('present') }}"
