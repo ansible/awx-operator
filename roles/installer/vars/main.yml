@@ -11,7 +11,6 @@ _postgres_data_path: '/var/lib/pgsql/data/userdata'
 # metrics-utility (github.com/ansible/metrics-utility)
 _metrics_utility_enabled: "{{ metrics_utility_enabled | default(false) }}"
 _metrics_utility_configmap: "{{ metrics_utility_configmap | default(deployment_type + '-metrics-utility-configmap') }}"
-_metrics_utility_secret: "{{ metrics_utility_secret | default('') }}"
 _metrics_utility_console_enabled: "{{ metrics_utility_console_enabled | default(false) }}"
 _metrics_utility_image: "{{ metrics_utility_image | default(_image) }}"
 _metrics_utility_image_version: "{{ metrics_utility_image_version | default(_image_version) }}"
