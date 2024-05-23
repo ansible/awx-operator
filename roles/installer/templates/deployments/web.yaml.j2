@@ -231,6 +231,7 @@ spec:
               mountPath: /etc/tower/settings.py
               subPath: settings.py
               readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
             - name: {{ ansible_operator_meta.name }}-nginx-conf
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
@@ -307,6 +308,7 @@ spec:
               mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
@@ -438,6 +440,7 @@ spec:
             items:
               - key: redis_conf
                 path: redis.conf
+        {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=8) | trim }}
         - name: {{ ansible_operator_meta.name }}-uwsgi-config
           configMap:
             name: {{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap
