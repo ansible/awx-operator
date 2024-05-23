@@ -44,9 +44,9 @@ spec:
             envFrom:
             - configMapRef:
                 name: {{ _metrics_utility_configmap }}
-{% if _metrics_utility_secret is defined %}
+{% if metrics_utility_secret is defined %}
             - secretRef:
-                name: {{ _metrics_utility_secret }}
+                name: {{ metrics_utility_secret }}
 {% endif %}
             volumeMounts:
             - name: {{ ansible_operator_meta.name }}-metrics-utility

@@ -218,6 +218,10 @@ spec:
         path: postgres_image_version
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: AWX Spec Overrides
+        path: spec_overrides
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
       - displayName: Image Pull Policy
         path: image_pull_policy
         x-descriptors:

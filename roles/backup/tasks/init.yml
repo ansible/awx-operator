@@ -77,10 +77,10 @@
   set_fact:
     _postgres_image: "{{ _custom_postgres_image | default(lookup('env', 'RELATED_IMAGE_AWX_POSTGRES')) | default(_default_postgres_image, true) }}"
 
-- name: Create management pod from templated deployment config
+- name: Create management pod from the template
   k8s:
     name: "{{ ansible_operator_meta.name }}-db-management"
-    kind: Deployment
+    kind: Pod
     state: present
     definition: "{{ lookup('template', 'management-pod.yml.j2') }}"
     wait: true

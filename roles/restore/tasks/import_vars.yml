@@ -12,6 +12,7 @@
     k8s_cp:
       namespace: "{{ backup_pvc_namespace }}"
       pod: "{{ ansible_operator_meta.name }}-db-management"
+      container: "{{ ansible_operator_meta.name }}-db-management"
       remote_path: "{{ backup_dir  }}/awx_object"
       local_path: "{{ tmp_spec.path }}"
       state: from_pod

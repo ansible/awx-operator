@@ -39,4 +39,6 @@ additional_labels: []
 
 # Maintain some of the recommended `app.kubernetes.io/*` labels on the resource (self)
 set_self_labels: true
+
+spec_overrides: {}
 ...
