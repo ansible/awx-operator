@@ -1,4 +1,4 @@
-#### Deploying a specific version of AWX
+# Deploying a specific version of AWX
 
 There are a few variables that are customizable for awx the image management.
 
@@ -36,4 +36,5 @@ spec:
   init_projects_container_image: myorg/my-mirrored-centos:stream9
 ```
 
-**Note**: The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.
+!!! note
+    The `image` and `image_version` are intended for local mirroring scenarios. Please note that using a version of AWX other than the one bundled with the `awx-operator` is **not** supported. For the default values, check the [main.yml](https://github.com/ansible/awx-operator/blob/devel/roles/installer/defaults/main.yml) file.

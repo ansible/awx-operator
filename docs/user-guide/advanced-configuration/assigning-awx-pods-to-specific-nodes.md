@@ -1,4 +1,4 @@
-#### Assigning AWX pods to specific nodes
+# Assigning AWX pods to specific nodes
 
 You can constrain the AWX pods created by the operator to run on a certain subset of nodes. `node_selector` and `postgres_selector` constrains
 the AWX pods to run only on the nodes that match all the specified key/value pairs. `tolerations` and `postgres_tolerations` allow the AWX
@@ -6,8 +6,8 @@ pods to be scheduled onto nodes with matching taints.
 The ability to specify topologySpreadConstraints is also allowed through `topology_spread_constraints`
 If you want to use affinity rules for your AWX pod you can use the `affinity` option.
 
-If you want to constrain the web and task pods individually, you can do so by specificying the deployment type before the specific setting. For
-example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints. 
+If you want to constrain the web and task pods individually, you can do so by specifying the deployment type before the specific setting. For
+example, specifying `task_tolerations` will allow the AWX task pod to be scheduled onto nodes with matching taints.
 
 | Name                             | Description                              | Default                          |
 | -------------------------------- | ---------------------------------------- | -------------------------------- |
@@ -89,7 +89,7 @@ spec:
           topologyKey: topology.kubernetes.io/zone
 ```
 
-#### Special Note on DB-Migration Job Scheduling
+## Special Note on DB-Migration Job Scheduling
 
 For the **db-migration job**, which applies database migrations at cluster startup, you can specify scheduling settings using the `task_*` configurations such as `task_node_selector`, `task_tolerations`, etc.  
 If these task-specific settings are not defined, the job will automatically use the global AWX configurations like `node_selector` and `tolerations`.

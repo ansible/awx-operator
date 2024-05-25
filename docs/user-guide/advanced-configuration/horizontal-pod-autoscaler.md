@@ -1,4 +1,4 @@
-### Horizontal Pod Autoscaler (HPA)
+# Horizontal Pod Autoscaler (HPA)
 
 Horizontal Pod Autoscaler allows Kubernetes to scale the number of replicas of
 deployments in response to configured metrics.
@@ -18,7 +18,7 @@ properties in the operator resource.
 | task_manage_replicas   | Indicates operator should control the     | true    |
 |                        | replicas count for the task deployment.   |         |
 
-#### Recommended Settings for HPA
+## Recommended Settings for HPA
 
 Please see the Kubernetes documentation on how to configure the horizontal pod
 autoscaler.

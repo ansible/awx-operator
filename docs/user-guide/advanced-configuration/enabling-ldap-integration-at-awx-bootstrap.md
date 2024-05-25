@@ -1,10 +1,13 @@
-#### Enabling LDAP Integration at AWX bootstrap
+# Enabling LDAP Integration at AWX bootstrap
 
-A sample of extra settings can be found as below. All possible options can be found here: https://django-auth-ldap.readthedocs.io/en/latest/reference.html#settings
+A sample of extra settings can be found as below. All possible options can be found here: <https://django-auth-ldap.readthedocs.io/en/latest/reference.html#settings>
 
-> **NOTE:** These values are inserted into a Python file, so pay close attention to which values need quotes and which do not.
+!!! note
+    These values are inserted into a Python file, so pay close attention to which values need quotes and which do not.
 
 ```yaml
+spec:
+  extra_settings:
     - setting: AUTH_LDAP_SERVER_URI
       value: >-
         "ldaps://ad01.abc.com:636 ldaps://ad02.abc.com:636"
@@ -34,7 +37,6 @@ A sample of extra settings can be found as below. All possible options can be fo
           "CN=admin,OU=Groups,DC=abc,DC=com"
         ]
       }
-
 
     - setting: AUTH_LDAP_ORGANIZATION_MAP
       value: {

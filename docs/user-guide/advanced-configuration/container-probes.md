@@ -1,19 +1,20 @@
-#### Container Probes
+# Container Probes
+
 These parameters control the usage of liveness and readiness container probes for
 the web and task containers.
 
-> [!ALERT]
-> All of probes are disabled by default for now, to enable it, set the *_period parameters.  For example:
+!!! tip
+    All of probes are disabled by default for now, to enable it, set the `*_period` parameters. For example:
 
-```
+    ```yaml
+    spec:
+      web_liveness_period: 15
+      web_readiness_period: 15
+      task_liveness_period: 15
+      task_readiness_period: 15
+    ```
 
-web_liveness_period: 15
-web_readiness_period: 15
-task_liveness_period: 15
-task_readiness_period: 15
-```
-
-#### Web / Task Container Liveness Check
+## Web / Task Container Liveness Check
 
 The liveness probe queries the status of the supervisor daemon of the container.  The probe will fail if it
 detects one of the services in a state other than "RUNNING".
@@ -29,7 +30,7 @@ detects one of the services in a state other than "RUNNING".
 | task_liveness_failure_threshold| Number of consecutive failure events to identify failure of container | 3    |
 | task_liveness_timeout | Number of seconds to wait for a probe response from container | 1    |
 
-#### Web Container Readiness Check
+## Web Container Readiness Check
 
 This is an HTTP check against the status endpoint to confirm the system is still able to respond to web requests.
 
@@ -40,7 +41,7 @@ This is an HTTP check against the status endpoint to confirm the system is still
 | web_readiness_failure_threshold| Number of consecutive failure events to identify failure of container | 3    |
 | web_readiness_timeout | Number of seconds to wait for a probe response from container | 1    |
 
-#### Task Container Readiness Check
+## Task Container Readiness Check
 
 This is a command probe using the builtin check command of the awx-manage utility.
 

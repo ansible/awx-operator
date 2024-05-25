@@ -8,6 +8,8 @@
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
+This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) and can be used to install and manage the lifecycle of an AWX instance in the same namespace.
+
 ## Documentation
 
 The AWX Operator documentation is now available at <https://awx-operator.readthedocs.io/>

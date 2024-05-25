@@ -40,7 +40,6 @@ theme:
 nav:
   - Home: index.md
   - Installation:
-      - installation/index.md
       - installation/basic-install.md
       - installation/helm-install-on-existing-cluster.md
       - installation/kind-install.md
@@ -59,6 +58,7 @@ nav:
       - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
       - user-guide/advanced-configuration/redis-container-capabilities.md
       - user-guide/advanced-configuration/privileged-tasks.md
+      - user-guide/advanced-configuration/host-aliases.md
       - user-guide/advanced-configuration/containers-resource-requirements.md
       - user-guide/advanced-configuration/priority-classes.md
       - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
