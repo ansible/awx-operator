@@ -38,7 +38,7 @@ theme:
         name: Switch to light mode
 
 nav:
-  - index.md
+  - Home: index.md
   - Contributors Guide:
       - contributors-guide/contributing.md
       - contributors-guide/release-process.md
