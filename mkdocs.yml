@@ -39,34 +39,28 @@ theme:
 
 nav:
   - Home: index.md
-  - Contributors Guide:
-      - contributors-guide/contributing.md
-      - contributors-guide/release-process.md
-      - contributors-guide/author.md
-      - contributors-guide/code-of-conduct.md
-      - contributors-guide/get-involved.md
   - Installation:
-      - Installation: installation/index.md
+      - installation/index.md
       - installation/basic-install.md
-      - installation/creating-a-minikube-cluster-for-testing.md
       - installation/helm-install-on-existing-cluster.md
+      - installation/kind-install.md
+      - installation/creating-a-minikube-cluster-for-testing.md
   - Migrate:
       - migration/migration.md
+  - Upgrade:
+      - upgrade/upgrading.md
   - Uninstall:
       - uninstall/uninstall.md
   - User Guide:
       - user-guide/admin-user-account-configuration.md
       - user-guide/network-and-tls-configuration.md
       - user-guide/database-configuration.md
-  - Upgrade:
-      - upgrade/upgrading.md
   - Advanced Configuration:
       - user-guide/advanced-configuration/deploying-a-specific-version-of-awx.md
       - user-guide/advanced-configuration/redis-container-capabilities.md
       - user-guide/advanced-configuration/privileged-tasks.md
       - user-guide/advanced-configuration/containers-resource-requirements.md
       - user-guide/advanced-configuration/priority-classes.md
-      - user-guide/advanced-configuration/adding-execution-nodes.md
       - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
       - user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md
       - user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md
@@ -84,10 +78,18 @@ nav:
       - user-guide/advanced-configuration/service-account.md
       - user-guide/advanced-configuration/labeling-operator-managed-objects.md
       - user-guide/advanced-configuration/pods-termination-grace-period.md
+      - user-guide/advanced-configuration/security-context.md
+      - user-guide/advanced-configuration/container-probes.md
       - user-guide/advanced-configuration/disable-ipv6.md
       - user-guide/advanced-configuration/mesh-ingress.md
   - Troubleshooting:
       - troubleshooting/debugging.md
+  - Contributors Guide:
+      - contributors-guide/contributing.md
+      - contributors-guide/release-process.md
+      - contributors-guide/author.md
+      - contributors-guide/code-of-conduct.md
+      - contributors-guide/get-involved.md
 
 exclude_docs:
   README.md
