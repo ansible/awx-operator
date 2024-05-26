@@ -68,7 +68,6 @@ nav:
       - user-guide/advanced-configuration/enabling-ldap-integration-at-awx-bootstrap.md
       - user-guide/advanced-configuration/persisting-projects-directory.md
       - user-guide/advanced-configuration/custom-volume-and-volume-mount-options.md
-      - user-guide/advanced-configuration/default-execution-environments-from-private-registries.md
       - user-guide/advanced-configuration/exporting-environment-variables-to-containers.md
       - user-guide/advanced-configuration/csrf-cookie-secure-setting.md
       - user-guide/advanced-configuration/session-cookie-secure-setting.md
