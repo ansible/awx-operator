@@ -104,10 +104,11 @@
 
 - name: Enable optional metrics-utility
   include_tasks: enable_metrics_utility.yml
-  when: metrics_utility_enabled | bool
+  when: metrics_utility_enabled | default(false) | bool
 
 - name: Update status variables
   include_tasks: update_status.yml
+  when: update_status | bool
 
 - name: Cleanup & Set garbage collection refs
   include_tasks: cleanup.yml
