@@ -345,6 +345,16 @@ Below the addition variables to customize the secret configuration.
 | `customVolumes.projects.accessModes` | Volume access mode | `ReadWriteOnce` |
 | `customVolumes.postgres.storageClassName` | PersistentVolume storage class name | `<resourcename>-projects-volume` |
 
+#### runAsUser for init containers
+Used to override the default init container UID, helpful if you are running istio, etc.
+
+Example:
+
+```yaml
+AWX:
+  initContainerRunAsUser: "1337"
+```
+
 # Contributing
 
 ## Adding abstracted sections

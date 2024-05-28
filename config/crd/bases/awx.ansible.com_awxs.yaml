@@ -1536,6 +1536,12 @@ spec:
                         type: string
                     type: object
                 type: object
+              init_container_run_as_user:
+                description: Override the runAsUser uid for init containers
+                properties:
+                  runAsUser:
+                    type: string
+                type: object
               init_container_resource_requirements:
                 description: Resource requirements for the init container
                 properties:
