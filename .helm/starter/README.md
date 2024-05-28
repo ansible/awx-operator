@@ -235,6 +235,11 @@ AWX:
 |---|---|---|
 | `extraDeploy` | array of additional resources to be deployed (supports YAML or literal "\|") | - |
 
+### Operator
+| Value | Description | Default |
+|---|---|---|
+| `Operator.replicas` | Number of controller-manager instance replicas | `1` |
+
 ### customSecrets
 | Value | Description | Default |
 |---|---|---|

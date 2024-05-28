@@ -375,9 +375,12 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	for file in $${cluster_scoped_files}; do\
 		$(YQ) -i '.metadata.name += "-{{ .Release.Name }}"' $${file};\
 	done
-
 	# Correct the reference for the clusterrolebinding
 	$(YQ) -i '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
+	# Correct .spec.replicas for the controller-manager deployment
+	for file in charts/$(CHART_NAME)/raw-files/deployment-*-controller-manager.yaml; do\
+		$(YQ) -i '.spec.replicas = "{{ (.Values.Operator).replicas | default 1 }}"' $${file};\
+	done
 	# move all custom resource definitions to crds folder
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
