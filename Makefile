@@ -341,7 +341,7 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	rm -rf charts/$(CHART_NAME)
 	# create new chart metadata in Chart.yaml
 	cd charts && \
-		$(HELM) create awx-operator --starter $(shell pwd)/.helm/starter ;\
+		$(HELM) create $(CHART_NAME) --starter $(shell pwd)/.helm/starter ;\
 		$(YQ) -i '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
@@ -399,7 +399,7 @@ helm-package: helm-chart
 	@echo "== Package Current Chart Version =="
 	mkdir -p .cr-release-packages
 	# package the chart and put it in .cr-release-packages dir
-	$(HELM) package ./charts/awx-operator -d .cr-release-packages/$(VERSION)
+	$(HELM) package ./charts/$(CHART_NAME) -d .cr-release-packages/$(VERSION)
 
 # List all tags oldest to newest.
 TAGS := $(shell git ls-remote --tags --sort=version:refname --refs -q | cut -d/ -f3)
