@@ -245,7 +245,7 @@ spec:
             exec:
               command:
                 - /usr/bin/awx-manage
-                - check
+                - check_instance_ready
             initialDelaySeconds: {{ task_readiness_initial_delay }}
             periodSeconds: {{ task_readiness_period }}
             failureThreshold: {{ task_readiness_failure_threshold }}
