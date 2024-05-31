@@ -29,6 +29,7 @@ spec:
               mountPath: "/etc/tower/settings.py"
               subPath: settings.py
               readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -94,6 +95,7 @@ spec:
             items:
               - key: settings
                 path: settings.py
+        {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=8) | trim }}
 {% if development_mode | bool %}
         - name: awx-devel
           hostPath:

@@ -67,6 +67,7 @@ spec:
               mountPath: /etc/tower/settings.py
               subPath: settings.py
               readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
           volumes:
           - name: {{ ansible_operator_meta.name }}-metrics-utility
             persistentVolumeClaim:
@@ -90,4 +91,5 @@ spec:
               items:
                 - key: settings
                   path: settings.py
+          {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=10) | trim }}
           restartPolicy: OnFailure
