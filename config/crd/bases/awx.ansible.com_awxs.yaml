@@ -1462,6 +1462,32 @@ spec:
                         type: string
                     type: object
                 type: object
+              migration_job_resource_requirements:
+                description: Resource requirements for the django migration job container
+                properties:
+                  requests:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                      storage:
+                        type: string
+                      ephemeral-storage:
+                        type: string
+                    type: object
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                      storage:
+                        type: string
+                      ephemeral-storage:
+                        type: string
+                    type: object
+                type: object
               postgres_init_container_resource_requirements:
                 description: (Deprecated, use postgres_resource_requirements parameter) Resource requirements for the postgres init container
                 properties:

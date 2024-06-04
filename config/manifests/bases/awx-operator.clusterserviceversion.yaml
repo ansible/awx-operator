@@ -485,6 +485,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - displayName: Django Migration Job Container Resource Requirements
+        path: migration_job_resource_requirements
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
       - description: Sets permissions on the /var/lib/pgsql/data for postgres container using an init container (not Openshift)
         displayName: PostgreSQL initialize data volume
         path: postgres_data_volume_init

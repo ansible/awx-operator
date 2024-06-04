@@ -26,7 +26,8 @@ The resource requirements for both, the task and the web containers are configur
 | ------------------------------------ | ------------------------------------------------------------ | ------------------------------------ |
 | web_resource_requirements            | Web container resource requirements                          | requests: {cpu: 100m, memory: 128Mi} |
 | task_resource_requirements           | Task container resource requirements                         | requests: {cpu: 100m, memory: 128Mi} |
-| ee_resource_requirements             | EE control plane container resource requirements             | requests: {cpu: 50m, memory: 64Mi} |
+| ee_resource_requirements             | EE control plane container resource requirements             | requests: {cpu: 50m, memory: 64Mi}   |
+| migration_job_resource_requirements  | Django migration job resource requirements                   | requests: {cpu: 250m, memory: 128Mi} |
 | redis_resource_requirements          | Redis container resource requirements                        | requests: {cpu: 100m, memory: 128Mi} |
 | postgres_resource_requirements       | Postgres container (and initContainer) resource requirements | requests: {cpu: 10m, memory: 64Mi}   |
 | rsyslog_resource_requirements        | Rsyslog container resource requirements                      | requests: {cpu: 100m, memory: 128Mi} |
@@ -63,6 +64,13 @@ spec:
     limits:
       cpu: 1000m
       memory: 4Gi
+  migration_job_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   redis_resource_requirements:
     requests:
       cpu: 50m

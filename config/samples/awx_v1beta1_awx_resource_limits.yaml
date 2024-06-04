@@ -25,6 +25,13 @@ spec:
     limits:
       cpu: 1000m
       memory: 4Gi
+  migration_job_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   redis_resource_requirements:
     requests:
       cpu: 50m

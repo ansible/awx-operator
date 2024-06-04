@@ -327,6 +327,11 @@ ee_resource_requirements:
     cpu: 100m
     memory: 64Mi
 
+migration_job_resource_requirements:
+  requests:
+    cpu: 250m
+    memory: 128Mi
+
 # TODO: validate default resource requirements
 
 # Customize CSRF options

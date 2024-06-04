@@ -40,6 +40,7 @@ spec:
             - awx-manage
             - migrate
             - --noinput
+          resources: {{ migration_job_resource_requirements }}
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-application-credentials
               mountPath: "/etc/tower/conf.d/credentials.py"
