@@ -24,7 +24,7 @@
 
     - name: Sanitize instance version
       set_fact:
-        version: "{{ version_check.stdout.split('+')[0] | trim }}"
+        version: "{{ version_check.stdout | replace('+', '-') | trim }}"
 
     # It is possible to do a wait on this task to create the job and wait
     # until it completes. Unfortunately, if the job doesn't wait finish within
