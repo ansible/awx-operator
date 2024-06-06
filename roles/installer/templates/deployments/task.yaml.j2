@@ -8,9 +8,9 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
-{% if task_replicas != '' and task_manage_replicas is true %}
+{% if task_replicas != '' and task_manage_replicas | bool %}
   replicas: {{ task_replicas }}
-{% elif replicas != '' and task_manage_replicas is true %}
+{% elif replicas != '' and task_manage_replicas | bool %}
   replicas: {{ replicas }}
 {% endif %}
   selector:
