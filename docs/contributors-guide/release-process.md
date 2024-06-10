@@ -14,14 +14,14 @@ After the GHA is complete, the final step is to run the [publish-to-operator-hub
 - <https://github.com/k8s-operatorhub/community-operators> (community operator index)
 - <https://github.com/redhat-openshift-ecosystem/community-operators-prod> (operator index shipped with Openshift)
 
-The usage is documented in the script itself, but here is an example of how you would use the script to publish the 2.5.3 awx-opeator bundle to OperatorHub.
-Note that you need to specify the version being released, as well as the previous version. This is because the bundle has a pointer to the previous version that is it being upgrade from. This is used by OLM to create a dependency graph.
-
-```bash
-VERSION=2.5.3 PREV_VERSION=2.5.2 ./hack/publish-to-operator-hub.sh
-```
-
 !!! note
+    The usage is documented in the script itself, but here is an example of how you would use the script to publish the 2.5.3 awx-opeator bundle to OperatorHub.
+    Note that you need to specify the version being released, as well as the previous version. This is because the bundle has a pointer to the previous version that is it being upgrade from. This is used by OLM to create a dependency graph.
+
+    ```bash
+    VERSION=2.5.3 PREV_VERSION=2.5.2 ./hack/publish-to-operator-hub.sh
+    ```
+
     There are some quirks with running this on OS X that still need to be fixed, but the script runs smoothly on linux.
 
 As soon as CI completes successfully, the PR's will be auto-merged. Please remember to monitor those PR's to make sure that CI passes, sometimes it needs a retry.
