@@ -62,6 +62,7 @@ nav:
       - user-guide/advanced-configuration/containers-resource-requirements.md
       - user-guide/advanced-configuration/priority-classes.md
       - user-guide/advanced-configuration/scaling-the-web-and-task-pods-independently.md
+      - user-guide/advanced-configuration/horizontal-pod-autoscaler.md
       - user-guide/advanced-configuration/assigning-awx-pods-to-specific-nodes.md
       - user-guide/advanced-configuration/trusting-a-custom-certificate-authority.md
       - user-guide/advanced-configuration/custom-receptor-certs.md
