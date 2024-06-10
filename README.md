@@ -12,7 +12,7 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 ## Documentation
 
-The AWX Operator documentation is available at <https://ansible.readthedocs.io/projects/awx-operator/en/latest/>
+The AWX Operator documentation is available at <https://ansible.readthedocs.io/projects/awx-operator/>
 
 ## Contributing
 
