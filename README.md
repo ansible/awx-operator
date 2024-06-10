@@ -12,7 +12,7 @@ This Kubernetes Operator is meant to be deployed in your Kubernetes cluster(s) a
 
 ## Documentation
 
-The AWX Operator documentation is now available at <https://awx-operator.readthedocs.io/>
+The AWX Operator documentation is available at <https://ansible.readthedocs.io/projects/awx-operator/en/latest/>
 
 ## Contributing
 
@@ -30,7 +30,7 @@ We ask all of our community members and contributors to adhere to the [Ansible c
 
 ## Get Involved
 
-We welcome your feedback and ideas. The AWX operator uses the same IRC channel and Ansible Community Forum as AWX itself. Here's how to reach us with feedback and questions:
+We welcome your feedback and ideas. The AWX operator uses the same Matrix channel and Ansible Community Forum as AWX itself. Here's how to reach us with feedback and questions:
 
 - Join the [Ansible AWX channel on Matrix](https://matrix.to/#/#awx:ansible.com)
 - Join the [Ansible Community Forum](https://forum.ansible.com)
