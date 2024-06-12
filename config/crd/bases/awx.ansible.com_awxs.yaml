@@ -1574,10 +1574,18 @@ spec:
                 description: Number of web instance replicas
                 type: integer
                 format: int32
+              web_manage_replicas:
+                description: Enables operator control of replicas count for the web deployment when set to 'true'
+                type: boolean
+                default: true
               task_replicas:
                 description: Number of task instance replicas
                 type: integer
                 format: int32
+              task_manage_replicas:
+                description: Enables operator control of replicas count for the task deployment when set to 'true'
+                type: boolean
+                default: true
               web_liveness_initial_delay:
                 description: Initial delay before starting liveness checks on web pod
                 type: integer

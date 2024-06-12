@@ -14,3 +14,8 @@ _image_pull_policy: Always
 image_pull_secrets: []
 
 finalizer_run: false
+
+node_selector: ''
+topology_spread_constraints: ''
+tolerations: ''
+affinity: {}
