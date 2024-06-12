@@ -362,6 +362,11 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	git checkout -f config/.
 
 	@echo "== Build Templates and CRDS =="
+	# Add labels anchor to all deployment resources
+	for file in charts/$(CHART_NAME)/raw-files/deployment-*-controller-manager.yaml; do\
+		$(YQ) -i '.metadata.labels += { "INCLUDE_ANCHOR": "INCLUDE_INDENT_4"}' $${file};\
+		$(YQ) -i '.spec.template.metadata.labels += { "INCLUDE_ANCHOR": "INCLUDE_INDENT_8"}' $${file};\
+	done
 	# Delete metadata.namespace, release namespace will be automatically inserted by helm
 	for file in charts/$(CHART_NAME)/raw-files/*; do\
 		$(YQ) -i 'del(.metadata.namespace)' $${file};\
@@ -375,16 +380,14 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	for file in $${cluster_scoped_files}; do\
 		$(YQ) -i '.metadata.name += "-{{ .Release.Name }}"' $${file};\
 	done
-	# Add labels to all deployment resources
-	for file in charts/$(CHART_NAME)/raw-files/deployment*.yaml; do\
-		$(YQ) -i '.metadata.labels += { "INCLUDE_ANCHOR": "INCLUDE_INDENT_4"}' $${file};\
-		$(YQ) -i '.spec.template.metadata.labels += { "INCLUDE_ANCHOR": "INCLUDE_INDENT_8"}' $${file};\
-		$(SED_I) 's/INCLUDE_ANCHOR: INCLUDE_INDENT_4/{{- include ""awx.labels"" . | indent 4 }}/g' $${file};\
-		$(SED_I) 's/INCLUDE_ANCHOR: INCLUDE_INDENT_8/{{- include ""awx.labels"" . | indent 8 }}/g' $${file};\
-	done
 
 	# Correct the reference for the clusterrolebinding
 	$(YQ) -i '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
+	# Corrects labels to all deployment resources
+	for file in charts/$(CHART_NAME)/raw-files/deployment-*-controller-manager.yaml; do\
+		$(SED_I) 's/INCLUDE_ANCHOR: INCLUDE_INDENT_4/{{- include "awx.labels" . | indent 4 }}/g' $${file};\
+		$(SED_I) 's/INCLUDE_ANCHOR: INCLUDE_INDENT_8/{{- include "awx.labels" . | indent 8 }}/g' $${file};\
+	done
 	# move all custom resource definitions to crds folder
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
