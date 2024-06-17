@@ -11,3 +11,13 @@ updates:
     labels:
       - "component:docs"
       - "dependencies"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
