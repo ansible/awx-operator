@@ -1,0 +1,11 @@
+---
+- name: Create metrics-utility Kubernetes CronJob for Red Hat Hybrid Cloud Console
+  kubernetes.core.k8s:
+    definition: "{{ lookup('template', item.template) }}"
+    apply: true
+    wait: true
+  vars:
+    cronjob_name: "{{ item.name }}"
+    metrics_utility_ship_target: crc  # TODO - Update to console when changed
+  loop:
+    - {name: 'metrics-utility-gather-console', template: 'cronjobs/metrics-utility-gather.yaml.j2'}
