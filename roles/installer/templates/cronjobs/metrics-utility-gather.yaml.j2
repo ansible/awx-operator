@@ -52,9 +52,11 @@ spec:
                 name: {{ metrics_utility_secret }}
 {% endif %}
             volumeMounts:
+{% if _metrics_utility_ship_target == "directory" %}
             - name: {{ ansible_operator_meta.name }}-metrics-utility
               mountPath: /metrics-utility
               readOnly: false
+{% endif %}
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/credentials.py"
               subPath: credentials.py
@@ -69,10 +71,12 @@ spec:
               readOnly: true
             {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
           volumes:
+{% if _metrics_utility_ship_target == "directory" %}
           - name: {{ ansible_operator_meta.name }}-metrics-utility
             persistentVolumeClaim:
               claimName: {{ _metrics_utility_pvc_claim }}
               readOnly: false
+{% endif %}
           - name: "{{ ansible_operator_meta.name }}-application-credentials"
             secret:
               secretName: "{{ ansible_operator_meta.name }}-app-credentials"
