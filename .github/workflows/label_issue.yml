@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Label Issue - Needs Triage
-        uses: github/issue-labeler@v2.4.1
+        uses: github/issue-labeler@v3.4
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           not-before: 2021-12-07T07:00:00Z
@@ -26,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Label Issue - Community
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - name: Install python requests
         run: pip install requests
       - name: Check if user is a member of Ansible org
