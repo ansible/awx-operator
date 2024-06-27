@@ -17,3 +17,6 @@ AWX:
     password: Unset
     sslmode: prefer
     type: unmanaged
+
+tolerations: []
+affinity: {}
