@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: awx-projects-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 2Gi
+  storageClassName: awx-projects-volume
+  hostPath:
+    path: /opt/awx/projects
