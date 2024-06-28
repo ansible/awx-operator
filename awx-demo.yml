@@ -4,4 +4,8 @@ kind: AWX
 metadata:
   name: awx-demo
 spec:
+  hostname: awx-demo.example.com
   service_type: nodeport
+  nodeport_port: 32260
+  projects_persistence: true
+  projects_existing_claim: awx-projects-claim
