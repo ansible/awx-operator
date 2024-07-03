@@ -5,7 +5,7 @@ Generate the name of the postgres secret, expects AWX context passed in
 {{ default (printf "%s-postgres-configuration" .Values.AWX.name) .Values.AWX.postgres.secretName }}
 {{- end }}
 {{/*
-Generate liste of labels
+Generate list of labels
 */}}
 {{- define "awx.labels" }}
 {{- if hasKey .Values.AWX "labels" -}}
