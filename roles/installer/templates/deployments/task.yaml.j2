@@ -8,9 +8,9 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
-{% if task_replicas != '' and task_manage_replicas is true %}
+{% if task_replicas != '' and task_manage_replicas | bool %}
   replicas: {{ task_replicas }}
-{% elif replicas != '' and task_manage_replicas is true %}
+{% elif replicas != '' and task_manage_replicas | bool %}
   replicas: {{ replicas }}
 {% endif %}
   selector:
@@ -74,6 +74,25 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
+{% if bundle_ca_crt  %}
+        - name: init-bundle-ca-trust
+          image: '{{ _init_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ init_container_resource_requirements }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
+              update-ca-trust extract
+          volumeMounts:
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
         - name: init-database
           image: '{{ _image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -96,6 +115,10 @@ spec:
               subPath: settings.py
               readOnly: true
             {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
+{% if bundle_ca_crt  %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+{% endif %}
 {% if development_mode | bool %}
             - name: awx-devel
               mountPath: "/awx_devel"
@@ -123,10 +146,6 @@ spec:
                 outcert=/etc/receptor/tls/receptor.crt \
                 notafter=$(date --iso-8601=seconds --utc --date "10 years") \
                 verify=yes
-{% if bundle_ca_crt  %}
-              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
-              update-ca-trust
-{% endif %}
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
@@ -149,10 +168,6 @@ spec:
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
 {% endif %}
 {% if init_container_extra_volume_mounts -%}
             {{ init_container_extra_volume_mounts | indent(width=12, first=True) }}
@@ -255,10 +270,6 @@ spec:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
 {% endif %}
             - name: "{{ ansible_operator_meta.name }}-application-credentials"
               mountPath: "/etc/tower/conf.d/execution_environments.py"
@@ -358,10 +369,6 @@ spec:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
 {% endif %}
             - name: "{{ ansible_operator_meta.name }}-default-receptor-config"
               mountPath: "/etc/receptor/receptor-default.conf"
@@ -438,10 +445,6 @@ spec:
 {% if bundle_ca_crt  %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
-              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
-              subPath: bundle-ca.crt
-              readOnly: true
 {% endif %}
 {% if development_mode | bool %}
             - name: awx-devel
