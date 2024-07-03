@@ -443,6 +443,9 @@ ldap_password_secret: ''
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
 
+# Set false for basic install without operator
+update_status: true
+
 # Whether secrets should be garbage collected
 # on teardown
 #
