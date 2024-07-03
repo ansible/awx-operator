@@ -127,6 +127,17 @@
     name: example-awx-admin-password
   register: admin_pw_secret
 
+- name: Wait for instance to be ready
+  uri:
+    url: "http://localhost/awx/api/v2/instances/?node_type=control&node_state=ready"
+    user: admin
+    password: "{{ admin_pw_secret.resources[0].data.password | b64decode }}"
+    force_basic_auth: yes
+  register: instances
+  until: instances['json']['count'] | int > 0
+  retries: 20
+  delay: 2
+
 - name: Validate demo job launch
   block:
     - name: Launch Demo Job Template

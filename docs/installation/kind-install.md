@@ -107,7 +107,7 @@ spec:
 Create your AWX CR
 
 ```
-oc create -f awx-cr.yaml
+kubectl create -f awx-cr.yaml
 ```
 
 Your AWX instance should now be reacheable at http://localhost:32000/
