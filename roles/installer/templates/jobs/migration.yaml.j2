@@ -36,6 +36,7 @@ spec:
       containers:
         - name: "migration-job"
           image: '{{ _image }}'
+          resources: {{ task_resource_requirements }}
           command:
             - awx-manage
             - migrate
