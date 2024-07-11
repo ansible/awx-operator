@@ -1,40 +1,44 @@
 ---
-- name: Check if there are any super users defined.
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_web_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-web"
-    command: >-
-      bash -c "echo 'from django.contrib.auth.models import User;
-      nsu = User.objects.filter(is_superuser=True, username=\"{{ admin_user }}\").count();
-      exit(0 if nsu > 0 else 1)'
-      | awx-manage shell"
-  ignore_errors: true
-  register: users_result
-  changed_when: users_result.return_code > 0
+- name: Create/update super user
+  block:
+    - name: Check if there are any super users defined.
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ awx_web_pod_name }}"
+        container: "{{ ansible_operator_meta.name }}-web"
+        command: >-
+          bash -c "echo 'from django.contrib.auth.models import User;
+          nsu = User.objects.filter(is_superuser=True, username=\"{{ admin_user }}\").count();
+          exit(0 if nsu > 0 else 1)'
+          | awx-manage shell"
+      ignore_errors: true
+      register: users_result
+      changed_when: users_result.return_code > 0
+    - name: Create super user via Django if it doesn't exist.
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ awx_web_pod_name }}"
+        container: "{{ ansible_operator_meta.name }}-web"
+        command: awx-manage createsuperuser --username={{ admin_user | quote }} --email={{ admin_email | quote }} --noinput
+      register: result
+      changed_when: "'That username is already taken' not in result.stderr"
+      failed_when: "'That username is already taken' not in result.stderr and 'Superuser created successfully' not in result.stdout"
+      no_log: "{{ no_log }}"
+      when: users_result.return_code > 0
 
-- name: Create super user via Django if it doesn't exist.
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_web_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-web"
-    command: awx-manage createsuperuser --username={{ admin_user | quote }} --email={{ admin_email | quote }} --noinput
-  register: result
-  changed_when: "'That username is already taken' not in result.stderr"
-  failed_when: "'That username is already taken' not in result.stderr and 'Superuser created successfully' not in result.stdout"
-  no_log: "{{ no_log }}"
-  when: users_result.return_code > 0
+    - name: Update Django super user password
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ awx_web_pod_name }}"
+        container: "{{ ansible_operator_meta.name }}-web"
+        command: awx-manage update_password --username='{{ admin_user }}' --password='{{ admin_password }}'
+      register: result
+      changed_when: "'Password updated' in result.stdout"
+      no_log: "{{ no_log }}"
+      when: users_result.return_code > 0
 
-- name: Update Django super user password
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_web_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-web"
-    command: awx-manage update_password --username='{{ admin_user }}' --password='{{ admin_password }}'
-  register: result
-  changed_when: "'Password updated' in result.stdout"
-  no_log: "{{ no_log }}"
-  when: users_result.return_code > 0
+  when: create_superuser | bool
+
 
 - name: Check if legacy queue is present
   k8s_exec:

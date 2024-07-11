@@ -294,6 +294,10 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Create Admin User?
+        path: create_superuser
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Admin Account Username
         path: admin_user
         x-descriptors:

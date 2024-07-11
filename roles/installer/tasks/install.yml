@@ -61,6 +61,7 @@
 
 - name: Include admin password configuration tasks
   include_tasks: admin_password_configuration.yml
+  when: create_superuser | bool
 
 - name: Include broadcast websocket configuration tasks
   include_tasks: broadcast_websocket_configuration.yml
