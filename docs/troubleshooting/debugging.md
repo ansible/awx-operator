@@ -96,6 +96,8 @@ Create a vars file:
 ansible_operator_meta:
   name: awx
   namespace: awx
+set_self_labels: false
+update_status: false
 service_type: nodeport
 ```
 The vars file will replace the awx resource so any value that you wish to over ride using the awx resource, put in the vars file. For example, if you wish to use your own image, version and pull policy, you can specify it like below:
@@ -106,6 +108,8 @@ The vars file will replace the awx resource so any value that you wish to over r
 ansible_operator_meta:
   name: awx
   namespace: awx
+set_self_labels: false
+update_status: false
 service_type: nodeport
 image: $DEV_DOCKER_TAG_BASE/awx_kube_devel
 image_pull_policy: Always

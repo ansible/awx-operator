@@ -69,7 +69,7 @@
     label_selectors:
       - "app.kubernetes.io/component=database"
       - "app.kubernetes.io/instance={{ old_postgres_pod.metadata.labels['app.kubernetes.io/instance'] }}"
-      - "app.kubernetes.io/managed-by=awx-operator"
+      - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
   register: old_postgres_svc
 
 - name: Set full resolvable host name for postgres pod
@@ -130,8 +130,8 @@
   set_fact:
     upgraded_postgres_version: '{{ supported_pg_version }}'
 
-# Cleanup old Postgres resources
-- name: Remove old Postgres StatefulSet
+# Cleanup old PostgreSQL resources
+- name: Remove old PostgreSQL StatefulSet
   k8s:
     kind: StatefulSet
     api_version: v1
@@ -143,7 +143,7 @@
     - "{{ ansible_operator_meta.name }}-postgres"
     - "{{ ansible_operator_meta.name }}-postgres-13"
 
-- name: Remove old Postgres Service
+- name: Remove old PostgreSQL Service
   k8s:
     kind: Service
     api_version: v1
@@ -153,16 +153,3 @@
   loop:
     - "{{ ansible_operator_meta.name }}-postgres"
     - "{{ ansible_operator_meta.name }}-postgres-13"
-
-- name: Remove old persistent volume claim
-  k8s:
-    kind: PersistentVolumeClaim
-    api_version: v1
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "{{ item }}"
-    state: absent
-  loop:
-    - "postgres-{{ ansible_operator_meta.name }}-postgres-0"
-    - "postgres-{{ ansible_operator_meta.name }}-postgres-13-0"
-    - "postgres-13-{{ ansible_operator_meta.name }}-postgres-13-0"
-  when: postgres_keep_pvc_after_upgrade

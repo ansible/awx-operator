@@ -1,4 +1,4 @@
-#### Custom Volume and Volume Mount Options
+# Custom Volume and Volume Mount Options
 
 In a scenario where custom volumes and volume mounts are required to either overwrite defaults or mount configuration files.
 
@@ -12,8 +12,8 @@ In a scenario where custom volumes and volume mounts are required to either over
 | init_container_extra_volume_mounts | Specify volume mounts to be added to Init container      | ''      |
 | init_container_extra_commands      | Specify additional commands for Init container           | ''      |
 
-
-> :warning: The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
+!!! warning
+    The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
 
 Example configuration for ConfigMap
 
@@ -26,64 +26,50 @@ metadata:
   namespace: <target namespace>
 data:
   ansible.cfg: |
-     [defaults]
-     remote_tmp = /tmp
-     [ssh_connection]
-     ssh_args = -C -o ControlMaster=auto -o ControlPersist=60s
-  custom.py:  |
-      INSIGHTS_URL_BASE = "example.org"
-      AWX_CLEANUP_PATHS = True
+    [defaults]
+    remote_tmp = /tmp
+    [ssh_connection]
+    ssh_args = -C -o ControlMaster=auto -o ControlPersist=60s
 ```
+
 Example spec file for volumes and volume mounts
 
 ```yaml
 ---
-    spec:
-    ...
-      extra_volumes: |
-        - name: ansible-cfg
-          configMap:
-            defaultMode: 420
-            items:
-              - key: ansible.cfg
-                path: ansible.cfg
-            name: <resourcename>-extra-config
-        - name: custom-py
-          configMap:
-            defaultMode: 420
-            items:
-              - key: custom.py
-                path: custom.py
-            name: <resourcename>-extra-config
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: my-external-volume-claim
+spec:
+  ...
+  extra_volumes: |
+    - name: ansible-cfg
+      configMap:
+        defaultMode: 420
+        items:
+          - key: ansible.cfg
+            path: ansible.cfg
+        name: <resourcename>-extra-config
+    - name: shared-volume
+      persistentVolumeClaim:
+        claimName: my-external-volume-claim
 
-      init_container_extra_volume_mounts: |
-        - name: shared-volume
-          mountPath: /shared
+  init_container_extra_volume_mounts: |
+    - name: shared-volume
+      mountPath: /shared
 
-      init_container_extra_commands: |
-        # set proper permissions (rwx) for the awx user
-        chmod 775 /shared
-        chgrp 1000 /shared
+  init_container_extra_commands: |
+    # set proper permissions (rwx) for the awx user
+    chmod 775 /shared
+    chgrp 1000 /shared
 
-      ee_extra_volume_mounts: |
-        - name: ansible-cfg
-          mountPath: /etc/ansible/ansible.cfg
-          subPath: ansible.cfg
-
-      task_extra_volume_mounts: |
-        - name: custom-py
-          mountPath: /etc/tower/conf.d/custom.py
-          subPath: custom.py
-        - name: shared-volume
-          mountPath: /shared
+  ee_extra_volume_mounts: |
+    - name: ansible-cfg
+      mountPath: /etc/ansible/ansible.cfg
+      subPath: ansible.cfg
 ```
 
-> :warning: **Volume and VolumeMount names cannot contain underscores(_)**
+!!! warning
+    **Volume and VolumeMount names cannot contain underscores(_)**
 
-##### Custom UWSGI Configuration
+## Custom UWSGI Configuration
+
 We allow the customization of two UWSGI parameters:
 
 * [processes](https://uwsgi-docs.readthedocs.io/en/latest/Options.html#processes) with `uwsgi_processes` (default 5)
@@ -103,7 +89,7 @@ requests (more than 128) tend to come in a short period of time, but can all be
 handled before any other time outs may apply. Also see related nginx
 configuration.
 
-##### Custom Nginx Configuration
+## Custom Nginx Configuration
 
 Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it is possible to extend the nginx.conf.
 
@@ -124,26 +110,70 @@ may allow the web pods to handle more "bursty" request patterns if many
 requests (more than 128) tend to come in a short period of time, but can all be
 handled before any other time outs may apply. Also see related uwsgi
 configuration.
+
 * [worker_processes](http://nginx.org/en/docs/ngx_core_module.html#worker_processes) with `nginx_worker_processes` (default of 1)
 * [worker_cpu_affinity](http://nginx.org/en/docs/ngx_core_module.html#worker_cpu_affinity) with `nginx_worker_cpu_affinity` (default "auto")
 * [worker_connections](http://nginx.org/en/docs/ngx_core_module.html#worker_connections) with `nginx_worker_connections` (minimum of 1024)
 * [listen](https://nginx.org/en/docs/http/ngx_http_core_module.html#listen) with `nginx_listen_queue_size` (default same as uwsgi listen queue size)
 
+## Custom Logos
 
-##### Custom Favicon
+You can use custom volume mounts to mount in your own logos to be displayed instead of the AWX logo.
+There are two different logos, one to be displayed on page headers, and one for the login screen.
 
-You can use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
-
-First, Create the configmap from a local favicon.ico file.
+First, create configmaps for the logos from local `logo-login.svg` and `logo-header.svg` files.
 
 ```bash
-$ oc create configmap favicon-configmap --from-file favicon.ico
+kubectl create configmap logo-login-configmap --from-file logo-login.svg
+kubectl create configmap logo-header-configmap --from-file logo-header.svg
 ```
 
 Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
 
 ```yaml
+---
 spec:
+  ...
+  extra_volumes: |
+    - name: logo-login
+      configMap:
+        defaultMode: 420
+        items:
+          - key: logo-login.svg
+            path: logo-login.svg
+        name: logo-login-configmap
+    - name: logo-header
+      configMap:
+        defaultMode: 420
+        items:
+          - key: logo-header.svg
+            path: logo-header.svg
+        name: logo-header-configmap
+  web_extra_volume_mounts: |
+    - name: logo-login
+      mountPath: /var/lib/awx/public/static/media/logo-login.svg
+      subPath: logo-login.svg
+    - name: logo-header
+      mountPath: /var/lib/awx/public/static/media/logo-header.svg
+      subPath: logo-header.svg
+```
+
+## Custom Favicon
+
+You can also use custom volume mounts to mount in your own favicon to be displayed in your AWX browser tab.
+
+First, create the configmap from a local `favicon.ico` file.
+
+```bash
+kubectl create configmap favicon-configmap --from-file favicon.ico
+```
+
+Then specify the extra_volume and web_extra_volume_mounts on your AWX CR spec
+
+```yaml
+---
+spec:
+  ...
   extra_volumes: |
     - name: favicon
       configMap:
@@ -157,3 +187,7 @@ spec:
       mountPath: /var/lib/awx/public/static/media/favicon.ico
       subPath: favicon.ico
 ```
+
+## Custom AWX Configuration
+
+Refer to the [Extra Settings](./extra-settings.md) documentation for customizing the AWX configuration.

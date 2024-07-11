@@ -100,6 +100,7 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+    awx_postgres_target_session_attrs: "{{ pg_config['resources'][0]['data']['target_session_attrs'] | default('') | b64decode }}"
   no_log: "{{ no_log }}"
 
 - name: Set database as managed
@@ -129,7 +130,7 @@
       set_fact:
         sorted_old_postgres_pods: "{{ filtered_old_postgres_pods |
           sort(attribute='metadata.name') |
-          reverse }}"
+          reverse | list }}"
       when: filtered_old_postgres_pods | length
 
 
@@ -152,21 +153,22 @@
   set_fact:
     _previous_upgraded_pg_version: "{{ this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default(false) }}"
   when:
+    - this_awx['resources'][0] is defined
     - "'upgradedPostgresVersion' in this_awx['resources'][0]['status']"
 
 - name: Check if postgres pod is running an older version
   block:
-    - name: Set path to PG_VERSION file for given container image
-      set_fact:
-        path_to_pg_version: '{{ postgres_data_path }}/PG_VERSION'
-
     - name: Get old PostgreSQL version
       k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
         pod: "{{ old_postgres_pod['metadata']['name'] }}"
         command: |
           bash -c """
-          cat {{ path_to_pg_version }}
+          if [ -f "{{ _postgres_data_path }}/PG_VERSION" ]; then
+            cat "{{ _postgres_data_path }}/PG_VERSION"
+          elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
+            cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
+          fi
           """
       register: _old_pg_version
 

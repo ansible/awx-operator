@@ -47,6 +47,27 @@ spec:
 {% if postgres_priority_class is defined %}
       priorityClassName: '{{ postgres_priority_class }}'
 {% endif %}
+{% if postgres_data_volume_init and not is_openshift %}
+      initContainers:
+        - name: init
+          image: '{{ _postgres_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          securityContext:
+            runAsUser: 0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              {{ postgres_init_container_commands | indent(width=14) }}
+          resources: {{ postgres_init_container_resource_requirements | default(postgres_resource_requirements) }}
+          volumeMounts:
+            - name: postgres-{{ supported_pg_version }}
+              mountPath: '{{ _postgres_data_path | dirname }}'
+              subPath: '{{ _postgres_data_path | dirname | basename }}'
+{% if postgres_extra_volume_mounts %}
+            {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
+{% endif %}
       containers:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -56,6 +77,7 @@ spec:
             {{ postgres_security_context_settings | to_nice_yaml | indent(12) }}
 {% endif %}
 {% if postgres_extra_args %}
+          command: ["run-postgresql"]
           args: {{ postgres_extra_args }}
 {% endif %}
           env:
@@ -93,7 +115,7 @@ spec:
                   name: '{{ __postgres_configuration_secret }}'
                   key: password
             - name: PGDATA
-              value: '{{ postgres_data_path }}'
+              value: '{{ _postgres_data_path }}'
             - name: POSTGRES_INITDB_ARGS
               value: '{{ postgres_initdb_args }}'
             - name: POSTGRES_HOST_AUTH_METHOD
@@ -110,9 +132,9 @@ spec:
               name: postgres-{{ supported_pg_version }}
           volumeMounts:
             - name: postgres-{{ supported_pg_version }}
-              mountPath: '{{ postgres_data_path | dirname }}'
-              subPath: '{{ postgres_data_path | dirname | basename }}'
-{% if postgres_extra_volume_mounts -%}
+              mountPath: '{{ _postgres_data_path | dirname }}'
+              subPath: '{{ _postgres_data_path | dirname | basename }}'
+{% if postgres_extra_volume_mounts %}
             {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
           resources: {{ postgres_resource_requirements }}

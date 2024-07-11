@@ -55,6 +55,9 @@ spec:
 {% if loadbalancer_ip is defined and loadbalancer_ip | length %}
   loadbalancerip: '{{ loadbalancer_ip }}'
 {% endif %}
+{% if loadbalancer_class is defined and loadbalancer_class | length %}
+  loadBalancerClass: {{ loadbalancer_class }}
+{% endif %}
 {% else %}
   type: ClusterIP
 {% endif %}

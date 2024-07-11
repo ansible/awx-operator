@@ -94,6 +94,11 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              spec_overrides:
+                description: Overrides for the AWX spec
+                # type: string
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               image_pull_policy:
                 description: The image pull policy
                 type: string

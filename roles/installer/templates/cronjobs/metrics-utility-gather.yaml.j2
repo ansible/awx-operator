@@ -1,0 +1,99 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ ansible_operator_meta.name }}-{{ cronjob_name }}
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-{{ cronjob_name }}'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
+spec:
+  schedule: "{{ _metrics_utility_cronjob_gather_schedule }}"
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-{{ cronjob_name }}'
+            {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=12) | trim }}
+            {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=12) | trim }}
+        spec:
+{% if image_pull_secret is defined %}
+          imagePullSecrets:
+            - name: {{ image_pull_secret }}
+{% elif image_pull_secrets | length > 0 %}
+          imagePullSecrets:
+{% for secret in image_pull_secrets %}
+            - name: {{ secret }}
+{% endfor %}
+{% endif %}
+          containers:
+          - name: {{ ansible_operator_meta.name }}-{{ cronjob_name }}
+            image: "{{ _metrics_utility_image }}"
+            imagePullPolicy: "{{ image_pull_policy }}"
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "100m"
+            command:
+              - /bin/sh
+              - -c
+              - metrics-utility gather_automation_controller_billing_data --ship --until=10m
+            env:
+            - name: METRICS_UTILITY_SHIP_TARGET
+              value: "{{ _metrics_utility_ship_target }}"
+            envFrom:
+            - configMapRef:
+                name: {{ _metrics_utility_configmap }}
+{% if metrics_utility_secret is defined %}
+            - secretRef:
+                name: {{ metrics_utility_secret }}
+{% endif %}
+            volumeMounts:
+{% if _metrics_utility_ship_target == "directory" %}
+            - name: {{ ansible_operator_meta.name }}-metrics-utility
+              mountPath: /metrics-utility
+              readOnly: false
+{% endif %}
+            - name: "{{ ansible_operator_meta.name }}-application-credentials"
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: /etc/tower/settings.py
+              subPath: settings.py
+              readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
+          volumes:
+{% if _metrics_utility_ship_target == "directory" %}
+          - name: {{ ansible_operator_meta.name }}-metrics-utility
+            persistentVolumeClaim:
+              claimName: {{ _metrics_utility_pvc_claim }}
+              readOnly: false
+{% endif %}
+          - name: "{{ ansible_operator_meta.name }}-application-credentials"
+            secret:
+              secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+              items:
+                - key: credentials.py
+                  path: 'credentials.py'
+          - name: "{{ secret_key_secret_name }}"
+            secret:
+              secretName: '{{ secret_key_secret_name }}'
+              items:
+                - key: secret_key
+                  path: SECRET_KEY
+          - name: {{ ansible_operator_meta.name }}-settings
+            configMap:
+              name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+              items:
+                - key: settings
+                  path: settings.py
+          {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=10) | trim }}
+          restartPolicy: OnFailure

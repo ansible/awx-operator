@@ -14,6 +14,12 @@ spec:
 {% if awx_version %}
   image_version: {{ awx_version }}
 {% endif %}
+{% if awx_ee_image %}
+  control_plane_ee_image: {{ awx_ee_image }}
+  ee_images:
+  - image: {{ awx_ee_image }}
+    name: AWX EE
+{% endif %}
   ingress_type: ingress
   ingress_path: /awx
   ingress_annotations: |
@@ -32,11 +38,14 @@ spec:
       memory: 16M
   no_log: false
   postgres_resource_requirements: {}
-  postgres_init_container_resource_requirements: {}
   redis_resource_requirements: {}
   additional_labels:
   - my/team
   - my/service
+  extra_settings:
+  - setting: LOG_AGGREGATOR_LEVEL
+    value: "'DEBUG'"
+  task_readiness_period: 15
 {% if additional_fields is defined %}
   {{ additional_fields | to_nice_yaml | indent(2) }}
 {% endif %}

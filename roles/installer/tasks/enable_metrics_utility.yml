@@ -1,0 +1,30 @@
+---
+- name: Setup PVC if using directory ship target
+  block:
+
+    # Check to make sure provided pvc exists
+    - name: Check provided PVC claim exists
+      kubernetes.core.k8s_info:
+        name: "{{ _metrics_utility_pvc_claim }}"
+        kind: PersistentVolumeClaim
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      when:
+        - _metrics_utility_pvc_claim | length
+
+    - name: Create PVC for metrics-utility
+      kubernetes.core.k8s:
+        kind: PersistentVolumeClaim
+        definition: "{{ lookup('template', 'storage/metrics-utility.yaml.j2') }}"
+
+  when: _metrics_utility_ship_target == "directory"
+
+- name: Create default metrics-utility Kubernetes CronJobs
+  kubernetes.core.k8s:
+    definition: "{{ lookup('template', item.template) }}"
+    apply: true
+    wait: true
+  vars:
+    cronjob_name: "{{ item.name }}"
+  loop:
+    - {name: 'metrics-utility-gather', template: 'cronjobs/metrics-utility-gather.yaml.j2'}
+    - {name: 'metrics-utility-report', template: 'cronjobs/metrics-utility-report.yaml.j2'}

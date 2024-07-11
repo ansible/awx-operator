@@ -33,6 +33,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
 | loadbalancer_ip       | Assign Loadbalancer IP                   | ''      |
+| loadbalancer_class    | LoadBalancer class to use                | ''      |
 
 ```yaml
 ---
@@ -42,6 +43,7 @@ spec:
   loadbalancer_ip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
+  loadbalancer_class: service.k8s.aws/nlb
   service_annotations: |
     environment: testing
   service_labels: |

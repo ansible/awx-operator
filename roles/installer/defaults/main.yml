@@ -13,6 +13,7 @@ ingress_class_name: ''
 ingress_path: '/'
 ingress_path_type: 'Prefix'
 ingress_api_version: 'networking.k8s.io/v1'
+api_urlpattern_prefix: ''
 # Add annotations to the service account. Specify as literal block. E.g.:
 # service_account_annotations: |
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
@@ -52,6 +53,7 @@ ingress_hosts: ''
 
 loadbalancer_protocol: 'http'
 loadbalancer_port: '80'
+loadbalancer_class: ''
 service_annotations: ''
 
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768
@@ -277,10 +279,12 @@ init_container_extra_commands: ''
 init_container_extra_volume_mounts: ''
 
 ee_images:
-  - name: AWX EE (latest)
-    image: quay.io/ansible/awx-ee:latest
+  - name: "AWX EE (latest)"
+    image: "quay.io/ansible/awx-ee:latest"
+  - name: "AWX EE ({{ _image_version }})"
+    image: "quay.io/ansible/awx-ee:{{ _image_version }}"
 
-_control_plane_ee_image: quay.io/ansible/awx-ee:latest
+_control_plane_ee_image: "quay.io/ansible/awx-ee:{{ _image_version }}"
 
 _init_container_image: "{{ _control_plane_ee_image.split(':')[0] }}"
 _init_container_image_version: "{{ _control_plane_ee_image.split(':')[1] }}"
@@ -292,6 +296,11 @@ create_preload_data: true
 replicas: 1
 web_replicas: ''
 task_replicas: ''
+
+web_liveness_period: 0
+web_readiness_period: 0
+task_liveness_period: 0
+task_readiness_period: 0
 
 task_args:
   - /usr/bin/launch_awx_task.sh
@@ -392,13 +401,9 @@ postgres_resource_requirements:
   requests:
     cpu: 10m
     memory: 64Mi
-postgres_init_container_resource_requirements:
-  requests:
-    cpu: 10m
-    memory: 64Mi
+
 # Assign a preexisting priority class to the postgres pod
 postgres_priority_class: ''
-postgres_data_path: '/var/lib/postgresql/data/pgdata'
 
 # Persistence to the AWX project data folder
 # Whether or not the /var/lib/projects directory will be persistent
@@ -409,6 +414,11 @@ projects_existing_claim: ''
 #
 # Define postgres configuration arguments to use
 postgres_extra_args: ''
+
+postgres_data_volume_init: false
+postgres_init_container_commands: |
+  chown 26:0 /var/lib/pgsql/data
+  chmod 700 /var/lib/pgsql/data
 
 # Configure postgres connection keepalive
 postgres_keepalives: true
@@ -432,6 +442,9 @@ ldap_password_secret: ''
 
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
+
+# Set false for basic install without operator
+update_status: true
 
 # Whether secrets should be garbage collected
 # on teardown
@@ -481,3 +494,5 @@ nginx_worker_processes: 1
 nginx_worker_connections: "{{ uwsgi_listen_queue_size }}"
 nginx_worker_cpu_affinity: 'auto'
 nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
+
+extra_settings_files: {}

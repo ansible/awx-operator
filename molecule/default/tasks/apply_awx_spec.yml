@@ -1,5 +1,5 @@
 ---
-- name: Create or update the awx.ansible.com/v1alpha1.AWX
+- name: Create or update the awx.ansible.com/v1beta1.AWX
   k8s:
     state: present
     namespace: '{{ namespace }}'

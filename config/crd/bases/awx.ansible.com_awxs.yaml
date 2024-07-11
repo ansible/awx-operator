@@ -144,6 +144,9 @@ spec:
               ingress_controller:
                 description: Special configuration for specific Ingress Controllers
                 type: string
+              api_urlpattern_prefix:
+                description: An optional configuration to add a prefix in the API URL path
+                type: string
               loadbalancer_protocol:
                 description: Protocol to use for the loadbalancer
                 type: string
@@ -157,6 +160,10 @@ spec:
                 default: 80
               loadbalancer_ip:
                 description: Assign LoadBalancer IP address
+                type: string
+                default: ''
+              loadbalancer_class:
+                description: Class of LoadBalancer to use
                 type: string
                 default: ''
               route_host:
@@ -1456,7 +1463,7 @@ spec:
                     type: object
                 type: object
               postgres_init_container_resource_requirements:
-                description: Resource requirements for the postgres init container
+                description: (Deprecated, use postgres_resource_requirements parameter) Resource requirements for the postgres init container
                 properties:
                   requests:
                     properties:
@@ -1567,9 +1574,97 @@ spec:
                 description: Number of web instance replicas
                 type: integer
                 format: int32
+              web_manage_replicas:
+                description: Enables operator control of replicas count for the web deployment when set to 'true'
+                type: boolean
+                default: true
               task_replicas:
                 description: Number of task instance replicas
                 type: integer
+                format: int32
+              task_manage_replicas:
+                description: Enables operator control of replicas count for the task deployment when set to 'true'
+                type: boolean
+                default: true
+              web_liveness_initial_delay:
+                description: Initial delay before starting liveness checks on web pod
+                type: integer
+                default: 5
+                format: int32
+              task_liveness_initial_delay:
+                description: Initial delay before starting liveness checks on task pod
+                type: integer
+                default: 5
+                format: int32
+              web_liveness_period:
+                description: Time period in seconds between each liveness check for the web pod
+                type: integer
+                default: 0
+                format: int32
+              task_liveness_period:
+                description: Time period in seconds between each liveness check for the task pod
+                type: integer
+                default: 0
+                format: int32
+              web_liveness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of web pod
+                type: integer
+                default: 3
+                format: int32
+              task_liveness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of task pod
+                type: integer
+                default: 3
+                format: int32
+              web_liveness_timeout:
+                description: Number of seconds to wait for a probe response from web pod
+                type: integer
+                default: 1
+                format: int32
+              task_liveness_timeout:
+                description: Number of seconds to wait for a probe response from task pod
+                type: integer
+                default: 1
+                format: int32
+              web_readiness_initial_delay:
+                description: Initial delay before starting readiness checks on web pod
+                type: integer
+                default: 20
+                format: int32
+              task_readiness_initial_delay:
+                description: Initial delay before starting readiness checks on task pod
+                type: integer
+                default: 20
+                format: int32
+              web_readiness_period:
+                description: Time period in seconds between each readiness check for the web pod
+                type: integer
+                default: 0
+                format: int32
+              task_readiness_period:
+                description: Time period in seconds between each readiness check for the task pod
+                type: integer
+                default: 0
+                format: int32
+              web_readiness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of web pod
+                type: integer
+                default: 3
+                format: int32
+              task_readiness_failure_threshold:
+                description: Number of consecutive failure events to identify failure of task pod
+                type: integer
+                default: 3
+                format: int32
+              web_readiness_timeout:
+                description: Number of seconds to wait for a probe response from web pod
+                type: integer
+                default: 1
+                format: int32
+              task_readiness_timeout:
+                description: Number of seconds to wait for a probe response from task pod
+                type: integer
+                default: 1
                 format: int32
               garbage_collect_secrets:
                 description: Whether or not to remove secrets upon instance removal
@@ -1723,13 +1818,16 @@ spec:
               postgres_priority_class:
                 description: Assign a preexisting priority class to the postgres pod
                 type: string
-              postgres_data_path:
-                description: Path where the PostgreSQL data are located
-                type: string
               postgres_extra_args:
                 type: array
                 items:
                   type: string
+              postgres_data_volume_init:
+                description: Sets permissions on the /var/lib/pgdata/data for postgres container using an init container (not Openshift)
+                type: boolean
+              postgres_init_container_commands:
+                description: Customize the postgres init container commands (Non Openshift)
+                type: string
               postgres_extra_volumes:
                 description: Specify extra volumes to add to the application pod
                 type: string
@@ -1805,16 +1903,37 @@ spec:
                 description: Set log level of receptor service
                 type: string
               extra_settings:
-                description: Extra settings to specify for the API
+                description: Extra settings to specify for AWX
                 items:
                   properties:
                     setting:
                       type: string
                     value:
-                      type: string
                       x-kubernetes-preserve-unknown-fields: true
                   type: object
                 type: array
+              extra_settings_files:
+                description: Extra ConfigMaps or Secrets of settings files to specify for AWX
+                properties:
+                  configmaps:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+                      type: object
+                    type: array
+                  secrets:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+                      type: object
+                    type: array
+                type: object
               no_log:
                 description: Configure no_log for no_log tasks
                 type: boolean
@@ -1838,6 +1957,50 @@ spec:
                   type: string
               ipv6_disabled:
                 description: Disable web container's nginx ipv6 listener
+                type: boolean
+                default: false
+              metrics_utility_enabled:
+                description: Enable metrics utility
+                type: boolean
+                default: false
+              metrics_utility_image:
+                description: Metrics-Utility Image
+                type: string
+              metrics_utility_image_version:
+                description: Metrics-Utility Image Version
+                type: string
+              metrics_utility_image_pull_policy:
+                description: Metrics-Utility Image PullPolicy
+                type: string
+              metrics_utility_configmap:
+                description: Metrics-Utility ConfigMap
+                type: string
+              metrics_utility_secret:
+                description: Metrics-Utility Secret
+                type: string
+              metrics_utility_cronjob_gather_schedule:
+                description: Metrics-Utility Gather Data CronJob Schedule
+                type: string
+                default: '@hourly'
+              metrics_utility_cronjob_report_schedule:
+                description: Metrics-Utility Report CronJob Schedule
+                type: string
+                default: '@monthly'
+              metrics_utility_ship_target:
+                description: Metrics-Utility Ship Target
+                type: string
+              metrics_utility_pvc_claim:
+                description: Metrics-Utility PVC Claim
+                type: string
+              metrics_utility_pvc_claim_size:
+                description: Metrics-Utility PVC Claim Size
+                type: string
+                default: 5Gi
+              metrics_utility_pvc_claim_storage_class:
+                description: Metrics-Utility PVC Claim Storage Class
+                type: string
+              metrics_utility_console_enabled:
+                description: Enable metrics utility shipping to Red Hat Hybrid Cloud Console
                 type: boolean
                 default: false
             type: object

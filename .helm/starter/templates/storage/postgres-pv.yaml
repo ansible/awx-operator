@@ -13,7 +13,7 @@ spec:
     storage: {{ default "8Gi" .size | quote }}
   storageClassName: {{ include "postgres.storageClassName" $ }}
   hostPath:
-    path: {{ required "customVolumes.postgres.hostPath or spec.postgres_data_path are required!" (default ($.Values.AWX.spec).postgres_data_path .hostPath) | quote }}
+    path: /var/lib/pgsql/data/userdata
 {{- end }}
 {{- end }}
 {{- end }}

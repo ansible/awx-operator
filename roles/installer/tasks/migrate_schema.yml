@@ -1,0 +1,57 @@
+---
+
+- name: Check for pending migrations
+  k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_web_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-web"
+    command: >-
+      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
+  changed_when: false
+  when: awx_web_pod_name != ''
+  register: database_check
+
+- block:
+    - name: Get version of controller for tracking
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ awx_web_pod_name }}"
+        container: "{{ ansible_operator_meta.name }}-web"
+        command: >-
+          bash -c "awx-manage --version"
+      changed_when: false
+      register: version_check
+
+    - name: Sanitize instance version
+      set_fact:
+        version: "{{ version_check.stdout | replace('+', '-') | trim }}"
+
+    # It is possible to do a wait on this task to create the job and wait
+    # until it completes. Unfortunately, if the job doesn't wait finish within
+    # the timeout period that is considered an error.  We only want this to
+    # error if there is an issue with creating the job.
+    - name: Create kubernetes job to perform the migration
+      k8s:
+        apply: yes
+        definition: "{{ lookup('template', 'jobs/migration.yaml.j2') }}"
+      register: migrate_result
+
+    # This task is really only necessary for new installations. We need to
+    # ensure the database has a schema loaded before continuing with the
+    # initialization of admin user, etc.
+    - name: Watch for the migration job to finish
+      k8s_info:
+        kind: Job
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}-migration-{{ version }}"
+      register: result
+      until:
+        - result.resources[0].status.succeeded is defined
+        - result.resources[0].status.succeeded == 1
+      retries: 180
+      delay: 5
+      ignore_errors: true
+
+  when:
+    - database_check is defined
+    - (database_check.stdout|trim) != '0'

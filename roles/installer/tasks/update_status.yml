@@ -47,13 +47,13 @@
 - name: Retrieve instance version
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_task_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-task"
+    pod: "{{ awx_web_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-web"
     command: >-
       bash -c "awx-manage --version"
   register: instance_version
   changed_when: false
-  when: awx_task_pod_name != ''
+  when: awx_web_pod_name != ''
 
 - name: Update version status
   operator_sdk.util.k8s_status:

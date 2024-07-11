@@ -1,28 +1,28 @@
 ---
-- name: Get the current resource task pod information.
+- name: Get the current resource web pod information.
   k8s_info:
     api_version: v1
     kind: Pod
     namespace: '{{ ansible_operator_meta.namespace }}'
     label_selectors:
-      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
+      - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-web"
       - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
       - "app.kubernetes.io/component={{ deployment_type }}"
     field_selectors:
       - status.phase=Running
-  register: awx_task_pod
+  register: awx_web_pod
 
 - name: Set the resource pod as a variable.
   set_fact:
-    awx_task_pod: >-
-      {{ awx_task_pod['resources']
+    awx_web_pod: >-
+      {{ awx_web_pod['resources']
          | rejectattr('metadata.deletionTimestamp', 'defined')
          | sort(attribute='metadata.creationTimestamp')
          | first | default({}) }}
 
 - name: Set the resource pod name as a variable.
   set_fact:
-    awx_task_pod_name: "{{ awx_task_pod['metadata']['name'] | default('') }}"
+    awx_web_pod_name: "{{ awx_web_pod['metadata']['name'] | default('') }}"
 
 - name: Set user provided control plane ee image
   set_fact:
@@ -249,11 +249,9 @@
   k8s:
     apply: yes
     definition: "{{ lookup('template', 'deployments/{{ item }}.yaml.j2') }}"
-    wait: yes
-    wait_timeout: "{{ (120 * replicas) or 120 }}"
   loop:
-    - task
     - web
+    - task
   register: this_deployment_result
 
 - block:
@@ -262,16 +260,21 @@
         kind: Pod
         namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
-          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
+          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-web"
           - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
           - "app.kubernetes.io/component={{ deployment_type }}"
         field_selectors:
           - status.phase=Running
       register: _new_pod
+      until:
+        - _new_pod['resources'] | length
+        - _new_pod['resources'] | rejectattr('metadata.deletionTimestamp', 'defined') | list | length
+      retries: 60
+      delay: 5
 
     - name: Update new resource pod as a variable.
       set_fact:
-        awx_task_pod: >-
+        awx_web_pod: >-
           {{ _new_pod['resources']
              | rejectattr('metadata.deletionTimestamp', 'defined')
              | sort(attribute='metadata.creationTimestamp')
@@ -279,13 +282,13 @@
 
     - name: Update new resource pod name as a variable.
       set_fact:
-        awx_task_pod_name: '{{ awx_task_pod["metadata"]["name"] | default("")}}'
+        awx_web_pod_name: '{{ awx_web_pod["metadata"]["name"] | default("")}}'
   when:
     - this_deployment_result.changed
 
 - name: Verify the resource pod name is populated.
   assert:
     that:
-      - awx_task_pod_name != ''
+      - awx_web_pod_name != ''
     fail_msg: "Could not find the tower pod's name."
-  when: task_replicas | int > 0 or (task_replicas == '' and replicas > 0)
+  when: web_replicas | int > 0 or (web_replicas == '' and replicas > 0)
