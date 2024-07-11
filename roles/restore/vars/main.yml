@@ -14,6 +14,7 @@ broadcast_websocket_secret: '{{ deployment_name }}-broadcast-websocket'
 postgres_configuration_secret: '{{ deployment_name }}-postgres-configuration'
 supported_pg_version: 15
 image_pull_policy: IfNotPresent
+image_pull_secrets: []
 
 # If set to true, the restore process will delete the existing database and create a new one
 force_drop_db: false

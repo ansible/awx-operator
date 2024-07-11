@@ -11,6 +11,12 @@ spec:
   - name: {{ ansible_operator_meta.name }}-db-management
     image: "{{ _postgres_image }}"
     imagePullPolicy: "{{ image_pull_policy }}"
+{% if image_pull_secrets | length > 0 %}
+    imagePullSecrets:
+{% for secret in image_pull_secrets %}
+      - name: {{ secret }}
+{% endfor %}
+{% endif %}
     command: ["sleep", "infinity"]
     volumeMounts:
     - name: {{ ansible_operator_meta.name }}-backup

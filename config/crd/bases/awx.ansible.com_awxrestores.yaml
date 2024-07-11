@@ -110,6 +110,11 @@ spec:
                 - never
                 - IfNotPresent
                 - ifnotpresent
+              image_pull_secrets:
+                description: Image pull secrets for restore management container
+                type: array
+                items:
+                  type: string
               db_management_pod_node_selector:
                 description: nodeSelector for the Postgres pods to backup
                 type: string
