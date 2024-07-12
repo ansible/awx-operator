@@ -1862,6 +1862,10 @@ spec:
               ldap_password_secret:
                 description: Secret where can be found the LDAP bind password
                 type: string
+              ldap_skip_tls_verify:
+                description: Skip TLS verification for LDAP
+                default: false
+                type: boolean
               bundle_cacert_secret:
                 description: Secret where can be found the trusted Certificate Authority Bundle
                 type: string

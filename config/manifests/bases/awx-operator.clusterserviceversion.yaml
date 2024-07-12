@@ -727,6 +727,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - displayName: Skip TLS verification for LDAP?
+        path: ldap_skip_tls_verify
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Task Args
         path: task_args
         x-descriptors:

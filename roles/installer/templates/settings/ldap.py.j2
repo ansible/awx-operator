@@ -1,6 +1,10 @@
 AUTH_LDAP_GLOBAL_OPTIONS = {
 {% if ldap_cacert_ca_crt %}
+    {% if ldap_skip_tls_verify %}
+    ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER,
+    {% else %}
     ldap.OPT_X_TLS_REQUIRE_CERT: True,
+    {% endif %}
     ldap.OPT_X_TLS_CACERTFILE: "/etc/openldap/certs/ldap-ca.crt"
 {% endif %}
 }
