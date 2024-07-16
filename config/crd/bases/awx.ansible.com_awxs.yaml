@@ -47,9 +47,13 @@ spec:
                 description: apiVersion of the deployment type
                 type: string
               task_privileged:
-                description: If a privileged security context should be enabled
+                description: (Deprecated) If a privileged security context should be enabled
                 type: boolean
                 default: false
+              task_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               admin_user:
                 description: Username to use for the admin account
                 type: string
@@ -1709,12 +1713,20 @@ spec:
               ee_extra_volume_mounts:
                 description: Specify volume mounts to be added to Execution container
                 type: string
+              ee_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               task_extra_volume_mounts:
                 description: Specify volume mounts to be added to Task container
                 type: string
               web_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Web container
                 type: string
+              web_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               postgres_extra_volume_mounts:
                 description: Specify volume mounts to be added to Postgres container
                 type: string
@@ -1739,6 +1751,10 @@ spec:
               rsyslog_extra_volume_mounts:
                 description: Specify volume mounts to be added to the Rsyslog container
                 type: string
+              rsyslog_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               redis_image:
                 description: Registry path to the redis container to use
                 type: string
@@ -1746,10 +1762,14 @@ spec:
                 description: Redis container image version to use
                 type: string
               redis_capabilities:
-                description: Redis container capabilities
+                description: (Deprecated) Redis container capabilities
                 type: array
                 items:
                   type: string
+              redis_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               init_container_image:
                 description: Registry path to the init container to use
                 type: string
@@ -1762,6 +1782,10 @@ spec:
               init_container_extra_volume_mounts:
                 description: Specify volume mounts to be added to the init container
                 type: string
+              init_security_context:
+                description: Key/values that will be set under the container-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               init_projects_container_image:
                 description: Registry path to the init projects container to use
                 type: string
@@ -1896,7 +1920,11 @@ spec:
                 description: Set session cookie secure mode for web
                 type: string
               postgres_security_context_settings:
-                description: Key/values that will be set under the pod-level securityContext field
+                description: (Deprecated) Key/values that will be set under the pod-level securityContext field
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              postgres_security_context:
+                description: Key/values that will be set under the container-level securityContext field
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
               receptor_log_level:
