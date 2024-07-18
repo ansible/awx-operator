@@ -196,6 +196,18 @@ data:
                 alias /var/lib/awx/public/static/media/favicon.ico;
             }
 
+            location {{ (ingress_path + '/ui_legacy/static').replace('//', '/') }}  {
+                alias /var/lib/awx/public/static/;
+            }
+
+            location {{ (ingress_path + '/ui_legacy/websocket').replace('//', '/') }}  {
+                rewrite ^/ui_legacy/websocket/(.*) /websocket/$1 last;
+            }
+
+            location {{ (ingress_path + '/ui_legacy/api').replace('//', '/') }}  {
+                rewrite ^/ui_legacy/api/(.*) /api/$1 last;
+            }
+
 {% if api_urlpattern_prefix | length > 0 %}
             location ~ ^({{ (ingress_path + '/websocket/').replace('//', '/') }}|{{ (ingress_path + '/api/websocket/').replace('//', '/') }}|{{ (ingress_path + '/api/' + api_urlpattern_prefix + '/v2/websocket/').replace('//', '/') }}) {
 {% else %}
@@ -299,11 +311,11 @@ data:
     master-fifo = /var/lib/awx/awxfifo
     max-requests = 1000
     buffer-size = 32768
-    
+
     if-env = UWSGI_MOUNT_PATH
     mount = %(_)=awx.wsgi:application
     endif =
-    
+
     if-not-env = UWSGI_MOUNT_PATH
     mount = /=awx.wsgi:application
     endif =
