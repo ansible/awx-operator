@@ -168,7 +168,7 @@ spec:
 
 After AWXMeshIngress has been successfully created, a new Instance with the same name will be registered to AWX and will be visible on the Instance UI page
 
-![mesh ingress instance on AWX UI](mesh-ingress-instance-on-awx-ui.png)
+![mesh ingress instance on AWX UI](./images/mesh-ingress-instance-on-awx-ui.png)
 
 The Instance should have at least 2 listener addresses.
 
@@ -177,10 +177,10 @@ In this example, the mesh ingress has two listener addresses:
 - one for internal, that is used for peering to by all control nodes (top)
 - one for external, that is exposed to a route so external execution nodes can peer into it (bottom))
 
-![mesh ingress instance listener address on awx ui](mesh-ingress-instance-listener-address-on-awx-ui.png)
+![mesh ingress instance listener address on awx ui](./images/mesh-ingress-instance-listener-address-on-awx-ui.png)
 
 When selecting peer for new instance the mesh ingress instance should now be present as a option.
-![peering to mesh ingress on awx ui](peering-to-mesh-ingress-on-awx-ui.png)
+![peering to mesh ingress on awx ui](./images/peering-to-mesh-ingress-on-awx-ui.png)
 
 For more information about how to create external remote execution and hop nodes and configuring the mesh, see AWX Documentation on [Add a instance](https://ansible.readthedocs.io/projects/awx/en/latest/administration/instances.html#add-an-instance).
 

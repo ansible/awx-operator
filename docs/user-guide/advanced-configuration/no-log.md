@@ -1,4 +1,5 @@
-#### No Log
+# No Log
+
 Configure no_log for tasks with no_log
 
 | Name   | Description          | Default |
@@ -8,6 +9,6 @@ Configure no_log for tasks with no_log
 Example configuration of `no_log` parameter
 
 ```yaml
-  spec:
-    no_log: true
+spec:
+  no_log: true
 ```
