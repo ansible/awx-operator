@@ -1,4 +1,4 @@
-#### CSRF Cookie Secure Setting
+# CSRF Cookie Secure Setting
 
 With `csrf_cookie_secure`, you can pass the value for `CSRF_COOKIE_SECURE` to `/etc/tower/settings.py`
 
@@ -9,6 +9,6 @@ With `csrf_cookie_secure`, you can pass the value for `CSRF_COOKIE_SECURE` to `/
 Example configuration of the `csrf_cookie_secure` setting:
 
 ```yaml
-  spec:
-    csrf_cookie_secure: 'False'
+spec:
+  csrf_cookie_secure: 'False'
 ```

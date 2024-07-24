@@ -42,6 +42,10 @@ spec:
   additional_labels:
   - my/team
   - my/service
+  extra_settings:
+  - setting: LOG_AGGREGATOR_LEVEL
+    value: "'DEBUG'"
+  task_readiness_period: 15
 {% if additional_fields is defined %}
   {{ additional_fields | to_nice_yaml | indent(2) }}
 {% endif %}

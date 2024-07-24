@@ -13,6 +13,7 @@ ingress_class_name: ''
 ingress_path: '/'
 ingress_path_type: 'Prefix'
 ingress_api_version: 'networking.k8s.io/v1'
+api_urlpattern_prefix: ''
 # Add annotations to the service account. Specify as literal block. E.g.:
 # service_account_annotations: |
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
@@ -448,6 +449,9 @@ ldap_password_secret: ''
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
 
+# Set false for basic install without operator
+update_status: true
+
 # Whether secrets should be garbage collected
 # on teardown
 #
@@ -497,15 +501,4 @@ nginx_worker_connections: "{{ uwsgi_listen_queue_size }}"
 nginx_worker_cpu_affinity: 'auto'
 nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
 
-# metrics-utility (github.com/ansible/metrics-utility)
-_metrics_utility_enabled: "{{ metrics_utility_enabled | default(false) }}"
-_metrics_utility_configmap: "{{ metrics_utility_configmap | default(deployment_type + '-metrics-utility-configmap') }}"
-_metrics_utility_console_enabled: "{{ metrics_utility_console_enabled | default(false) }}"
-_metrics_utility_image: "{{ metrics_utility_image | default(_image) }}"
-_metrics_utility_image_version: "{{ metrics_utility_image_version | default(_image_version) }}"
-_metrics_utility_image_pull_policy: "{{ metrics_utility_image_pull_policy | default('IfNotPresent') }}"
-_metrics_utility_ship_target: "{{ metrics_utility_ship_target | default('directory') }}"
-_metrics_utility_pvc_claim: "{{ metrics_utility_pvc_claim | default(deployment_type + '-metrics-utility') }}"
-_metrics_utility_pvc_claim_size: "{{ metrics_utility_pvc_claim_size | default('5Gi') }}"
-_metrics_utility_cronjob_gather_schedule: "{{ metrics_utility_cronjob_gather_schedule | default('@hourly') }}"
-_metrics_utility_cronjob_report_schedule: "{{ metrics_utility_cronjob_report_schedule | default('@monthly') }}"
+extra_settings_files: {}

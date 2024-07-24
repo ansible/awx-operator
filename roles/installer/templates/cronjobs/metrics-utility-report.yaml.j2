@@ -44,9 +44,9 @@ spec:
             envFrom:
             - configMapRef:
                 name: {{ _metrics_utility_configmap }}
-{% if _metrics_utility_secret is defined %}
+{% if metrics_utility_secret is defined %}
             - secretRef:
-                name: {{ _metrics_utility_secret }}
+                name: {{ metrics_utility_secret }}
 {% endif %}
             volumeMounts:
             - name: {{ ansible_operator_meta.name }}-metrics-utility
@@ -56,10 +56,15 @@ spec:
               mountPath: "/etc/tower/conf.d/credentials.py"
               subPath: credentials.py
               readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
             - name: {{ ansible_operator_meta.name }}-settings
               mountPath: /etc/tower/settings.py
               subPath: settings.py
               readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
           volumes:
           - name: {{ ansible_operator_meta.name }}-metrics-utility
             persistentVolumeClaim:
@@ -71,10 +76,17 @@ spec:
               items:
                 - key: credentials.py
                   path: 'credentials.py'
+          - name: "{{ secret_key_secret_name }}"
+            secret:
+              secretName: '{{ secret_key_secret_name }}'
+              items:
+                - key: secret_key
+                  path: SECRET_KEY
           - name: {{ ansible_operator_meta.name }}-settings
             configMap:
               name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
               items:
                 - key: settings
                   path: settings.py
+          {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=10) | trim }}
           restartPolicy: OnFailure
