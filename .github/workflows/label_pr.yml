@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Label PR - Community
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - name: Install python requests
         run: pip install requests
       - name: Check if user is a member of Ansible org

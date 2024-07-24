@@ -26,7 +26,7 @@ Example Playbook
     - hosts: localhost
       connection: local
       roles:
-         - awx
+         - installer
 
 License
 -------

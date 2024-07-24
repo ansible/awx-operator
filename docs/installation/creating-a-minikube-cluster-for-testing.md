@@ -1,8 +1,8 @@
-### Creating a minikube cluster for testing
+# Creating a minikube cluster for testing
 
 If you do not have an existing cluster, the `awx-operator` can be deployed on a [Minikube](https://minikube.sigs.k8s.io/docs/) cluster for testing purposes. Due to different OS and hardware environments, please refer to the official Minikube documentation for further information.
 
-```
+```sh
 $ minikube start --cpus=4 --memory=6g --addons=ingress
 😄  minikube v1.23.2 on Fedora 34
 ✨  Using the docker driver based on existing profile
@@ -22,7 +22,7 @@ $ minikube start --cpus=4 --memory=6g --addons=ingress
 
 Once Minikube is deployed, check if the node(s) and `kube-apiserver` communication is working as expected.
 
-```
+```sh
 $ minikube kubectl -- get nodes
 NAME       STATUS   ROLES                  AGE    VERSION
 minikube   Ready    control-plane,master   113s   v1.22.2
@@ -45,6 +45,17 @@ It is not required for `kubectl` to be separately installed since it comes alrea
 
 Let's create an alias for easier usage:
 
+```sh
+alias kubectl="minikube kubectl --"
 ```
-$ alias kubectl="minikube kubectl --"
-```
+
+Now, you can proceed with the installation of the AWX Operator and AWX. Please refer to the [Basic Install](basic-install.md) for further instructions.
+
+!!! tip
+    Once your AWX has been deployed, the AWX instance will be accessible by running:
+
+    ```sh
+    minikube service -n awx awx-demo-service --url
+    ```
+
+For an example using the Nginx Ingress Controller in Minikube, don't miss our [demo video](https://asciinema.org/a/416946).

@@ -1,5 +1,4 @@
-
-### Custom Receptor CA
+# Custom Receptor CA
 
 The control nodes on the K8S cluster will communicate with execution nodes via mutual TLS TCP connections, running via Receptor.
 Execution nodes will verify incoming connections by ensuring the x509 certificate was issued by a trusted Certificate Authority (CA).
@@ -21,4 +20,5 @@ If this secret is created after AWX is deployed, run the following to restart th
 kubectl rollout restart deployment awx-demo
 ```
 
-**Important Note**, changing the receptor CA will break connections to any existing execution nodes. These nodes will enter an `unavailable` state, and jobs will not be able to run on them. Users will need to download and re-run the install bundle for each execution node. This will replace the TLS certificate files with those signed by the new CA. The execution nodes should then appear in a `ready` state after a few minutes.
+!!! warning
+    Changing the receptor CA will break connections to any existing execution nodes. These nodes will enter an `unavailable` state, and jobs will not be able to run on them. Users will need to download and re-run the install bundle for each execution node. This will replace the TLS certificate files with those signed by the new CA. The execution nodes should then appear in a `ready` state after a few minutes.
