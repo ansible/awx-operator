@@ -34,6 +34,9 @@ spec:
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+{% if postgres_annotations %}
+        {{ postgres_annotations | indent(width=8) }}
+{% endif %}
     spec:
 {% if image_pull_secret is defined %}
       imagePullSecrets:

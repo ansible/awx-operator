@@ -212,6 +212,12 @@ task_annotations: ''
 #   my.web-annotation/2: value2
 web_annotations: ''
 
+# Add annotations to postgres pod. Specify as literal block. E.g.:
+# postgres_annotations: |
+#   my.annotation/1: value
+#   my.annotation/2: value2
+postgres_annotations: ''
+
 admin_user: admin
 admin_email: test@example.com
 
