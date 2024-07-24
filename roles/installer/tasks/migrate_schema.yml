@@ -41,6 +41,7 @@
     # initialization of admin user, etc.
     - name: Watch for the migration job to finish
       k8s_info:
+        api_version: batch/v1
         kind: Job
         namespace: "{{ ansible_operator_meta.namespace }}"
         name: "{{ ansible_operator_meta.name }}-migration-{{ version }}"
