@@ -1,4 +1,4 @@
-#### Persisting Projects Directory
+# Persisting Projects Directory
 
 In cases which you want to persist the `/var/lib/projects` directory, there are few variables that are customizable for the `awx-operator`.
 

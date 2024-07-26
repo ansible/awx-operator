@@ -1,4 +1,4 @@
-#### Exporting Environment Variables to Containers
+# Exporting Environment Variables to Containers
 
 If you need to export custom environment variables to your containers.
 
@@ -9,7 +9,8 @@ If you need to export custom environment variables to your containers.
 | rsyslog_extra_env | Environment variables to be added to Rsyslog container | ''      |
 | ee_extra_env      | Environment variables to be added to EE container      | ''      |
 
-> :warning: The `ee_extra_env` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
+!!! warning
+    The `ee_extra_env` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
 
 Example configuration of environment variables
 

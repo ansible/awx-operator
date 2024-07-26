@@ -221,6 +221,9 @@ spec:
               web_annotations:
                 description: Web deployment annotations. This will override the general annotations parameter for the Web deployment.
                 type: string
+              postgres_annotations:
+                description: Annotations to add to the Postgres deployment.
+                type: string
               tolerations:
                 description: node tolerations for the pods
                 type: string

@@ -37,13 +37,13 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           depth: 0
 
 
       - name: Log into registry ghcr.io
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567    # v3.3.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -51,7 +51,7 @@ jobs:
 
 
       - name: Log into registry quay.io
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d    # v3.0.0
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567    # v3.3.0
         with:
           registry: ${{ env.QUAY_REGISTRY }}
           username: ${{ secrets.QUAY_USER }}

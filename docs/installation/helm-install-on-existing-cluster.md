@@ -1,4 +1,4 @@
-### Helm Install on existing cluster
+# Helm Install on existing cluster
 
 For those that wish to use [Helm](https://helm.sh/) to install the awx-operator to an existing K8s cluster:
 

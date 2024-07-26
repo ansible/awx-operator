@@ -4,13 +4,14 @@
 
 When the operator is deploying AWX, it is running the `installer` role inside the operator container. If the AWX CR's status is `Failed`, it is often useful to look at the awx-operator container logs, which shows the output of the installer role. To see these logs, run:
 
-```
+```sh
 kubectl logs deployments/awx-operator-controller-manager -c awx-manager -f
 ```
 
 ### Inspect k8s Resources
 
 Past that, it is often useful to inspect various resources the AWX Operator manages like:
+
 * awx
 * awxbackup
 * awxrestore
@@ -24,6 +25,7 @@ Past that, it is often useful to inspect various resources the AWX Operator mana
 * serviceaccount
 
 And if installing via OperatorHub and OLM:
+
 * subscription
 * csv
 * installPlan
@@ -31,7 +33,7 @@ And if installing via OperatorHub and OLM:
 
 To inspect these resources you can use these commands
 
-```
+```sh
 # Inspecting k8s resources
 kubectl describe -n <namespace> <resource> <resource-name>
 kubectl get -n <namespace> <resource> <resource-name> -o yaml
@@ -41,7 +43,6 @@ kubectl logs -n <namespace> <resource> <resource-name>
 kubectl exec -it -n <namespace> <pod> <pod-name>
 ```
 
-
 ### Configure No Log
 
 It is possible to show task output for debugging by setting no_log to false on the AWX CR spec.
@@ -49,7 +50,7 @@ This will show output in the awx-operator logs for any failed tasks where no_log
 
 For example:
 
-```
+```sh
 ---
 apiVersion: awx.ansible.com/v1beta1
 kind: AWX
@@ -63,19 +64,19 @@ spec:
 
 ## Iterating on the installer without deploying the operator
 
-Go through the [normal basic install](https://github.com/ansible/awx-operator/blob/devel/README.md#basic-install) steps.
+Go through the [normal basic install](../installation/basic-install.md) steps.
 
 Install some dependencies:
 
-```
-$ ansible-galaxy collection install -r molecule/requirements.yml
-$ pip install -r molecule/requirements.txt
+```sh
+ansible-galaxy collection install -r molecule/requirements.yml
+pip install -r molecule/requirements.txt
 ```
 
 To prevent the changes we're about to make from being overwritten, scale down any running instance of the operator:
 
-```
-$ kubectl scale deployment awx-operator-controller-manager --replicas=0
+```sh
+kubectl scale deployment awx-operator-controller-manager --replicas=0
 ```
 
 Create a playbook that invokes the installer role (the operator uses ansible-runner's role execution feature):
@@ -96,8 +97,11 @@ Create a vars file:
 ansible_operator_meta:
   name: awx
   namespace: awx
+set_self_labels: false
+update_status: false
 service_type: nodeport
 ```
+
 The vars file will replace the awx resource so any value that you wish to over ride using the awx resource, put in the vars file. For example, if you wish to use your own image, version and pull policy, you can specify it like below:
 
 ```yaml
@@ -106,6 +110,8 @@ The vars file will replace the awx resource so any value that you wish to over r
 ansible_operator_meta:
   name: awx
   namespace: awx
+set_self_labels: false
+update_status: false
 service_type: nodeport
 image: $DEV_DOCKER_TAG_BASE/awx_kube_devel
 image_pull_policy: Always
@@ -114,14 +120,13 @@ image_version: $COMPOSE_TAG
 
 Run the installer:
 
-```
-$ ansible-playbook run.yml -e @vars.yml -v
+```sh
+ansible-playbook run.yml -e @vars.yml -v
 ```
 
 Grab the URL and admin password:
 
-```
-$ minikube service awx-service --url -n awx
-$ minikube kubectl get secret awx-admin-password -- -o jsonpath="{.data.password}" | base64 --decode
+```sh
+$ kubectl get secret awx-admin-password -- -o jsonpath="{.data.password}" | base64 --decode ; echo
 LU6lTfvnkjUvDwL240kXKy1sNhjakZmT
 ```

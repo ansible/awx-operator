@@ -1,4 +1,4 @@
-#### Session Cookie Secure Setting
+# Session Cookie Secure Setting
 
 With `session_cookie_secure`, you can pass the value for `SESSION_COOKIE_SECURE` to `/etc/tower/settings.py`
 
