@@ -5,6 +5,11 @@ kind: AWX
 metadata:
   name: {{ .name }}
   namespace: {{ $.Release.Namespace }}
+{{- /* Provide labels if present */}}
+{{- if hasKey . "labels" }}
+  labels:
+    {{- include "awx.labels" $ | indent 4 }}
+{{- end }}
 spec:
 {{- /* Provide custom persistent volumes configs if enabled */}}
 {{- include "spec.storageClassNames" $ }}
