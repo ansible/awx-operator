@@ -97,6 +97,9 @@ spec:
           image: '{{ _image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ init_container_resource_requirements }}
+          {% if init_container_run_as_user -%}
+            {{ init_container_run_as_user | indent(width=12, first=True) }}
+          {% endif %}
           command:
             - /bin/sh
             - -c

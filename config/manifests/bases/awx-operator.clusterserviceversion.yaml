@@ -527,6 +527,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:resourceRequirements
+      - description: Init Container runAsUser override
+        path: init_container_run_as_user
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:string
       - displayName: Replicas
         path: replicas
         x-descriptors:
