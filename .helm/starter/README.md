@@ -68,7 +68,7 @@ These sub-headers aim to be a more intuitive entrypoint into customizing your de
 The `AWX.postgres` section simplifies the creation of the external postgres secret. If enabled, the configs provided will automatically be placed in a `postgres-config` secret and linked to the `AWX` resource. For proper secret management, the `AWX.postgres.password` value, and any other sensitive values, can be passed in at the command line rather than specified in code. Use the `--set` argument with `helm install`. Supplying the password this way is not recommended for production use, but may be helpful for initial PoC.
 
 ### Additional Kubernetes Resources
-The `AWX.extraDeploy` section allows the creation of additional Kubernetes resources. This simplifies setups requiring additional objects that are used by AWX, e.g. using `ExternalSecrets` to create Kubernetes secrets.
+The `extraDeploy` section allows the creation of additional Kubernetes resources. This simplifies setups requiring additional objects that are used by AWX, e.g. using `ExternalSecrets` to create Kubernetes secrets.
 
 Resources are passed as an array, either as YAML or strings (literal "|"). The resources are passed through `tpl`, so templating is possible. Example:
 
