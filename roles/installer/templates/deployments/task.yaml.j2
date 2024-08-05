@@ -149,7 +149,7 @@ spec:
                   cakey: /etc/receptor/tls/ca/mesh-CA.key
                   outcert: /etc/receptor/tls/receptor.crt
                   notafter: $(date --iso-8601=seconds --utc --date "10 years")
-                  verify: yes
+                  verify: True
               EOF
               receptor --config certgen-installer.yaml
 {% if init_container_extra_commands %}
