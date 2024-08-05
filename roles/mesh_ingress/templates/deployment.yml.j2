@@ -30,7 +30,31 @@ spec:
 {% if external_ipaddress is defined %}
           external_ipaddress={{ external_ipaddress }}
 {% endif %}
-          receptor --config {{ lookup("template", "./certs-make-sign.yaml.j2") }}
+          cat << EOF > certgen-mesh-ingress.yaml
+          ---
+          version: 2
+          cert-makereqs:
+            - bits=2048
+              commonname: $internal_hostname
+              dnsname: $internal_hostname
+              nodeid: $internal_hostname
+              outreq: /etc/receptor/tls/receptor.req
+              outkey: /etc/receptor/tls/receptor.key
+{% if external_hostname is defined %}
+          dnsname:$external_hostname
+{% endif %}
+{% if external_ipaddress is defined %}
+          ipaddress:$external_ipaddress
+{% endif %}
+          cert-signreqs:
+            - req: /etc/receptor/tls/receptor.req
+              cacert: /etc/receptor/tls/ca/mesh-CA.crt
+              cakey: /etc/receptor/tls/ca/mesh-CA.key
+              outcert: /etc/receptor/tls/receptor.crt
+              notafter: $(date --iso-8601=seconds --utc --date "10 years")
+              verify: yes
+          EOF
+          receptor --config certgen-mesh-ingress.yaml
           exec receptor --config /etc/receptor/receptor.yaml
         image: '{{ _control_plane_ee_image }}'
         imagePullPolicy: '{{ _image_pull_policy }}'

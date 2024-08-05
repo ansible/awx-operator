@@ -132,7 +132,26 @@ spec:
             - -c
             - |
               hostname=$MY_POD_NAME
-              receptor --config {{ lookup("template", "./certs-make-sign.yaml.j2") }}
+              cat << EOF > certgen-installer.yaml
+              ---
+              version: 2
+              cert-makereqs:
+                - bits: 2048
+                  commonname: $hostname
+                  dnsname: $hostname
+                  nodeid: $hostname
+                  outreq: /etc/receptor/tls/receptor.req
+                  outkey: /etc/receptor/tls/receptor.key
+
+              cert-signreqs:
+                - req: /etc/receptor/tls/receptor.req
+                  cacert: /etc/receptor/tls/ca/mesh-CA.crt
+                  cakey: /etc/receptor/tls/ca/mesh-CA.key
+                  outcert: /etc/receptor/tls/receptor.crt
+                  notafter: \$(date --iso-8601=seconds --utc --date "10 years")
+                  verify: yes
+              EOF
+              receptor --config certgen-installer.yaml
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
