@@ -1,0 +1,17 @@
+steps:
+  - name: "docker"
+    args: ["buildx", "create", "--name", "awx-operator", "--use"]
+  - name: "docker"
+    env:
+    - "AWX_DEFAULT_VERSION=24.6.1"
+    args:
+      [
+        "buildx",
+        "build",
+        "--platform",
+        "linux/arm64,linux/amd64",
+        "-t",
+        "us-central1-docker.pkg.dev/civic-origin-380/lxm-docker/awx-operator:2.19.1-lxm10",
+        "--push",
+        ".",
+      ]

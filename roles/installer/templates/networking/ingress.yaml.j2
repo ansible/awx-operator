@@ -27,7 +27,7 @@ spec:
 {% if not ingress_hosts %}
     - http:
         paths:
-          - path: '{{ ingress_path }}'
+          - path: '{{ (ingress_path + '/*').replace("//","/") }}'
             pathType: '{{ ingress_path_type }}'
             backend:
               service:

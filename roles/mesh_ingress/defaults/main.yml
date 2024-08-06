@@ -9,7 +9,7 @@ ingress_controller: ''
 
 set_self_owneref: true
 
-_control_plane_ee_image: "quay.io/ansible/awx-ee:{{ lookup('env', 'DEFAULT_AWX_VERSION') or 'latest' }}"
+_control_plane_ee_image: "quay.io/ansible/awx-ee:24.6.1
 _image_pull_policy: Always
 image_pull_secrets: []
 

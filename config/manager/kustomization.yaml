@@ -13,5 +13,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: quay.io/ansible/awx-operator
+  newName: us-central1-docker.pkg.dev/civic-origin-380/lxm-docker/awx-operator
   newTag: latest
