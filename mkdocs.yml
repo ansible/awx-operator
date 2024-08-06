@@ -41,7 +41,6 @@ nav:
   - Home: index.md
   - Installation:
       - installation/basic-install.md
-      - installation/helm-install-on-existing-cluster.md
       - installation/kind-install.md
       - installation/creating-a-minikube-cluster-for-testing.md
   - Migrate:
