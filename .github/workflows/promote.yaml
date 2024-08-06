@@ -70,14 +70,3 @@ jobs:
           docker buildx imagetools create \
             ghcr.io/${{ github.repository }}:${{ env.TAG_NAME }} \
             --tag ${{ env.QUAY_REGISTRY }}/awx-operator:latest
-
-
-      - name: Release Helm chart
-        run: |
-          ansible-playbook ansible/helm-release.yml -v \
-            -e operator_image=${{ env.QUAY_REGISTRY }}/awx-operator \
-            -e chart_owner=${{ github.repository_owner }} \
-            -e tag=${{ env.TAG_NAME }} \
-            -e gh_token=${{ secrets.GITHUB_TOKEN }} \
-            -e gh_user=${{ github.actor }} \
-            -e repo_type=https
