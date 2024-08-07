@@ -239,36 +239,3 @@ catalog-build: opm ## Build a catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
-
-.PHONY: kubectl-slice
-KUBECTL_SLICE = $(shell pwd)/bin/kubectl-slice
-kubectl-slice: ## Download kubectl-slice locally if necessary.
-ifeq (,$(wildcard $(KUBECTL_SLICE)))
-ifeq (,$(shell which kubectl-slice 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p $(dir $(KUBECTL_SLICE)) ;\
-	curl -sSLo - https://github.com/patrickdappollonio/kubectl-slice/releases/download/v1.2.6/kubectl-slice_$(OS)_$(ARCHX).tar.gz | \
-	tar xzf - -C bin/ kubectl-slice ;\
-	}
-else
-KUBECTL_SLICE = $(shell which kubectl-slice)
-endif
-endif
-
-.PHONY: yq
-YQ = $(shell pwd)/bin/yq
-yq: ## Download yq locally if necessary.
-ifeq (,$(wildcard $(YQ)))
-ifeq (,$(shell which yq 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p $(dir $(HELM)) ;\
-	curl -sSLo - https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_$(OS)_$(ARCHA).tar.gz | \
-	tar xzf - -C bin/ ;\
-	mv bin/yq_$(OS)_$(ARCHA) bin/yq ;\
-	}
-else
-YQ = $(shell which yq)
-endif
-endif
