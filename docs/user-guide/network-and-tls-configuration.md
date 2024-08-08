@@ -1,6 +1,6 @@
-### Network and TLS Configuration
+# Network and TLS Configuration
 
-#### Service Type
+## Service Type
 
 If the `service_type` is not specified, the `ClusterIP` service will be used for your AWX Tower service.
 
@@ -24,7 +24,7 @@ spec:
     environment: testing
 ```
 
-  * LoadBalancer
+### LoadBalancer
 
 The following variables are customizable only when `service_type=LoadBalancer`
 
@@ -33,6 +33,7 @@ The following variables are customizable only when `service_type=LoadBalancer`
 | loadbalancer_protocol | Protocol to use for Loadbalancer ingress | http    |
 | loadbalancer_port     | Port used for Loadbalancer ingress       | 80      |
 | loadbalancer_ip       | Assign Loadbalancer IP                   | ''      |
+| loadbalancer_class    | LoadBalancer class to use                | ''      |
 
 ```yaml
 ---
@@ -42,6 +43,7 @@ spec:
   loadbalancer_ip: '192.168.10.25'
   loadbalancer_protocol: https
   loadbalancer_port: 443
+  loadbalancer_class: service.k8s.aws/nlb
   service_annotations: |
     environment: testing
   service_labels: |
@@ -52,7 +54,7 @@ When setting up a Load Balancer for HTTPS you will be required to set the `loadb
 
 The HTTPS Load Balancer also uses SSL termination at the Load Balancer level and will offload traffic to AWX over HTTP.
 
-  * NodePort
+### NodePort
 
 The following variables are customizable only when `service_type=NodePort`. To be able to use HTTPS as protocol you must also specify 'nodeport_tls_secret' secret containing `web.crt` and `web.key` that will be used for https inside container by nginx.
 
@@ -79,7 +81,7 @@ spec:
   nodeport_tls_secret: sample-tls-secret
 ```
 
-#### Ingress Type
+## Ingress Type
 
 By default, the AWX operator is not opinionated and won't force a specific ingress type on you. So, when the `ingress_type` is not specified, it will default to `none` and nothing ingress-wise will be created.
 
@@ -94,7 +96,7 @@ spec:
   ingress_type: none
 ```
 
-  * Generic Ingress Controller
+### Generic Ingress Controller
 
 The following variables are customizable when `ingress_type=ingress`. The `ingress` type creates an Ingress resource as [documented](https://kubernetes.io/docs/concepts/services-networking/ingress/) which can be shared with many other Ingress Controllers as [listed](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 
@@ -122,7 +124,7 @@ spec:
     environment: testing
 ```
 
-##### Specialized Ingress Controller configuration
+### Specialized Ingress Controller configuration
 
 Some Ingress Controllers need a special configuration to fully support AWX, add the following value with the `ingress_controller` variable, if you are using one of these:
 
@@ -142,7 +144,7 @@ spec:
   ingress_controller: contour
 ```
 
-  * Route
+### Route
 
 The following variables are customizable when `ingress_type=route`
 

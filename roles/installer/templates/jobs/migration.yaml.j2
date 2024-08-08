@@ -1,0 +1,145 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: '{{ ansible_operator_meta.name }}-migration-{{ version }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
+    {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
+        {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
+    spec:
+{% if bundle_ca_crt %}
+      initContainers:
+        - name: init-bundle-ca-trust
+          image: '{{ _init_container_image }}'
+          imagePullPolicy: '{{ image_pull_policy }}'
+          resources: {{ init_container_resource_requirements }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
+              update-ca-trust extract
+          volumeMounts:
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+              mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
+              subPath: bundle-ca.crt
+              readOnly: true
+{% endif %}
+      containers:
+        - name: "migration-job"
+          image: '{{ _image }}'
+          resources: {{ task_resource_requirements }}
+          command:
+            - awx-manage
+            - migrate
+            - --noinput
+          volumeMounts:
+            - name: {{ ansible_operator_meta.name }}-application-credentials
+              mountPath: "/etc/tower/conf.d/credentials.py"
+              subPath: credentials.py
+              readOnly: true
+            - name: "{{ secret_key_secret_name }}"
+              mountPath: /etc/tower/SECRET_KEY
+              subPath: SECRET_KEY
+              readOnly: true
+            - name: {{ ansible_operator_meta.name }}-settings
+              mountPath: "/etc/tower/settings.py"
+              subPath: settings.py
+              readOnly: true
+            {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
+{% if bundle_ca_crt %}
+            - name: "ca-trust-extracted"
+              mountPath: "/etc/pki/ca-trust/extracted"
+{% endif %}
+{% if development_mode | bool %}
+            - name: awx-devel
+              mountPath: "/awx_devel"
+{% endif %}
+      serviceAccountName: '{{ ansible_operator_meta.name }}'
+{% if image_pull_secret is defined %}
+      imagePullSecrets:
+        - name: {{ image_pull_secret }}
+{% elif image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
+{% endif %}
+{% if task_node_selector %}
+      nodeSelector:
+        {{ task_node_selector | indent(width=8) }}
+{% elif node_selector %}
+      nodeSelector:
+        {{ node_selector | indent(width=8) }}
+{% endif %}
+{% if task_topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ task_topology_spread_constraints | indent(width=8) }}
+{% elif topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ topology_spread_constraints | indent(width=8) }}
+{% endif %}
+{% if task_tolerations %}
+      tolerations:
+        {{ task_tolerations | indent(width=8) }}
+{% elif tolerations %}
+      tolerations:
+        {{ tolerations | indent(width=8) }}
+{% endif %}
+{% if task_affinity %}
+      affinity:
+        {{ task_affinity | to_nice_yaml | indent(width=8) }}
+{% elif affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
+{% endif %}
+      volumes:
+        - name: "{{ ansible_operator_meta.name }}-application-credentials"
+          secret:
+            secretName: "{{ ansible_operator_meta.name }}-app-credentials"
+            items:
+              - key: credentials.py
+                path: 'credentials.py'
+              - key: ldap.py
+                path: 'ldap.py'
+              - key: execution_environments.py
+                path: 'execution_environments.py'
+        - name: "{{ secret_key_secret_name }}"
+          secret:
+            secretName: '{{ secret_key_secret_name }}'
+            items:
+              - key: secret_key
+                path: SECRET_KEY
+        - name: {{ ansible_operator_meta.name }}-settings
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
+            items:
+              - key: settings
+                path: settings.py
+        {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=8) | trim }}
+{% if bundle_ca_crt %}
+        - name: "ca-trust-extracted"
+          emptyDir: {}
+        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+          secret:
+            secretName: "{{ bundle_cacert_secret }}"
+            items:
+              - key: bundle-ca.crt
+                path: 'bundle-ca.crt'
+{% endif %}
+{% if development_mode | bool %}
+        - name: awx-devel
+          hostPath:
+            path: /awx_devel
+{% endif %}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 30

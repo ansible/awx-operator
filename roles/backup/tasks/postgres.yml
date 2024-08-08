@@ -60,6 +60,7 @@
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
+    container: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       mkdir -p {{ backup_dir }}
 
@@ -67,6 +68,7 @@
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
+    container: "{{ ansible_operator_meta.name }}-db-management"
     command: >-
       touch {{ backup_dir }}/tower.db
 
@@ -126,6 +128,7 @@
   k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
+    container: "{{ ansible_operator_meta.name }}-db-management"
     command: |
       bash -c "
       function end_keepalive {

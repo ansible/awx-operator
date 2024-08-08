@@ -17,10 +17,11 @@ jobs:
           - -t replicas
     env:
       DOCKER_API_VERSION: "1.41"
+      DEBUG_OUTPUT_DIR: /tmp/awx_operator_molecule_test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.8"
 
@@ -37,20 +38,28 @@ jobs:
           MOLECULE_VERBOSITY: 3
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+          STORE_DEBUG_OUTPUT: true
         run: |
           sudo rm -f $(which kustomize)
           make kustomize
           KUSTOMIZE_PATH=$(readlink -f bin/kustomize) molecule test -s kind -- ${{ matrix.ansible_args }}
+
+      - name: Upload artifacts for failed tests if Run Molecule fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: awx_operator_molecule_test
+          path: ${{ env.DEBUG_OUTPUT_DIR }}
   helm:
     runs-on: ubuntu-latest
     name: helm
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.8.0
+        uses: helm/kind-action@v1.10.0
 
       - name: Build operator image and load into kind
         run: |
@@ -88,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check no_log statements
         run: |
@@ -99,3 +108,5 @@ jobs:
             echo "${no_log}"
             exit 1
           fi
+  nox-sessions:
+    uses: ./.github/workflows/reusable-nox.yml

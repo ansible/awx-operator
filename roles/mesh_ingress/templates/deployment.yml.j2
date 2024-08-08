@@ -12,6 +12,12 @@ spec:
       labels:
         app.kubernetes.io/name: {{ ansible_operator_meta.name }}
     spec:
+{% if image_pull_secrets | length > 0 %}
+      imagePullSecrets:
+{% for secret in image_pull_secrets %}
+        - name: {{ secret }}
+{% endfor %}
+{% endif %}
       containers:
       - args:
         - /bin/sh
@@ -24,7 +30,8 @@ spec:
 {% if external_ipaddress is defined %}
           external_ipaddress={{ external_ipaddress }}
 {% endif %}
-          receptor --cert-makereq bits=2048 \
+          receptor --cert-makereq \
+            bits=2048 \
             commonname=$internal_hostname \
             dnsname=$internal_hostname \
             nodeid=$internal_hostname \
@@ -41,6 +48,7 @@ spec:
             cacert=/etc/receptor/tls/ca/mesh-CA.crt \
             cakey=/etc/receptor/tls/ca/mesh-CA.key \
             outcert=/etc/receptor/tls/receptor.crt \
+            notafter=$(date --iso-8601=seconds --utc --date "10 years") \
             verify=yes
           exec receptor --config /etc/receptor/receptor.conf
         image: '{{ _control_plane_ee_image }}'
@@ -63,6 +71,22 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       serviceAccount: {{ ansible_operator_meta.name }}
+{% if node_selector %}
+      nodeSelector:
+        {{ node_selector | indent(width=8) }}
+{% endif %}
+{% if topology_spread_constraints %}
+      topologySpreadConstraints:
+        {{ topology_spread_constraints | indent(width=8) }}
+{% endif %}
+{% if tolerations %}
+      tolerations:
+        {{ tolerations | indent(width=8) }}
+{% endif %}
+{% if affinity %}
+      affinity:
+        {{ affinity | to_nice_yaml | indent(width=8) }}
+{% endif %}
       volumes:
       - name: {{ ansible_operator_meta.name }}-receptor-tls
       - name: {{ ansible_operator_meta.name }}-receptor-ca

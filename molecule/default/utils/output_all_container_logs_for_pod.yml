@@ -1,0 +1,15 @@
+---
+- name: Get all container log in pod
+  kubernetes.core.k8s_log:
+    namespace: '{{ namespace }}'
+    name: '{{ item.metadata.name }}'
+    all_containers: true
+  register: all_container_logs
+
+- name: Store logs in file
+  ansible.builtin.copy:
+    content: "{{ all_container_logs.log_lines | join('\n') }}"
+    dest: '{{ debug_output_dir }}/{{ item.metadata.name }}.log'
+
+# TODO: all_containser option dump all of the output in a single output make it hard to read we probably should iterate through each of the container to get specific logs
+# also we should probably investigate toolings to do OpenShift style sosreport/must-gather for kind cluster or switch to microshift where sosreport is supported

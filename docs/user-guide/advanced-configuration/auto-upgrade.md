@@ -1,9 +1,9 @@
-#### Auto upgrade
+# Auto upgrade
+
 With this parameter you can influence the behavior during an operator upgrade.  
 If set to `true`, the operator will upgrade the specific instance directly.  
 When the value is set to `false`, and we have a running deployment, the operator will not update the AWX instance.  
 This can be useful when you have multiple AWX instances which you want to upgrade step by step instead of all at once.  
-
 
 | Name         | Description                        | Default |
 | -------------| ---------------------------------- | ------- |
@@ -12,11 +12,11 @@ This can be useful when you have multiple AWX instances which you want to upgrad
 Example configuration of `auto_upgrade` parameter
 
 ```yaml
-  spec:
-    auto_upgrade: true
+spec:
+  auto_upgrade: true
 ```
 
-##### Upgrade of instances without auto upgrade
+## Upgrade of instances without auto upgrade
 
 There are two ways to upgrade instances which are marked with the 'auto_upgrade: false' flag.  
 
@@ -28,8 +28,10 @@ Changing flags:
 
 Delete the deployment:
 
-- delete the deployment object of your AWX instance  
-```
-$ kubectl -n awx delete deployment <yourInstanceName> 
-```
-- wait until the instance gets redeployed  
+- delete the deployment object of your AWX instance
+
+    ```sh
+    kubectl -n awx delete deployment <yourInstanceName> 
+    ```
+
+- wait until the instance gets redeployed

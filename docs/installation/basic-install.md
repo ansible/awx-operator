@@ -1,6 +1,7 @@
-### Basic Install
+# Basic Install
 
 After cloning this repository, you must choose the tag to run:
+
 ```sh
 git clone git@github.com:ansible/awx-operator.git
 cd awx-operator
@@ -20,17 +21,23 @@ export VERSION=<tag>
 export VERSION=2.7.2
 ```
 
-Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: https://kubectl.docs.kubernetes.io/installation/kustomize/ )
+Once you have a running Kubernetes cluster, you can deploy AWX Operator into your cluster using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). Since kubectl version 1.14 kustomize functionality is built-in (otherwise, follow the instructions here to install the latest version of Kustomize: <https://kubectl.docs.kubernetes.io/installation/kustomize/>)
 
-> Some things may need to be configured slightly differently for different Kubernetes flavors for the networking aspects. When installing on Kind, see the [kind install docs](./kind-install.md) for more details.
+!!! tip
+    If you don't have a Kubernetes cluster, you can use [Minikube](https://minikube.sigs.k8s.io/docs/) for testing purposes. See the [Minikube install docs](./creating-a-minikube-cluster-for-testing.md) for more details.
+
+!!! note
+    Some things may need to be configured slightly differently for different Kubernetes flavors for the networking aspects. When installing on Kind, see the [kind install docs](./kind-install.md) for more details.
 
 There is a make target you can run:
-```
+
+```sh
 make deploy
 ```
 
 If you have a custom operator image you have built, you can specify it with:
-```
+
+```sh
 IMG=quay.io/$YOURNAMESPACE/awx-operator:$YOURTAG make deploy
 ```
 
@@ -52,11 +59,12 @@ images:
 namespace: awx
 ```
 
-> **TIP:** If you need to change any of the default settings for the operator (such as resources.limits), you can add [patches](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/) at the bottom of your kustomization.yaml file.
+!!! tip
+    If you need to change any of the default settings for the operator (such as resources.limits), you can add [patches](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/) at the bottom of your kustomization.yaml file.
 
 Install the manifests by running this:
 
-```
+```sh
 $ kubectl apply -k .
 namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
@@ -77,7 +85,7 @@ deployment.apps/awx-operator-controller-manager created
 
 Wait a bit and you should have the `awx-operator` running:
 
-```
+```sh
 $ kubectl get pods -n awx
 NAME                                               READY   STATUS    RESTARTS   AGE
 awx-operator-controller-manager-66ccd8f997-rhd4z   2/2     Running   0          11s
@@ -85,13 +93,14 @@ awx-operator-controller-manager-66ccd8f997-rhd4z   2/2     Running   0          
 
 So we don't have to keep repeating `-n awx`, let's set the current namespace for `kubectl`:
 
-```
-$ kubectl config set-context --current --namespace=awx
+```sh
+kubectl config set-context --current --namespace=awx
 ```
 
 Next, create a file named `awx-demo.yml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
 
-**Note:** If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
+!!! note
+    If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
 
 ```yaml
 ---
@@ -103,7 +112,8 @@ spec:
   service_type: nodeport
 ```
 
-> It may make sense to create and specify your own secret key for your deployment so that if the k8s secret gets deleted, it can be re-created if needed.  If it is not provided, one will be auto-generated, but cannot be recovered if lost. Read more [here](../user-guide/admin-user-account-configuration.md#secret-key-configuration).
+!!! tip
+    It may make sense to create and specify your own secret key for your deployment so that if the k8s secret gets deleted, it can be re-created if needed.  If it is not provided, one will be auto-generated, but cannot be recovered if lost. Read more [here](../user-guide/admin-user-account-configuration.md#secret-key-configuration).
 
 If you are on Openshift, you can take advantage of Routes by specifying the following your spec. This will automatically create a Route for you with a custom hostname. This can be found on the Route section of the Openshift Console.
 
@@ -118,8 +128,7 @@ spec:
   ingress_type: Route
 ```
 
-
-Make sure to add this new file to the list of "resources" in your `kustomization.yaml` file:
+Make sure to add this new file to the list of `resources` in your `kustomization.yaml` file:
 
 ```yaml
 ...
@@ -132,19 +141,13 @@ resources:
 
 Finally, apply the changes to create the AWX instance in your cluster:
 
-```
+```sh
 kubectl apply -k .
-```
-
-After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
-
-```
-$ kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager
 ```
 
 After a few seconds, you should see the operator begin to create new resources:
 
-```
+```sh
 $ kubectl get pods -l "app.kubernetes.io/managed-by=awx-operator"
 NAME                        READY   STATUS    RESTARTS   AGE
 awx-demo-77d96f88d5-pnhr8   4/4     Running   0          3m24s
@@ -156,19 +159,19 @@ awx-demo-postgres   ClusterIP   None           <none>        5432/TCP       4m4s
 awx-demo-service    NodePort    10.109.40.38   <none>        80:31006/TCP   3m56s
 ```
 
-Once deployed, the AWX instance will be accessible by running:
+After a few minutes, the new AWX instance will be deployed. You can look at the operator pod logs in order to know where the installation process is at:
 
+```sh
+kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager
 ```
-$ minikube service -n awx awx-demo-service --url
-```
+
+Once deployed, your AWX instance should now be reachable at `http://localhost:<assigned-nodeport>/` (in this case, `http://localhost:31006/`).
 
 By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run:
 
-```
+```sh
 $ kubectl get secret awx-demo-admin-password -o jsonpath="{.data.password}" | base64 --decode ; echo
 yDL2Cx5Za94g9MvBP6B73nzVLlmfgPjR
 ```
 
 You just completed the most basic install of an AWX instance via this operator. Congratulations!!!
-
-For an example using the Nginx Ingress Controller in Minikube, don't miss our [demo video](https://asciinema.org/a/416946).

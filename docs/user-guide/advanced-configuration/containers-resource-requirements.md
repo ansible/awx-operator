@@ -1,38 +1,16 @@
-#### Containers HostAliases Requirements
-
-Sometimes you might need to use [HostAliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) in web/task containers.
-
-| Name         | Description           | Default |
-| ------------ | --------------------- | ------- |
-| host_aliases | A list of HostAliases | None    |
-
-Example of customization could be:
-
-```yaml
----
-spec:
-  ...
-  host_aliases:
-    - ip: <name-of-your-ip>
-      hostnames:
-        - <name-of-your-domain>
-```
-
-#### Containers Resource Requirements
+# Containers Resource Requirements
 
 The resource requirements for both, the task and the web containers are configurable - both the lower end (requests) and the upper end (limits).
 
-| Name                       | Description                                      | Default                              |
-| -------------------------- | ------------------------------------------------ | ------------------------------------ |
-| web_resource_requirements  | Web container resource requirements              | requests: {cpu: 100m, memory: 128Mi} |
-| task_resource_requirements | Task container resource requirements             | requests: {cpu: 100m, memory: 128Mi} |
-| ee_resource_requirements   | EE control plane container resource requirements | requests: {cpu: 50m, memory: 64Mi} |
-| redis_resource_requirements   | Redis container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
-| postgres_resource_requirements   | Postgres container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
-| rsyslog_resource_requirements   | Rsyslog container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
-| init_container_resource_requirements   | Init Container resource requirements | requests: {cpu: 100m, memory: 128Mi} |
-| postgres_init_container_resource_requirements   | Postgres Init Container resource requirements | requests: {cpu: 10m, memory: 64Mi} |
-
+| Name                                 | Description                                                  | Default                              |
+| ------------------------------------ | ------------------------------------------------------------ | ------------------------------------ |
+| web_resource_requirements            | Web container resource requirements                          | requests: {cpu: 100m, memory: 128Mi} |
+| task_resource_requirements           | Task container resource requirements                         | requests: {cpu: 100m, memory: 128Mi} |
+| ee_resource_requirements             | EE control plane container resource requirements             | requests: {cpu: 50m, memory: 64Mi}   |
+| redis_resource_requirements          | Redis container resource requirements                        | requests: {cpu: 100m, memory: 128Mi} |
+| postgres_resource_requirements       | Postgres container (and initContainer) resource requirements | requests: {cpu: 10m, memory: 64Mi}   |
+| rsyslog_resource_requirements        | Rsyslog container resource requirements                      | requests: {cpu: 100m, memory: 128Mi} |
+| init_container_resource_requirements | Init Container resource requirements                         | requests: {cpu: 100m, memory: 128Mi} |
 
 Example of customization could be:
 
@@ -85,17 +63,9 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
-  postgres_init_container_resource_requirements:
-    requests:
-      cpu: 10m
-      memory: 64Mi
-    limits:
-      cpu: 1000m
-      memory: 2Gi
 ```
 
-
-#### Limits and ResourceQuotas
+## Limits and ResourceQuotas
 
 If the cluster you are deploying in has a ResoruceQuota, you will need to configure resource limits for all of the pods deployed in that cluster. This can be done for AWX pods on the AWX spec in the manner shown above.
 

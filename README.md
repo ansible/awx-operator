@@ -8,30 +8,17 @@
 
 An [Ansible AWX](https://github.com/ansible/awx) operator for Kubernetes built with [Operator SDK](https://github.com/operator-framework/operator-sdk) and Ansible.
 
-<!-- Regenerate this table of contents using https://github.com/ekalinin/github-markdown-toc -->
-<!-- gh-md-toc --insert README.md -->
-<!--ts-->
+The AWX Operator is meant to be deployed in your Kubernetes cluster(s) and can be used to install and manage the lifecycle of an AWX instance in the same namespace.
 
-# AWX Operator Documentation
+## Documentation
 
-The AWX Operator documentation is now available at https://awx-operator.readthedocs.io/en/latest/
-
-For docs changes, create PRs on the appropriate files in the /docs folder.
+The AWX Operator documentation is available at <https://ansible.readthedocs.io/projects/awx-operator/>
 
 ## Contributing
 
 Please visit [our contributing guidelines](https://github.com/ansible/awx-operator/blob/devel/CONTRIBUTING.md).
 
-## Release Process
-
-The first step is to create a draft release. Typically this will happen in the [Stage Release](https://github.com/ansible/awx/blob/devel/.github/workflows/stage.yml) workflow for AWX and you don't need to do it as a separate step.
-
-If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
-
-After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, which will:
-
-- Publish image to Quay
-- Release Helm chart
+For docs changes, create PRs on the appropriate files in the `/docs` folder.
 
 ## Author
 
@@ -43,7 +30,7 @@ We ask all of our community members and contributors to adhere to the [Ansible c
 
 ## Get Involved
 
-We welcome your feedback and ideas. The AWX operator uses the same mailing list and IRC channel as AWX itself. Here's how to reach us with feedback and questions:
+We welcome your feedback and ideas. The AWX operator uses the same Matrix channel and Ansible Community Forum as AWX itself. Here's how to reach us with feedback and questions:
 
 - Join the [Ansible AWX channel on Matrix](https://matrix.to/#/#awx:ansible.com)
 - Join the [Ansible Community Forum](https://forum.ansible.com)

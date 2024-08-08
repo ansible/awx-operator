@@ -12,7 +12,7 @@ metadata:
     {{ ingress_annotations | indent(width=4) }}
 {% endif %}
 {% if ingress_controller|lower == "nginx" %}
-      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 {% endif %}
 spec:
 {% if ingress_class_name %}
@@ -28,7 +28,7 @@ spec:
                 name: {{ ansible_operator_meta.name }}
                 port:
                   number: 27199
-{% if external_hostname %}
+{% if external_hostname is defined %}
       host: {{ external_hostname }}
 {% endif %}
 {% endif %}
@@ -53,7 +53,7 @@ spec:
     - services:
       - name: {{ ansible_operator_meta.name }}
         port: 27199
-{% if external_hostname %}
+{% if external_hostname is defined %}
       match: HostSNI(`{{ external_hostname }}`)
 {% endif %}
   tls:
@@ -70,6 +70,9 @@ metadata:
   name: {{ ansible_operator_meta.name }}
   namespace: {{ ansible_operator_meta.namespace }}
 spec:
+{% if external_hostname is defined %}
+  host: {{ external_hostname }}
+{% endif %}
   port:
     targetPort: ws
   tls:

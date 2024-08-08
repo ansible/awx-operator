@@ -177,7 +177,7 @@ ifeq (,$(shell which operator-sdk 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.32.0/operator-sdk_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.34.2/operator-sdk_$(OS)_$(ARCHA) ;\
 	chmod +x $(OPERATOR_SDK) ;\
 	}
 else
@@ -193,7 +193,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/operator-sdk/releases/download/v1.32.0/ansible-operator_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/ansible-operator-plugins/releases/download/v1.34.0/ansible-operator_$(OS)_$(ARCHA) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else
@@ -341,7 +341,7 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	rm -rf charts/$(CHART_NAME)
 	# create new chart metadata in Chart.yaml
 	cd charts && \
-		$(HELM) create awx-operator --starter $(shell pwd)/.helm/starter ;\
+		$(HELM) create $(CHART_NAME) --starter $(shell pwd)/.helm/starter ;\
 		$(YQ) -i '.version = "$(VERSION)"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.appVersion = "$(VERSION)" | .appVersion style="double"' $(CHART_NAME)/Chart.yaml ;\
 		$(YQ) -i '.description = "$(CHART_DESCRIPTION)"' $(CHART_NAME)/Chart.yaml ;\
@@ -370,14 +370,21 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 	for file in charts/$(CHART_NAME)/raw-files/*rolebinding*; do\
 		$(YQ) -i '.subjects[0].namespace = "{{ .Release.Namespace }}"' $${file};\
 	done
+	# Add .spec.replicas for the controller-manager deployment
+	for file in charts/$(CHART_NAME)/raw-files/deployment-*-controller-manager.yaml; do\
+		$(YQ) -i '.spec.replicas = "{{ (.Values.Operator).replicas | default 1 }}"' $${file};\
+	done
 	# Correct .metadata.name for cluster scoped resources
 	cluster_scoped_files="charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml charts/$(CHART_NAME)/raw-files/clusterrole-awx-operator-metrics-reader.yaml charts/$(CHART_NAME)/raw-files/clusterrole-awx-operator-proxy-role.yaml";\
 	for file in $${cluster_scoped_files}; do\
 		$(YQ) -i '.metadata.name += "-{{ .Release.Name }}"' $${file};\
 	done
-
 	# Correct the reference for the clusterrolebinding
 	$(YQ) -i '.roleRef.name += "-{{ .Release.Name }}"' 'charts/$(CHART_NAME)/raw-files/clusterrolebinding-awx-operator-proxy-rolebinding.yaml'
+	# Correct .spec.replicas type for the controller-manager deployment
+	for file in charts/$(CHART_NAME)/raw-files/deployment-*-controller-manager.yaml; do\
+		$(SED_I) "s/'{{ (.Values.Operator).replicas | default 1 }}'/{{ (.Values.Operator).replicas | default 1 }}/g" $${file};\
+	done
 	# move all custom resource definitions to crds folder
 	mkdir charts/$(CHART_NAME)/crds
 	mv charts/$(CHART_NAME)/raw-files/customresourcedefinition*.yaml charts/$(CHART_NAME)/crds/.
@@ -399,7 +406,7 @@ helm-package: helm-chart
 	@echo "== Package Current Chart Version =="
 	mkdir -p .cr-release-packages
 	# package the chart and put it in .cr-release-packages dir
-	$(HELM) package ./charts/awx-operator -d .cr-release-packages/$(VERSION)
+	$(HELM) package ./charts/$(CHART_NAME) -d .cr-release-packages/$(VERSION)
 
 # List all tags oldest to newest.
 TAGS := $(shell git ls-remote --tags --sort=version:refname --refs -q | cut -d/ -f3)

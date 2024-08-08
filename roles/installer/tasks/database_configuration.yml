@@ -100,20 +100,45 @@
     awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
     awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
     awx_postgres_sslmode: "{{ pg_config['resources'][0]['data']['sslmode'] |  default('prefer'|b64encode) | b64decode }}"
+    awx_postgres_target_session_attrs: "{{ pg_config['resources'][0]['data']['target_session_attrs'] | default('') | b64decode }}"
   no_log: "{{ no_log }}"
 
 - name: Set database as managed
   set_fact:
     managed_database: "{{ pg_config['resources'][0]['data']['type'] | default('') | b64decode == 'managed' }}"
 
-- name: Get the old postgres pod information
+# It is possible that N-2 postgres pods may still be present in the namespace from previous upgrades.
+# So we have to take that into account and preferentially set the most recent one.
+- name: Get the old postgres pod (N-1)
   k8s_info:
     kind: Pod
     namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "{{ ansible_operator_meta.name }}-postgres-0"
     field_selectors:
       - status.phase=Running
-  register: old_postgres_pod
+  register: _running_pods
+
+- block:
+    - name: Filter pods by name
+      set_fact:
+        filtered_old_postgres_pods: "{{ _running_pods.resources |
+          selectattr('metadata.name', 'match', ansible_operator_meta.name + '-postgres.*-0') |
+          rejectattr('metadata.name', 'search', '-' + supported_pg_version | string + '-0') |
+          list }}"
+
+  # Sort pods by name in reverse order (most recent PG version first) and set
+    - name: Set info for previous postgres pod
+      set_fact:
+        sorted_old_postgres_pods: "{{ filtered_old_postgres_pods |
+          sort(attribute='metadata.name') |
+          reverse | list }}"
+      when: filtered_old_postgres_pods | length
+
+
+    - name: Set info for previous postgres pod
+      set_fact:
+        old_postgres_pod: "{{ sorted_old_postgres_pods | first }}"
+      when: filtered_old_postgres_pods | length
+  when: _running_pods.resources | length
 
 - name: Look up details for this deployment
   k8s_info:
@@ -123,30 +148,41 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: this_awx
 
-- name: Check if postgres pod is running and version 12
-  block:
-    - name: Set path to PG_VERSION file for given container image
-      set_fact:
-        path_to_pg_version: '{{ postgres_data_path }}/PG_VERSION'
+# If this deployment has been upgraded before or if upgrade has already been started, set this var
+- name: Set previous PG version var
+  set_fact:
+    _previous_upgraded_pg_version: "{{ this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default(false) }}"
+  when:
+    - this_awx['resources'][0] is defined
+    - "'upgradedPostgresVersion' in this_awx['resources'][0]['status']"
 
+- name: Check if postgres pod is running an older version
+  block:
     - name: Get old PostgreSQL version
       k8s_exec:
         namespace: "{{ ansible_operator_meta.namespace }}"
-        pod: "{{ ansible_operator_meta.name }}-postgres-0"
+        pod: "{{ old_postgres_pod['metadata']['name'] }}"
         command: |
           bash -c """
-          cat {{ path_to_pg_version }}
+          if [ -f "{{ _postgres_data_path }}/PG_VERSION" ]; then
+            cat "{{ _postgres_data_path }}/PG_VERSION"
+          elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
+            cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
+          fi
           """
       register: _old_pg_version
 
-    - name: Upgrade data dir from Postgres 12 to 13 if applicable
+    - debug:
+        msg: "--- Upgrading from {{ old_postgres_pod['metadata']['name'] | default('NONE')}} Pod ---"
+
+    - name: Upgrade data dir from old Postgres to {{ supported_pg_version }} if applicable
       include_tasks: upgrade_postgres.yml
       when:
-        - _old_pg_version.stdout | default('0') | trim == '12'
+        - (_old_pg_version.stdout | default(0) | int ) < supported_pg_version
   when:
     - managed_database
-    - this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default('none') != '12'
-    - old_postgres_pod['resources'] | length  # upgrade is complete and old pg pod has been removed
+    - (_previous_upgraded_pg_version | default(false)) | ternary(_previous_upgraded_pg_version | int < supported_pg_version, true)
+    - old_postgres_pod | length  # If empty, then old pg pod has been removed and we can assume the upgrade is complete
 
 - block:
     - name: Create Database if no database is specified
@@ -167,7 +203,7 @@
       kubernetes.core.k8s_scale:
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ ansible_operator_meta.name }}-postgres-13"
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
         replicas: 0
         wait: yes
@@ -177,7 +213,7 @@
         state: absent
         api_version: apps/v1
         kind: StatefulSet
-        name: "{{ ansible_operator_meta.name }}-postgres-13"
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
         wait: yes
       when: create_statefulset_result.error == 422

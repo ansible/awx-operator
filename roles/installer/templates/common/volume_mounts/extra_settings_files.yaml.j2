@@ -1,0 +1,16 @@
+{% if extra_settings_files.configmaps is defined and extra_settings_files.configmaps | length %}
+{% for configmap in extra_settings_files.configmaps %}
+- name: {{ ansible_operator_meta.name }}-{{ configmap.key | replace('_', '-') | replace('.', '-') | lower }}-configmap
+  mountPath: "/etc/tower/conf.d/{{ configmap.key }}"
+  subPath: {{ configmap.key }}
+  readOnly: true
+{% endfor %}
+{% endif %}
+{% if extra_settings_files.secrets is defined and extra_settings_files.secrets | length %}
+{% for secret in extra_settings_files.secrets %}
+- name: {{ ansible_operator_meta.name }}-{{ secret.key | replace('_', '-') | replace('.', '-') | lower }}-secret
+  mountPath: "/etc/tower/conf.d/{{ secret.key }}"
+  subPath: {{ secret.key }}
+  readOnly: true
+{% endfor %}
+{% endif %}
