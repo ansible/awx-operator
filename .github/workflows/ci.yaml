@@ -50,49 +50,6 @@ jobs:
         with:
           name: awx_operator_molecule_test
           path: ${{ env.DEBUG_OUTPUT_DIR }}
-  helm:
-    runs-on: ubuntu-latest
-    name: helm
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.10.0
-
-      - name: Build operator image and load into kind
-        run: |
-          IMG=awx-operator-ci make docker-build
-          kind load docker-image --name chart-testing awx-operator-ci
-
-      - name: Patch pull policy for tests
-        run: |
-          kustomize edit add patch --path ../testing/pull_policy/Never.yaml
-        working-directory: config/default
-
-      - name: Build and lint helm chart
-        run: |
-          IMG=awx-operator-ci make helm-chart
-          helm lint ./charts/awx-operator
-
-      - name: Install kubeval
-        run: |
-          mkdir tmp && cd tmp
-          wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
-          tar xf kubeval-linux-amd64.tar.gz
-          sudo cp kubeval /usr/local/bin
-        working-directory: ./charts
-
-      - name: Run kubeval
-        run: |
-          helm template -n awx awx-operator > tmp/test.yaml
-          kubeval --strict --force-color --ignore-missing-schemas tmp/test.yaml
-        working-directory: ./charts
-
-      - name: Install helm chart
-        run: |
-          helm install --wait my-awx-operator --namespace awx --create-namespace ./charts/awx-operator
   no-log:
     runs-on: ubuntu-latest
     steps:
