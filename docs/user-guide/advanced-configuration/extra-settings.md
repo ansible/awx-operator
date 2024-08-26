@@ -28,6 +28,7 @@ spec:
     - setting: MAX_PAGE_SIZE
       value: "500"
 
+    # LDAP is deprecated
     - setting: AUTH_LDAP_BIND_DN
       value: "cn=admin,dc=example,dc=com"
 
