@@ -15,7 +15,11 @@ data:
     import os
     import socket
     # Import all so that extra_settings works properly
-    from django_auth_ldap.config import *
+    try:
+        # Some AWX setups may have no django_auth_ldap dependency.
+        from django_auth_ldap.config import *
+    except:
+        pass
 
     def get_secret():
         if os.path.exists("/etc/tower/SECRET_KEY"):
