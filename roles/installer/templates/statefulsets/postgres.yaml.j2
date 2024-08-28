@@ -149,6 +149,10 @@ spec:
       tolerations:
         {{ postgres_tolerations | indent(width=8) }}
 {% endif %}
+{% if postgres_pod_security_context_settings|length %}
+      securityContext:
+        {{ postgres_pod_security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
 {% if postgres_extra_volumes %}
       volumes:
         {{ postgres_extra_volumes | indent(width=8, first=False) }}
