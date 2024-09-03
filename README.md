@@ -14,7 +14,7 @@ The AWX Operator is meant to be deployed in your Kubernetes cluster(s) and can b
 
 The AWX Operator documentation is available at <https://ansible.readthedocs.io/projects/awx-operator/>
 
-> Helm chart documentation is available at <https://ansible.readthedocs.io/projects/awx-operator-helm/>
+> Helm chart documentation is available at <https://ansible-community.github.io/awx-operator-helm/>
 
 ## Contributing
 
