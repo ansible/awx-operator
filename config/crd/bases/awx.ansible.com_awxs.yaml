@@ -73,6 +73,9 @@ spec:
                 type: string
                 maxLength: 255
                 pattern: '^[a-zA-Z0-9][-a-zA-Z0-9]{0,253}[a-zA-Z0-9]$'
+              pg_dump_suffix:
+                description: Additional parameters for the pg_dump command during a migration
+                type: string
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for data migration
                 type: string
