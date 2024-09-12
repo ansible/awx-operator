@@ -320,7 +320,7 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
       - description: PostgreSQL dump additional parameters to exclude tables during migration to openshift
-        displayname: PostgreSQL backup extra arguments
+        displayname: PostgreSQL Extra Arguments for Migration to Openshift
         path: pg_dump_suffix
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:hidden
