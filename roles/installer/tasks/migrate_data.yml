@@ -44,6 +44,7 @@
       -d {{ awx_old_postgres_database }}
       -p {{ awx_old_postgres_port }}
       -F custom
+      {{ pg_dump_suffix }}
   no_log: "{{ no_log }}"
 
 - name: Set pg_restore command
