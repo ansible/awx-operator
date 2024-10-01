@@ -241,6 +241,9 @@ postgres_configuration_secret: ''
 
 old_postgres_configuration_secret: ''
 
+# Allow additional parameters to be added to the pg_dump backup command during AAP VMs to OCP migration
+pg_dump_suffix: ''
+
 # Secret to lookup that provides default execution environment pull credentials
 #
 ee_pull_credentials_secret: ''

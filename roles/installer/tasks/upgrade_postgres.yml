@@ -118,7 +118,9 @@
       trap 'end_keepalive \"$keepalive_file\" \"$keepalive_pid\"' EXIT SIGINT SIGTERM
       echo keepalive_pid: $keepalive_pid
       set -e -o pipefail
+      psql -c 'GRANT postgres TO {{ awx_postgres_user }}'
       PGPASSWORD=\"$POSTGRES_PASSWORD\" {{ pgdump }} | PGPASSWORD=\"$POSTGRES_PASSWORD\" {{ pg_restore }}
+      psql -c 'REVOKE postgres FROM {{ awx_postgres_user }}'
       set +e +o pipefail
       echo 'Successful'
       "

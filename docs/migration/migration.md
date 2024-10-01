@@ -65,6 +65,13 @@ spec:
   secret_key_secret: <resourcename>-secret-key
   ...
 ```
+### Exclude postgreSQL tables during migration (optional)
+
+Use the `pg_dump_suffix` parameter under `AWX.spec` to customize the pg_dump command that will execute during migration. This variable will append your provided pg_dump parameters to the end of the 'standard' command. For example, to exclude the data from 'main_jobevent' and 'main_job' to decrease the size of the backup use:
+
+```
+pg_dump_suffix: "--exclude-table-data 'main_jobevent*' --exclude-table-data 'main_job'"
+```
 
 ## Important Note
 
