@@ -23,6 +23,8 @@
   changed_when: "'That username is already taken' not in result.stderr"
   failed_when: "'That username is already taken' not in result.stderr and 'Superuser created successfully' not in result.stdout"
   no_log: "{{ no_log }}"
+  environment:
+    ANSIBLE_REVERSE_RESOURCE_SYNC: "false"
   when: users_result.return_code > 0
 
 - name: Update Django super user password
@@ -117,4 +119,6 @@
       bash -c "awx-manage create_preload_data"
   register: cdo
   changed_when: "'added' in cdo.stdout"
+  environment:
+    ANSIBLE_REVERSE_RESOURCE_SYNC: "false"
   when: create_preload_data | bool
