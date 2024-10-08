@@ -4,10 +4,7 @@ The first step is to create a draft release. Typically this will happen in the [
 
 If you need to do an independent release of the operator, you can run the [Stage Release](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/stage.yml) in the awx-operator repo. Both of these workflows will run smoke tests, so there is no need to do this manually.
 
-After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, which will:
-
-- Publish image to Quay
-- Release Helm chart
+After the draft release is created, publish it and the [Promote AWX Operator image](https://github.com/ansible/awx-operator/blob/devel/.github/workflows/promote.yaml) will run, which publishes the image to Quay.
 
 After the GHA is complete, the final step is to run the [publish-to-operator-hub.sh](https://github.com/ansible/awx-operator/blob/devel/hack/publish-to-operator-hub.sh) script, which will create a PR in the following repos to add the new awx-operator bundle version to OperatorHub:
 
@@ -15,7 +12,7 @@ After the GHA is complete, the final step is to run the [publish-to-operator-hub
 - <https://github.com/redhat-openshift-ecosystem/community-operators-prod> (operator index shipped with Openshift)
 
 !!! note
-    The usage is documented in the script itself, but here is an example of how you would use the script to publish the 2.5.3 awx-opeator bundle to OperatorHub.
+    The usage is documented in the script itself, but here is an example of how you would use the script to publish the 2.5.3 awx-operator bundle to OperatorHub.
     Note that you need to specify the version being released, as well as the previous version. This is because the bundle has a pointer to the previous version that is it being upgrade from. This is used by OLM to create a dependency graph.
 
     ```bash
