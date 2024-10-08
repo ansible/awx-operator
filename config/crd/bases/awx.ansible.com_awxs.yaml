@@ -57,6 +57,10 @@ spec:
               hostname:  # deprecated
                 description: (Deprecated) The hostname of the instance
                 type: string
+              create_superuser:
+                description: If a superuser should be created
+                type: boolean
+                default: true
               admin_email:
                 description: The admin user email
                 type: string

@@ -505,3 +505,5 @@ nginx_worker_cpu_affinity: 'auto'
 nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
 
 extra_settings_files: {}
+
+create_superuser: true
