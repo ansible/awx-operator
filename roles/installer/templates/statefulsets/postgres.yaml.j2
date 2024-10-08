@@ -38,6 +38,10 @@ spec:
         {{ postgres_annotations | indent(width=8) }}
 {% endif %}
     spec:
+{% if postgres_security_context_settings|length %}
+      securityContext:
+        {{ postgres_security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
 {% if image_pull_secret is defined %}
       imagePullSecrets:
         - name: {{ image_pull_secret }}
@@ -75,10 +79,6 @@ spec:
         - image: '{{ _postgres_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           name: postgres
-{% if postgres_security_context_settings|length %}
-          securityContext:
-            {{ postgres_security_context_settings | to_nice_yaml | indent(12) }}
-{% endif %}
 {% if postgres_extra_args %}
           command: ["run-postgresql"]
           args: {{ postgres_extra_args }}
