@@ -319,6 +319,11 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
+      - description: PostgreSQL dump additional parameters to exclude tables during migration to openshift
+        displayname: PostgreSQL Extra Arguments for Migration to Openshift
+        path: pg_dump_suffix
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - description: Name of the k8s secret the symmetric encryption key is stored
           in.
         displayName: Secret Key
@@ -717,12 +722,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: LDAP Certificate Authority Trust Bundle
+      - displayName: LDAP Certificate Authority Trust Bundle (Deprecated)
         path: ldap_cacert_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
-      - displayName: LDAP Password Secret
+      - displayName: LDAP Password Secret (Deprecated)
         path: ldap_password_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced

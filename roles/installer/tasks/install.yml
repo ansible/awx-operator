@@ -44,12 +44,12 @@
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 
-- name: Load LDAP CAcert certificate
+- name: Load LDAP CAcert certificate (Deprecated)
   include_tasks: load_ldap_cacert_secret.yml
   when:
   - ldap_cacert_secret != ''
 
-- name: Load ldap bind password
+- name: Load ldap bind password (Deprecated)
   include_tasks: load_ldap_password_secret.yml
   when:
   - ldap_password_secret != ''

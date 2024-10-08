@@ -241,6 +241,9 @@ postgres_configuration_secret: ''
 
 old_postgres_configuration_secret: ''
 
+# Allow additional parameters to be added to the pg_dump backup command during AAP VMs to OCP migration
+pg_dump_suffix: ''
+
 # Secret to lookup that provides default execution environment pull credentials
 #
 ee_pull_credentials_secret: ''
@@ -439,11 +442,11 @@ projects_storage_access_mode: ReadWriteMany
 
 ca_trust_bundle: "/etc/pki/tls/certs/ca-bundle.crt"
 
-# Secret to lookup that provides the LDAP CACert trusted bundle
+# Secret to lookup that provides the LDAP CACert trusted bundle (Deprecated)
 #
 ldap_cacert_secret: ''
 
-# Secret to lookup that provides the LDAP bind password
+# Secret to lookup that provides the LDAP bind password (Deprecated)
 ldap_password_secret: ''
 
 # Secret to lookup that provides the custom CA trusted bundle

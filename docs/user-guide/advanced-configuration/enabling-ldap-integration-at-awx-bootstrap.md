@@ -1,4 +1,4 @@
-# Enabling LDAP Integration at AWX bootstrap
+# Enabling LDAP Integration at AWX bootstrap (Deprecated)
 
 A sample of extra settings can be found as below. All possible options can be found here: <https://django-auth-ldap.readthedocs.io/en/latest/reference.html#settings>
 
