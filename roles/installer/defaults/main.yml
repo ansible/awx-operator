@@ -449,6 +449,9 @@ ldap_cacert_secret: ''
 # Secret to lookup that provides the LDAP bind password (Deprecated)
 ldap_password_secret: ''
 
+# Whether or not to skip TLS verification for LDAP
+ldap_skip_tls_verify: false
+
 # Secret to lookup that provides the custom CA trusted bundle
 bundle_cacert_secret: ''
 
