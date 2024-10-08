@@ -1862,11 +1862,11 @@ spec:
               development_mode:
                 description: If the deployment should be done in development mode
                 type: boolean
-              ldap_cacert_secret:
-                description: Secret where can be found the LDAP trusted Certificate Authority Bundle
+              ldap_cacert_secret:  # deprecated
+                description: (Deprecated) Secret where can be found the LDAP trusted Certificate Authority Bundle
                 type: string
-              ldap_password_secret:
-                description: Secret where can be found the LDAP bind password
+              ldap_password_secret:  # deprecated
+                description: (Deprecated) Secret where can be found the LDAP bind password
                 type: string
               bundle_cacert_secret:
                 description: Secret where can be found the trusted Certificate Authority Bundle

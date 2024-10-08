@@ -722,12 +722,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: LDAP Certificate Authority Trust Bundle
+      - displayName: LDAP Certificate Authority Trust Bundle (Deprecated)
         path: ldap_cacert_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
-      - displayName: LDAP Password Secret
+      - displayName: LDAP Password Secret (Deprecated)
         path: ldap_password_secret
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
