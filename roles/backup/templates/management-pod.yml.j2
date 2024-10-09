@@ -7,6 +7,15 @@ metadata:
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
 spec:
+  initContainers:
+    - name: init-pvc-chown
+      image: busybox
+      # _postgres_image runs as uid 26
+      command: ["sh", "-c", "chown -R :26 /backups && chmod -R 770 /backups"]
+      volumeMounts:
+        - name: {{ ansible_operator_meta.name }}-backup
+          mountPath: /backups
+          readOnly: false
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
     image: "{{ _postgres_image }}"
