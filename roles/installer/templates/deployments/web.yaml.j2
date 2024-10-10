@@ -217,7 +217,8 @@ spec:
               mountPath: "/etc/tower/conf.d/ldap.py"
               subPath: ldap.py
               readOnly: true
-{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+{% if ( (ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough') or
+        ( nodeport_protocol | lower == 'https' ) ) %}
             - name: "{{ ansible_operator_meta.name }}-nginx-certs"
               mountPath: "/etc/nginx/pki"
               readOnly: true
@@ -395,6 +396,15 @@ spec:
         - name: "{{ ansible_operator_meta.name }}-nginx-certs"
           secret:
             secretName: "{{ route_tls_secret }}"
+            items:
+              - key: tls.key
+                path: 'web.key'
+              - key: tls.crt
+                path: 'web.crt'
+{% elif nodeport_protocol | lower == 'https' %}
+        - name: "{{ ansible_operator_meta.name }}-nginx-certs"
+          secret:
+            secretName: "{{ nodeport_tls_secret }}"
             items:
               - key: tls.key
                 path: 'web.key'

@@ -59,6 +59,13 @@ service_annotations: ''
 # Port to be used for NodePort configuration, default is to auto-assign a port between 30000-32768
 # nodeport_port: '30080'
 
+# Protocol to be used on NodePort, default is 'http' and the only other option is 'https' in which case
+# secret containing TLS certificate and key must be specified in nodeport_tls_secret variable.
+nodeport_protocol: 'http'
+
+# Secret to lookup that provide the TLS specific credentials to deploy.
+nodeport_tls_secret: ''
+
 # The TLS termination mechanism to use to access
 # the services. Supported mechanism are: edge, passthrough
 #

@@ -190,6 +190,18 @@ spec:
               nodeport_port:
                 description: Port to use for the nodeport
                 type: integer
+              nodeport_protocol:
+                description: Protocol to use for the nodeport
+                type: string
+                default: http
+                enum:
+                - http
+                - HTTP
+                - https
+                - HTTPS
+              nodeport_tls_secret:
+                description: Secret where the TLS related credentials are stored
+                type: string
               node_selector:
                 description: nodeSelector for the pods
                 type: string
