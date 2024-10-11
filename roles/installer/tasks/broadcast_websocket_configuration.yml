@@ -42,10 +42,24 @@
 - name: Set broadcast websocket secret
   set_fact:
     # yamllint disable-line rule:line-length
-    __broadcast_websocket_secret: '{{ _generated_broadcast_websocket["resources"] | default([]) | length | ternary(_generated_broadcast_websocket, _broadcast_websocket_secret)  }}'  # noqa 204
+    __broadcast_websocket_secret: "{{ broadcast_websocket_secret | length | ternary(_broadcast_websocket_secret, _generated_broadcast_websocket) }}"
   no_log: "{{ no_log }}"
 
 - name: Store broadcast websocket secret name
   set_fact:
     broadcast_websocket_secret_value: "{{ __broadcast_websocket_secret['resources'][0]['data']['secret'] | b64decode }}"
   no_log: "{{ no_log }}"
+
+- name: Remove ownerReferences
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ __broadcast_websocket_secret }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        ownerReferences: null
+  no_log: "{{ no_log }}"
+  when:
+    - not garbage_collect_secrets | bool
+    - _generated_broadcast_websocket["resources"] | default([]) | length
