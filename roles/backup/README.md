@@ -2,7 +2,7 @@ Backup Role
 =========
 
 The purpose of this role is to create a backup of your AWX deployment which includes:
-  - custom deployment specific values in the spec section of the AWX custom resource object
+  - custom deployment specific values in the spec section of the AWX custom resource object, custom deployment values may include private repo URL (see Usage below)
   - backup of the postgresql database
   - secret_key, admin_password, and broadcast_websocket secrets
   - database configuration
@@ -13,6 +13,7 @@ Requirements
 This role assumes you are authenticated with an Openshift or Kubernetes cluster:
   - The awx-operator has been deployed to the cluster
   - AWX is deployed to via the operator
+This role assumes you have storage assigned to AWX by your Administrator.  You'll need a PV and PVC for backup and restore
 
 
 Usage
@@ -25,10 +26,14 @@ Then create a file named `backup-awx.yml` with the following contents:
 apiVersion: awx.ansible.com/v1beta1
 kind: AWXBackup
 metadata:
-  name: awxbackup-2021-04-22
-  namespace: my-namespace
+  name: awxbackup-<YYYY-MM-DD>
+  namespace: <my-namespace>
 spec:
-  deployment_name: mytower
+  deployment_name: <your deployment name here>
+  backup_pvc: <name from your PVC>
+  clean_backup_on_delete: true ## optional
+  postgres_image: <URL to get image from> ## if using private repo
+  postgres_image_version: <'version'>  ## if using private repo ## single quote is required around version
 ```
 
 Note that the `deployment_name` above is the name of the AWX deployment you intend to backup from.  The namespace above is the one containing the AWX deployment that will be backed up.
@@ -41,6 +46,30 @@ $ kubectl apply -f backup-awx.yml
 
 The resulting pvc will contain a backup tar that can be used to restore to a new deployment. Future backups will also be stored in separate tars on the same pvc.
 
+To delete the restore object you can run kubectl delete
+# kubectl delete awxrestore.awx.ansible.com/restore-awx -n <namespace_here>
+
+Check you storage that you have assigned to the backup, it should show that your PV and PVC are bound
+# kubectl get pv
+NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS    REASON   AGE
+awx-backup    2Gi        RWX            Delete           Bound    awx/awx-backup                      local-storage            6s
+postgres-pv   2Gi        RWX            Delete           Bound    awx/postgres-13-awx-postgres-13-0   local-storage            84d
+
+
+# kubectl get pvc -n awx
+NAME                            STATUS   VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+awx-backup                      Bound    awx-backup    2Gi        RWX            local-storage   12s
+postgres-13-awx-postgres-13-0   Bound    postgres-pv   2Gi        RWX            local-storage   84d
+
+To check your pod running the job you can run kubectl describe
+# kubectl describe po/backup-awx-db-management -n <namespace_here>
+
+The path to your PV and PVC need to be present on the node where the pod is running.  Examine the pod events section to see where the pod is running.
+...
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  11s   default-scheduler  Successfully assigned awx/backup-awx-db-management to <hostname>
 
 Role Variables
 --------------
