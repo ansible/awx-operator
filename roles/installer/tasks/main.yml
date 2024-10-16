@@ -23,6 +23,10 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
   register: awx_web_deployment
 
+- name: Check for existing deployment for previous version
+  include_tasks: check_existing.yml
+  when: gating_version | length
+
 - name: Start installation if auto_upgrade is true
   include_tasks: install.yml
   when:

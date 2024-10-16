@@ -1,0 +1,19 @@
+---
+
+- name: Check for existing deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    name: "{{ ansible_operator_meta.name }}"
+  register: existing_deployment
+
+- name: Set previous_version version based on AWX CR version status
+  ansible.builtin.set_fact:
+    previous_version: "{{ existing_deployment.resources[0].status.version | default('0.0.0') }}"
+  when: existing_deployment['resources'] | length
+
+- name: If previous_version is less than or equal to gating_version, set upgraded_from to previous_version
+  ansible.builtin.set_fact:
+    upgraded_from: "{{ previous_version }}"
+  when: previous_version is version_compare(gating_version, '<')

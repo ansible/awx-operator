@@ -21,3 +21,6 @@ _metrics_utility_pvc_claim: "{{ metrics_utility_pvc_claim | default(deployment_t
 _metrics_utility_pvc_claim_size: "{{ metrics_utility_pvc_claim_size | default('5Gi') }}"
 _metrics_utility_cronjob_gather_schedule: "{{ metrics_utility_cronjob_gather_schedule | default('@hourly') }}"
 _metrics_utility_cronjob_report_schedule: "{{ metrics_utility_cronjob_report_schedule | default('@monthly') }}"
+
+# version check
+gating_version: ''

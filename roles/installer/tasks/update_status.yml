@@ -55,6 +55,16 @@
   changed_when: false
   when: awx_web_pod_name != ''
 
+- name: Update upgradedFrom status
+  operator_sdk.util.k8s_status:
+    api_version: '{{ api_version }}'
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    status:
+      upgradedFrom: "{{ upgraded_from }}"
+  when: upgraded_from is defined
+
 - name: Update version status
   operator_sdk.util.k8s_status:
     api_version: '{{ api_version }}'
