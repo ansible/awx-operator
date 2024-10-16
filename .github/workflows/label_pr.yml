@@ -13,9 +13,17 @@ jobs:
     name: Label PR - Community
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-      - name: Install python requests
-        run: pip install requests
+
+      - name: Create a virtual environment
+        run: python3 -m venv venv
+
+      - name: Activate virtual environment and install dependencies
+        run: |
+          source venv/bin/activate
+          pip3 install requests
+
       - name: Check if user is a member of Ansible org
         uses: jannekem/run-python-script-action@v1
         id: check_user
@@ -32,6 +40,7 @@ jobs:
                 print("User is member")
             else:
                 print("User is community")
+
       - name: Add community label if not a member
         if: contains(steps.check_user.outputs.stdout, 'community')
         uses: andymckay/labeler@e6c4322d0397f3240f0e7e30a33b5c5df2d39e90
