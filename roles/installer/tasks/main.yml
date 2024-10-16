@@ -24,8 +24,8 @@
   register: awx_web_deployment
 
 - name: Check for existing deployment for previous version
-  include_tasks: check_previous_version.yml
-  when: gating_version | length > 0
+  include_tasks: check_existing.yml
+  when: gating_version | length
 
 - name: Start installation if auto_upgrade is true
   include_tasks: install.yml
