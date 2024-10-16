@@ -13,6 +13,8 @@ jobs:
     name: Label PR - Community
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: test-python-module-fix
 
       - uses: actions/setup-python@v5
 
