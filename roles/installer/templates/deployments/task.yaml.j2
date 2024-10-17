@@ -182,7 +182,7 @@ spec:
             - -c
             - |
               chmod 775 /var/lib/awx/projects
-              chgrp 1000 /var/lib/awx/projects
+              chgrp 0 /var/lib/awx/projects
           env:
             - name: MY_POD_NAME
               valueFrom:
