@@ -30,34 +30,39 @@ spec:
 {% if external_ipaddress is defined %}
           external_ipaddress={{ external_ipaddress }}
 {% endif %}
-          receptor --cert-makereq \
-            bits=2048 \
-            commonname=$internal_hostname \
-            dnsname=$internal_hostname \
-            nodeid=$internal_hostname \
+          cat << EOF > certgen-mesh-ingress.yaml
+          ---
+          version: 2
+          cert-makereqs:
+            - bits=2048
+              commonname: $internal_hostname
+              dnsname: $internal_hostname
+              nodeid: $internal_hostname
+              outreq: /etc/receptor/tls/receptor.req
+              outkey: /etc/receptor/tls/receptor.key
 {% if external_hostname is defined %}
-            dnsname=$external_hostname \
+          dnsname:$external_hostname
 {% endif %}
 {% if external_ipaddress is defined %}
-            ipaddress=$external_ipaddress \
+          ipaddress:$external_ipaddress
 {% endif %}
-            outreq=/etc/receptor/tls/receptor.req \
-            outkey=/etc/receptor/tls/receptor.key
-          receptor --cert-signreq \
-            req=/etc/receptor/tls/receptor.req \
-            cacert=/etc/receptor/tls/ca/mesh-CA.crt \
-            cakey=/etc/receptor/tls/ca/mesh-CA.key \
-            outcert=/etc/receptor/tls/receptor.crt \
-            notafter=$(date --iso-8601=seconds --utc --date "10 years") \
-            verify=yes
-          exec receptor --config /etc/receptor/receptor.conf
+          cert-signreqs:
+            - req: /etc/receptor/tls/receptor.req
+              cacert: /etc/receptor/tls/ca/mesh-CA.crt
+              cakey: /etc/receptor/tls/ca/mesh-CA.key
+              outcert: /etc/receptor/tls/receptor.crt
+              notafter: "$(date --iso-8601=seconds --utc --date "10 years")"
+              verify: True
+          EOF
+          receptor --config certgen-mesh-ingress.yaml
+          exec receptor --config /etc/receptor/receptor.yaml
         image: '{{ _control_plane_ee_image }}'
         imagePullPolicy: '{{ _image_pull_policy }}'
         name: {{ ansible_operator_meta.name }}-mesh-ingress
         volumeMounts:
-        - mountPath: /etc/receptor/receptor.conf
+        - mountPath: /etc/receptor/receptor.yaml
           name: {{ ansible_operator_meta.name }}-receptor-config
-          subPath: receptor.conf
+          subPath: receptor.yaml
         - mountPath: /etc/receptor/tls/ca/mesh-CA.crt
           name: {{ ansible_operator_meta.name }}-receptor-ca
           readOnly: true
@@ -97,6 +102,6 @@ spec:
           defaultMode: 420
           items:
           - key: receptor_conf
-            path: receptor.conf
+            path: receptor.yaml
           name: {{ ansible_operator_meta.name }}-receptor-config
         name: {{ ansible_operator_meta.name }}-receptor-config

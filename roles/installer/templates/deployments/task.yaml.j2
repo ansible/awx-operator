@@ -132,20 +132,26 @@ spec:
             - -c
             - |
               hostname=$MY_POD_NAME
-              receptor --cert-makereq \
-                bits=2048 \
-                commonname=$hostname \
-                dnsname=$hostname \
-                nodeid=$hostname \
-                outreq=/etc/receptor/tls/receptor.req \
-                outkey=/etc/receptor/tls/receptor.key
-              receptor --cert-signreq \
-                req=/etc/receptor/tls/receptor.req \
-                cacert=/etc/receptor/tls/ca/mesh-CA.crt \
-                cakey=/etc/receptor/tls/ca/mesh-CA.key \
-                outcert=/etc/receptor/tls/receptor.crt \
-                notafter=$(date --iso-8601=seconds --utc --date "10 years") \
-                verify=yes
+              cat << EOF > certgen-installer.yaml
+              ---
+              version: 2
+              cert-makereqs:
+                - bits: 2048
+                  commonname: $hostname
+                  dnsname: $hostname
+                  nodeid: $hostname
+                  outreq: /etc/receptor/tls/receptor.req
+                  outkey: /etc/receptor/tls/receptor.key
+
+              cert-signreqs:
+                - req: /etc/receptor/tls/receptor.req
+                  cacert: /etc/receptor/tls/ca/mesh-CA.crt
+                  cakey: /etc/receptor/tls/ca/mesh-CA.key
+                  outcert: /etc/receptor/tls/receptor.crt
+                  notafter: "$(date --iso-8601=seconds --utc --date "10 years")"
+                  verify: True
+              EOF
+              receptor --config certgen-installer.yaml
 {% if init_container_extra_commands %}
               {{ init_container_extra_commands | indent(width=14) }}
 {% endif %}
@@ -360,19 +366,19 @@ spec:
             - /bin/sh
             - -c
             - |
-              if [ ! -f /etc/receptor/receptor.conf ]; then
-                cp /etc/receptor/receptor-default.conf /etc/receptor/receptor.conf
-                sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.conf
+              if [ ! -f /etc/receptor/receptor.yaml ]; then
+                cp /etc/receptor/receptor-default.yaml /etc/receptor/receptor.yaml
+                sed -i "s/HOSTNAME/$HOSTNAME/g" /etc/receptor/receptor.yaml
               fi
-              exec receptor --config /etc/receptor/receptor.conf
+              exec receptor --config /etc/receptor/receptor.yaml
           volumeMounts:
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
             - name: "{{ ansible_operator_meta.name }}-default-receptor-config"
-              mountPath: "/etc/receptor/receptor-default.conf"
-              subPath: receptor.conf
+              mountPath: "/etc/receptor/receptor-default.yaml"
+              subPath: receptor.yaml
             - name: "{{ ansible_operator_meta.name }}-receptor-config"
               mountPath: "/etc/receptor/"
             - name: "{{ ansible_operator_meta.name }}-receptor-ca"
@@ -610,7 +616,7 @@ spec:
             name: '{{ ansible_operator_meta.name }}-{{ deployment_type }}-configmap'
             items:
               - key: receptor_conf
-                path: receptor.conf
+                path: receptor.yaml
         - name: "{{ ansible_operator_meta.name }}-projects"
 {% if projects_persistence|bool %}
           persistentVolumeClaim:
