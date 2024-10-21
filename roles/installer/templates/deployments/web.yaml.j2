@@ -243,6 +243,8 @@ spec:
               readOnly: true
             - name: {{ ansible_operator_meta.name }}-redis-socket
               mountPath: "/var/run/redis"
+            - name: {{ ansible_operator_meta.name }}-supervisor-socket
+              mountPath: "/var/run/supervisor"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
 {% if projects_persistence|bool %}
@@ -451,6 +453,8 @@ spec:
               - key: uwsgi_conf
                 path: uwsgi.conf
         - name: {{ ansible_operator_meta.name }}-redis-socket
+          emptyDir: {}
+        - name: {{ ansible_operator_meta.name }}-supervisor-socket
           emptyDir: {}
         - name: {{ ansible_operator_meta.name }}-redis-data
           emptyDir: {}
