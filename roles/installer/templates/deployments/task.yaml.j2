@@ -201,6 +201,16 @@ spec:
             capabilities:
               add: {{ redis_capabilities }}
 {% endif %}
+{% if redis_host_network %}
+          hostNetwork: {{ redis_host_network }}
+{% endif %}
+{% if redis_dns_policy %}
+         dnsPolicy: {{ redis_dns_policy }}
+{% endif %}
+{% if redis_dns_policy == 'None' and redis_dns_config is defined }
+         dnsConfig: {{ redis_dns_config }}
+{% endif %}
+
           args: ["redis-server", "/etc/redis.conf"]
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-redis-config
@@ -238,6 +248,15 @@ spec:
 {% endif %}
 {% if task_command %}
           command: {{ task_command }}
+{% endif %}
+{% if task_host_network %}
+          hostNetwork: {{ task_host_network }}
+{% endif %}
+{% if task_dns_policy %}
+         dnsPolicy: {{ task_dns_policy }}
+{% endif %}
+{% if task_dns_policy == 'None' and task_dns_config is defined }
+         dnsConfig: {{ task_dns_config }}
 {% endif %}
 {% if task_args %}
           args: {{ task_args }}
@@ -392,6 +411,16 @@ spec:
 {% if ee_extra_volume_mounts -%}
             {{ ee_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
+{% if ee_host_network %}
+          hostNetwork: {{ ee_host_network }}
+{% endif %}
+{% if ee_dns_policy %}
+         dnsPolicy: {{ ee_dns_policy }}
+{% endif %}
+{% if ee_dns_policy == 'None' and ee_dns_config is defined }
+         dnsConfig: {{ ee_dns_config }}
+{% endif %}
+
 {% if termination_grace_period_seconds is defined %}
             - name: pre-stop-data
               mountPath: /var/lib/pre-stop
@@ -418,6 +447,15 @@ spec:
           name: '{{ ansible_operator_meta.name }}-rsyslog'
 {% if rsyslog_command %}
           command: {{ rsyslog_command }}
+{% endif %}
+{% if rsyslog_host_network %}
+          hostNetwork: {{ rsyslog_host_network }}
+{% endif %}
+{% if rsyslog_dns_policy %}
+         dnsPolicy: {{ rsyslog_dns_policy }}
+{% endif %}
+{% if rsyslog_dns_policy == 'None' and rsyslog_dns_config is defined }
+         dnsConfig: {{ rsyslog_dns_config }}
 {% endif %}
 {% if rsyslog_args %}
           args: {{ rsyslog_args }}
