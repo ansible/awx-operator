@@ -135,7 +135,7 @@ data:
         }
 
 
-        {% if route_tls_termination_mechanism | lower == 'passthrough' %}
+        {% if route_tls_termination_mechanism | lower == 'passthrough' or nodeport_protocol | lower == "https" %}
         server {
             listen 8052 default_server{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% if not ipv6_disabled %}
@@ -149,7 +149,7 @@ data:
         {% endif %}
 
         server {
-        {% if route_tls_termination_mechanism | lower == 'passthrough' %}
+        {% if route_tls_termination_mechanism | lower == 'passthrough' or nodeport_protocol | lower == "https" %}
             listen 8053 ssl{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
             {% if not ipv6_disabled %}
             listen [::]:8053 ssl{% if nginx_listen_queue_size > 511 %} backlog={{ nginx_listen_queue_size }}{% endif %};
