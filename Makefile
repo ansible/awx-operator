@@ -6,6 +6,10 @@
 VERSION ?= $(shell git describe --tags)
 PREV_VERSION ?= $(shell git describe --abbrev=0 --tags $(shell git rev-list --tags --skip=1 --max-count=1))
 
+# KUBECTL_CMD reflects the direct shell command to run kubectl, to simplify usage when kubectl is wrapped 
+# within Kubernates Cluster programs (like Minikube). E.g. below
+# KUBECTL_CMD ?= minikube kubectl --
+KUBECTL_CMD ?= kubectl
 CONTAINER_CMD ?= docker
 
 # CHANNELS define the bundle channels used in the bundle.
@@ -110,11 +114,11 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 
 .PHONY: install
 install: kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl apply -f -
+	$(KUSTOMIZE) build config/crd | ${KUBECTL_CMD} apply -f -
 
 .PHONY: uninstall
 uninstall: kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl delete -f -
+	$(KUSTOMIZE) build config/crd | ${KUBECTL_CMD} delete -f -
 
 .PHONY: gen-resources
 gen-resources: kustomize ## Generate resources for controller and print to stdout
@@ -126,12 +130,12 @@ gen-resources: kustomize ## Generate resources for controller and print to stdou
 deploy: kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	@cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
-	@$(KUSTOMIZE) build config/default | kubectl apply -f -
+	@$(KUSTOMIZE) build config/default | ${KUBECTL_CMD} apply -f -
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
-	$(KUSTOMIZE) build config/default | kubectl delete -f -
+	$(KUSTOMIZE) build config/default | ${KUBECTL_CMD} delete -f -
 
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ARCHA := $(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
