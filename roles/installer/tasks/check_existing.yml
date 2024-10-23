@@ -1,19 +1,35 @@
 ---
 
-- name: Check for existing deployment
-  k8s_info:
-    api_version: "{{ api_version }}"
-    kind: "{{ kind }}"
+- name: Check for presence of Deployment
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
     namespace: "{{ ansible_operator_meta.namespace }}"
-    name: "{{ ansible_operator_meta.name }}"
-  register: existing_deployment
+    label_selectors:
+      - 'app.kubernetes.io/part-of={{ ansible_operator_meta.name }}'
+      - 'app.kubernetes.io/managed-by={{ deployment_type }}-operator'
+      - 'app.kubernetes.io/component={{ deployment_type }}'
+  register: _deployments
 
-- name: Set previous_version version based on AWX CR version status
-  ansible.builtin.set_fact:
-    previous_version: "{{ existing_deployment.resources[0].status.version | default('0.0.0') }}"
-  when: existing_deployment['resources'] | length
+- name: Set previous_version if deployment exists
+  when: _deployments.resources | length > 0
+  block:
+    - name: Check for existing deployment
+      kubernetes.core.k8s_info:
+        api_version: "{{ api_version }}"
+        kind: "{{ kind }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}"
+      register: existing_cr
 
-- name: If previous_version is less than or equal to gating_version, set upgraded_from to previous_version
-  ansible.builtin.set_fact:
-    upgraded_from: "{{ previous_version }}"
-  when: previous_version is version_compare(gating_version, '<')
+    - name: Set previous_version version based on AWX CR version status
+      ansible.builtin.set_fact:
+        previous_version: "{{ existing_cr.resources[0].status.version }}"
+      when: existing_cr['resources'] | length
+
+    - name: If previous_version is less than or equal to gating_version, set upgraded_from to previous_version
+      ansible.builtin.set_fact:
+        upgraded_from: "{{ previous_version }}"
+      when:
+        - previous_version is defined
+        - previous_version is version_compare(gating_version, '<')
