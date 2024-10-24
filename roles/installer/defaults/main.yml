@@ -490,8 +490,6 @@ host_aliases: ''
 
 receptor_log_level: info
 
-receptor_datadir: /var/lib/receptor/
-
 # UWSGI default values
 uwsgi_processes: 5
 # NOTE: to increase this value, net.core.somaxconn must also be increased
