@@ -91,6 +91,8 @@ data:
 
     RECEPTOR_LOG_LEVEL = '{{ receptor_log_level }}'
 
+    RECEPTOR_DATADIR = '{{ receptor_datadir }}'
+
 
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
@@ -256,10 +258,11 @@ data:
     - log-level: {{ receptor_log_level }}
     - local-only: null
     - node:
-       firewallrules:
-        - action: reject
-          tonode: HOSTNAME
-          toservice: control
+        datadir: {{ receptor_datadir }}
+        firewallrules:
+          - action: reject
+            tonode: HOSTNAME
+            toservice: control
     - control-service:
         service: control
         filename: /var/run/receptor/receptor.sock

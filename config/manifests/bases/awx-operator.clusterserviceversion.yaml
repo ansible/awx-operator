@@ -991,7 +991,12 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Extra Settings
+      - displayName: Receptor Data Directory
+        path: receptor_datadir
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
+      - displayName: API Extra Settings
         path: extra_settings
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
