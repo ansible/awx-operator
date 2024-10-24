@@ -26,7 +26,7 @@ data:
             return open('/etc/tower/SECRET_KEY', 'rb').read().strip()
 
     ADMINS = ()
-    STATIC_ROOT = '/var/lib/awx/public/static'
+    STATIC_ROOT = '{{ _static_root | default('/var/lib/awx/public/static') }}'
     STATIC_URL = '{{ (ingress_path + '/static/').replace('//', '/') }}'
     PROJECTS_ROOT = '/var/lib/awx/projects'
     JOBOUTPUT_ROOT = '/var/lib/awx/job_status'

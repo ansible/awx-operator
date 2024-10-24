@@ -267,6 +267,11 @@ spec:
             timeoutSeconds: {{ task_readiness_timeout }}
 {% endif %}
           volumeMounts:
+{% if public_base_url is defined %}
+            - name: redirect-page
+              mountPath: '/static/awx/index.html'
+              subPath: redirect-page.html
+{% endif %}
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
@@ -516,6 +521,14 @@ spec:
       terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
 {% endif %}
       volumes:
+{% if public_base_url is defined %}
+        - name: redirect-page
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-redirect-page'
+            items:
+              - key: redirect-page.html
+                path: redirect-page.html
+{% endif %}
 {% if bundle_ca_crt %}
         - name: "ca-trust-extracted"
           emptyDir: {}
