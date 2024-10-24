@@ -44,6 +44,12 @@
 - name: Include secret key configuration tasks
   include_tasks: secret_key_configuration.yml
 
+- name: Apply Redirect Page Configmap
+  k8s:
+    state: "{{ deployment_state }}"
+    definition: "{{ lookup('template', 'redirect-page.configmap.html.j2') }}"
+  when: public_base_url is defined
+
 - name: Load LDAP CAcert certificate (Deprecated)
   include_tasks: load_ldap_cacert_secret.yml
   when:
