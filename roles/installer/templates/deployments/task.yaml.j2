@@ -97,7 +97,7 @@ spec:
           image: '{{ _image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ init_container_resource_requirements }}
-          command:
+          args:
             - /bin/sh
             - -c
             - wait-for-migrations
