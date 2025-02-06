@@ -1,0 +1,167 @@
+---
+- name: Get database configuration
+  include_tasks: database_configuration.yml
+
+# It is possible that N-2 postgres pods may still be present in the namespace from previous upgrades.
+# So we have to take that into account and preferentially set the most recent one.
+- name: Get the old postgres pod (N-1)
+  k8s_info:
+    kind: Pod
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    field_selectors:
+      - status.phase=Running
+  register: _running_pods
+
+- block:
+    - name: Filter pods by name
+      set_fact:
+        filtered_old_postgres_pods: "{{ _running_pods.resources |
+          selectattr('metadata.name', 'match', ansible_operator_meta.name + '-postgres.*-0') |
+          rejectattr('metadata.name', 'search', '-' + supported_pg_version | string + '-0') |
+          list }}"
+
+  # Sort pods by name in reverse order (most recent PG version first) and set
+    - name: Set info for previous postgres pod
+      set_fact:
+        sorted_old_postgres_pods: "{{ filtered_old_postgres_pods |
+          sort(attribute='metadata.name') |
+          reverse | list }}"
+      when: filtered_old_postgres_pods | length
+
+
+    - name: Set info for previous postgres pod
+      set_fact:
+        old_postgres_pod: "{{ sorted_old_postgres_pods | first }}"
+      when: filtered_old_postgres_pods | length
+  when: _running_pods.resources | length
+
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: this_awx
+
+# If this deployment has been upgraded before or if upgrade has already been started, set this var
+- name: Set previous PG version var
+  set_fact:
+    _previous_upgraded_pg_version: "{{ this_awx['resources'][0]['status']['upgradedPostgresVersion'] | default(false) }}"
+  when:
+    - this_awx['resources'][0] is defined
+    - "'upgradedPostgresVersion' in this_awx['resources'][0]['status']"
+
+- name: Check if postgres pod is running an older version
+  block:
+    - name: Get old PostgreSQL version
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ old_postgres_pod['metadata']['name'] }}"
+        command: |
+          bash -c """
+          if [ -f "{{ _postgres_data_path }}/PG_VERSION" ]; then
+            cat "{{ _postgres_data_path }}/PG_VERSION"
+          elif [ -f '/var/lib/postgresql/data/pgdata/PG_VERSION' ]; then
+            cat '/var/lib/postgresql/data/pgdata/PG_VERSION'
+          fi
+          """
+      register: _old_pg_version
+
+    - debug:
+        msg: "--- Upgrading from {{ old_postgres_pod['metadata']['name'] | default('NONE')}} Pod ---"
+
+    - name: Upgrade data dir from old Postgres to {{ supported_pg_version }} if applicable
+      include_tasks: upgrade_postgres.yml
+      when:
+        - (_old_pg_version.stdout | default(0) | int ) < supported_pg_version
+  when:
+    - managed_database
+    - (_previous_upgraded_pg_version | default(false)) | ternary(_previous_upgraded_pg_version | int < supported_pg_version, true)
+    - old_postgres_pod | length  # If empty, then old pg pod has been removed and we can assume the upgrade is complete
+
+- block:
+    - name: Create Database if no database is specified
+      k8s:
+        apply: true
+        definition: "{{ lookup('template', 'statefulsets/postgres.yaml.j2') }}"
+      register: create_statefulset_result
+
+    - name: Scale down Deployment for migration
+      include_tasks: scale_down_deployment.yml
+      when: create_statefulset_result.changed
+
+  rescue:
+    - name: Scale down Deployment for migration
+      include_tasks: scale_down_deployment.yml
+
+    - name: Scale down PostgreSQL statefulset for migration
+      kubernetes.core.k8s_scale:
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        replicas: 0
+        wait: yes
+
+    - name: Remove PostgreSQL statefulset for upgrade
+      k8s:
+        state: absent
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        wait: yes
+      when: create_statefulset_result.error == 422
+
+    - name: Recreate PostgreSQL statefulset with updated values
+      k8s:
+        apply: true
+        definition: "{{ lookup('template', 'statefulsets/postgres.yaml.j2') }}"
+  when: managed_database
+
+- name: Set Default label selector for custom resource generated postgres
+  set_fact:
+    postgres_label_selector: "app.kubernetes.io/instance=postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}"
+  when: postgres_label_selector is not defined
+
+- name: Get the postgres pod information
+  k8s_info:
+    kind: Pod
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - "{{ postgres_label_selector }}"
+    field_selectors:
+      - status.phase=Running
+  register: postgres_pod
+
+- name: Wait for Database to initialize if managed DB
+  k8s_info:
+    kind: Pod
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    label_selectors:
+      - "{{ postgres_label_selector }}"
+    field_selectors:
+      - status.phase=Running
+  register: postgres_pod
+  until:
+    - "postgres_pod['resources'] | length"
+    - "postgres_pod['resources'][0]['status']['phase'] == 'Running'"
+    - "postgres_pod['resources'][0]['status']['containerStatuses'][0]['ready'] == true"
+  delay: 5
+  retries: 60
+  when: managed_database
+
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: this_awx
+
+- name: Migrate data from old Openshift instance
+  import_tasks: migrate_data.yml
+  when:
+    - old_pg_config['resources'] is defined
+    - old_pg_config['resources'] | length
+    - this_awx['resources'][0]['status']['migratedFromSecret'] is not defined

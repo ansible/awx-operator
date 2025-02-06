@@ -1965,6 +1965,9 @@ spec:
                 description: Disable web container's nginx ipv6 listener
                 type: boolean
                 default: false
+              idle_deployment:
+                description: Scale down deployments to put AWX into an idle state
+                type: boolean
               metrics_utility_enabled:
                 description: Enable metrics utility
                 type: boolean

@@ -1155,6 +1155,13 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:metrics_utility_enabled:true
+      - description: Scale down deployments to put AWX into an idle state
+        displayName: Idle AWX
+        path: idle_deployment
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       statusDescriptors:
       - description: Route to access the instance deployed
         displayName: URL

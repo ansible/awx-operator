@@ -1,4 +1,8 @@
 ---
+- name: Idle AWX
+  include_tasks: idle_deployment.yml
+  when: idle_deployment | bool
+
 - name: Check for presence of old awx Deployment
   k8s_info:
     api_version: apps/v1

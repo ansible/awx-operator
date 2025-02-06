@@ -505,3 +505,6 @@ nginx_worker_cpu_affinity: 'auto'
 nginx_listen_queue_size: "{{ uwsgi_listen_queue_size }}"
 
 extra_settings_files: {}
+
+# idle_deployment - Scale down deployments to put AWX into an idle state
+idle_deployment: false
