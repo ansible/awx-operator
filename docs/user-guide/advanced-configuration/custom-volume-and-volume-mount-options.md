@@ -115,6 +115,7 @@ configuration.
 * [worker_cpu_affinity](http://nginx.org/en/docs/ngx_core_module.html#worker_cpu_affinity) with `nginx_worker_cpu_affinity` (default "auto")
 * [worker_connections](http://nginx.org/en/docs/ngx_core_module.html#worker_connections) with `nginx_worker_connections` (minimum of 1024)
 * [listen](https://nginx.org/en/docs/http/ngx_http_core_module.html#listen) with `nginx_listen_queue_size` (default same as uwsgi listen queue size)
+* [client_max_body_size](https://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size) with `nginx_client_max_body_size` (default of 5M)
 
 ## Custom Logos
 
