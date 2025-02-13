@@ -464,6 +464,7 @@ development_mode: false
 
 security_context_settings: {}
 postgres_security_context_settings: {}
+postgres_pod_security_context_settings: {}
 
 # Set no_log settings on certain tasks
 no_log: true
