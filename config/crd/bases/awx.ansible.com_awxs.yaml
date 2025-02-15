@@ -1737,7 +1737,7 @@ spec:
                 description: Set the number of connections per worker for nginx
                 type: integer
               nginx_client_max_body_size:
-                description: Sets the maximum allowed size of the client request body in megabytes(defaults to 5M)
+                description: Sets the maximum allowed size of the client request body in megabytes (defaults to 5M)
                 type: integer
               nginx_worker_cpu_affinity:
                 description: Set the CPU affinity for nginx workers
