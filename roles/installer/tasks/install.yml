@@ -74,8 +74,8 @@
 - name: Include set_images tasks
   include_tasks: set_images.yml
 
-- name: Include database configuration tasks
-  include_tasks: database_configuration.yml
+- name: Include Database tasks
+  include_tasks: database.yml
 
 - name: Load Route TLS certificate
   include_tasks: load_route_tls_secret.yml

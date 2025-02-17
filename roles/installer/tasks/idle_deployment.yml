@@ -1,0 +1,34 @@
+---
+- name: Scale down AWX Deployments
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: "{{ item }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      spec:
+        replicas: 0
+  loop:
+    - '{{ ansible_operator_meta.name }}-task'
+    - '{{ ansible_operator_meta.name }}-web'
+
+- name: Get database configuration
+  include_tasks: database_configuration.yml
+
+- name: Scale down PostgreSQL Statefulset
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+      spec:
+        replicas: 0
+  when: managed_database
+
+- name: End Playbook
+  ansible.builtin.meta: end_play
