@@ -70,15 +70,16 @@ spec:
 
 ## Custom UWSGI Configuration
 
-We allow the customization of two UWSGI parameters:
+We allow the customization of three UWSGI parameters:
 
 * [processes](https://uwsgi-docs.readthedocs.io/en/latest/Options.html#processes) with `uwsgi_processes` (default 5)
 * [listen](https://uwsgi-docs.readthedocs.io/en/latest/Options.html#listen) with `uwsgi_listen_queue_size` (default 128)
+* [harakiri](https://uwsgi-docs.readthedocs.io/en/latest/Options.html#harakiri) with `uwsgi_timeout` (default 30)
 
 **Note:** Increasing the listen queue beyond 128 requires that the sysctl setting net.core.somaxconn be set to an equal value or higher.
   The operator will set the appropriate securityContext sysctl value for you, but it is a required that this sysctl be added to an allowlist on the kubelet level. [See kubernetes docs about allowing this sysctl setting](https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/#enabling-unsafe-sysctls).
 
-These vars relate to the vertical and horizontal scalibility of the web service.
+The `processes` and `listen` vars relate to the vertical and horizontal scalibility of the web service.
 
 Increasing the number of processes allows more requests to be actively handled
 per web pod, but will consume more CPU and Memory and the resource requests
@@ -88,6 +89,12 @@ may allow the web pods to handle more "bursty" request patterns if many
 requests (more than 128) tend to come in a short period of time, but can all be
 handled before any other time outs may apply. Also see related nginx
 configuration.
+
+The `uwsgi_timeout` variable determines after how many seconds a request will
+be forecibly killed by uwsgi. A "graceful" timeout signal is sent to the worker
+2 seconds prior to attempt to get a traceback of what may be causing the
+request to hang.
+
 
 ## Custom Nginx Configuration
 

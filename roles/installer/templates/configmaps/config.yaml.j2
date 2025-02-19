@@ -304,8 +304,8 @@ data:
     max-requests = 1000
     buffer-size = 32768
 
-    harakiri = 120
-    harakiri-graceful-timeout = 115
+    harakiri = {{ uwsgi_timeout|int }}
+    harakiri-graceful-timeout = {{ [(uwsgi_timeout|int - 2), 1] | max }}
     harakiri-graceful-signal = 6
     py-call-osafterfork = true
     
