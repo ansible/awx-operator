@@ -8,6 +8,13 @@ The purpose of this role is to restore your AWX deployment from an existing PVC 
   - database configuration
 
 
+The AWXRestore is designed to cover following two scenarios:
+
+A) Restoring from the exsiting AWXBackup CR
+the backup_name param is for this scenario
+<br>B) Restoring from the exsiting backup files in the PVC
+the backup_dir param is for this scenario
+
 
 Requirements
 ------------
@@ -16,10 +23,14 @@ This role assumes you are authenticated with an Openshift or Kubernetes cluster:
   - The awx-operator has been deployed to the cluster
   - AWX is deployed to via the operator
   - An AWX backup is available on a PVC in your cluster (see the backup [README.md](../backup/README.md))
+This role assumes you have storage assigned to AWX by your Administrator.  You'll need a PV and PVC for backup and restore
+Place your backup directory (tower-openshift-backup-<date>-<time>) on the root of the PV
 
 *Before Restoring from a backup*, be sure to:
   - delete the old existing AWX CR
   - delete the persistent volume claim (PVC) for the database from the old deployment, which has a name like `postgres-<postgres version>-<deployment-name>-postgres-<postgres version>-0`
+  - delete any PGSQL data that resides in the PV,PVC
+   <br> `cd` to data path on PV and `rm -rf *`
 
 **Note**: Do not delete the namespace/project, as that will delete the backup and the backup's PVC as well.
 
@@ -37,8 +48,15 @@ metadata:
   name: restore1
   namespace: my-namespace
 spec:
-  deployment_name: mytower
-  backup_name: awxbackup-2021-04-22
+  deployment_name: <your deployment name>
+  backup_name: awxbackup-<YYY-MM-DD>  ## required for scenario A only
+  backup_dir: /backups/<folder> ## required for scenario B only
+  ## `/backups` is mandatory since your PV will be mounted as `/backups`
+  ## <folder> ## is the name of the folder created by the backup earlier
+  backup_pvc: <your pvc name>
+  postgres_image: <image URL>  ## if using a private repo
+  postgres_image_version: <'version'>  ## if using a private repo  ## single quote around version is required
+   
 ```
 
 Note that the `deployment_name` above is the name of the AWX deployment you intend to create and restore to.
@@ -59,6 +77,31 @@ This will create a new deployment and restore your backup to it.
 
 > :warning: admin_password_secret value will replace the password for the `admin_user` user (by default, this is the `admin` user).
 
+Watch your ansible logs as the restore proceeds
+<br>`# kubectl logs -f -n <namespace> deploy/awx-operator-controller-manager`
+
+Check your storage that you have assigned to the restore, it should show that your PV and PVC are bound
+<br>`# kubectl get pv`
+<br>`NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS    REASON   AGE`
+<br>`awx-backup    2Gi        RWX            Delete           Bound    awx/awx-backup                      local-storage            6s`
+<br>`postgres-pv   2Gi        RWX            Delete           Bound    awx/postgres-13-awx-postgres-13-0   local-storage            84d`
+
+
+`# kubectl get pvc -n awx`
+<br>`NAME                            STATUS   VOLUME        CAPACITY   ACCESS MODES   STORAGECLASS    AGE`
+<br>`awx-backup                      Bound    awx-backup    2Gi        RWX            local-storage   12s`
+<br>`postgres-13-awx-postgres-13-0   Bound    postgres-pv   2Gi        RWX            local-storage   84d`
+
+To check your pod running the job you can run kubectl describe
+<br>`# kubectl describe po/restore-awx-db-management -n <namespace_here>`
+
+The path to your PV and PVC need to be present on the node where the pod is running.  Examine the pod events section to see where the pod is running.
+<br>
+<br>...
+<br>`Events:`
+ <br> `Type    Reason     Age   From               Message`
+  <br>`----    ------     ----  ----               -------`
+  <br>`Normal  Scheduled  11s   default-scheduler  Successfully assigned awx/restore-awx-db-management to <hostname>`
 
 Role Variables
 --------------
