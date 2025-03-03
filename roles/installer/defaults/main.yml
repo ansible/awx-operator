@@ -1,5 +1,6 @@
 ---
 deployment_type: awx
+deployment_type_shortname: awx
 kind: 'AWX'
 api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 
