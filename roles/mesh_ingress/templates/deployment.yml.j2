@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ ansible_operator_meta.name }}
-  namespace: {{ ansible_operator_meta.namespace }}
+  namespace: "{{ ansible_operator_meta.namespace }}"
 spec:
   selector:
     matchLabels:

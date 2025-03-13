@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ ansible_operator_meta.name }}-redirect-page
-  namespace: {{ ansible_operator_meta.namespace }}
+  namespace: "{{ ansible_operator_meta.namespace }}"
 data:
   redirect-page.html: |
     <!DOCTYPE html>
