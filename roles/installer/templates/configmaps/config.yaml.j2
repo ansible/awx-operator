@@ -181,12 +181,28 @@ data:
             # Protect against MIME content sniffing https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
             add_header X-Content-Type-Options nosniff;
 
-            location /nginx_status {
-                stub_status on;
-                access_log off;
-                allow 127.0.0.1;
-                deny all;
-            }
+            # feat: allow nginx config override via nginxExtraConfig in CR
+
+            # Adds support for customizing a portion of the nginx configuration
+            # by introducing the `.spec.nginxExtraConfig` field to the
+            # AutomationController CRD.
+
+            # If set, this user-defined string overrides the default `/nginx_status`
+            # location block in the generated nginx config. If not set, the default
+            # stub_status configuration remains.
+
+            # This enables use cases like exposing custom nginx endpoints or
+            # modifying access control for `/nginx_status`.
+            {% if nginx_extra_config %}
+                {{ nginx_extra_config | indent(width=4) }}
+            {% else %}
+                location /nginx_status {
+                    stub_status on;
+                    access_log off;
+                    allow 127.0.0.1;
+                    deny all;
+                }
+            {% endif %}
 
             location {{ (ingress_path + '/static').replace('//', '/') }} {
                 alias /var/lib/awx/public/static/;

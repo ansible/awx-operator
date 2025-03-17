@@ -500,6 +500,7 @@ uwsgi_processes: 5
 uwsgi_listen_queue_size: 128
 
 # NGINX default values
+nginx_extra_config: ""
 nginx_worker_processes: 1
 nginx_worker_connections: "{{ uwsgi_listen_queue_size }}"
 nginx_worker_cpu_affinity: 'auto'
