@@ -1361,6 +1361,13 @@ spec:
                       type: string
                     image:
                       type: string
+                    pull:
+                      type: string
+                      default: missing
+                      enum:
+                      - always
+                      - missing
+                      - never
               control_plane_ee_image:
                 description: Registry path to the Execution Environment container image to use on control plane pods
                 type: string
