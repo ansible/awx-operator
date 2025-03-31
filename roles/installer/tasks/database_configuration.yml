@@ -25,18 +25,10 @@
   when: old_postgres_configuration_secret | length
   no_log: "{{ no_log }}"
 
-- name: Check for default old PostgreSQL configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: '{{ ansible_operator_meta.name }}-old-postgres-configuration'
-  register: _default_old_pg_config_resources
-  no_log: "{{ no_log }}"
-
 - name: Set old PostgreSQL configuration
   set_fact:
-    # yamllint disable-line rule:line-length
-    old_pg_config: '{{ _custom_old_pg_config_resources["resources"] | default([]) | length | ternary(_custom_old_pg_config_resources, _default_old_pg_config_resources) }}'  # noqa 204
+    old_pg_config: '{{ _custom_old_pg_config_resources["resources"] }}'  # noqa 204
+  when: old_postgres_configuration_secret | length
 
 - name: Set proper database name when migrating from old deployment
   set_fact:
