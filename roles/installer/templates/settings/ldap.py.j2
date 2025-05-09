@@ -1,11 +1,13 @@
+{% if ldap_cacert_ca_crt %}
 import ldap
 
 AUTH_LDAP_GLOBAL_OPTIONS = {
-{% if ldap_cacert_ca_crt %}
     ldap.OPT_X_TLS_REQUIRE_CERT: True,
     ldap.OPT_X_TLS_CACERTFILE: "/etc/openldap/certs/ldap-ca.crt"
-{% endif %}
 }
+{% else %}
+AUTH_LDAP_GLOBAL_OPTIONS = {}
+{% endif %}
 
 # Load LDAP BIND password from Kubernetes secret if define
 {% if ldap_password_secret -%}
