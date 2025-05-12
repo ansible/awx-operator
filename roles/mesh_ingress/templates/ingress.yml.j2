@@ -68,9 +68,7 @@ metadata:
   annotations:
     openshift.io/host.generated: "true"
 {% if route_annotations %}
-  {% for key, value in route_annotations.items() %}
-      {{ key }}: "{{ value }}"
-  {% endfor %}
+    {{ route_annotations | indent(width=4) }}
 {% endif %}
   name: {{ ansible_operator_meta.name }}
   namespace: "{{ ansible_operator_meta.namespace }}"

@@ -71,9 +71,7 @@ spec:
                 type: string
               route_annotations:
                 description: Annotations to add to the OpenShift Route
-                type: object
-                additionalProperties:
-                  type: string
+                type: string
               ingress_class_name:
                 description: The name of ingress class to use instead of the cluster default.
                 type: string
