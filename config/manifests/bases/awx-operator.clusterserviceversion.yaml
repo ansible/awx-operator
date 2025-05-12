@@ -449,6 +449,10 @@ spec:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:text
         - urn:alm:descriptor:com.tectonic.ui:fieldDependency:ingress_type:Route
+      - displayName: Route Annotations
+        path: route_annotations
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Route TLS Termination Mechanism
         path: route_tls_termination_mechanism
         x-descriptors:
