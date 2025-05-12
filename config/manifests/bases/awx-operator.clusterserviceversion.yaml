@@ -50,6 +50,10 @@ spec:
         path: ingress_annotations
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:text
+      - displayName: Route Annotations
+        path: route_annotations
+        x-descriptors:
+          - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Ingress Class Name
         path: ingress_class_name
         x-descriptors:
