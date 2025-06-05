@@ -565,7 +565,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:number
-        - urn:alm:descriptor:com.tectonic.ui:hidden
+        - urn:alm:descriptor:com.tectonic.ui:hidde
+      - displayName: "Nginx Status Extra Config"
+        description: "Custom nginx_status configuration to inject into the nginx.conf. Overrides default /nginx_status block if set."
+        path: nginx_extra_config 
+        x-descriptors:
+          - 'urn:alm:descriptor:com.tectonic.ui:text'
+          - 'urn:alm:descriptor:com.tectonic.ui:hidden'
       - displayName: NGINX Worker Processes
         path: nginx_worker_processes
         x-descriptors:

@@ -96,7 +96,7 @@ Using the [extra_volumes feature](#custom-volume-and-volume-mount-options), it i
 1. Create a ConfigMap with the extra settings you want to include in the nginx.conf
 2. Create an extra_volumes entry in the AWX spec for this ConfigMap
 3. Create an web_extra_volume_mounts entry in the AWX spec to mount this volume
-
+4. Set the nginxExtraConfig field in the AWX spec to override the default /nginx_status block. If this field is set, its contents will be injected directly into the nginx config. If not set, the default /nginx_status block will be used. 
 The AWX nginx config automatically includes /etc/nginx/conf.d/*.conf if present.
 
 Additionally there are some global configuration values in the base nginx
