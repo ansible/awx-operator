@@ -187,7 +187,7 @@ data:
                 allow 127.0.0.1;
                 deny all;
             }
-
+ 
             location {{ (ingress_path + '/static').replace('//', '/') }} {
                 alias /var/lib/awx/public/static/;
             }
@@ -229,7 +229,7 @@ data:
             location {{ ingress_path }} {
                 # Add trailing / if missing
                 rewrite ^(.*)$http_host(.*[^/])$ $1$http_host$2/ permanent;
-                uwsgi_read_timeout 125s;
+                uwsgi_read_timeout {{ nginx_read_timeout }}s;
                 uwsgi_pass uwsgi;
                 include /etc/nginx/uwsgi_params;
                 include /etc/nginx/conf.d/*.conf;
@@ -243,6 +243,23 @@ data:
                 add_header Cache-Control "no-cache, no-store, must-revalidate";
                 add_header Expires "0";
                 add_header Pragma "no-cache";
+                # Return 503 Service Unavailable with JSON response if uWSGI fails to respond
+                error_page 504 =503 /json_503;
+                error_page 502 =503 /json_503;  # Optional, in case uWSGI is completely down   
+            }
+
+            location = /json_503 {
+                # Custom JSON response for 503 Service Unavailable
+                internal;
+                add_header Content-Type application/json;
+
+                # Check if X-Request-ID is set and include it in the response
+                if ($http_x_request_id) {
+                    return 503 '{"status": "error", "message": "Service Unavailable", "code": 503, "request_id": "$http_x_request_id"}';
+                }
+
+                # If X-Request-ID is not set, just return the basic JSON response
+                return 503 '{"status": "error", "message": "Service Unavailable", "code": 503}';
             }
         }
     }
@@ -304,8 +321,8 @@ data:
     max-requests = 1000
     buffer-size = 32768
 
-    harakiri = 120
-    harakiri-graceful-timeout = 115
+    harakiri = {{ uwsgi_timeout }}
+    harakiri-graceful-timeout = {{ uwsgi_timeout_grace_period }}
     harakiri-graceful-signal = 6
     py-call-osafterfork = true
     
