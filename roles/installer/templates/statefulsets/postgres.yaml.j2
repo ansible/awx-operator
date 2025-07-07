@@ -145,6 +145,10 @@ spec:
       nodeSelector:
         {{ postgres_selector | indent(width=8) }}
 {% endif %}
+{% if postgres_pod_security_context_settings|length %}
+      securityContext:
+        {{ postgres_pod_security_context_settings | to_nice_yaml | indent(8) }}
+{% endif %}
 {% if postgres_tolerations %}
       tolerations:
         {{ postgres_tolerations | indent(width=8) }}
