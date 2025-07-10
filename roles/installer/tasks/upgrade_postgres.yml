@@ -72,7 +72,7 @@
       - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
   register: old_postgres_svc
 
-- name: Set full resolvable host name for postgres pod
+- name: Set resolvable_db_host
   set_fact:
     resolvable_db_host: "{{ old_postgres_svc['resources'][0]['metadata']['name'] }}.{{ ansible_operator_meta.namespace }}.svc"  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"

@@ -67,7 +67,7 @@
     - "{{ deployment_name }}-web"
   when: this_deployment['resources'] | length
 
-- name: Set full resolvable host name for postgres pod
+- name: Set resolvable_db_host
   set_fact:
     resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc." + cluster_name, awx_postgres_host) }}'  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"
@@ -119,7 +119,7 @@
           {{ pg_create_db }}
   when: force_drop_db
 
-- name: Restore database dump to the new postgresql container
+- name: Restore Postgres database
   kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
