@@ -430,6 +430,9 @@ postgres_init_container_commands: |
   chown 26:0 /var/lib/pgsql/data
   chmod 700 /var/lib/pgsql/data
 
+# Enable PostgreSQL SCRAM-SHA-256 migration
+postgres_scram_migration_enabled: true
+
 # Configure postgres connection keepalive
 postgres_keepalives: true
 postgres_keepalives_idle: 5

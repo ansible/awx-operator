@@ -70,6 +70,22 @@
     - debug:
         msg: "--- Upgrading from {{ old_postgres_pod['metadata']['name'] | default('NONE')}} Pod ---"
 
+    - name: Migrate from md5 to scram-sha-256
+      k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ old_postgres_pod['metadata']['name'] }}"
+        command: |
+          bash -c "
+          psql -U postgres -c \"ALTER SYSTEM SET password_encryption = 'scram-sha-256';\" &&
+          psql -U postgres -c \"SELECT pg_reload_conf();\" &&
+          psql -U postgres -c \"ALTER USER \\\"{{ awx_postgres_user }}\\\" WITH PASSWORD '{{ awx_postgres_pass }}';\"
+          "
+      register: _migration_output
+      no_log: "{{ no_log }}"
+      when:
+        - postgres_scram_migration_enabled
+        - (_old_pg_version.stdout | default(0) | int ) == 13
+
     - name: Upgrade data dir from old Postgres to {{ supported_pg_version }} if applicable
       include_tasks: upgrade_postgres.yml
       when:
