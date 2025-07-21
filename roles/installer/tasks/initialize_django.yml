@@ -56,6 +56,17 @@
       bash -c "awx-manage unregister_queue --queuename=tower"
   when: "'[tower capacity=' in legacy_queue.stdout"
 
+- name: Import auth config when public_url is defined and gating version is defined
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ awx_web_pod_name }}"
+    container: "{{ ansible_operator_meta.name }}-web"
+    command: >-
+      bash -c "awx-manage import_auth_config_to_gateway"
+  when:
+    - gating_version | length
+    - public_base_url is defined
+
 - name: Check for specified default execution environment pull credentials
   k8s_info:
     kind: Secret
