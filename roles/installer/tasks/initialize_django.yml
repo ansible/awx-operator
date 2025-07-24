@@ -118,3 +118,41 @@
   register: cdo
   changed_when: "'added' in cdo.stdout"
   when: create_preload_data | bool
+
+- name: Check for presence of Deployment
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - 'app.kubernetes.io/part-of={{ ansible_operator_meta.name }}'
+      - 'app.kubernetes.io/managed-by={{ deployment_type }}-operator'
+      - 'app.kubernetes.io/component={{ deployment_type }}'
+  register: _deployments
+  when: gating_version | length
+
+- name: Import auth configuration when needed
+  when:
+    - gating_version | length
+    - _deployments.resources | length > 0
+  block:
+    - name: Check for existing deployment
+      kubernetes.core.k8s_info:
+        api_version: "{{ api_version }}"
+        kind: "{{ kind }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        name: "{{ ansible_operator_meta.name }}"
+      register: existing_cr
+
+    - name: Import auth config when public_url is defined and gating version is defined
+      kubernetes.core.k8s_exec:
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        pod: "{{ awx_web_pod_name }}"
+        container: "{{ ansible_operator_meta.name }}-web"
+        command: >-
+          bash -c "awx-manage import_auth_config_to_gateway"
+      when:
+        - public_base_url is defined
+        - existing_cr['resources'] | length
+        - existing_cr.resources[0].status.upgradedFrom is defined
+        - existing_cr.resources[0].status.upgradedFrom is version_compare(gating_version, '<')
