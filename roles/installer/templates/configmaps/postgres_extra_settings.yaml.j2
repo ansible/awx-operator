@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ ansible_operator_meta.name }}-postgres-extra-settings'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+data:
+  99-overrides.conf: |
+{% for pg_setting in postgres_extra_settings %}
+{% if pg_setting.value is string %}
+    {{ pg_setting.setting }} = '{{ pg_setting.value }}'
+{% else %}
+    {{ pg_setting.setting }} = {{ pg_setting.value }}
+{% endif %}
+{% endfor %}

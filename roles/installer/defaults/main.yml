@@ -422,8 +422,11 @@ projects_persistence: false
 # Define an existing PersistentVolumeClaim to use
 projects_existing_claim: ''
 #
-# Define postgres configuration arguments to use
+# Define postgres configuration arguments to use (Deprecated)
 postgres_extra_args: ''
+#
+# Define postgresql.conf configurations
+postgres_extra_settings: []
 
 postgres_data_volume_init: false
 postgres_init_container_commands: |

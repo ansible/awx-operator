@@ -2,6 +2,12 @@
 - name: Get database configuration
   include_tasks: database_configuration.yml
 
+- name: Create postgresql.conf ConfigMap
+  k8s:
+    apply: true
+    definition: "{{ lookup('template', 'configmaps/postgres_extra_settings.yaml.j2') }}"
+  when: postgres_extra_settings | length
+
 # It is possible that N-2 postgres pods may still be present in the namespace from previous upgrades.
 # So we have to take that into account and preferentially set the most recent one.
 - name: Get the old postgres pod (N-1)

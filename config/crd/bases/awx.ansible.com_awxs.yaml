@@ -1828,9 +1828,25 @@ spec:
                 description: Assign a preexisting priority class to the postgres pod
                 type: string
               postgres_extra_args:
+                description: "(Deprecated, use postgres_extra_settings parameter) Define postgres configuration arguments to use"
                 type: array
                 items:
                   type: string
+              postgres_extra_settings:
+                description: "PostgreSQL configuration settings to be added to postgresql.conf"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    setting:
+                      description: "PostgreSQL configuration parameter name"
+                      type: string
+                    value:
+                      description: "PostgreSQL configuration parameter value"
+                      type: string
+                  required:
+                    - setting
+                    - value
               postgres_data_volume_init:
                 description: Sets permissions on the /var/lib/pgdata/data for postgres container using an init container (not Openshift)
                 type: boolean
