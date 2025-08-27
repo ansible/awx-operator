@@ -3,6 +3,31 @@
   include_tasks: idle_deployment.yml
   when: idle_deployment | bool
 
+- name: Look up details for this deployment
+  k8s_info:
+    api_version: "{{ api_version }}"
+    kind: "{{ kind }}"
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: this_awx
+
+- name: set annotations based on this_awx
+  set_fact:
+    this_annotations: "{{ this_awx['resources'][0]['metadata']['annotations'] | default({}) }}"
+
+- name: set client_request_timeout based on annotation
+  set_fact:
+    client_request_timeout: "{{ (this_annotations['aap.ansible.io/client-request-timeout'][:-1]) | int }}"
+    client_request_timeout_overidden: true
+  when:
+    - "'aap.ansible.io/client-request-timeout' in this_annotations"
+    - this_annotations['aap.ansible.io/client-request-timeout'] is match('^\\d+s$')
+
+- name: client_request_timeout has been changed
+  debug:
+    msg: "client_request_timeout's default 30s value has been overriden by the annotation 'aap.ansible.io/client-request-timeout' to {{ client_request_timeout }}s"
+  when: client_request_timeout_overidden | default(false)
+
 - name: Check for presence of old awx Deployment
   k8s_info:
     api_version: apps/v1
