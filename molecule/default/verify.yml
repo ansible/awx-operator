@@ -17,6 +17,8 @@
           with_fileglob:
             - tasks/awx_test.yml
             - tasks/awx_replicas_test.yml
+            - tasks/service_configuration_test.yml
+            - tasks/service_template_unit_test.yml
           tags:
             - always
       rescue:
