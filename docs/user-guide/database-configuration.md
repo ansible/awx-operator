@@ -97,6 +97,41 @@ spec:
 !!! note
     If `postgres_storage_class` is not defined, PostgreSQL will store it's data on a volume using the default storage class for your cluster.
 
+## PostgreSQL Extensions
+
+You can enable PostgreSQL extensions by configuring them through `postgres_extra_args`. Some extensions require configuration parameters to be set at startup.
+
+### Enabling pg_stat_statements
+
+To enable the `pg_stat_statements` extension for query performance monitoring, you need to add it to `shared_preload_libraries`:
+
+```yaml
+---
+spec:
+  ...
+  postgres_extra_args:
+    - '-c'
+    - 'shared_preload_libraries=pg_stat_statements'
+```
+
+You can combine multiple PostgreSQL configuration parameters:
+
+```yaml
+---
+spec:
+  ...
+  postgres_extra_args:
+    - '-c'
+    - 'shared_preload_libraries=pg_stat_statements'
+    - '-c'
+    - 'max_connections=1000'
+    - '-c'
+    - 'log_statement=all'
+```
+
+!!! note
+    Changes to `shared_preload_libraries` require a PostgreSQL restart, which will happen automatically when you apply the updated AWX Custom Resource. After enabling the extension, you'll need to create it in your database with `CREATE EXTENSION pg_stat_statements;`.
+
 ## Note about overriding the postgres image
 
 We recommend you use the default image sclorg image. If you are coming from a deployment using the old postgres image from dockerhub (postgres:13), upgrading from awx-operator version 2.12.2 and below to 2.15.0+ will handle migrating your data to the new postgresql image (postgresql-15-c9s).
