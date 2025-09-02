@@ -34,14 +34,13 @@ spec:
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-{% if postgres_annotations or postgres_extra_settings | length > 0 %}
       annotations:
 {% if postgres_extra_settings | length > 0 %}
-        checksum-postgres_extra_settings: "{{ lookup('postgres_extra_settings.yaml.j2') | sha1 }}"
+        checksum-postgres_extra_settings: "{{ lookup('template', 'configmaps/postgres_extra_settings.yaml.j2') | sha1 }}"
 {% endif %}
+        checksum-secret-postgres_configuration_secret: "{{ lookup('ansible.builtin.vars', 'pg_config', default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% if postgres_annotations %}
         {{ postgres_annotations | indent(width=8) }}
-{% endif %}
 {% endif %}
     spec:
 {% if image_pull_secret is defined %}
