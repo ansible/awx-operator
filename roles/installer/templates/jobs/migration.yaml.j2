@@ -24,7 +24,7 @@ spec:
             - -c
             - |
               mkdir -p /etc/pki/ca-trust/extracted/{java,pem,openssl,edk2}
-              update-ca-trust extract
+              update-ca-trust extract --output /etc/pki/ca-trust/extracted
           volumeMounts:
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"

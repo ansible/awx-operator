@@ -49,3 +49,8 @@ spec:
 {% if additional_fields is defined %}
   {{ additional_fields | to_nice_yaml | indent(2) }}
 {% endif %}
+  postgres_extra_settings:
+    - setting: max_connections
+      value: "499"
+    - setting: ssl_ciphers
+      value: "HIGH:!aNULL:!MD5"

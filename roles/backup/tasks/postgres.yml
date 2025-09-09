@@ -72,7 +72,7 @@
     command: >-
       touch {{ backup_dir }}/tower.db
 
-- name: Set full resolvable host name for postgres pod
+- name: Set resolvable_db_host
   set_fact:
     resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc", awx_postgres_host) }}'  # yamllint disable-line rule:line-length
   no_log: "{{ no_log }}"

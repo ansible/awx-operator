@@ -6,7 +6,7 @@
     pod: "{{ awx_web_pod_name }}"
     container: "{{ ansible_operator_meta.name }}-web"
     command: >-
-      bash -c "awx-manage showmigrations | grep -v '[X]' | grep '[ ]' | wc -l"
+      bash -c "awx-manage showmigrations | grep -v '(no migrations)' | grep -v '[X]' | grep '[ ]' | wc -l"
   changed_when: false
   when: awx_web_pod_name != ''
   register: database_check

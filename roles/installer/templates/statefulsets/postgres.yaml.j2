@@ -34,6 +34,11 @@ spec:
         app.kubernetes.io/component: 'database'
         app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      annotations:
+{% if postgres_extra_settings | length > 0 %}
+        checksum-postgres_extra_settings: "{{ lookup('template', 'configmaps/postgres_extra_settings.yaml.j2') | sha1 }}"
+{% endif %}
+        checksum-secret-postgres_configuration_secret: "{{ lookup('ansible.builtin.vars', 'pg_config', default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% if postgres_annotations %}
         {{ postgres_annotations | indent(width=8) }}
 {% endif %}
@@ -137,6 +142,11 @@ spec:
             - name: postgres-{{ supported_pg_version }}
               mountPath: '{{ _postgres_data_path | dirname }}'
               subPath: '{{ _postgres_data_path | dirname | basename }}'
+{% if postgres_extra_settings | length > 0 %}
+            - name: pg-overrides
+              mountPath: /opt/app-root/src/postgresql-cfg
+              readOnly: true
+{% endif %}
 {% if postgres_extra_volume_mounts %}
             {{ postgres_extra_volume_mounts | indent(width=12, first=True) }}
 {% endif %}
@@ -149,9 +159,19 @@ spec:
       tolerations:
         {{ postgres_tolerations | indent(width=8) }}
 {% endif %}
-{% if postgres_extra_volumes %}
+{% if (postgres_extra_volumes | length + postgres_extra_settings | length) > 0 %}
       volumes:
+{% if postgres_extra_volumes %}
         {{ postgres_extra_volumes | indent(width=8, first=False) }}
+{% endif %}
+{% if postgres_extra_settings | length > 0 %}
+        - name: pg-overrides
+          configMap:
+            name: '{{ ansible_operator_meta.name }}-postgres-extra-settings'
+            items:
+              - key: 99-overrides.conf
+                path: 99-overrides.conf
+{% endif %}
 {% endif %}
   volumeClaimTemplates:
     - metadata:

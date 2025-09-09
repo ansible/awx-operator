@@ -7,7 +7,7 @@ spec:
   service_type: clusterip
   ingress_type: Route
 
-  # Secrets
-  admin_password_secret: custom-admin-password
-  postgres_configuration_secret: custom-pg-configuration
-  secret_key_secret: custom-secret-key
+  # # Secrets
+  # admin_password_secret: custom-admin-password
+  # postgres_configuration_secret: custom-pg-configuration
+  # secret_key_secret: custom-secret-key

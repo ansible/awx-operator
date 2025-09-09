@@ -25,7 +25,10 @@
     - name: Set previous_version version based on AWX CR version status
       ansible.builtin.set_fact:
         previous_version: "{{ existing_cr.resources[0].status.version }}"
-      when: existing_cr['resources'] | length
+      when:
+        - existing_cr.resources | length
+        - existing_cr.resources[0].status is defined
+        - existing_cr.resources[0].status.version is defined
 
     - name: If previous_version is less than or equal to gating_version, set upgraded_from to previous_version
       ansible.builtin.set_fact:

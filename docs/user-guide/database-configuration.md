@@ -69,6 +69,7 @@ The following variables are customizable for the managed PostgreSQL service
 | postgres_storage_requirements                 | PostgreSQL container storage requirements                       | requests: {storage: 8Gi}                |
 | postgres_storage_class                        | PostgreSQL PV storage class                                     | Empty string                            |
 | postgres_priority_class                       | Priority class used for PostgreSQL pod                          | Empty string                            |
+| postgres_extra_settings                       | PostgreSQL configuration settings to be added to postgresql.conf | `[]`                                    |
 
 Example of customization could be:
 
@@ -89,13 +90,77 @@ spec:
     limits:
       storage: 50Gi
   postgres_storage_class: fast-ssd
-  postgres_extra_args:
-    - '-c'
-    - 'max_connections=1000'
+  postgres_extra_settings:
+    - setting: max_connections
+      value: "1000"
 ```
 
 !!! note
     If `postgres_storage_class` is not defined, PostgreSQL will store it's data on a volume using the default storage class for your cluster.
+
+## PostgreSQL Extra Settings
+
+!!! warning "Deprecation Notice"
+    The `postgres_extra_args` parameter is **deprecated** and should no longer be used. Use `postgres_extra_settings` instead for configuring PostgreSQL parameters. The `postgres_extra_args` parameter will be removed in a future version of the AWX operator.
+
+You can customize PostgreSQL configuration by adding settings to the `postgresql.conf` file using the `postgres_extra_settings` parameter. This allows you to tune PostgreSQL performance, security, and behavior according to your specific requirements.
+
+The `postgres_extra_settings` parameter accepts an array of setting objects, where each object contains a `setting` name and its corresponding `value`.
+
+!!! note
+    The `postgres_extra_settings` parameter replaces the deprecated `postgres_extra_args` parameter and provides a more structured way to configure PostgreSQL settings.
+
+### Configuration Format
+
+```yaml
+spec:
+  postgres_extra_settings:
+    - setting: max_connections
+      value: "499"
+    - setting: ssl_ciphers
+      value: "HIGH:!aNULL:!MD5"
+```
+
+**Common PostgreSQL settings you might want to configure:**
+
+| Setting | Description | Example Value |
+|---------|-------------|---------------|
+| `max_connections` | Maximum number of concurrent connections | `"200"` |
+| `ssl_ciphers` | SSL cipher suites to use | `"HIGH:!aNULL:!MD5"` |
+| `shared_buffers` | Amount of memory for shared memory buffers | `"256MB"` |
+| `effective_cache_size` | Planner's assumption about effective cache size | `"1GB"` |
+| `work_mem` | Amount of memory for internal sort operations | `"4MB"` |
+| `maintenance_work_mem` | Memory for maintenance operations | `"64MB"` |
+| `checkpoint_completion_target` | Target for checkpoint completion | `"0.9"` |
+| `wal_buffers` | Amount of memory for WAL buffers | `"16MB"` |
+
+### Important Notes
+
+!!! warning
+    - Changes to `postgres_extra_settings` require a PostgreSQL pod restart to take effect.
+    - Some settings may require specific PostgreSQL versions or additional configuration.
+    - Always test configuration changes in a non-production environment first.
+
+!!! tip
+    - String values should be quoted in the YAML configuration.
+    - Numeric values can be provided as strings or numbers.
+    - Boolean values should be provided as strings ("on"/"off" or "true"/"false").
+
+For a complete list of available PostgreSQL configuration parameters, refer to the [PostgreSQL documentation](https://www.postgresql.org/docs/current/runtime-config.html).
+
+**Verification:**
+
+You can verify that your settings have been applied by connecting to the PostgreSQL database and running:
+
+```bash
+kubectl exec -it <postgres-pod-name> -n <namespace> -- psql
+```
+
+Then run the following query:
+
+```sql
+SELECT name, setting FROM pg_settings;
+```
 
 ## Note about overriding the postgres image
 

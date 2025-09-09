@@ -67,6 +67,9 @@ kind: Route
 metadata:
   annotations:
     openshift.io/host.generated: "true"
+{% if route_annotations %}
+    {{ route_annotations | indent(width=4) }}
+{% endif %}
   name: {{ ansible_operator_meta.name }}
   namespace: "{{ ansible_operator_meta.namespace }}"
 spec:

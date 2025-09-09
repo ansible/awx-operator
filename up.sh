@@ -5,6 +5,7 @@
 
 # -- Usage
 #   NAMESPACE=awx TAG=dev QUAY_USER=developer ./up.sh
+#   NAMESPACE=awx TAG=dev QUAY_USER=developer PULL_SECRET_FILE=my-secret.yml ./up.sh
 
 # -- User Variables
 NAMESPACE=${NAMESPACE:-awx}
@@ -12,6 +13,7 @@ QUAY_USER=${QUAY_USER:-developer}
 TAG=${TAG:-$(git rev-parse --short HEAD)}
 DEV_TAG=${DEV_TAG:-dev}
 DEV_TAG_PUSH=${DEV_TAG_PUSH:-true}
+PULL_SECRET_FILE=${PULL_SECRET_FILE:-hacking/pull-secret.yml}
 
 # -- Check for required variables
 # Set the following environment variables
@@ -72,6 +74,10 @@ for file in "${files[@]}"; do
   fi
 done
 
+# Create redhat-operators-pull-secret if pull credentials file exists
+if [ -f "$PULL_SECRET_FILE" ]; then
+  $KUBE_APPLY $PULL_SECRET_FILE
+fi
 
 # Delete old operator deployment
 kubectl delete deployment awx-operator-controller-manager

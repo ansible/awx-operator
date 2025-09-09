@@ -5,7 +5,7 @@
     postgres_configuration_secret: "{{ spec['postgres_configuration_secret'] | default(postgres_configuration_secret) }}"
 
 - name: Check for specified PostgreSQL configuration
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     namespace: '{{ ansible_operator_meta.namespace }}'
     name: '{{ postgres_configuration_secret }}'
@@ -29,7 +29,7 @@
 
 - block:
     - name: Get the postgres pod information
-      k8s_info:
+      kubernetes.core.k8s_info:
         kind: Pod
         namespace: '{{ ansible_operator_meta.namespace }}'
         label_selectors:
@@ -47,7 +47,7 @@
   when: awx_postgres_type == 'managed'
 
 - name: Check for presence of AWX Deployment
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: apps/v1
     kind: Deployment
     name: "{{ deployment_name }}-task"
@@ -55,7 +55,7 @@
   register: this_deployment
 
 - name: Scale down Deployment for migration
-  k8s_scale:
+  kubernetes.core.k8s_scale:
     api_version: apps/v1
     kind: Deployment
     name: "{{ item }}"
@@ -67,9 +67,17 @@
     - "{{ deployment_name }}-web"
   when: this_deployment['resources'] | length
 
-- name: Set full resolvable host name for postgres pod
+- name: Set resolvable_db_host
   set_fact:
     resolvable_db_host: '{{ (awx_postgres_type == "managed") | ternary(awx_postgres_host + "." + ansible_operator_meta.namespace + ".svc." + cluster_name, awx_postgres_host) }}'  # yamllint disable-line rule:line-length
+  no_log: "{{ no_log }}"
+
+- name: Set pg_isready command
+  ansible.builtin.set_fact:
+    pg_isready: >-
+      pg_isready
+      -h {{ resolvable_db_host }}
+      -p {{ awx_postgres_port }}
   no_log: "{{ no_log }}"
 
 - name: Set pg_restore command
@@ -111,8 +119,8 @@
           {{ pg_create_db }}
   when: force_drop_db
 
-- name: Restore database dump to the new postgresql container
-  k8s_exec:
+- name: Restore Postgres database
+  kubernetes.core.k8s_exec:
     namespace: "{{ backup_pvc_namespace }}"
     pod: "{{ ansible_operator_meta.name }}-db-management"
     container: "{{ ansible_operator_meta.name }}-db-management"
@@ -126,6 +134,11 @@
         exit $rc
       }
       keepalive_file=\"$(mktemp)\"
+      until {{ pg_isready }} &> /dev/null
+      do
+          echo \"Waiting until Postgres is accepting connections...\"
+          sleep 2
+      done
       while [[ -f \"$keepalive_file\" ]]; do
         echo 'Migrating data from old database...'
         sleep 60

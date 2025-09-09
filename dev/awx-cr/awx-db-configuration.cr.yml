@@ -1,0 +1,30 @@
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+spec:
+  service_type: clusterip
+  ingress_type: Route
+
+  postgres_extra_settings:
+    - setting: max_connections
+      value: "999"
+    - setting: ssl_ciphers
+      value: "HIGH:!aNULL:!MD5"
+
+  # requires custom-postgres-configuration secret to be pre-created
+  # postgres_configuration_secret: custom-postgres-configuration
+
+  postgres_resource_requirements:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 800m
+      memory: 1Gi
+  postgres_storage_requirements:
+    requests:
+      storage: 20Gi
+    limits:
+      storage: 100Gi
