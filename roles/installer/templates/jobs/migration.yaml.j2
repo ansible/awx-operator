@@ -13,7 +13,7 @@ spec:
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
     spec:
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
       initContainers:
         - name: init-bundle-ca-trust
           image: '{{ _init_container_image }}'
@@ -55,7 +55,7 @@ spec:
               subPath: settings.py
               readOnly: true
             {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -125,7 +125,7 @@ spec:
               - key: settings
                 path: settings.py
         {{ lookup("template", "common/volumes/extra_settings_files.yaml.j2")  | indent(width=8) | trim }}
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
         - name: "ca-trust-extracted"
           emptyDir: {}
         - name: "{{ ansible_operator_meta.name }}-bundle-cacert"

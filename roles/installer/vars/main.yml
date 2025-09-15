@@ -3,7 +3,6 @@ postgres_initdb_args: '--auth-host=scram-sha-256'
 postgres_host_auth_method: 'scram-sha-256'
 # LDAP is deprecated
 ldap_cacert_ca_crt: ''
-bundle_ca_crt: ''
 projects_existing_claim: ''
 supported_pg_version: 15
 _previous_upgraded_pg_version: 0

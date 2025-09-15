@@ -97,7 +97,7 @@ spec:
           volumeMounts:
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ bundle_cacert_secret }}"
+            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
@@ -400,7 +400,7 @@ spec:
 {% if bundle_ca_crt is defined %}
         - name: "ca-trust-extracted"
           emptyDir: {}
-        - name: "{{ bundle_cacert_secret }}"
+        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
           secret:
             secretName: "{{ bundle_cacert_secret }}"
             items:
