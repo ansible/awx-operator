@@ -83,7 +83,7 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
         - name: init-bundle-ca-trust
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -97,7 +97,7 @@ spec:
           volumeMounts:
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+            - name: "{{ bundle_cacert_secret }}"
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
@@ -113,7 +113,7 @@ spec:
             - |
               {{ init_container_extra_commands | indent(width=14) }}
           volumeMounts:
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -205,7 +205,7 @@ spec:
               mountPath: '/var/lib/awx/venv/awx/lib/python3.11/site-packages/awx/ui/build/index.html'
               subPath: redirect-page.html
 {% endif %}
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -328,7 +328,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -397,10 +397,10 @@ spec:
         - name: "{{ ansible_operator_meta.name }}-receptor-work-signing"
           secret:
             secretName: "{{ ansible_operator_meta.name }}-receptor-work-signing"
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
         - name: "ca-trust-extracted"
           emptyDir: {}
-        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+        - name: "{{ bundle_cacert_secret }}"
           secret:
             secretName: "{{ bundle_cacert_secret }}"
             items:

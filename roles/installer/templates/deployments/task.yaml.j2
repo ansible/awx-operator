@@ -74,7 +74,7 @@ spec:
       priorityClassName: '{{ control_plane_priority_class }}'
 {% endif %}
       initContainers:
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
         - name: init-bundle-ca-trust
           image: '{{ _init_container_image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
@@ -88,7 +88,7 @@ spec:
           volumeMounts:
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
-            - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+            - name: "{{ bundle_cacert_secret }}"
               mountPath: /etc/pki/ca-trust/source/anchors/bundle-ca.crt
               subPath: bundle-ca.crt
               readOnly: true
@@ -115,7 +115,7 @@ spec:
               subPath: settings.py
               readOnly: true
             {{ lookup("template", "common/volume_mounts/extra_settings_files.yaml.j2")  | indent(width=12) | trim }}
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -165,7 +165,7 @@ spec:
               readOnly: true
             - name: "{{ ansible_operator_meta.name }}-receptor-tls"
               mountPath: "/etc/receptor/tls/"
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -267,7 +267,7 @@ spec:
             timeoutSeconds: {{ task_readiness_timeout }}
 {% endif %}
           volumeMounts:
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -366,7 +366,7 @@ spec:
               fi
               exec receptor --config /etc/receptor/receptor.conf
           volumeMounts:
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -442,7 +442,7 @@ spec:
               mountPath: "/var/run/redis"
             - name: rsyslog-socket
               mountPath: "/var/run/awx-rsyslog"
-{% if bundle_ca_crt  %}
+{% if bundle_ca_crt is defined %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
 {% endif %}
@@ -516,10 +516,10 @@ spec:
       terminationGracePeriodSeconds: {{ termination_grace_period_seconds }}
 {% endif %}
       volumes:
-{% if bundle_ca_crt %}
+{% if bundle_ca_crt is defined %}
         - name: "ca-trust-extracted"
           emptyDir: {}
-        - name: "{{ ansible_operator_meta.name }}-bundle-cacert"
+        - name: "{{ bundle_cacert_secret }}"
           secret:
             secretName: "{{ bundle_cacert_secret }}"
             items:
