@@ -224,7 +224,7 @@
     _custom_image: "{{ image }}:{{ image_version }}"
   when:
     - image | default([]) | length
-    - image_version is defined or image_version != ''
+    - image_version is defined and image_version != ''
 
 - name: Set AWX app image URL
   set_fact:
@@ -239,7 +239,7 @@
     _custom_redis_image: "{{ redis_image }}:{{ redis_image_version }}"
   when:
     - redis_image | default([]) | length
-    - redis_image_version is defined or redis_image_version != ''
+    - redis_image_version is defined and redis_image_version != ''
 
 - name: Set Redis image URL
   set_fact:

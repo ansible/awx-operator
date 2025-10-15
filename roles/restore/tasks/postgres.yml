@@ -83,7 +83,7 @@
 - name: Set pg_restore command
   set_fact:
     pg_restore: >-
-      pg_restore --clean --if-exists
+      pg_restore --clean --if-exists --no-owner --no-acl
       -U {{ awx_postgres_user }}
       -h {{ resolvable_db_host }}
       -d {{ awx_postgres_database }}

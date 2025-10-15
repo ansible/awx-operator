@@ -36,6 +36,17 @@ spec:
           metadata:
             type: object
           spec:
+            x-kubernetes-validations:
+            - rule: "has(self.image) && has(self.image_version) || !has(self.image) && !has(self.image_version)"
+              message: "Both image and image_version must be set when required"
+            - rule: "has(self.redis_image) && has(self.redis_image_version) || !has(self.redis_image) && !has(self.redis_image_version)"
+              message: "Both redis_image and redis_image_version must be set when required"
+            - rule: "has(self.postgres_image) && has(self.postgres_image_version) || !has(self.postgres_image) && !has(self.postgres_image_version)"
+              message: "Both postgres_image and postgres_image_version must be set when required"
+            - rule: >-
+                has(self.metrics_utility_image) && has(self.metrics_utility_image_version) ||
+                !has(self.metrics_utility_image) && !has(self.metrics_utility_image_version)
+              message: "Both metrics_utility_image and metrics_utility_image_version must be set when required"
             properties:
               deployment_type:
                 description: Name of the deployment type
@@ -1845,8 +1856,8 @@ spec:
                       description: "PostgreSQL configuration parameter value"
                       type: string
                   required:
-                    - setting
-                    - value
+                  - setting
+                  - value
               postgres_data_volume_init:
                 description: Sets permissions on the /var/lib/pgdata/data for postgres container using an init container (not Openshift)
                 type: boolean
