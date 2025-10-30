@@ -50,6 +50,8 @@ For more information on the forum navigation, see [Navigating the Ansible forum]
 
 For real-time interactions, conversations in the community happen over the Matrix protocol in the following channels:
 
+<CI-TEST>
+
 * [#awx:ansible.com](https://matrix.to/#/#awx:ansible.com): AWX and AWX-Operator project-related discussions.
 * [#docs:ansible.im](https://matrix.to/#/#docs:ansible.im): Ansible, AWX and AWX-Operator documentation-related discussions.
 
