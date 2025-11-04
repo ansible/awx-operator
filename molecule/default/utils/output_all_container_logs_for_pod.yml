@@ -5,10 +5,21 @@
     name: '{{ item.metadata.name }}'
     all_containers: true
   register: all_container_logs
+  ignore_errors: yes
 
 - name: Store logs in file
   ansible.builtin.copy:
-    content: "{{ all_container_logs.log_lines | join('\n') }}"
+    content: |-
+      {% if all_container_logs is failed %}
+      Failed to retrieve logs for pod {{ item.metadata.name }}:
+      {{ all_container_logs.msg | default(all_container_logs.stderr | default('No additional details provided.')) }}
+      {% elif all_container_logs.log_lines is defined %}
+      {{ all_container_logs.log_lines | join('\n') }}
+      {% elif all_container_logs.log is defined %}
+      {{ all_container_logs.log }}
+      {% else %}
+      No log content returned by kubernetes.core.k8s_log.
+      {% endif %}
     dest: '{{ debug_output_dir }}/{{ item.metadata.name }}.log'
 
 # TODO: all_containser option dump all of the output in a single output make it hard to read we probably should iterate through each of the container to get specific logs
