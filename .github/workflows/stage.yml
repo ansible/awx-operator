@@ -61,6 +61,8 @@ jobs:
               --build-arg OPERATOR_VERSION=${{ github.event.inputs.version }}" \
           IMG=ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }} \
           make docker-buildx
+        env:
+          DOCKER_BUILDX_PUSH: true
 
       - name: Run test deployment
         working-directory: awx-operator
