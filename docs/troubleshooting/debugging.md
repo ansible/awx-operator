@@ -127,6 +127,6 @@ ansible-playbook run.yml -e @vars.yml -v
 Grab the URL and admin password:
 
 ```sh
-$ kubectl get secret awx-admin-password -- -o jsonpath="{.data.password}" | base64 --decode ; echo
+$ kubectl get secret awx-admin-password -o jsonpath="{.data.password}" | base64 --decode ; echo
 LU6lTfvnkjUvDwL240kXKy1sNhjakZmT
 ```

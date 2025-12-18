@@ -9,7 +9,7 @@ Have questions about this document or anything not covered here? Please file a n
 - [AWX-Operator Contributing Guidelines](#awx-operator-contributing-guidelines)
   - [Table of contents](#table-of-contents)
   - [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
-  - [Submmiting your work](#submmiting-your-work)
+  - [Submitting your work](#submitting-your-work)
   - [Development](#development)
   - [Testing](#testing)
       - [Testing in Kind](#testing-in-kind)

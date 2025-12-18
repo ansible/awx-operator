@@ -1,6 +1,6 @@
 # Development Guide
 
-There are development scripts and yaml exaples in the [`dev/`](../dev) directory that, along with the up.sh and down.sh scripts in the root of the repo, can be used to build, deploy and test changes made to the awx-operator.
+There are development scripts and yaml examples in the [`dev/`](../dev) directory that, along with the up.sh and down.sh scripts in the root of the repo, can be used to build, deploy and test changes made to the awx-operator.
 
 
 ## Prerequisites
