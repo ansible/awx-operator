@@ -37,6 +37,9 @@ spec:
           metadata:
             type: object
           spec:
+            x-kubernetes-validations:
+            - rule: "has(self.postgres_image) && has(self.postgres_image_version) || !has(self.postgres_image) && !has(self.postgres_image_version)"
+              message: "Both postgres_image and postgres_image_version must be set when required"
             type: object
             x-kubernetes-preserve-unknown-fields: true
             required:
