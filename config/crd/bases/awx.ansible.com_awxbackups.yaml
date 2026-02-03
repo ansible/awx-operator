@@ -48,6 +48,10 @@ spec:
               backup_pvc:
                 description: Name of the backup PVC
                 type: string
+              create_backup_pvc:
+                description: If true (default), automatically create the backup PVC if it does not exist
+                type: boolean
+                default: true
               backup_pvc_namespace:
                 description: (Deprecated) Namespace the PVC is in
                 type: string
