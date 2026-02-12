@@ -34,9 +34,6 @@ spec:
   ] %}
         checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.j2') | sha1 }}"
 {% endfor %}
-{% if public_base_url is defined %}
-        checksum-configmaps-redirect-page.configmap.html: "{{ lookup('template', 'configmaps/redirect-page.configmap.html.j2') | sha1 }}"
-{% endif %}
 {% for secret in [
     "bundle_cacert",
     "route_tls",
@@ -200,11 +197,6 @@ spec:
             timeoutSeconds: {{ web_readiness_timeout }}
 {% endif %}
           volumeMounts:
-{% if public_base_url is defined %}
-            - name: redirect-page
-              mountPath: '/var/lib/awx/venv/awx/lib/python3.12/site-packages/awx/ui/build/index.html'
-              subPath: redirect-page.html
-{% endif %}
 {% if bundle_ca_crt %}
             - name: "ca-trust-extracted"
               mountPath: "/etc/pki/ca-trust/extracted"
@@ -383,14 +375,6 @@ spec:
         {{ security_context_settings | to_nice_yaml | indent(8) }}
 {% endif %}
       volumes:
-{% if public_base_url is defined %}
-        - name: redirect-page
-          configMap:
-            name: '{{ ansible_operator_meta.name }}-redirect-page'
-            items:
-              - key: redirect-page.html
-                path: redirect-page.html
-{% endif %}
         - name: "{{ ansible_operator_meta.name }}-receptor-ca"
           secret:
             secretName: "{{ ansible_operator_meta.name }}-receptor-ca"
