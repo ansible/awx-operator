@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+labels:
+  - pairs:
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
+      
+resources:
+  - awx_viewer_role.yaml
+  - awxbackup_viewer_role.yaml
+  - awxmeshingress_viewer_role.yaml
+  - awxrestore_viewer_role.yaml
