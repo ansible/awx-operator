@@ -83,12 +83,23 @@
 - name: Set pg_restore command
   set_fact:
     pg_restore: >-
-      pg_restore --clean --if-exists --no-owner --no-acl
+      pg_restore {{ force_drop_db | bool | ternary('', '--clean --if-exists') }} --no-owner --no-acl
       -U {{ awx_postgres_user }}
       -h {{ resolvable_db_host }}
       -d {{ awx_postgres_database }}
       -p {{ awx_postgres_port }}
   no_log: "{{ no_log }}"
+
+- name: Grant CREATEDB privilege to database user for force_drop_db
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    container: postgres
+    command: >-
+      psql -c "ALTER USER {{ awx_postgres_user }} CREATEDB;"
+  when:
+    - force_drop_db | bool
+    - awx_postgres_type == 'managed'
 
 - name: Force drop and create database if force_drop_db is true
   block:
@@ -155,3 +166,14 @@
       "
   register: data_migration
   no_log: "{{ no_log }}"
+
+- name: Revoke CREATEDB privilege from database user
+  kubernetes.core.k8s_exec:
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    pod: "{{ postgres_pod_name }}"
+    container: postgres
+    command: >-
+      psql -c "ALTER USER {{ awx_postgres_user }} NOCREATEDB;"
+  when:
+    - force_drop_db | bool
+    - awx_postgres_type == 'managed'
