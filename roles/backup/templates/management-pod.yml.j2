@@ -27,6 +27,6 @@ spec:
   volumes:
     - name: {{ ansible_operator_meta.name }}-backup
       persistentVolumeClaim:
-        claimName: {{ backup_claim }}
+        claimName: {{ backup_pvc }}
         readOnly: false
   restartPolicy: Never

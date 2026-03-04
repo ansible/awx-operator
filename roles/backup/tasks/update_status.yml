@@ -9,5 +9,5 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       backupDirectory: "{{ backup_dir }}"
-      backupClaim: "{{ backup_claim }}"
+      backupClaim: "{{ backup_pvc }}"
   when: backup_complete
