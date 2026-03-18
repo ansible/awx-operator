@@ -524,3 +524,7 @@ extra_settings_files: {}
 
 # idle_deployment - Scale down deployments to put AWX into an idle state
 idle_deployment: false
+
+# create_superuser - Whether to create the admin superuser during installation.
+# Set to false when deploying as part of AAP where the gateway admin user is used instead.
+create_superuser: true
