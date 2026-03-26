@@ -3,10 +3,7 @@
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
 # - use the VERSION as arg of the bundle target (e.g make bundle VERSION=0.0.2)
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
-VERSION ?= $(shell git describe --tags)
-PREV_VERSION ?= $(shell git describe --abbrev=0 --tags $(shell git rev-list --tags --skip=1 --max-count=1))
-
-CONTAINER_CMD ?= docker
+# VERSION ?= 0.0.1 # Set in operator.mk
 
 # CHANNELS define the bundle channels used in the bundle.
 # Add a new line here if you would like to change its default config. (E.g CHANNELS = "candidate,fast,stable")
@@ -31,8 +28,8 @@ BUNDLE_METADATA_OPTS ?= $(BUNDLE_CHANNELS) $(BUNDLE_DEFAULT_CHANNEL)
 # This variable is used to construct full image tags for bundle and catalog images.
 #
 # For example, running 'make bundle-build bundle-push catalog-build catalog-push' will build and push both
-# ansible.com/awx-operator-bundle:$VERSION and ansible.com/awx-operator-catalog:$VERSION.
-IMAGE_TAG_BASE ?= quay.io/ansible/awx-operator
+# example.com/temp-operator-bundle:$VERSION and example.com/temp-operator-catalog:$VERSION.
+# IMAGE_TAG_BASE ?= quay.io/<org>/<operator-name>  # Set in operator.mk
 
 # BUNDLE_IMG defines the image:tag used for the bundle.
 # You can use it as an arg. (E.g make bundle-build BUNDLE_IMG=<some-registry>/<project-name-bundle>:<tag>)
@@ -46,12 +43,16 @@ BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 # To enable set flag to true
 USE_IMAGE_DIGESTS ?= false
 ifeq ($(USE_IMAGE_DIGESTS), true)
-       BUNDLE_GEN_FLAGS += --use-image-digests
+	BUNDLE_GEN_FLAGS += --use-image-digests
 endif
+
+# Set the Operator SDK version to use. By default, what is installed on the system is used.
+# This is useful for CI or a project to utilize a specific version of the operator-sdk toolkit.
+OPERATOR_SDK_VERSION ?= v1.40.0
+CONTAINER_TOOL ?= podman
 
 # Image URL to use all building/pushing image targets
 IMG ?= $(IMAGE_TAG_BASE):$(VERSION)
-NAMESPACE ?= awx
 
 .PHONY: all
 all: docker-build
@@ -73,23 +74,20 @@ all: docker-build
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-.PHONY: print-%
-print-%: ## Print any variable from the Makefile. Use as `make print-VARIABLE`
-	@echo $($*)
-
 ##@ Build
 
 .PHONY: run
+ANSIBLE_ROLES_PATH?="$(shell pwd)/roles"
 run: ansible-operator ## Run against the configured Kubernetes cluster in ~/.kube/config
-	ANSIBLE_ROLES_PATH="$(ANSIBLE_ROLES_PATH):$(shell pwd)/roles" $(ANSIBLE_OPERATOR) run
+	$(ANSIBLE_OPERATOR) run
 
 .PHONY: docker-build
 docker-build: ## Build docker image with the manager.
-	${CONTAINER_CMD} build $(BUILD_ARGS) -t ${IMG} .
+	docker build $(BUILD_ARGS) -t ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	${CONTAINER_CMD} push ${IMG}
+	docker push ${IMG}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple
 # architectures. (i.e. make docker-buildx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -97,7 +95,6 @@ docker-push: ## Push docker image with the manager.
 # - have enable BuildKit, More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 # - be able to push the image for your registry (i.e. if you do not inform a valid value via IMG=<myregistry/image:<tag>> than the export will fail)
 # To properly provided solutions that supports more than one platform you should use this option.
-PLATFORMS ?= linux/arm64,linux/amd64,linux/s390x,linux/ppc64le
 .PHONY: docker-buildx
 docker-buildx: ## Build and push docker image for the manager for cross-platform support
 	- docker buildx create --name project-v3-builder
@@ -105,12 +102,11 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	- docker buildx build --push $(BUILD_ARGS) --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile .
 	- docker buildx rm project-v3-builder
 
-.PHONY: podman-buildx
-podman-buildx: ## Build and push podman image for the manager for cross-platform support
-	podman build --platform=$(PLATFORMS) $(BUILD_ARGS) --manifest ${IMG} -f Dockerfile .
-	podman manifest push --all ${IMG} ${IMG}
-
 ##@ Deployment
+
+ifndef ignore-not-found
+  ignore-not-found = false
+endif
 
 .PHONY: install
 install: kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
@@ -118,28 +114,22 @@ install: kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/con
 
 .PHONY: uninstall
 uninstall: kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl delete -f -
-
-.PHONY: gen-resources
-gen-resources: kustomize ## Generate resources for controller and print to stdout
-	@cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
-	@$(KUSTOMIZE) build config/default
+	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
 .PHONY: deploy
 deploy: kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	@cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
-	@$(KUSTOMIZE) build config/default | kubectl apply -f -
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
-	@cd config/default && $(KUSTOMIZE) edit set namespace ${NAMESPACE}
-	$(KUSTOMIZE) build config/default | kubectl delete -f -
+	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+
+## Location for locally installed tools
+LOCALBIN ?= $(shell pwd)/bin
 
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
-ARCHA := $(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
-ARCHX := $(shell uname -m | sed -e 's/amd64/x86_64/' -e 's/aarch64/arm64/')
+ARCH := $(shell uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
 
 .PHONY: kustomize
 KUSTOMIZE = $(shell pwd)/bin/kustomize
@@ -149,27 +139,11 @@ ifeq (,$(shell which kustomize 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(KUSTOMIZE)) ;\
-	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.0.1/kustomize_v5.0.1_$(OS)_$(ARCHA).tar.gz | \
+	curl -sSLo - https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.6.0/kustomize_v5.6.0_$(OS)_$(ARCH).tar.gz | \
 	tar xzf - -C bin/ ;\
 	}
 else
 KUSTOMIZE = $(shell which kustomize)
-endif
-endif
-
-.PHONY: operator-sdk
-OPERATOR_SDK = $(shell pwd)/bin/operator-sdk
-operator-sdk: ## Download operator-sdk locally if necessary, preferring the $(pwd)/bin path over global if both exist.
-ifeq (,$(wildcard $(OPERATOR_SDK)))
-ifeq (,$(shell which operator-sdk 2>/dev/null))
-	@{ \
-	set -e ;\
-	mkdir -p $(dir $(OPERATOR_SDK)) ;\
-	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/v1.40.0/operator-sdk_$(OS)_$(ARCHA) ;\
-	chmod +x $(OPERATOR_SDK) ;\
-	}
-else
-OPERATOR_SDK = $(shell which operator-sdk)
 endif
 endif
 
@@ -181,7 +155,7 @@ ifeq (,$(shell which ansible-operator 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(ANSIBLE_OPERATOR)) ;\
-	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/ansible-operator-plugins/releases/download/v1.40.0/ansible-operator_$(OS)_$(ARCHA) ;\
+	curl -sSLo $(ANSIBLE_OPERATOR) https://github.com/operator-framework/ansible-operator-plugins/releases/download/$(OPERATOR_SDK_VERSION)/ansible-operator_$(OS)_$(ARCH) ;\
 	chmod +x $(ANSIBLE_OPERATOR) ;\
 	}
 else
@@ -189,30 +163,47 @@ ANSIBLE_OPERATOR = $(shell which ansible-operator)
 endif
 endif
 
+.PHONY: operator-sdk
+OPERATOR_SDK ?= $(LOCALBIN)/operator-sdk
+operator-sdk: ## Download operator-sdk locally if necessary.
+ifeq (,$(wildcard $(OPERATOR_SDK)))
+ifeq (, $(shell which operator-sdk 2>/dev/null))
+	@{ \
+	set -e ;\
+	mkdir -p $(dir $(OPERATOR_SDK)) ;\
+	curl -sSLo $(OPERATOR_SDK) https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_$(OS)_$(ARCH) ;\
+	chmod +x $(OPERATOR_SDK) ;\
+	}
+else
+OPERATOR_SDK = $(shell which operator-sdk)
+endif
+endif
+
+
 .PHONY: bundle
 bundle: kustomize operator-sdk ## Generate bundle manifests and metadata, then validate generated files.
 	$(OPERATOR_SDK) generate kustomize manifests -q
 	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
+	$(KUSTOMIZE) build config/manifests | $(OPERATOR_SDK) generate bundle $(BUNDLE_GEN_FLAGS)
 	$(OPERATOR_SDK) bundle validate ./bundle
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
-	${CONTAINER_CMD} build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+	$(CONTAINER_TOOL) build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
 	$(MAKE) docker-push IMG=$(BUNDLE_IMG)
 
 .PHONY: opm
-OPM = ./bin/opm
+OPM = $(LOCALBIN)/opm
 opm: ## Download opm locally if necessary.
 ifeq (,$(wildcard $(OPM)))
 ifeq (,$(shell which opm 2>/dev/null))
 	@{ \
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.55.0/$(OS)-$(ARCHA)-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.55.0/$(OS)-$(ARCH)-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
@@ -237,9 +228,15 @@ endif
 # https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
 .PHONY: catalog-build
 catalog-build: opm ## Build a catalog image.
-	$(OPM) index add --container-tool ${CONTAINER_CMD} --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
+	$(OPM) index add --container-tool $(CONTAINER_TOOL) --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
 
 # Push the catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+
+##@ Includes
+# Operator-specific targets and variables
+-include makefiles/operator.mk
+# Shared dev workflow targets (synced across all operator repos)
+-include makefiles/common.mk

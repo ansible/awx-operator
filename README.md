@@ -16,11 +16,7 @@ The AWX Operator documentation is available at <https://ansible.readthedocs.io/p
 
 ## Contributing
 
-Please visit [our contributing guidelines](https://github.com/ansible/awx-operator/blob/devel/CONTRIBUTING.md).
-
-For docs changes, create PRs on the appropriate files in the `/docs` folder.
-
-The development environment consists of running an [`up.sh`](https://github.com/ansible/awx-operator/blob/devel/up.sh) and a [`down.sh`](https://github.com/ansible/awx-operator/blob/devel/down.sh) script, which applies or deletes yaml on the Openshift or K8s cluster you are connected to. See the [development.md](https://github.com/ansible/awx-operator/blob/devel/docs/development.md) for information on how to deploy and test changes from your branch.
+Please visit our [contributing guidelines](https://github.com/ansible/awx-operator/blob/devel/CONTRIBUTING.md) and [development guide](https://github.com/ansible/awx-operator/blob/devel/docs/development.md) for information on how to set up your environment, build and deploy the operator, and submit changes.
 
 ## Author
 
