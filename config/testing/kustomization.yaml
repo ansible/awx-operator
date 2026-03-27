@@ -14,10 +14,13 @@ resources:
 - ../crd
 - ../rbac
 - ../manager
+- ../default/metrics_service.yaml
 images:
 - name: testing
   newName: testing-operator
 patches:
 - path: manager_image.yaml
 - path: debug_logs_patch.yaml
-- path: ../default/manager_auth_proxy_patch.yaml
+- path: ../default/manager_metrics_patch.yaml
+  target:
+    kind: Deployment

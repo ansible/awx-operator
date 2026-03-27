@@ -121,12 +121,20 @@ fi
 # -- Build & Push Operator Image
 echo "Preparing to build $IMG:$TAG ($IMG:$DEV_TAG) with $ENGINE..."
 sleep 3
-make docker-build docker-push IMG=$IMG:$TAG
 
-# Tag and Push DEV_TAG Image when DEV_TAG_PUSH is 'True'
-if $DEV_TAG_PUSH ; then
-  $ENGINE tag $IMG:$TAG $IMG:$DEV_TAG
-  make docker-push IMG=$IMG:$DEV_TAG
+# Detect architecture and use multi-arch build for ARM hosts
+HOST_ARCH=$(uname -m)
+if [[ "$HOST_ARCH" == "aarch64" || "$HOST_ARCH" == "arm64" ]] && [ "$ENGINE" = "podman" ]; then
+  echo "ARM architecture detected ($HOST_ARCH). Using multi-arch build..."
+  make podman-buildx IMG=$IMG:$TAG ENGINE=$ENGINE
+else
+  make docker-build docker-push IMG=$IMG:$TAG
+
+  # Tag and Push DEV_TAG Image when DEV_TAG_PUSH is 'True'
+  if $DEV_TAG_PUSH ; then
+    $ENGINE tag $IMG:$TAG $IMG:$DEV_TAG
+    make docker-push IMG=$IMG:$DEV_TAG
+  fi
 fi
 
 # -- Deploy Operator

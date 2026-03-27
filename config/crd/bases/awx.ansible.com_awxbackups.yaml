@@ -37,6 +37,9 @@ spec:
           metadata:
             type: object
           spec:
+            x-kubernetes-validations:
+            - rule: "has(self.postgres_image) && has(self.postgres_image_version) || !has(self.postgres_image) && !has(self.postgres_image_version)"
+              message: "Both postgres_image and postgres_image_version must be set when required"
             type: object
             x-kubernetes-preserve-unknown-fields: true
             required:
@@ -48,6 +51,10 @@ spec:
               backup_pvc:
                 description: Name of the backup PVC
                 type: string
+              create_backup_pvc:
+                description: If true (default), automatically create the backup PVC if it does not exist
+                type: boolean
+                default: true
               backup_pvc_namespace:
                 description: (Deprecated) Namespace the PVC is in
                 type: string
@@ -81,6 +88,10 @@ spec:
               pg_dump_suffix:
                 description: Additional parameters for the pg_dump command
                 type: string
+              use_db_compression:
+                description: Enable compression for database dumps using pg_dump built-in compression.
+                type: boolean
+                default: true
               postgres_label_selector:
                 description: Label selector used to identify postgres pod for backing up data
                 type: string

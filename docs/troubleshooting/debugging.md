@@ -24,13 +24,6 @@ Past that, it is often useful to inspect various resources the AWX Operator mana
 * secrets
 * serviceaccount
 
-And if installing via OperatorHub and OLM:
-
-* subscription
-* csv
-* installPlan
-* catalogSource
-
 To inspect these resources you can use these commands
 
 ```sh

@@ -8,6 +8,9 @@ api_version: '{{ deployment_type }}.ansible.com/v1beta1'
 backup_pvc: ''
 backup_pvc_namespace: "{{ ansible_operator_meta.namespace }}"
 
+# If true (default), automatically create the backup PVC if it does not exist
+create_backup_pvc: true
+
 # Size of backup PVC if created dynamically
 backup_storage_requirements: ''
 
@@ -38,6 +41,9 @@ backup_resource_requirements:
     memory: "32Mi"
 # Allow additional parameters to be added to the pg_dump backup command
 pg_dump_suffix: ''
+
+# Enable compression for database dumps (pg_dump -F custom built-in compression)
+use_db_compression: true
 
 # Labels defined on the resource, which should be propagated to child resources
 additional_labels: []

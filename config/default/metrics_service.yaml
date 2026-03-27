@@ -3,6 +3,8 @@ kind: Service
 metadata:
   labels:
     control-plane: controller-manager
+    app.kubernetes.io/name: awx-operator
+    app.kubernetes.io/managed-by: kustomize
   name: controller-manager-metrics-service
   namespace: system
 spec:
@@ -10,6 +12,7 @@ spec:
   - name: https
     port: 8443
     protocol: TCP
-    targetPort: https
+    targetPort: 8443
   selector:
     control-plane: controller-manager
+    app.kubernetes.io/name: awx-operator

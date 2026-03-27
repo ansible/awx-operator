@@ -16,7 +16,7 @@ jobs:
           - --skip-tags=replicas
           - -t replicas
     env:
-      DOCKER_API_VERSION: "1.41"
+      DOCKER_API_VERSION: "1.44"
       DEBUG_OUTPUT_DIR: /tmp/awx_operator_molecule_test
     steps:
       - uses: actions/checkout@v4

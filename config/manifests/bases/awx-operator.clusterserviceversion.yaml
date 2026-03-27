@@ -175,6 +175,12 @@ spec:
         path: additional_labels
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
+      - description: Enable compression for database dumps using pg_dump built-in compression
+        displayName: Use DB Compression
+        path: use_db_compression
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
       - displayName: Node Selector for backup management pod
         path: db_management_pod_node_selector
         x-descriptors:

@@ -38,6 +38,7 @@ spec:
       - args:
         - --leader-elect
         - --leader-election-id=awx-operator
+        - --health-probe-bind-address=:6789
         image: controller:latest
         imagePullPolicy: IfNotPresent
         name: awx-manager
