@@ -1,5 +1,10 @@
 # Changelog
 
+> **Note:** This file is no longer actively maintained. For the latest release notes and version history, please visit the [GitHub Releases page](https://github.com/ansible/awx-operator/releases).
+
+---
+# Changelog
+
 This is a list of high-level changes for each release of `awx-operator`. A full list of commits can be found at `https://github.com/ansible/awx-operator/releases/tag/<version>`.
 
 # 0.19.0 (Mar 23, 2022)
