@@ -1,0 +1,24 @@
+{
+    "build": { "dockerfile": "../Dockerfile.devcontainer" },
+    "name": "awx-operator",
+    // "image": "quay.io/operator-framework/ansible-operator:v1.26.0",
+    // "features": {
+	// 	"./local-features/copy-kube-config": {}
+	// },
+    "mounts": [
+        // list of kubeconfig files you wish to mount into the container
+		{
+			"source": "${env:HOME}${env:USERPROFILE}/.kube",
+			"target": "/usr/local/share/kube-localhost",
+			"type": "bind"
+		}
+    ],
+	// "remoteEnv": {
+	// 	"SYNC_LOCALHOST_KUBECONFIG": "true"
+	// },
+	"initializeCommand": "bash .devcontainer/init.sh",
+	"remoteUser": "0",
+	"runArgs": [
+		"--network=host"
+	]
+}
