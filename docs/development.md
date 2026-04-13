@@ -99,7 +99,7 @@ CONTAINER_TOOL=docker QUAY_USER=username make up
 PLATFORM=linux/amd64 QUAY_USER=username make up
 
 # Deploy without building (use an existing image)
-BUILD_IMAGE=false DEV_IMG=quay.io/myuser/awx-operator:latest make up
+BUILD_IMAGE=false DEV_IMG=quay.io/myuser/awx-operator DEV_TAG=latest make up
 
 # Build without pushing (local cluster like kind/minikube)
 IMAGE_PULL_POLICY=Never QUAY_USER=username make up
