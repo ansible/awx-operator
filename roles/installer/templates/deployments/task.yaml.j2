@@ -44,11 +44,14 @@ spec:
   ] %}
         checksum-secret-{{ secret }}: "{{ lookup('ansible.builtin.vars', secret, default='')["resources"][0]["data"] | default('') | sha1 }}"
 {% endfor %}
-{% if task_annotations %}
-        {{ task_annotations | indent(width=8) }}
-{% elif annotations %}
-        {{ annotations | indent(width=8) }}
-{% endif %}
+{% set combined_annotations = web_annotations + annotations %}
+{% set seen = [] %}
+{% for annotation in combined_annotations %}
+    {% if annotation not in seen %}
+        {{ annotation | indent(width=8) }}
+        {% do seen.append(annotation) %}
+    {% endif %}
+{% endfor %}
     spec:
       serviceAccountName: '{{ ansible_operator_meta.name }}'
 {% if image_pull_secret is defined %}
