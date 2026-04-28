@@ -16,3 +16,7 @@ spec:
     requests:
       cpu: 50m
       memory: 64M
+  # HTTP proxy settings (optional)
+  # http_proxy: "http://proxy.example.com:3128"
+  # https_proxy: "http://proxy.example.com:3128"
+  # no_proxy: "localhost,127.0.0.1,.cluster.local"

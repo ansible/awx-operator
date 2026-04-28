@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ ansible_operator_meta.name }}-proxy-env'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+data:
+{% if http_proxy %}
+  HTTP_PROXY: '{{ http_proxy }}'
+  http_proxy: '{{ http_proxy }}'
+{% endif %}
+{% if https_proxy %}
+  HTTPS_PROXY: '{{ https_proxy }}'
+  https_proxy: '{{ https_proxy }}'
+{% endif %}
+{% if no_proxy %}
+  NO_PROXY: '{{ no_proxy }}'
+  no_proxy: '{{ no_proxy }}'
+{% endif %}
