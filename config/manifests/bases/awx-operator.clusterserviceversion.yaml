@@ -1074,24 +1074,6 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:io.kubernetes:Secret
-      - description: HTTP proxy URL to configure on AWX containers
-        displayName: HTTP Proxy
-        path: http_proxy
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text
-      - description: HTTPS proxy URL to configure on AWX containers
-        displayName: HTTPS Proxy
-        path: https_proxy
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text
-      - description: Comma-separated list of hosts that bypass the proxy on AWX containers
-        displayName: No Proxy
-        path: no_proxy
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:advanced
-        - urn:alm:descriptor:com.tectonic.ui:text
       - displayName: Nodeport Port
         path: nodeport_port
         x-descriptors:

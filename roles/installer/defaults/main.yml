@@ -460,9 +460,7 @@ ldap_password_secret: ''
 bundle_cacert_secret: ''
 
 # Proxy environment variables for AWX containers.
-# Defaults inherit from the operator pod environment (e.g. set by the OCP cluster
-# proxy object). Set these fields in the CR spec to override the inherited values
-# per instance.
+# Values are inherited from the operator pod environment.
 http_proxy: "{{ lookup('env', 'http_proxy') or lookup('env', 'HTTP_PROXY') or '' }}"
 https_proxy: "{{ lookup('env', 'https_proxy') or lookup('env', 'HTTPS_PROXY') or '' }}"
 no_proxy: "{{ lookup('env', 'no_proxy') or lookup('env', 'NO_PROXY') or '' }}"

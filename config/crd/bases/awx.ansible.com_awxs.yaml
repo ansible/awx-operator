@@ -1901,15 +1901,6 @@ spec:
               bundle_cacert_secret:
                 description: Secret where can be found the trusted Certificate Authority Bundle
                 type: string
-              http_proxy:
-                description: HTTP proxy URL to configure on AWX containers
-                type: string
-              https_proxy:
-                description: HTTPS proxy URL to configure on AWX containers
-                type: string
-              no_proxy:
-                description: Comma-separated list of hosts that bypass the proxy on AWX containers
-                type: string
               projects_persistence:
                 description: Whether or not the /var/lib/projects directory will be persistent
                 default: false
