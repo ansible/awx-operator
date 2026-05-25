@@ -185,7 +185,7 @@ spec:
                 - sh
                 - -c
                 - |
-                  (exit $(/usr/bin/supervisorctl -c /etc/supervisord_task.conf status | grep -vc RUNNING))
+                  (exit $(/usr/bin/supervisorctl -c /etc/supervisord_web.conf status | grep -vc RUNNING))
             initialDelaySeconds: {{ web_liveness_initial_delay }}
             periodSeconds: {{ web_liveness_period }}
             failureThreshold: {{ web_liveness_failure_threshold }}
