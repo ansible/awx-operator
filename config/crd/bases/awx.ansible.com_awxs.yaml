@@ -1795,7 +1795,7 @@ spec:
                 description: nodeSelector for the Postgres pods
                 type: string
               postgres_keep_pvc_after_upgrade:
-                description: Specify whether or not to keep the old PVC after PostgreSQL upgrades
+                description: "(Deprecated) Specify whether or not to keep the old PVC after PostgreSQL upgrades"
                 type: boolean
               postgres_tolerations:
                 description: node tolerations for the Postgres pods

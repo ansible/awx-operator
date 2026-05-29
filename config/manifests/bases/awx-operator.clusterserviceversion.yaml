@@ -688,11 +688,6 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Should PostgreSQL data for managed databases be kept after upgrades?
-        path: postgres_keep_pvc_after_upgrade
-        x-descriptors:
-        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
-        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Postgres Tolerations
         path: postgres_tolerations
         x-descriptors:

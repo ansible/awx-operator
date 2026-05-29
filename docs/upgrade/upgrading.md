@@ -20,16 +20,6 @@ In the event you need to recover the backup see the [restore role documentation]
 
 **Note**: Do not delete the namespace/project, as that will delete the backup and the backup's PVC as well.
 
-## PostgreSQL Upgrade Considerations
-
-If there is a PostgreSQL major version upgrade, after the data directory on the PVC is migrated to the new version, the old PVC is kept by default.
-This provides the ability to roll back if needed, but can take up extra storage space in your cluster unnecessarily. You can configure it to be deleted automatically after a successful upgrade by setting the following variable on the AWX spec.
-
-```yaml
-spec:
-  postgres_keep_pvc_after_upgrade: False
-```
-
 ## Caveats for upgrading to v0.14.0
 
 ### Cluster-scope to Namespace-scope considerations
