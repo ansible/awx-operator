@@ -10,4 +10,5 @@
     status:
       backupDirectory: "{{ backup_dir }}"
       backupClaim: "{{ backup_pvc }}"
+      backupPostgres: "{{ not postgres_skip_data | bool or awx_postgres_type == 'managed' }}"
   when: backup_complete

@@ -34,7 +34,10 @@
 - block:
   - include_tasks: init.yml
 
+  - include_tasks: set_database_config.yml
+
   - include_tasks: postgres.yml
+    when: not postgres_skip_data | bool or awx_postgres_type == 'managed'
 
   - include_tasks: awx-cro.yml
 

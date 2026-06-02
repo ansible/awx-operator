@@ -1,0 +1,23 @@
+---
+- name: Set Postgres Configuration Secret name
+  set_fact:
+    postgres_configuration_secret: "{{ spec['postgres_configuration_secret'] | default(postgres_configuration_secret) }}"
+
+- name: Check for specified PostgreSQL configuration
+  kubernetes.core.k8s_info:
+    kind: Secret
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: '{{ postgres_configuration_secret }}'
+  register: pg_config
+  no_log: "{{ no_log }}"
+
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | b64decode | default('unmanaged') }}"
+  no_log: "{{ no_log }}"
+...

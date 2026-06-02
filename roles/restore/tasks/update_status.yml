@@ -8,4 +8,5 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       restoreComplete: true
+      restorePostgres: "{{ not postgres_skip_data | bool or awx_postgres_type == 'managed' }}"
   when: tower_restore_complete is defined

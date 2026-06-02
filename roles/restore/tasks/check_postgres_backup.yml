@@ -1,0 +1,19 @@
+---
+- name: Check the PostgreSQL database backup file
+  kubernetes.core.k8s_exec:
+    namespace: "{{ backup_pvc_namespace }}"
+    pod: "{{ ansible_operator_meta.name }}-db-management"
+    container: "{{ ansible_operator_meta.name }}-db-management"
+    command: |
+      stat {{ backup_dir }}/tower.db
+  changed_when: false
+  failed_when: false
+  register: _tower_db
+
+- name: Fail if the database backup file is missing and postgres_skip_data not enabled
+  ansible.builtin.assert:
+    that:
+      - postgres_skip_data | bool
+    fail_msg: "postgres_skip_data needs to be set to true when the database dump does not exist"
+  when: _tower_db.rc | bool
+...

@@ -1,28 +1,4 @@
 ---
-
-- name: Get PostgreSQL configuration
-  k8s_info:
-    kind: Secret
-    namespace: '{{ ansible_operator_meta.namespace }}'
-    name: "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"
-  register: pg_config
-  no_log: "{{ no_log }}"
-
-- name: Fail if postgres configuration secret status does not exist
-  fail:
-    msg: "The postgresConfigurationSecret status is not set on the AWX object yet or the secret has been deleted."
-  when: not pg_config | default([]) | length
-
-- name: Store Database Configuration
-  set_fact:
-    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
-    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
-    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
-    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
-    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
-    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged'|b64encode) | b64decode }}"
-  no_log: "{{ no_log }}"
-
 - block:
     - name: Delete pod to reload a resource configuration
       set_fact:
@@ -47,22 +23,6 @@
       set_fact:
         postgres_pod_name: "{{ postgres_pod['resources'][0]['metadata']['name'] }}"
   when: awx_postgres_type == 'managed'
-
-- name: Determine the timestamp for the backup once for all nodes
-  set_fact:
-    now: '{{ lookup("pipe", "date +%F-%H%M%S") }}'
-
-- name: Set backup directory name
-  set_fact:
-    backup_dir: "/backups/tower-openshift-backup-{{ now }}"
-
-- name: Create directory for backup
-  k8s_exec:
-    namespace: "{{ backup_pvc_namespace }}"
-    pod: "{{ ansible_operator_meta.name }}-db-management"
-    container: "{{ ansible_operator_meta.name }}-db-management"
-    command: >-
-      mkdir -p {{ backup_dir }}
 
 - name: Precreate file for database dump
   k8s_exec:

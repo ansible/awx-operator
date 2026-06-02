@@ -44,4 +44,7 @@ set_self_labels: true
 force_drop_db: false
 
 spec_overrides: {}
+
+# Skip PostgreSQL database restore
+postgres_skip_data: false
 ...

@@ -97,6 +97,10 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              postgres_skip_data:
+                description: Skip PostgreSQL database restore.
+                type: boolean
+                default: false
               spec_overrides:
                 description: Overrides for the AWX spec
                 # type: string
@@ -153,4 +157,7 @@ spec:
                 type: array
               restoreComplete:
                 description: Restore process complete
+                type: boolean
+              restorePostgres:
+                description: Restore PostgreSQL data
                 type: boolean

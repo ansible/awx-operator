@@ -45,6 +45,9 @@ pg_dump_suffix: ''
 # Enable compression for database dumps (pg_dump -F custom built-in compression)
 use_db_compression: true
 
+# Skip PostgreSQL database dump
+postgres_skip_data: false
+
 # Labels defined on the resource, which should be propagated to child resources
 additional_labels: []
 

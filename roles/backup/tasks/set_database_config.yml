@@ -1,0 +1,24 @@
+---
+- name: Get PostgreSQL configuration
+  k8s_info:
+    kind: Secret
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    name: "{{ this_awx['resources'][0]['status']['postgresConfigurationSecret'] }}"
+  register: pg_config
+  no_log: "{{ no_log }}"
+
+- name: Fail if postgres configuration secret status does not exist
+  fail:
+    msg: "The postgresConfigurationSecret status is not set on the AWX object yet or the secret has been deleted."
+  when: not pg_config | default([]) | length
+
+- name: Store Database Configuration
+  set_fact:
+    awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"
+    awx_postgres_pass: "{{ pg_config['resources'][0]['data']['password'] | b64decode }}"
+    awx_postgres_database: "{{ pg_config['resources'][0]['data']['database'] | b64decode }}"
+    awx_postgres_port: "{{ pg_config['resources'][0]['data']['port'] | b64decode }}"
+    awx_postgres_host: "{{ pg_config['resources'][0]['data']['host'] | b64decode }}"
+    awx_postgres_type: "{{ pg_config['resources'][0]['data']['type'] | default('unmanaged'|b64encode) | b64decode }}"
+  no_log: "{{ no_log }}"
+...

@@ -101,6 +101,10 @@ spec:
               postgres_image_version:
                 description: PostgreSQL container image version to use
                 type: string
+              postgres_skip_data:
+                description: Skip PostgreSQL database dump.
+                type: boolean
+                default: false
               precreate_partition_hours:
                 description: Number of hours worth of events table partitions to precreate before backup to avoid pg_dump locks.
                 type: integer
@@ -156,3 +160,6 @@ spec:
               backupClaim:
                 description: Backup persistent volume claim
                 type: string
+              backupPostgres:
+                description: Backup PostgreSQL data
+                type: boolean
