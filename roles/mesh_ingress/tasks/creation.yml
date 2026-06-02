@@ -58,6 +58,10 @@
   set_fact:
     _image_pull_policy: "{{ awx_spec.image_pull_policy | default(_image_pull_policy, true) }}"
 
+- name: Set receptor_log_level from AWX spec or default
+  set_fact:
+    receptor_log_level: "{{ awx_spec.receptor_log_level | default(receptor_log_level) }}"
+
 - name: Default ingress_type to Route if OpenShift
   set_fact:
     ingress_type: route

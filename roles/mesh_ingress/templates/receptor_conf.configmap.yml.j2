@@ -9,7 +9,7 @@ data:
     ---
     - node:
         id: {{ ansible_operator_meta.name }}
-    - log-level: debug
+    - log-level: {{ receptor_log_level }}
     - control-service:
         service: control
     - ws-listener:

@@ -20,3 +20,6 @@ node_selector: ''
 topology_spread_constraints: ''
 tolerations: ''
 affinity: {}
+
+# receptor default values
+receptor_log_level: debug
