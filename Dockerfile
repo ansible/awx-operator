@@ -1,8 +1,8 @@
-FROM quay.io/operator-framework/ansible-operator:v1.40.0
+FROM quay.io/operator-framework/ansible-operator:v1.42.2
 
 USER root
-RUN dnf update --security --bugfix -y --disableplugin=subscription-manager && \
-    dnf install -y --disableplugin=subscription-manager openssl
+RUN microdnf update -y && \
+    microdnf install -y openssl
 
 USER 1001
 
