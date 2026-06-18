@@ -1692,7 +1692,7 @@ spec:
                 default: true
                 type: boolean
               default_container_group_namespace:
-                description: Namespace where Container Group job pods will run. When set, the operator creates this namespace (if needed) and grants the AWX service account pod and secret permissions there instead of the AWX namespace.
+                description: Namespace where Container Group job pods will run. Creates the namespace and grants required permissions automatically.
                 type: string
               task_args:
                 type: array
