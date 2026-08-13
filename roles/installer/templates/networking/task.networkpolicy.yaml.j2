@@ -1,0 +1,42 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-task'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(4) | trim }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-task'
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: '{{ deployment_type }}'
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution via OpenShift DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+{% if managed_database | bool %}
+    # Allow task to reach managed PostgreSQL.
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: database
+              app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+{% endif %}
+    # Unrestricted egress for receptor mesh, SCM polling, execution
+    # environments, Kubernetes API, and other external services.
+    - {}

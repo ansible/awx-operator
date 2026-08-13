@@ -11,6 +11,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: {{ ansible_operator_meta.name }}
+        app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+        app.kubernetes.io/component: receptor-mesh-ingress
     spec:
 {% if image_pull_secrets | length > 0 %}
       imagePullSecrets:

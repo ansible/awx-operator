@@ -1,0 +1,24 @@
+# Default deny policy for AWX operand pods (layered product pattern).
+# Selects only pods managed by this operator instance, not all pods in the
+# namespace, since AWX / Controller is a layered product that may share a
+# namespace with other workloads.
+#
+# See: https://docs.google.com/document/d/1CDoGSRd-h8VT4PMrK_83Ro0YzYPjORbkxtfTJU1sN6Q
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-default-deny'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(4) | trim }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/managed-by
+        operator: In
+        values:
+          - '{{ deployment_type }}-operator'
+  policyTypes:
+    - Ingress
+    - Egress

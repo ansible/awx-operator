@@ -1,0 +1,112 @@
+---
+- name: Validate AWX NetworkPolicies
+  block:
+    - name: Get default-deny NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-default-deny
+      register: np_default_deny
+
+    - name: Assert default-deny NetworkPolicy exists and has correct spec
+      ansible.builtin.assert:
+        that:
+          - np_default_deny.resources | length == 1
+          - "'Ingress' in np_default_deny.resources[0].spec.policyTypes"
+          - "'Egress' in np_default_deny.resources[0].spec.policyTypes"
+          - np_default_deny.resources[0].spec.ingress is not defined
+          - np_default_deny.resources[0].spec.egress is not defined
+          - np_default_deny.resources[0].spec.podSelector.matchExpressions is defined
+        fail_msg: "default-deny NetworkPolicy is missing or misconfigured"
+
+    - name: Get web NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-web
+      register: np_web
+
+    - name: Assert web NetworkPolicy exists with Ingress and Egress
+      ansible.builtin.assert:
+        that:
+          - np_web.resources | length == 1
+          - "'Ingress' in np_web.resources[0].spec.policyTypes"
+          - "'Egress' in np_web.resources[0].spec.policyTypes"
+          - np_web.resources[0].spec.ingress | length > 0
+          - np_web.resources[0].spec.egress | length > 0
+        fail_msg: "web NetworkPolicy is missing or misconfigured"
+
+    - name: Get task NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-task
+      register: np_task
+
+    - name: Assert task NetworkPolicy exists with Egress only
+      ansible.builtin.assert:
+        that:
+          - np_task.resources | length == 1
+          - "'Egress' in np_task.resources[0].spec.policyTypes"
+          - np_task.resources[0].spec.policyTypes | length == 1
+          - np_task.resources[0].spec.egress | length > 0
+        fail_msg: "task NetworkPolicy is missing or misconfigured"
+
+    - name: Get postgres NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-postgres-15
+      register: np_postgres
+
+    - name: Assert postgres NetworkPolicy exists (managed database)
+      ansible.builtin.assert:
+        that:
+          - np_postgres.resources | length == 1
+          - "'Ingress' in np_postgres.resources[0].spec.policyTypes"
+          - "'Egress' in np_postgres.resources[0].spec.policyTypes"
+          - np_postgres.resources[0].spec.ingress | length > 0
+          - np_postgres.resources[0].spec.egress | length > 0
+        fail_msg: "postgres NetworkPolicy is missing or misconfigured"
+
+    - name: Get db-management NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-db-management
+      register: np_db_management
+
+    - name: Assert db-management NetworkPolicy exists with Egress only
+      ansible.builtin.assert:
+        that:
+          - np_db_management.resources | length == 1
+          - "'Egress' in np_db_management.resources[0].spec.policyTypes"
+          - np_db_management.resources[0].spec.policyTypes | length == 1
+          - np_db_management.resources[0].spec.egress | length > 0
+        fail_msg: "db-management NetworkPolicy is missing or misconfigured"
+
+    - name: Collect all NetworkPolicy names
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+      register: all_network_policies
+
+    - name: Assert expected number of NetworkPolicies exist
+      ansible.builtin.assert:
+        that:
+          - all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list | length >= 5
+        fail_msg: "Expected at least 5 AWX NetworkPolicies, got {{ all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list | length }}"
+
+  rescue:
+    - name: Re-emit failure
+      vars:
+        failed_task:
+          result: '{{ ansible_failed_result }}'
+      fail:
+        msg: '{{ failed_task }}'

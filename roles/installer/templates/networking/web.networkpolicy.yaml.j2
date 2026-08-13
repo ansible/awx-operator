@@ -1,0 +1,86 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-web'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(4) | trim }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: '{{ deployment_type }}'
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow traffic from the OpenShift router (for Routes/Ingress).
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              policy-group.network.openshift.io/ingress: ""
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+      ports:
+        - protocol: TCP
+          port: 8052
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+        - protocol: TCP
+          port: 8053
+{% endif %}
+    # Allow traffic from AAP gateway, other AAP component pods, and the
+    # operator controller-manager (for health checks and reconciliation).
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/managed-by
+                operator: In
+                values:
+                  - '{{ deployment_type }}-operator'
+                  - 'aap-operator'
+                  - 'aap-gateway-operator'
+                  - 'automationcontroller-operator'
+                  - 'automationhub-operator'
+                  - 'eda-operator'
+                  - 'metrics-operator'
+                  - 'automationmetricsservice-operator'
+                  - 'ansible-mcp-server-operator'
+        - podSelector:
+            matchLabels:
+              control-plane: controller-manager
+      ports:
+        - protocol: TCP
+          port: 8052
+{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
+        - protocol: TCP
+          port: 8053
+{% endif %}
+  egress:
+    # Allow DNS resolution via OpenShift DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+{% if managed_database | bool %}
+    # Allow web to reach managed PostgreSQL.
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: database
+              app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+{% endif %}
+    # Unrestricted egress for LDAP/SAML/webhooks and other user-configured
+    # external services whose addresses cannot be enumerated.
+    - {}

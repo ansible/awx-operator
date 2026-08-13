@@ -90,6 +90,9 @@
 - name: Include Database tasks
   include_tasks: database.yml
 
+- name: Apply NetworkPolicies for AWX operand pods
+  include_tasks: networkpolicy.yml
+
 - name: Load Route TLS certificate
   include_tasks: load_route_tls_secret.yml
   when:

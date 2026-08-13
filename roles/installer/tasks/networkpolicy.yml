@@ -1,0 +1,34 @@
+---
+# Default deny for all AWX operand pods (layered product pattern).
+# Applied before per-component allow policies so that the deny is in place
+# before any workload pods start.
+- name: Apply default deny NetworkPolicy for AWX operand pods
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/default-deny.networkpolicy.yaml.j2') }}"
+
+- name: Apply web NetworkPolicy
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/web.networkpolicy.yaml.j2') }}"
+
+- name: Apply task NetworkPolicy
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/task.networkpolicy.yaml.j2') }}"
+
+- name: Apply PostgreSQL NetworkPolicy
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/postgres.networkpolicy.yaml.j2') }}"
+  when: managed_database | bool
+
+- name: Apply db-management NetworkPolicy for backup, restore, and migration pods
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/db-management.networkpolicy.yaml.j2') }}"

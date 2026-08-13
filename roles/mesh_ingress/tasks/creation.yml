@@ -79,6 +79,9 @@
     external_hostname: "{{ ingress.result.status.ingress[0].host }}"
   when: ingress_type | lower == 'route'
 
+- name: Apply NetworkPolicy for mesh-ingress
+  include_tasks: networkpolicy.yml
+
 - name: Create other resources
   k8s:
     apply: yes

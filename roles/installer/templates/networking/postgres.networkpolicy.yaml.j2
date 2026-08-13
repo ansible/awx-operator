@@ -1,0 +1,45 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: 'postgres-{{ supported_pg_version }}'
+    app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: 'postgres-{{ supported_pg_version }}'
+      app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
+      app.kubernetes.io/component: database
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow connections from AWX operand pods (web, task, migration jobs,
+    # backup/restore) and the operator controller-manager.
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+        - podSelector:
+            matchLabels:
+              control-plane: controller-manager
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+  egress:
+    # Allow DNS resolution via OpenShift DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353

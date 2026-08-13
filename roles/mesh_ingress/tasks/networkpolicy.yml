@@ -1,0 +1,6 @@
+---
+- name: Apply mesh-ingress NetworkPolicy
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'mesh-ingress.networkpolicy.yaml.j2') }}"

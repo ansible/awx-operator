@@ -1,0 +1,55 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-mesh-ingress'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+    app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+    app.kubernetes.io/component: receptor-mesh-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: '{{ ansible_operator_meta.name }}'
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: receptor-mesh-ingress
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow receptor connections from the OpenShift router (external
+    # execution nodes connect via Route/Ingress on port 27199).
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              policy-group.network.openshift.io/ingress: ""
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+      ports:
+        - protocol: TCP
+          port: 27199
+    # Allow receptor connections from within the namespace (task pods
+    # and other mesh-ingress nodes).
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      ports:
+        - protocol: TCP
+          port: 27199
+  egress:
+    # Allow DNS resolution via OpenShift DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+    # Unrestricted egress: receptor mesh peers are user-configured
+    # and cannot be enumerated at policy creation time.
+    - {}

@@ -1,0 +1,47 @@
+# NetworkPolicy for backup, restore, and migration pods.
+# Matches all pods with the common AWX labels that are NOT specifically
+# selected by the web or task NPs (those pods already have their own policies
+# with unrestricted egress).
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-db-management'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(4) | trim }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      app.kubernetes.io/component: '{{ deployment_type }}'
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution via OpenShift DNS.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+{% if managed_database | bool %}
+    # Allow db-management pods to reach managed PostgreSQL.
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: database
+              app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+{% else %}
+    # External database: allow on the configured port without destination
+    # restriction since the database host is user-configured.
+    - ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+{% endif %}
