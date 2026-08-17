@@ -98,10 +98,12 @@
       register: all_network_policies
 
     - name: Assert expected number of NetworkPolicies exist
+      vars:
+        awx_nps: "{{ all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list }}"
       ansible.builtin.assert:
         that:
-          - all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list | length >= 5
-        fail_msg: "Expected at least 5 AWX NetworkPolicies, got {{ all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list | length }}"
+          - awx_nps | length >= 5
+        fail_msg: "Expected at least 5 AWX NetworkPolicies, got {{ awx_nps | length }}"
 
   rescue:
     - name: Re-emit failure
