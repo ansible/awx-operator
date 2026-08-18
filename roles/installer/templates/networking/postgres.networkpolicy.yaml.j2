@@ -32,6 +32,20 @@ spec:
       ports:
         - protocol: TCP
           port: {{ awx_postgres_port | default('5432') }}
+{% if backup_pvc_namespace | default(ansible_operator_meta.namespace) != ansible_operator_meta.namespace %}
+    # Allow connections from backup/restore management pods running in a
+    # different namespace (backup_pvc_namespace).
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: '{{ backup_pvc_namespace }}'
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
+{% endif %}
   egress:
     # Allow DNS resolution via OpenShift DNS.
     - to:
@@ -43,3 +57,14 @@ spec:
           port: 5353
         - protocol: UDP
           port: 5353
+    # Allow egress to other postgres pods on the database port.
+    # Required for pg_dump during major-version upgrades
+    # (upgrade_postgres.yml streams data from old to new pod).
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: database
+              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+      ports:
+        - protocol: TCP
+          port: {{ awx_postgres_port | default('5432') }}
