@@ -63,6 +63,9 @@
     ingress_type: route
   when: is_openshift | bool and ingress_type | lower == 'none'
 
+- name: Apply NetworkPolicy for mesh-ingress
+  include_tasks: networkpolicy.yml
+
 - name: Apply Ingress resource
   k8s:
     apply: yes
@@ -78,9 +81,6 @@
   set_fact:
     external_hostname: "{{ ingress.result.status.ingress[0].host }}"
   when: ingress_type | lower == 'route'
-
-- name: Apply NetworkPolicy for mesh-ingress
-  include_tasks: networkpolicy.yml
 
 - name: Create other resources
   k8s:

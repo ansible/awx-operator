@@ -15,8 +15,8 @@
           - np_default_deny.resources | length == 1
           - "'Ingress' in np_default_deny.resources[0].spec.policyTypes"
           - "'Egress' in np_default_deny.resources[0].spec.policyTypes"
-          - np_default_deny.resources[0].spec.ingress is not defined
-          - np_default_deny.resources[0].spec.egress is not defined
+          - np_default_deny.resources[0].spec.ingress | default([]) | length == 0
+          - np_default_deny.resources[0].spec.egress | default([]) | length == 0
           - np_default_deny.resources[0].spec.podSelector.matchExpressions is defined
         fail_msg: "default-deny NetworkPolicy is missing or misconfigured"
 

@@ -28,6 +28,7 @@ spec:
               app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
         - podSelector:
             matchLabels:
+              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
               control-plane: controller-manager
       ports:
         - protocol: TCP

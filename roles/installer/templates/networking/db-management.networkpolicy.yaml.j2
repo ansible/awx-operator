@@ -14,7 +14,7 @@ spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-      app.kubernetes.io/component: '{{ deployment_type }}'
+      app.kubernetes.io/component: db-management
   policyTypes:
     - Egress
   egress:
