@@ -18,12 +18,14 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # Allow DNS resolution via OpenShift DNS.
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: openshift-dns
-      ports:
+    # Allow DNS resolution (port 53 for vanilla k8s / Kind, port 5353 for
+    # OpenShift DNS).  No destination restriction — DNS is a low-risk
+    # egress target.
+    - ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
         - protocol: TCP
           port: 5353
         - protocol: UDP
