@@ -18,25 +18,10 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow receptor connections from the OpenShift router (external
-    # execution nodes connect via Route/Ingress on port 27199).
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              policy-group.network.openshift.io/ingress: ""
-        - namespaceSelector:
-            matchLabels:
-              network.openshift.io/policy-group: ingress
-      ports:
-        - protocol: TCP
-          port: 27199
-    # Allow receptor connections from within the namespace (task pods
-    # and other mesh-ingress nodes).
-    - from:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
-      ports:
+    # Allow receptor connections on port 27199 from any source (routers,
+    # ingress controllers, NodePort, external execution nodes, and
+    # internal mesh peers).
+    - ports:
         - protocol: TCP
           port: 27199
   egress:

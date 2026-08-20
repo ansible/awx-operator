@@ -17,42 +17,9 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow traffic from the OpenShift router (for Routes/Ingress).
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              policy-group.network.openshift.io/ingress: ""
-        - namespaceSelector:
-            matchLabels:
-              network.openshift.io/policy-group: ingress
-      ports:
-        - protocol: TCP
-          port: 8052
-{% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
-        - protocol: TCP
-          port: 8053
-{% endif %}
-    # Allow traffic from AAP gateway, other AAP component pods, and the
-    # operator controller-manager (for health checks and reconciliation).
-    - from:
-        - podSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/managed-by
-                operator: In
-                values:
-                  - '{{ deployment_type }}-operator'
-                  - 'aap-operator'
-                  - 'aap-gateway-operator'
-                  - 'automationcontroller-operator'
-                  - 'automationhub-operator'
-                  - 'eda-operator'
-                  - 'metrics-operator'
-                  - 'automationmetricsservice-operator'
-                  - 'ansible-mcp-server-operator'
-        - podSelector:
-            matchLabels:
-              control-plane: controller-manager
-      ports:
+    # Allow traffic on the HTTP serving port from any source (routers,
+    # ingress controllers, NodePort, gateway, and other AAP components).
+    - ports:
         - protocol: TCP
           port: 8052
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
