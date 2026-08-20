@@ -12,6 +12,7 @@ spec:
       labels:
         {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=8) | trim }}
         {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=8) | trim }}
+        app.kubernetes.io/component: db-management
     spec:
 {% if bundle_ca_crt %}
       initContainers:
