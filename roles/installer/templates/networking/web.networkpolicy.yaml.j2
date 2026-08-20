@@ -37,17 +37,6 @@ spec:
           port: 5353
         - protocol: UDP
           port: 5353
-{% if managed_database | bool %}
-    # Allow web to reach managed PostgreSQL.
-    - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/component: database
-              app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
-      ports:
-        - protocol: TCP
-          port: {{ awx_postgres_port | default('5432') }}
-{% endif %}
-    # Unrestricted egress for LDAP/SAML/webhooks and other user-configured
-    # external services whose addresses cannot be enumerated.
+    # Unrestricted egress for LDAP/SAML/webhooks, managed/external PostgreSQL,
+    # and other user-configured services whose addresses cannot be enumerated.
     - {}

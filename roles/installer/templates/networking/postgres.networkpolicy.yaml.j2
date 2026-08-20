@@ -20,12 +20,13 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow connections from AWX operand pods (web, task, migration jobs,
-    # backup/restore) and the operator controller-manager.
+    # Allow connections from this AWX instance's operand pods (web, task,
+    # migration jobs, backup/restore) and the operator controller-manager.
     - from:
         - podSelector:
             matchLabels:
               app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
+              app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
         - podSelector:
             matchLabels:
               app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'

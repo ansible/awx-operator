@@ -26,17 +26,7 @@ spec:
           port: 5353
         - protocol: UDP
           port: 5353
-{% if managed_database | bool %}
-    # Allow task to reach managed PostgreSQL.
-    - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/component: database
-              app.kubernetes.io/instance: 'postgres-{{ supported_pg_version }}-{{ ansible_operator_meta.name }}'
-      ports:
-        - protocol: TCP
-          port: {{ awx_postgres_port | default('5432') }}
-{% endif %}
     # Unrestricted egress for receptor mesh, SCM polling, execution
-    # environments, Kubernetes API, and other external services.
+    # environments, Kubernetes API, managed/external PostgreSQL, and other
+    # external services.
     - {}
