@@ -1,6 +1,6 @@
 # Development Guide
 
-There are development yaml examples in the [`dev/`](../dev) directory and Makefile targets that can be used to build, deploy and test changes made to the awx-operator.
+There are development yaml examples in the [`dev/`](https://github.com/ansible/awx-operator/tree/devel/dev) directory and Makefile targets that can be used to build, deploy and test changes made to the awx-operator.
 
 Run `make help` to see all available targets and options.
 

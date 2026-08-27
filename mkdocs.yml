@@ -7,6 +7,16 @@ docs_dir: docs
 strict: true
 use_directory_urls: false
 
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+
 theme:
   name: "ansible"
   features:
@@ -85,6 +95,7 @@ nav:
       - troubleshooting/debugging.md
   - Contributors Guide:
       - contributors-guide/contributing.md
+      - development.md
       - contributors-guide/release-process.md
       - contributors-guide/author.md
       - contributors-guide/code-of-conduct.md
@@ -108,9 +119,6 @@ plugins:
             docstring_style: sphinx
             merge_init_into_class: yes
             show_submodules: yes
-          import:
-            - url: https://docs.ansible.com/ansible/latest/objects.inv
-              domains: [py, std]
 
 markdown_extensions:
   - admonition
