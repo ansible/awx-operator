@@ -29,88 +29,88 @@
 
     - name: Validate DEFAULT_AWX_VERSION
       block:
-      - name: Extract tags from images from web pod
-        set_fact:
-          web_image_tags: |
-            {{ awx_web_pod.resources[0].spec.containers |
-              map(attribute='image') |
-              map('regex_search', default_awx_version) }}
-      - name: Extract tags from images from task pod
-        set_fact:
-          task_image_tags: |
-            {{ awx_task_pod.resources[0].spec.containers |
-              map(attribute='image') |
-              map('regex_search', default_awx_version) }}
-      - fail:
-          msg: |
-            It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
-            This is an environment variable that is set via build arg when releasing awx-operator.
-        when:
-          - default_awx_version not in web_image_tags
-          - default_awx_version not in task_image_tags
+        - name: Extract tags from images from web pod
+          set_fact:
+            web_image_tags: |
+              {{ awx_web_pod.resources[0].spec.containers |
+                map(attribute='image') |
+                map('regex_search', default_awx_version) }}
+        - name: Extract tags from images from task pod
+          set_fact:
+            task_image_tags: |
+              {{ awx_task_pod.resources[0].spec.containers |
+                map(attribute='image') |
+                map('regex_search', default_awx_version) }}
+        - fail:
+            msg: |
+              It looks like you may have broken the DEFAULT_AWX_VERSION functionality.
+              This is an environment variable that is set via build arg when releasing awx-operator.
+          when:
+            - default_awx_version not in web_image_tags
+            - default_awx_version not in task_image_tags
       when: not awx_version
 
     - name: Validate additional_labels
       block:
-      - name: Extract additional_labels from AWX spec
-        set_fact:
-          awx_additional_labels: >-
-            {{ this_awx.resources[0].metadata.labels
-              | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
-              | list
-            }}
-
-      - name: Extract additional_labels from AWX web Pod
-        set_fact:
-          awx_web_pod_additional_labels: >-
-            {{ awx_web_pod.resources[0].metadata.labels
-              | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
-              | list
-            }}
-
-      - name: Extract additional_labels from AWX task Pod
-        set_fact:
-          awx_task_pod_additional_labels: >-
-            {{ awx_task_pod.resources[0].metadata.labels
+        - name: Extract additional_labels from AWX spec
+          set_fact:
+            awx_additional_labels: >-
+              {{ this_awx.resources[0].metadata.labels
                 | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
                 | list
-            }}
+              }}
 
-      - name: Assert AWX web Pod contains additional_labels
-        ansible.builtin.assert:
-          that:
-            - awx_web_pod_additional_labels == awx_additional_labels
+        - name: Extract additional_labels from AWX web Pod
+          set_fact:
+            awx_web_pod_additional_labels: >-
+              {{ awx_web_pod.resources[0].metadata.labels
+                | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+                | list
+              }}
 
-      - name: Assert AWX task Pod contains additional_labels
-        ansible.builtin.assert:
-          that:
-            - awx_task_pod_additional_labels == awx_additional_labels
+        - name: Extract additional_labels from AWX task Pod
+          set_fact:
+            awx_task_pod_additional_labels: >-
+              {{ awx_task_pod.resources[0].metadata.labels
+                  | dict2items | selectattr('key', 'in', this_awx.resources[0].spec.additional_labels)
+                  | list
+              }}
 
-      - name: Extract web Pod labels which shouldn't have been propagated to it from AWX
-        set_fact:
-          awx_web_pod_extra_labels: >-
-            {{ awx_web_pod.resources[0].metadata.labels
-              | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
-              | list
-            }}
+        - name: Assert AWX web Pod contains additional_labels
+          ansible.builtin.assert:
+            that:
+              - awx_web_pod_additional_labels == awx_additional_labels
 
-      - name: AWX web Pod doesn't contain AWX labels not in additional_labels
-        ansible.builtin.assert:
-          that:
-            - awx_web_pod_extra_labels == []
+        - name: Assert AWX task Pod contains additional_labels
+          ansible.builtin.assert:
+            that:
+              - awx_task_pod_additional_labels == awx_additional_labels
 
-      - name: Extract task Pod labels which shouldn't have been propagated to it from AWX
-        set_fact:
-          awx_task_pod_extra_labels: >-
-            {{ awx_task_pod.resources[0].metadata.labels
-              | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
-              | list
-            }}
+        - name: Extract web Pod labels which shouldn't have been propagated to it from AWX
+          set_fact:
+            awx_web_pod_extra_labels: >-
+              {{ awx_web_pod.resources[0].metadata.labels
+                | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
+                | list
+              }}
 
-      - name: AWX task Pod doesn't contain AWX labels not in additional_labels
-        ansible.builtin.assert:
-          that:
-            - awx_task_pod_extra_labels == []
+        - name: AWX web Pod doesn't contain AWX labels not in additional_labels
+          ansible.builtin.assert:
+            that:
+              - awx_web_pod_extra_labels == []
+
+        - name: Extract task Pod labels which shouldn't have been propagated to it from AWX
+          set_fact:
+            awx_task_pod_extra_labels: >-
+              {{ awx_task_pod.resources[0].metadata.labels
+                | dict2items | selectattr('key', 'in', ["my/do-not-inherit"])
+                | list
+              }}
+
+        - name: AWX task Pod doesn't contain AWX labels not in additional_labels
+          ansible.builtin.assert:
+            that:
+              - awx_task_pod_extra_labels == []
 
   rescue:
     - name: Re-emit failure
