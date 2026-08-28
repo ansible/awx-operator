@@ -183,6 +183,9 @@ spec:
               route_host:
                 description: The DNS to use to points to the instance
                 type: string
+              route_annotations:
+                description: Annotations to add to the route
+                type: string
               route_tls_termination_mechanism:
                 description: The secure TLS termination mechanism to use
                 type: string

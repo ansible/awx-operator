@@ -97,6 +97,10 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+{% if route_annotations %}
+  annotations:
+    {{ route_annotations | indent(width=4) }}
+{% endif %}
 spec:
 {% if route_host != '' %}
   host: {{ route_host }}
