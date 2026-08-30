@@ -49,6 +49,13 @@ Let's create an alias for easier usage:
 alias kubectl="minikube kubectl --"
 ```
 
+If you still are facing problems to use the `kubectl` commnad after creating the alias, make a bash script in `/usr/local/bin/` named `kubectl`:
+```
+#!/bin/bash
+args="$@"
+minikube kubectl -- $args
+````
+
 Now, you can proceed with the installation of the AWX Operator and AWX. Please refer to the [Basic Install](basic-install.md) for further instructions.
 
 !!! tip

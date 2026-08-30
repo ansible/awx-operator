@@ -166,6 +166,11 @@ kubectl logs -f deployments/awx-operator-controller-manager -c awx-manager
 ```
 
 Once deployed, your AWX instance should now be reachable at `http://localhost:<assigned-nodeport>/` (in this case, `http://localhost:31006/`).
+If you are using minikube, your AWX instance will be reachable at `http://<minikube-ip>:<assigned-nodeport>/`. To view your minikuke ip run:
+```
+$ minikube ip
+```
+
 
 By default, the admin user is `admin` and the password is available in the `<resourcename>-admin-password` secret. To retrieve the admin password, run:
 
