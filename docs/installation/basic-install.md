@@ -3,7 +3,7 @@
 After cloning this repository, you must choose the tag to run:
 
 ```sh
-git clone git@github.com:ansible/awx-operator.git
+git clone https://github.com/ansible/awx-operator.git
 cd awx-operator
 git tag
 git checkout tags/<tag>
