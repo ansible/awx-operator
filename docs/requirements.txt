@@ -94,7 +94,7 @@ mkdocs==1.5.3
     #   mkdocs-minify-plugin
     #   mkdocs-monorepo-plugin
     #   mkdocstrings
-mkdocs-ansible==24.3.1
+mkdocs-ansible==24.12.0
     # via -r requirements.in
 mkdocs-autorefs==0.5.0
     # via mkdocstrings
@@ -130,8 +130,6 @@ pillow==10.0.1
     # via
     #   cairosvg
     #   mkdocs-ansible
-pipdeptree==2.7.1
-    # via mkdocs-ansible
 platformdirs==4.2.0
     # via
     #   mkdocs
