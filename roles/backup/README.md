@@ -102,7 +102,7 @@ backup_resource_requirements:
 To customize the pg_dump command that will be executed on a backup use the `pg_dump_suffix` variable. This variable will append your provided pg_dump parameters to the end of the 'standard' command. For example to exclude the data from 'main_jobevent' and 'main_job' to decrease the size of the backup use:
 
 ```
-pg_dump_suffix: "--exclude-table-data 'main_jobevent*' --exclude-table-data 'main_job'"
+pg_dump_suffix: "--exclude-table-data 'main_jobevent*' --exclude-table-data '*main_systemjobevent*' --exclude-table-data '*main_activitystream_*'"
 ```
 
 Testing
