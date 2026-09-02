@@ -13,11 +13,19 @@ metadata:
 {% endif %}
 spec:
   ports:
-{% if service_type | lower == "nodeport" %}
+{% if service_type | lower == "nodeport" and nodeport_protocol | lower == "http" %}
     - port: 80
       protocol: TCP
       targetPort: 8052
       name: http
+{% if nodeport_port is defined %}
+      nodePort: {{ nodeport_port }}
+{% endif %}
+{% elif service_type | lower == "nodeport" and nodeport_protocol | lower == "https" %}
+    - port: 443
+      protocol: TCP
+      targetPort: 8053
+      name: https
 {% if nodeport_port is defined %}
       nodePort: {{ nodeport_port }}
 {% endif %}
