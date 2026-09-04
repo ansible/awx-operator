@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Label PR - Community
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
 
       - name: Create a virtual environment
         run: python3 -m venv venv
@@ -25,7 +25,7 @@ jobs:
           pip3 install requests
 
       - name: Check if user is a member of Ansible org
-        uses: jannekem/run-python-script-action@v1
+        uses: jannekem/run-python-script-action@9d8e2e0878d575fb6073277f38ce3f10ebf4f059 # v1.8
         id: check_user
         with:
           script: |

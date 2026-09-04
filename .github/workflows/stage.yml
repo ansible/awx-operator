@@ -38,7 +38,7 @@ jobs:
           exit 0
 
       - name: Checkout awx-operator
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository_owner }}/awx-operator
           path: awx-operator
@@ -48,7 +48,7 @@ jobs:
           python3 -m pip install docker
 
       - name: Log into registry ghcr.io
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567    # v3.3.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f    # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -75,7 +75,7 @@ jobs:
 
       - name: Create Draft Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
