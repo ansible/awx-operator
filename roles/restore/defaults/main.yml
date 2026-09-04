@@ -24,6 +24,17 @@ no_log: true
 #   kubernetes.io/os: linux
 db_management_pod_node_selector: ''
 
+# Add tolerations for the Postgres pods to backup.
+# Specify as a list of dicts. E.g.:
+# db_management_pod_tolerations:
+#   - key: "key1"
+#     operator: "Equal"
+#     value: "value1"
+#     effect: "NoSchedule"
+#   - key: "key2"
+#     operator: "Exists"
+#     effect: "NoExecute"
+db_management_pod_tolerations: []
 
 # Default resource requirements
 restore_resource_requirements:
