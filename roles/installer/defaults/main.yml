@@ -20,6 +20,11 @@ api_urlpattern_prefix: ''
 #   eks.amazonaws.com/role-arn: arn:aws:iam::<ACCOUNT_ID>:role/<IAM_ROLE_NAME>
 service_account_annotations: ''
 
+# Namespace where Container Group job pods will run.
+# When set, the operator grants the AWX service account pod/secret
+# permissions in this namespace instead of the AWX namespace.
+default_container_group_namespace: ''
+
 # Custom labels for the tower service. Specify as literal block. E.g.:
 # service_labels: |
 #   environment: non-production

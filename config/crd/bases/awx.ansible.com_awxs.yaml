@@ -1691,6 +1691,9 @@ spec:
                 description: Whether or not to preload data upon instance creation
                 default: true
                 type: boolean
+              default_container_group_namespace:
+                description: Namespace where Container Group job pods will run. Creates the namespace and grants required permissions automatically.
+                type: string
               task_args:
                 type: array
                 items:
