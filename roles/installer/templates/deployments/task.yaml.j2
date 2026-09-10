@@ -35,6 +35,7 @@ spec:
         checksum-{{ template | replace('/', '-') }}: "{{ lookup('template', template + '.yaml.j2') | sha1 }}"
 {% endfor %}
 {% for secret in [
+    "pg_config",
     "bundle_cacert",
     "route_tls",
     "ldap_cacert",
@@ -100,6 +101,32 @@ spec:
           image: '{{ _image }}'
           imagePullPolicy: '{{ image_pull_policy }}'
           resources: {{ init_container_resource_requirements }}
+          env:
+            - name: AWX_DATABASES__default__HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: host
+            - name: AWX_DATABASES__default__PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: port
+            - name: AWX_DATABASES__default__NAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: database
+            - name: AWX_DATABASES__default__USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: username
+            - name: AWX_DATABASES__default__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: password
           command:
             - /bin/sh
             - -c
@@ -335,6 +362,31 @@ spec:
               value: "/etc/supervisord_task.conf"
             - name: AWX_SKIP_MIGRATIONS
               value: "1"
+            - name: AWX_DATABASES__default__HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: host
+            - name: AWX_DATABASES__default__PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: port
+            - name: AWX_DATABASES__default__NAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: database
+            - name: AWX_DATABASES__default__USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: username
+            - name: AWX_DATABASES__default__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: password
             - name: MY_POD_UID
               valueFrom:
                 fieldRef:
