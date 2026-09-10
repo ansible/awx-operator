@@ -38,6 +38,7 @@ spec:
         checksum-configmaps-redirect-page.configmap.html: "{{ lookup('template', 'configmaps/redirect-page.configmap.html.j2') | sha1 }}"
 {% endif %}
 {% for secret in [
+    "pg_config",
     "bundle_cacert",
     "route_tls",
     "ldap_cacert",
@@ -286,6 +287,31 @@ spec:
               value: "web"
             - name: SUPERVISOR_CONFIG_PATH
               value: "/etc/supervisord_web.conf"
+            - name: AWX_DATABASES__default__HOST
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: host
+            - name: AWX_DATABASES__default__PORT
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: port
+            - name: AWX_DATABASES__default__NAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: database
+            - name: AWX_DATABASES__default__USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: username
+            - name: AWX_DATABASES__default__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ __postgres_configuration_secret }}"
+                  key: password
             - name: MY_POD_NAMESPACE
               valueFrom:
                 fieldRef:
