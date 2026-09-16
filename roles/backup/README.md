@@ -105,6 +105,16 @@ To customize the pg_dump command that will be executed on a backup use the `pg_d
 pg_dump_suffix: "--exclude-table-data 'main_jobevent*' --exclude-table-data 'main_job'"
 ```
 
+When using a hostPath backed PVC and some other storage classes like longhorn storage, the postgres data directory needs to be accessible by the user in the postgres pod (UID 26).
+
+To initialize this directory with the correct permissions, configure the following setting, which will use an init container to set the permissions in the postgres volume.
+
+```
+init_container_commands: |
+  chown 26:0 /backups
+  chmod 700 /backups
+```
+
 Testing
 ----------------
 
