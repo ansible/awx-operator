@@ -18,7 +18,7 @@ jobs:
         - name: Check out repo
           uses: actions/checkout@v4
         - name: Setup nox
-          uses: wntrblm/nox@2024.04.15
+          uses: wntrblm/nox@2024.10.09
           with:
               python-versions: "${{ matrix.python-versions }}"
         - name: "Run nox -s ${{ matrix.session }}"
