@@ -1,4 +1,13 @@
 ---
+{#
+  AWX Service Template
+  
+  Configures the main service for AWX web interface with support for:
+  - ClusterIP (default)
+  - NodePort (with optional custom port)
+  - LoadBalancer (with configurable protocol and port)
+  - Route passthrough termination for HTTPS
+#}
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,13 +15,23 @@ metadata:
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
+{% if service_labels %}
     {{ service_labels | indent(width=4) }}
+{% endif %}
 {% if service_annotations %}
   annotations:
     {{ service_annotations | indent(width=4) }}
 {% endif %}
+{# Variable validation for service configurations #}
+{% if service_type | lower == 'loadbalancer' and not (loadbalancer_port is defined) %}
+  {% set _ = ansible_fail(msg="loadbalancer_port must be defined when service_type is LoadBalancer") %}
+{% endif %}
+{% if service_type | lower == 'nodeport' and nodeport_port is defined and (nodeport_port | int < 30000 or nodeport_port | int > 32767) %}
+  {% set _ = ansible_fail(msg="nodeport_port must be between 30000 and 32767") %}
+{% endif %}
 spec:
   ports:
+{# HTTP Port Configuration #}
 {% if service_type | lower == "nodeport" %}
     - port: 80
       protocol: TCP
@@ -21,39 +40,40 @@ spec:
 {% if nodeport_port is defined %}
       nodePort: {{ nodeport_port }}
 {% endif %}
-{% elif service_type | lower != 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
+{% elif service_type | lower == 'loadbalancer' %}
+{% set lb_port = loadbalancer_port | default(80) %}
+{% set lb_protocol = loadbalancer_protocol | lower | default('http') %}
+    - port: {{ lb_port }}
+      protocol: TCP
+      targetPort: 8052
+      name: {{ 'https' if lb_protocol == 'https' else 'http' }}
+{% else %}
+{# ClusterIP service - only add HTTP port if not using HTTPS load balancer protocol #}
+{% if not (loadbalancer_protocol is defined and loadbalancer_protocol | lower == 'https') %}
     - port: 80
       protocol: TCP
       targetPort: 8052
       name: http
 {% endif %}
+{% endif %}
+{# HTTPS Port for Route Passthrough #}
 {% if ingress_type | lower == 'route' and route_tls_termination_mechanism | lower == 'passthrough' %}
     - port: 443
       protocol: TCP
       targetPort: 8053
       name: https
 {% endif %}
-{% if service_type | lower == 'loadbalancer' and loadbalancer_protocol | lower == 'https' %}
-    - port: {{ loadbalancer_port }}
-      protocol: TCP
-      targetPort: 8052
-      name: https
-{% elif service_type | lower == 'loadbalancer' and loadbalancer_protocol | lower != 'https' %}
-    - port: {{ loadbalancer_port }}
-      protocol: TCP
-      targetPort: 8052
-      name: http
-{% endif %}
   selector:
     app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-web'
     app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
     app.kubernetes.io/component: '{{ deployment_type }}'
+{# Service Type Configuration - supports ClusterIP (default), NodePort, and LoadBalancer #}
 {% if service_type | lower == "nodeport" %}
   type: NodePort
 {% elif service_type | lower == "loadbalancer" %}
   type: LoadBalancer
 {% if loadbalancer_ip is defined and loadbalancer_ip | length %}
-  loadbalancerip: '{{ loadbalancer_ip }}'
+  loadBalancerIP: '{{ loadbalancer_ip }}'
 {% endif %}
 {% if loadbalancer_class is defined and loadbalancer_class | length %}
   loadBalancerClass: {{ loadbalancer_class }}

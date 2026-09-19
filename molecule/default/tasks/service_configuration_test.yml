@@ -1,0 +1,276 @@
+---
+# Service Configuration Test Suite
+# Tests for different service types and configurations
+
+- name: Test ClusterIP service (default)
+  block:
+    - name: Apply AWX with ClusterIP service
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-clusterip-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: ClusterIP
+            service_labels: |
+              test-type: clusterip
+            service_annotations: |
+              test.annotation/type: clusterip
+
+    - name: Wait for AWX ClusterIP service to be created
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: v1
+        kind: Service
+        name: test-clusterip-awx-service
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      register: clusterip_service
+
+    - name: Validate ClusterIP service configuration
+      ansible.builtin.assert:
+        that:
+          - clusterip_service.resources[0].spec.type == "ClusterIP"
+          - clusterip_service.resources[0].spec.ports[0].port == 80
+          - clusterip_service.resources[0].spec.ports[0].targetPort == 8052
+          - clusterip_service.resources[0].spec.ports[0].name == "http"
+          - "'test-type: clusterip' in clusterip_service.resources[0].metadata.labels"
+          - "'test.annotation/type: clusterip' in clusterip_service.resources[0].metadata.annotations"
+        fail_msg: "ClusterIP service validation failed"
+
+- name: Test NodePort service
+  block:
+    - name: Apply AWX with NodePort service
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-nodeport-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: NodePort
+            nodeport_port: 30080
+            service_labels: |
+              test-type: nodeport
+
+    - name: Wait for AWX NodePort service to be created
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: v1
+        kind: Service
+        name: test-nodeport-awx-service
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      register: nodeport_service
+
+    - name: Validate NodePort service configuration
+      ansible.builtin.assert:
+        that:
+          - nodeport_service.resources[0].spec.type == "NodePort"
+          - nodeport_service.resources[0].spec.ports[0].port == 80
+          - nodeport_service.resources[0].spec.ports[0].targetPort == 8052
+          - nodeport_service.resources[0].spec.ports[0].nodePort == 30080
+          - nodeport_service.resources[0].spec.ports[0].name == "http"
+          - "'test-type: nodeport' in nodeport_service.resources[0].metadata.labels"
+        fail_msg: "NodePort service validation failed"
+
+- name: Test LoadBalancer service with HTTP
+  block:
+    - name: Apply AWX with LoadBalancer service (HTTP)
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-lb-http-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: LoadBalancer
+            loadbalancer_port: 8080
+            loadbalancer_protocol: http
+            loadbalancer_class: "nginx"
+            service_labels: |
+              test-type: loadbalancer-http
+
+    - name: Wait for AWX LoadBalancer HTTP service to be created
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: v1
+        kind: Service
+        name: test-lb-http-awx-service
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      register: lb_http_service
+
+    - name: Validate LoadBalancer HTTP service configuration
+      ansible.builtin.assert:
+        that:
+          - lb_http_service.resources[0].spec.type == "LoadBalancer"
+          - lb_http_service.resources[0].spec.ports[0].port == 8080
+          - lb_http_service.resources[0].spec.ports[0].targetPort == 8052
+          - lb_http_service.resources[0].spec.ports[0].name == "http"
+          - lb_http_service.resources[0].spec.loadBalancerClass == "nginx"
+          - "'test-type: loadbalancer-http' in lb_http_service.resources[0].metadata.labels"
+        fail_msg: "LoadBalancer HTTP service validation failed"
+
+- name: Test LoadBalancer service with HTTPS
+  block:
+    - name: Apply AWX with LoadBalancer service (HTTPS)
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-lb-https-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: LoadBalancer
+            loadbalancer_port: 8443
+            loadbalancer_protocol: https
+            loadbalancer_ip: "192.168.1.100"
+            service_labels: |
+              test-type: loadbalancer-https
+
+    - name: Wait for AWX LoadBalancer HTTPS service to be created
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: v1
+        kind: Service
+        name: test-lb-https-awx-service
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      register: lb_https_service
+
+    - name: Validate LoadBalancer HTTPS service configuration
+      ansible.builtin.assert:
+        that:
+          - lb_https_service.resources[0].spec.type == "LoadBalancer"
+          - lb_https_service.resources[0].spec.ports[0].port == 8443
+          - lb_https_service.resources[0].spec.ports[0].targetPort == 8052
+          - lb_https_service.resources[0].spec.ports[0].name == "https"
+          - lb_https_service.resources[0].spec.loadBalancerIP == "192.168.1.100"
+          - "'test-type: loadbalancer-https' in lb_https_service.resources[0].metadata.labels"
+        fail_msg: "LoadBalancer HTTPS service validation failed"
+
+- name: Test Route passthrough HTTPS configuration
+  block:
+    - name: Apply AWX with Route passthrough
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-route-passthrough-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: ClusterIP
+            ingress_type: route
+            route_tls_termination_mechanism: passthrough
+            service_labels: |
+              test-type: route-passthrough
+
+    - name: Wait for AWX Route passthrough service to be created
+      k8s_info:
+        namespace: "{{ namespace }}"
+        api_version: v1
+        kind: Service
+        name: test-route-passthrough-awx-service
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+      register: route_passthrough_service
+
+    - name: Validate Route passthrough service has HTTPS port
+      ansible.builtin.assert:
+        that:
+          - route_passthrough_service.resources[0].spec.type == "ClusterIP"
+          # Should have both HTTP and HTTPS ports for passthrough
+          - route_passthrough_service.resources[0].spec.ports | length >= 1
+          # Check if HTTPS port (443 -> 8053) exists for passthrough
+          - route_passthrough_service.resources[0].spec.ports | selectattr('port', 'equalto', 443) | list | length == 1
+          - (route_passthrough_service.resources[0].spec.ports | selectattr('port', 'equalto', 443) | first).targetPort == 8053
+          - (route_passthrough_service.resources[0].spec.ports | selectattr('port', 'equalto', 443) | first).name == "https"
+        fail_msg: "Route passthrough service validation failed"
+
+- name: Test service template field validation (negative tests)
+  block:
+    # Test invalid NodePort range
+    - name: Test invalid NodePort (should fail)
+      k8s:
+        state: present
+        definition:
+          apiVersion: awx.ansible.com/v1beta1
+          kind: AWX
+          metadata:
+            name: test-invalid-nodeport-awx
+            namespace: "{{ namespace }}"
+          spec:
+            service_type: NodePort
+            nodeport_port: 25000  # Below valid range
+      register: invalid_nodeport_result
+      failed_when: false
+
+    - name: Verify invalid NodePort was rejected
+      ansible.builtin.assert:
+        that:
+          - invalid_nodeport_result is failed
+        fail_msg: "Invalid NodePort should have been rejected"
+
+  rescue:
+    - name: Clean up test resources on failure
+      k8s:
+        state: absent
+        api_version: awx.ansible.com/v1beta1
+        kind: AWX
+        name: "{{ item }}"
+        namespace: "{{ namespace }}"
+      loop:
+        - test-clusterip-awx
+        - test-nodeport-awx
+        - test-lb-http-awx
+        - test-lb-https-awx
+        - test-route-passthrough-awx
+        - test-invalid-nodeport-awx
+      ignore_errors: yes
+
+    - name: Re-emit failure
+      fail:
+        msg: "Service configuration tests failed: {{ ansible_failed_result }}"
+
+- name: Clean up test resources
+  k8s:
+    state: absent
+    api_version: awx.ansible.com/v1beta1
+    kind: AWX
+    name: "{{ item }}"
+    namespace: "{{ namespace }}"
+  loop:
+    - test-clusterip-awx
+    - test-nodeport-awx  
+    - test-lb-http-awx
+    - test-lb-https-awx
+    - test-route-passthrough-awx
+    - test-invalid-nodeport-awx
+  ignore_errors: yes
