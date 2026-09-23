@@ -1,12 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: '{{ ansible_operator_meta.name }}-migration-{{ version }}'
+  name: '{{ migration_job_name }}'
   namespace: '{{ ansible_operator_meta.namespace }}'
   labels:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
+  ttlSecondsAfterFinished: {{ migration_job_ttl_seconds_after_finished }}
   template:
     metadata:
       labels:
@@ -39,9 +40,15 @@ spec:
           image: '{{ _image }}'
           resources: {{ task_resource_requirements }}
           command:
-            - awx-manage
-            - migrate
-            - --noinput
+            - /bin/sh
+            - -c
+            - |
+              set -o pipefail
+              if awx-manage showmigrations --plan | grep -q '\[ \]'; then
+                awx-manage migrate --noinput
+              else
+                echo 'No pending migrations for this image - nothing to do.'
+              fi
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-application-credentials
               mountPath: "/etc/tower/conf.d/credentials.py"

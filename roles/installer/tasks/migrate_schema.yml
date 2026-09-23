@@ -1,40 +1,59 @@
 ---
 
-- name: Check for pending migrations
-  k8s_exec:
-    namespace: "{{ ansible_operator_meta.namespace }}"
-    pod: "{{ awx_web_pod_name }}"
-    container: "{{ ansible_operator_meta.name }}-web"
-    command: >-
-      bash -c "awx-manage showmigrations | grep -v '(no migrations)' | grep -v '[X]' | grep '[ ]' | wc -l"
-  changed_when: false
+# Kubernetes stamps a Job's own name onto its Pods as the job-name /
+# batch.kubernetes.io/job-name label, and label values are capped at 63
+# characters - that is the real ceiling for the whole name below, not the
+# usual 253-character object name limit. The suffix is a short hash of the
+# target image rather than the awx-manage version string: it changes
+# whenever the image actually changes (unlike a version string that can
+# repeat across builds), so "a Job with this name succeeded" reliably means
+# "migrations for this exact image were already run".
+- name: Compute a collision-safe migration Job name from the target image
+  set_fact:
+    migration_job_name: "{{ ansible_operator_meta.name[:42] }}-migration-{{ (_image | hash('sha256'))[:10] }}"
   when: awx_web_pod_name != ''
-  register: database_check
 
 - block:
-    - name: Get version of controller for tracking
-      k8s_exec:
+    - name: Look up any existing migration Job for this image
+      k8s_info:
+        api_version: batch/v1
+        kind: Job
         namespace: "{{ ansible_operator_meta.namespace }}"
-        pod: "{{ awx_web_pod_name }}"
-        container: "{{ ansible_operator_meta.name }}-web"
-        command: >-
-          bash -c "awx-manage --version"
-      changed_when: false
-      register: version_check
+        name: "{{ migration_job_name }}"
+      register: existing_migration_job
 
-    - name: Sanitize instance version
-      set_fact:
-        version: "{{ version_check.stdout | replace('+', '-') | trim }}"
+    # Job spec.template is immutable, so an existing Job for this name can
+    # never be safely re-applied. Anything other than a confirmed success
+    # (failed, still running, or stuck from a previous reconcile) is
+    # deleted so it can be recreated cleanly below.
+    - name: Delete a stale migration Job that has not succeeded
+      k8s:
+        api_version: batch/v1
+        kind: Job
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        name: "{{ migration_job_name }}"
+        state: absent
+      when:
+        - existing_migration_job.resources | default([]) | length > 0
+        - existing_migration_job.resources[0].status.succeeded | default(0) != 1
 
-    # It is possible to do a wait on this task to create the job and wait
-    # until it completes. Unfortunately, if the job doesn't wait finish within
-    # the timeout period that is considered an error.  We only want this to
-    # error if there is an issue with creating the job.
+    # The Job's own command checks for pending migrations and applies them
+    # using its own (new) image - see jobs/migration.yaml.j2. That removes
+    # any dependency on exec-ing into a possibly still-running old pod to
+    # decide whether migrations are needed. ignore_errors here covers the
+    # rare case of a concurrent reconcile recreating the Job between the
+    # lookup above and this apply; that shows up as a failure on this pass
+    # and self-heals on the next one, once the existence check above sees
+    # the (now real) Job's status.
     - name: Create kubernetes job to perform the migration
       k8s:
         apply: yes
         definition: "{{ lookup('template', 'jobs/migration.yaml.j2') }}"
       register: migrate_result
+      ignore_errors: true
+      when:
+        - existing_migration_job.resources | default([]) | length == 0 or
+          existing_migration_job.resources[0].status.succeeded | default(0) != 1
 
     # This task is really only necessary for new installations. We need to
     # ensure the database has a schema loaded before continuing with the
@@ -44,15 +63,31 @@
         api_version: batch/v1
         kind: Job
         namespace: "{{ ansible_operator_meta.namespace }}"
-        name: "{{ ansible_operator_meta.name }}-migration-{{ version }}"
-      register: result
+        name: "{{ migration_job_name }}"
+      register: migrate_watch_result
       until:
-        - result.resources[0].status.succeeded is defined
-        - result.resources[0].status.succeeded == 1
+        - migrate_watch_result.resources[0].status.succeeded is defined
+        - migrate_watch_result.resources[0].status.succeeded == 1
       retries: 180
       delay: 5
       ignore_errors: true
+      when: migrate_result is changed
 
-  when:
-    - database_check is defined
-    - (database_check.stdout|trim) != '0'
+    # Consumed by update_status.yml so status.image/status.version are only
+    # stamped once migration for this image is actually confirmed, instead
+    # of unconditionally at the end of the reconcile.
+    - name: Record whether the migration for this image is confirmed successful
+      set_fact:
+        migration_confirmed: >-
+          {{ migrate_result is skipped or
+             (migrate_result is succeeded and migrate_watch_result is defined and not (migrate_watch_result.failed | default(false))) }}
+
+    - name: Report migration Job outcome
+      debug:
+        msg: >-
+          migration Job {{ migration_job_name }}:
+          {{ 'already succeeded for this image, nothing to do' if migrate_result is skipped
+             else ('confirmed successful' if migration_confirmed | bool
+             else 'not confirmed successful - see migrate_result/migrate_watch_result for details') }}
+
+  when: awx_web_pod_name != ''

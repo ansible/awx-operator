@@ -8,6 +8,21 @@
     state: absent
     force: true
 
+# A restore rolls the database backward independent of the AWX image, so a
+# migration Job that already succeeded before the restore is no longer
+# trustworthy evidence that the (now-restored) database is current. Deleting
+# it here means the next reconcile finds no matching Job and creates a
+# fresh one, which re-checks and re-applies migrations against the restored
+# database instead of skipping based on stale Job status.
+- name: Delete migration Jobs so they re-run against the restored database
+  k8s:
+    kind: Job
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    state: absent
+    label_selectors:
+      - "app.kubernetes.io/part-of={{ deployment_name }}"
+      - "app.kubernetes.io/component=db-management"
+
 - name: Remove ownerReferences from secrets to avoid garbage collection
   k8s:
     definition:
