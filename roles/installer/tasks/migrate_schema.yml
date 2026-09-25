@@ -22,20 +22,77 @@
         name: "{{ migration_job_name }}"
       register: existing_migration_job
 
+    - name: Look up task pods to check whether they are stuck waiting for migrations
+      k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        label_selectors:
+          - "app.kubernetes.io/name={{ ansible_operator_meta.name }}-task"
+      register: task_pods
+
+    # Flatten the init-database init container status (the one that runs
+    # wait-for-migrations, see deployments/task.yaml.j2) out of every task
+    # pod, so we can tell "still blocked on migrations" apart from
+    # "crashing for an unrelated reason" or "hasn't started yet".
+    - name: Extract the wait-for-migrations init container status from each task pod
+      set_fact:
+        wait_for_migrations_statuses: >-
+          {{ task_pods.resources | default([])
+             | map(attribute='status.initContainerStatuses', default=[])
+             | sum(start=[])
+             | selectattr('name', 'equalto', 'init-database')
+             | list }}
+
+    # A database restore that rolls the schema backward independent of the
+    # AWX image - for example an external CNPG/barman point-in-time
+    # recovery, which this operator has no visibility into and no hook for
+    # (unlike a restore done through the AWXRestore CR, see
+    # roles/restore/tasks/cleanup.yml) - can leave a migration Job marked
+    # succeeded for the *current* image even though the just-restored
+    # database predates it. Job status alone can't detect this. Task pods
+    # stuck running (not crash-looping, not merely not-yet-started) in this
+    # init container are the corroborating, ground-truth signal that
+    # migrations genuinely still need to run, regardless of what a
+    # same-image Job's cached status claims.
+    - name: Determine whether task pods are stuck waiting for migrations
+      set_fact:
+        task_stuck_waiting_for_migrations: >-
+          {{ wait_for_migrations_statuses | selectattr('state.running', 'defined') | list | length > 0 }}
+
     # Job spec.template is immutable, so an existing Job for this name can
-    # never be safely re-applied. Anything other than a confirmed success
-    # (failed, still running, or stuck from a previous reconcile) is
-    # deleted so it can be recreated cleanly below.
-    - name: Delete a stale migration Job that has not succeeded
+    # never be safely re-applied - it can only be left alone or deleted and
+    # recreated. "Dead" deliberately excludes a Job that is still active:
+    # deleting a migration Job mid-run would abort a real, in-progress
+    # migration on any reconcile that happens to land while it's running
+    # (e.g. a long migration plus an unrelated watched-resource change
+    # triggering ansible-operator again).
+    - name: Determine whether the existing migration Job is dead
+      set_fact:
+        migration_job_is_dead: >-
+          {{ existing_migration_job.resources | default([]) | length > 0 and
+             (existing_migration_job.resources[0].status.failed | default(0) > 0 or
+              (existing_migration_job.resources[0].status.active | default(0) == 0 and
+               existing_migration_job.resources[0].status.succeeded | default(0) != 1)) }}
+
+    # See the wait_for_migrations comment above: a Job can be "succeeded"
+    # for this exact image and still be stale evidence if the database was
+    # rolled back out from under that image afterward.
+    - name: Determine whether the existing migration Job's success is contradicted by live pod state
+      set_fact:
+        migration_job_stale_success: >-
+          {{ existing_migration_job.resources | default([]) | length > 0 and
+             existing_migration_job.resources[0].status.succeeded | default(0) == 1 and
+             task_stuck_waiting_for_migrations }}
+
+    - name: Delete a migration Job that is dead or contradicted by live pod state
       k8s:
         api_version: batch/v1
         kind: Job
         namespace: "{{ ansible_operator_meta.namespace }}"
         name: "{{ migration_job_name }}"
         state: absent
-      when:
-        - existing_migration_job.resources | default([]) | length > 0
-        - existing_migration_job.resources[0].status.succeeded | default(0) != 1
+      when: migration_job_is_dead or migration_job_stale_success
 
     # The Job's own command checks for pending migrations and applies them
     # using its own (new) image - see jobs/migration.yaml.j2. That removes
@@ -51,9 +108,10 @@
         definition: "{{ lookup('template', 'jobs/migration.yaml.j2') }}"
       register: migrate_result
       ignore_errors: true
-      when:
-        - existing_migration_job.resources | default([]) | length == 0 or
-          existing_migration_job.resources[0].status.succeeded | default(0) != 1
+      when: >-
+        existing_migration_job.resources | default([]) | length == 0
+        or migration_job_is_dead
+        or migration_job_stale_success
 
     # This task is really only necessary for new installations. We need to
     # ensure the database has a schema loaded before continuing with the
@@ -87,7 +145,8 @@
         msg: >-
           migration Job {{ migration_job_name }}:
           {{ 'already succeeded for this image, nothing to do' if migrate_result is skipped
+             else ('recreated - previous success was contradicted by task pods still waiting on migrations' if migration_job_stale_success and migration_confirmed | bool
              else ('confirmed successful' if migration_confirmed | bool
-             else 'not confirmed successful - see migrate_result/migrate_watch_result for details') }}
+             else 'not confirmed successful - see migrate_result/migrate_watch_result for details')) }}
 
   when: awx_web_pod_name != ''
