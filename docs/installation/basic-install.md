@@ -41,7 +41,7 @@ If you have a custom operator image you have built, you can specify it with:
 IMG=quay.io/$YOURNAMESPACE/awx-operator:$YOURTAG make deploy
 ```
 
-Otherwise, you can manually create a file called `kustomization.yaml` with the following content:
+Otherwise, you can manually create a file called `kustomization.yaml` in the `awx-operator` directory with the following content:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -65,6 +65,7 @@ namespace: awx
 Install the manifests by running this:
 
 ```sh
+$ cd awx-operator
 $ kubectl apply -k .
 namespace/awx created
 customresourcedefinition.apiextensions.k8s.io/awxbackups.awx.ansible.com created
@@ -97,7 +98,7 @@ So we don't have to keep repeating `-n awx`, let's set the current namespace for
 kubectl config set-context --current --namespace=awx
 ```
 
-Next, create a file named `awx-demo.yml` in the same folder with the suggested content below. The `metadata.name` you provide will be the name of the resulting AWX deployment.
+Next, create a new folder, for example `awx-demo`. Create a file named `awx-demo.yml` with the content below.  The `metadata.name` you provide will be the name of the resulting AWX deployment.
 
 !!! note
     If you deploy more than one AWX instance to the same namespace, be sure to use unique names.
@@ -128,20 +129,22 @@ spec:
   ingress_type: Route
 ```
 
-Make sure to add this new file to the list of `resources` in your `kustomization.yaml` file:
+Create new a file `kustomization.yaml` within the `awx-demo` directory and add `awx-demo.yml` to the list of `resources`.
 
 ```yaml
-...
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 resources:
-  - github.com/ansible/awx-operator/config/default?ref=<tag>
-  # Add this extra line:
   - awx-demo.yml
-...
+
+# Specify a custom namespace in which to install AWX
+namespace: awx
 ```
 
 Finally, apply the changes to create the AWX instance in your cluster:
 
 ```sh
+cd awx-demo
 kubectl apply -k .
 ```
 
