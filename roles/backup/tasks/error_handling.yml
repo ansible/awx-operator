@@ -3,7 +3,7 @@
 - name: Emit ocp event with error
   operator_sdk.util.k8s_event:
     state: present
-    name: backup-error
+    name: "{{ ansible_operator_meta.name }}.backup-error"
     namespace: "{{ ansible_operator_meta.namespace }}"
     reason: BackupFailed
     message: "{{ error_msg }}"

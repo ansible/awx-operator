@@ -3,7 +3,7 @@
 - name: Emit ocp event with error
   operator_sdk.util.k8s_event:
     state: present
-    name: restore-error
+    name: "{{ ansible_operator_meta.name }}.restore-error"
     namespace: "{{ ansible_operator_meta.namespace }}"
     reason: RestoreFailed
     message: "{{ error_msg }}"
