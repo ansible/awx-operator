@@ -19,6 +19,7 @@ spec:
             app.kubernetes.io/name: '{{ ansible_operator_meta.name }}-{{ cronjob_name }}'
             {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=12) | trim }}
             {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=12) | trim }}
+            app.kubernetes.io/component: db-management
         spec:
 {% if image_pull_secret is defined %}
           imagePullSecrets:
