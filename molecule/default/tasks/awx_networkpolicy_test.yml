@@ -90,6 +90,37 @@
           - np_db_management.resources[0].spec.egress | length > 0
         fail_msg: "db-management NetworkPolicy is missing or misconfigured"
 
+    - name: Get metrics-utility-gather CronJob
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: batch/v1
+        kind: CronJob
+        name: example-awx-metrics-utility-gather
+      register: cronjob_metrics_utility_gather
+
+    - name: Get metrics-utility-report CronJob
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: batch/v1
+        kind: CronJob
+        name: example-awx-metrics-utility-report
+      register: cronjob_metrics_utility_report
+
+    - name: Assert metrics-utility CronJob pods are selected by db-management NetworkPolicy
+      vars:
+        gather_labels: "{{ cronjob_metrics_utility_gather.resources[0].spec.jobTemplate.spec.template.metadata.labels }}"
+        report_labels: "{{ cronjob_metrics_utility_report.resources[0].spec.jobTemplate.spec.template.metadata.labels }}"
+      ansible.builtin.assert:
+        that:
+          - cronjob_metrics_utility_gather.resources | length == 1
+          - cronjob_metrics_utility_report.resources | length == 1
+          - gather_labels["app.kubernetes.io/component"] == "db-management"
+          - report_labels["app.kubernetes.io/component"] == "db-management"
+        fail_msg: >-
+          metrics-utility CronJob pod template is missing app.kubernetes.io/component: db-management.
+          Without it, the pod only inherits the generic common labels, isn't selected by any
+          allow-NetworkPolicy, and gets zero egress from default-deny (AAP-95494).
+
     - name: Collect all NetworkPolicy names
       k8s_info:
         namespace: '{{ namespace }}'
