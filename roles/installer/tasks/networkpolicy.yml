@@ -32,3 +32,10 @@
     state: present
     apply: true
     definition: "{{ lookup('template', 'networking/db-management.networkpolicy.yaml.j2') }}"
+
+- name: Apply metrics-utility NetworkPolicy for external billing data egress
+  kubernetes.core.k8s:
+    state: present
+    apply: true
+    definition: "{{ lookup('template', 'networking/metrics-utility.networkpolicy.yaml.j2') }}"
+  when: _metrics_utility_enabled | default(false) | bool or _metrics_utility_console_enabled | default(false) | bool

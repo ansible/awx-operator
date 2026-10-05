@@ -90,6 +90,27 @@
           - np_db_management.resources[0].spec.egress | length > 0
         fail_msg: "db-management NetworkPolicy is missing or misconfigured"
 
+    - name: Get metrics-utility NetworkPolicy
+      k8s_info:
+        namespace: '{{ namespace }}'
+        api_version: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: example-awx-metrics-utility
+      register: np_metrics_utility
+
+    - name: Assert metrics-utility NetworkPolicy exists with Egress only
+      ansible.builtin.assert:
+        that:
+          - np_metrics_utility.resources | length == 1
+          - "'Egress' in np_metrics_utility.resources[0].spec.policyTypes"
+          - np_metrics_utility.resources[0].spec.policyTypes | length == 1
+          - np_metrics_utility.resources[0].spec.egress | length > 0
+        fail_msg: >-
+          metrics-utility NetworkPolicy is missing or misconfigured. Without it,
+          metrics-utility CronJob pods have no egress at all: DNS, Postgres,
+          sso.redhat.com, and console.redhat.com all depend on this one policy
+          (AAP-95494).
+
     - name: Get metrics-utility-gather CronJob
       k8s_info:
         namespace: '{{ namespace }}'
@@ -106,20 +127,27 @@
         name: example-awx-metrics-utility-report
       register: cronjob_metrics_utility_report
 
-    - name: Assert metrics-utility CronJob pods are selected by db-management NetworkPolicy
-      vars:
-        gather_labels: "{{ cronjob_metrics_utility_gather.resources[0].spec.jobTemplate.spec.template.metadata.labels }}"
-        report_labels: "{{ cronjob_metrics_utility_report.resources[0].spec.jobTemplate.spec.template.metadata.labels }}"
+    - name: Assert metrics-utility CronJob resources exist
       ansible.builtin.assert:
         that:
           - cronjob_metrics_utility_gather.resources | length == 1
           - cronjob_metrics_utility_report.resources | length == 1
-          - gather_labels["app.kubernetes.io/component"] == "db-management"
-          - report_labels["app.kubernetes.io/component"] == "db-management"
+        fail_msg: "metrics-utility CronJob(s) are missing"
+
+    - name: Assert metrics-utility CronJob pods are selected by the metrics-utility NetworkPolicy
+      vars:
+        gather_name: "{{ cronjob_metrics_utility_gather.resources[0].spec.jobTemplate.spec.template.metadata.labels['app.kubernetes.io/name'] }}"
+        report_name: "{{ cronjob_metrics_utility_report.resources[0].spec.jobTemplate.spec.template.metadata.labels['app.kubernetes.io/name'] }}"
+        selector_values: >-
+          {{ (np_metrics_utility.resources[0].spec.podSelector.matchExpressions
+          | selectattr('key', 'equalto', 'app.kubernetes.io/name') | first).values }}
+      ansible.builtin.assert:
+        that:
+          - gather_name in selector_values
+          - report_name in selector_values
         fail_msg: >-
-          metrics-utility CronJob pod template is missing app.kubernetes.io/component: db-management.
-          Without it, the pod only inherits the generic common labels, isn't selected by any
-          allow-NetworkPolicy, and gets zero egress from default-deny (AAP-95494).
+          metrics-utility CronJob pod names are not covered by the metrics-utility
+          NetworkPolicy's podSelector, so they would have no egress at all (AAP-95494).
 
     - name: Collect all NetworkPolicy names
       k8s_info:
@@ -133,8 +161,8 @@
         awx_nps: "{{ all_network_policies.resources | selectattr('metadata.name', 'match', '^example-awx-') | list }}"
       ansible.builtin.assert:
         that:
-          - awx_nps | length >= 5
-        fail_msg: "Expected at least 5 AWX NetworkPolicies, got {{ awx_nps | length }}"
+          - awx_nps | length >= 6
+        fail_msg: "Expected at least 6 AWX NetworkPolicies, got {{ awx_nps | length }}"
 
   rescue:
     - name: Re-emit failure

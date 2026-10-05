@@ -1,0 +1,49 @@
+# NetworkPolicy for metrics-utility CronJob pods (gather, report, and the
+# Red Hat Hybrid Cloud Console variant). These pods need both database access
+# (already granted via the db-management NetworkPolicy, which these pods also
+# match) and external egress to authenticate against sso.redhat.com and ship
+# billing data to console.redhat.com, which db-management does not allow.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: '{{ ansible_operator_meta.name }}-metrics-utility'
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  labels:
+    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(4) | trim }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - '{{ ansible_operator_meta.name }}-metrics-utility-gather'
+          - '{{ ansible_operator_meta.name }}-metrics-utility-report'
+          - '{{ ansible_operator_meta.name }}-metrics-utility-gather-console'
+      - key: app.kubernetes.io/managed-by
+        operator: In
+        values:
+          - '{{ deployment_type }}-operator'
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution via OpenShift DNS and kube-system.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    # Unrestricted egress for sso.redhat.com, console.redhat.com, and other
+    # external services whose addresses cannot be enumerated.
+    - {}
