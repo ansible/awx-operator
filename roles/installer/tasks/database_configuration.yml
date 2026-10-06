@@ -100,6 +100,26 @@
   set_fact:
     __postgres_configuration_secret: "{{ pg_config['resources'][0]['metadata']['name'] }}"
 
+# Runs unconditionally (not just for the operator-generated secret above) so
+# rotation-detection also works for an externally supplied
+# postgres_configuration_secret (BYO database, or a secret populated by
+# something like Vault Secrets Operator) - the label is what the "kind:
+# Secret" watch entry in watches.yaml selects on. apply: true only merges
+# metadata.labels here, so this never touches the secret's actual data even
+# when the secret is owned/managed by something else.
+- name: Ensure the resolved PostgreSQL secret carries the reconcile-watch label
+  k8s:
+    apply: true
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ __postgres_configuration_secret }}"
+        namespace: "{{ ansible_operator_meta.namespace }}"
+        labels:
+          awx.ansible.com/owner-name: "{{ ansible_operator_meta.name }}"
+  no_log: "{{ no_log }}"
+
 - name: Store Database Configuration
   set_fact:
     awx_postgres_user: "{{ pg_config['resources'][0]['data']['username'] | b64decode }}"

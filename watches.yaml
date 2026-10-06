@@ -5,6 +5,35 @@
   kind: AWX
   playbook: playbooks/awx.yml
   snakeCaseParameters: False
+  # Metadata-only changes (e.g. the annotation patched by the PG secret watch
+  # entry below) don't bump metadata.generation, so without this the primary
+  # watch on AWX ignores them and no reconcile is triggered.
+  watchAnnotationsChanges: true
+
+# The PG configuration secret is deliberately never given an ownerReference
+# (see roles/installer/tasks/cleanup.yml, which actively strips one off if
+# present) so that it survives CR deletion. That means it can't use
+# ansible-operator's ownerReference-based dependent-resource watch to trigger
+# a reconcile on rotation (e.g. by Vault/VSO). This selector-based watch is
+# an independent mechanism: it matches on label, not ownership, so rotating
+# the secret's data (in place, by whatever manages it) still triggers a
+# reconcile without ever granting it an ownerReference.
+#
+# One watch entry covers every AWX instance in the namespace: the label's
+# key is fixed but its value is the owning CR's own name (set in
+# postgres_secret.yaml.j2 / database_configuration.yml), so "Exists"
+# matches any instance's secret without the entries colliding -
+# pg_secret_rotated.yml reads the value to know which CR to reconcile.
+- version: v1
+  group: ""
+  kind: Secret
+  selector:
+    matchExpressions:
+      - key: awx.ansible.com/owner-name
+        operator: Exists
+  playbook: playbooks/pg_secret_rotated.yml
+  manageStatus: false
+  watchDependentResources: false
 
 - version: v1beta1
   group: awx.ansible.com
