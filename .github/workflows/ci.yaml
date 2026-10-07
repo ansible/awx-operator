@@ -35,6 +35,7 @@ jobs:
 
       - name: Run Molecule
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOLECULE_VERBOSITY: 3
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
