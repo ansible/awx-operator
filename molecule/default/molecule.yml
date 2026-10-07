@@ -25,8 +25,12 @@ provisioner:
         awx_image: ${AWX_TEST_IMAGE:-""}
         awx_version: ${AWX_TEST_VERSION:-""}
         _github_api_token: "{{ lookup('env', 'GITHUB_TOKEN') | default(lookup('env', 'CI_GITHUB_TOKEN'), true) | default('', true) }}"
-        _github_api_headers: "{{ {'Authorization': 'Bearer ' + _github_api_token, 'Accept': 'application/vnd.github+json'} if _github_api_token else {} }}"
-        default_awx_version: "{{ lookup('url', 'https://api.github.com/repos/ansible/awx/releases/latest', headers=_github_api_headers) | from_json | json_query('tag_name') }}"
+        _github_api_headers: >-
+          {{ {'Authorization': 'Bearer ' + _github_api_token,
+             'Accept': 'application/vnd.github+json'} if _github_api_token else {} }}
+        default_awx_version: >-
+          {{ lookup('url', 'https://api.github.com/repos/ansible/awx/releases/latest',
+             headers=_github_api_headers) | from_json | json_query('tag_name') }}
         ansible_python_interpreter: '{{ ansible_playbook_python }}'
         config_dir: ${MOLECULE_PROJECT_DIRECTORY}/config
         samples_dir: ${MOLECULE_PROJECT_DIRECTORY}/config/samples
