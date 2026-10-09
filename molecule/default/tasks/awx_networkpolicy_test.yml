@@ -140,7 +140,7 @@
         report_name: "{{ cronjob_metrics_utility_report.resources[0].spec.jobTemplate.spec.template.metadata.labels['app.kubernetes.io/name'] }}"
         selector_values: >-
           {{ (np_metrics_utility.resources[0].spec.podSelector.matchExpressions
-          | selectattr('key', 'equalto', 'app.kubernetes.io/name') | first).values }}
+          | selectattr('key', 'equalto', 'app.kubernetes.io/name') | first)['values'] }}
       ansible.builtin.assert:
         that:
           - gather_name in selector_values
