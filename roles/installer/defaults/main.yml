@@ -336,6 +336,10 @@ rsyslog_args:
   - /usr/bin/launch_awx_rsyslog.sh
 rsyslog_command: []
 
+# How long a completed database migration Job is kept around before
+# Kubernetes garbage-collects it.
+migration_job_ttl_seconds_after_finished: 86400
+
 task_resource_requirements:
   requests:
     cpu: 100m
