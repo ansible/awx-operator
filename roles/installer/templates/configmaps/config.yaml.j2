@@ -91,6 +91,9 @@ data:
 
     RECEPTOR_LOG_LEVEL = '{{ receptor_log_level }}'
 
+{% if default_container_group_namespace %}
+    AWX_CONTAINER_GROUP_DEFAULT_NAMESPACE = '{{ default_container_group_namespace }}'
+{% endif %}
 
 {% for item in extra_settings | default([]) %}
     {{ item.setting }} = {{ item.value }}
