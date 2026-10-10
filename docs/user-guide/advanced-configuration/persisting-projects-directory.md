@@ -1,10 +1,10 @@
 # Persisting Projects Directory
 
-In cases which you want to persist the `/var/lib/projects` directory, there are few variables that are customizable for the `awx-operator`.
+In cases which you want to persist the `/var/lib/awx/projects` directory, there are few variables that are customizable for the `awx-operator`.
 
 | Name                         | Description                                                                                    | Default       |
 | ---------------------------- | ---------------------------------------------------------------------------------------------- | ------------- |
-| projects_persistence         | Whether or not the /var/lib/projects directory will be persistent                              | false         |
+| projects_persistence         | Whether or not the /var/lib/awx/projects directory will be persistent                              | false         |
 | projects_storage_class       | Define the PersistentVolume storage class                                                      | ''            |
 | projects_storage_size        | Define the PersistentVolume size                                                               | 8Gi           |
 | projects_storage_access_mode | Define the PersistentVolume access mode                                                        | ReadWriteMany |
