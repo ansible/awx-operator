@@ -7,7 +7,6 @@ metadata:
     {{ lookup("template", "../common/templates/labels/common.yaml.j2")  | indent(width=4) | trim }}
     {{ lookup("template", "../common/templates/labels/version.yaml.j2") | indent(width=4) | trim }}
 spec:
-  ttlSecondsAfterFinished: {{ migration_job_ttl_seconds_after_finished }}
   template:
     metadata:
       labels:
