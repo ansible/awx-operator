@@ -4,13 +4,15 @@
 # batch.kubernetes.io/job-name label, and label values are capped at 63
 # characters - that is the real ceiling for the whole name below, not the
 # usual 253-character object name limit. The suffix is a short hash of the
-# target image rather than the awx-manage version string: it changes
+# full instance name and target image rather than the awx-manage version
+# string. Including the full name keeps truncated prefixes distinct. The hash changes
 # whenever the image actually changes (unlike a version string that can
 # repeat across builds), so "a Job with this name succeeded" reliably means
 # "migrations for this exact image were already run".
 - name: Compute a collision-safe migration Job name from the target image
   ansible.builtin.set_fact:
-    migration_job_name: "{{ ansible_operator_meta.name[:42] }}-migration-{{ (_image | hash('sha256'))[:10] }}"
+    migration_job_name: >-
+      {{ ansible_operator_meta.name[:42] }}-migration-{{ ([ansible_operator_meta.name, _image] | to_json | hash('sha256'))[:10] }}
     migration_confirmed: false
   when: awx_web_pod_name != ''
 
