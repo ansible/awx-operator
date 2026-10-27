@@ -39,15 +39,9 @@ spec:
           image: '{{ _image }}'
           resources: {{ task_resource_requirements }}
           command:
-            - /bin/sh
-            - -c
-            - |
-              set -o pipefail
-              if awx-manage showmigrations --plan | grep -q '\[ \]'; then
-                awx-manage migrate --noinput
-              else
-                echo 'No pending migrations for this image - nothing to do.'
-              fi
+            - awx-manage
+            - migrate
+            - --noinput
           volumeMounts:
             - name: {{ ansible_operator_meta.name }}-application-credentials
               mountPath: "/etc/tower/conf.d/credentials.py"
