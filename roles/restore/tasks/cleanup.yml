@@ -8,6 +8,38 @@
     state: absent
     force: true
 
+# A restore rolls the database backward independent of the AWX image, so a
+# migration Job that already succeeded before the restore is no longer
+# trustworthy evidence that the (now-restored) database is current. Deleting
+# it here means the next reconcile finds no matching Job and creates a
+# fresh one, which re-checks and re-applies migrations against the restored
+# database instead of skipping based on stale Job status.
+# Match labels on the Job itself, including retained Jobs from before
+# image-based naming. The db-management component label is only on Pods.
+- name: Find Jobs owned by the restored deployment
+  kubernetes.core.k8s_info:
+    api_version: batch/v1
+    kind: Job
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    label_selectors:
+      - "app.kubernetes.io/part-of={{ deployment_name }}"
+      - "app.kubernetes.io/managed-by={{ deployment_type }}-operator"
+  register: restore_migration_jobs
+
+- name: Delete migration Jobs so they re-run against the restored database
+  kubernetes.core.k8s:
+    api_version: batch/v1
+    kind: Job
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    name: "{{ item.metadata.name }}"
+    state: absent
+  loop: "{{ restore_migration_jobs.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  when: >-
+    item.spec.template.spec.containers
+    | selectattr('name', 'equalto', 'migration-job') | list | length > 0
+
 - name: Remove ownerReferences from secrets to avoid garbage collection
   k8s:
     definition:
