@@ -44,6 +44,12 @@
     status:
       secretKeySecret: "{{ secret_key_secret_name }}"
 
+# migration_confirmed (set in migrate_schema.yml) gates the tasks below so
+# status.version/status.image only advance to the new image once its
+# migration is actually confirmed successful - not unconditionally at the
+# end of every reconcile. When migrate_schema.yml didn't run at all (e.g.
+# awx_web_pod_name was empty), migration_confirmed is undefined and treated
+# as true so status still gets populated on unrelated reconciles.
 - name: Retrieve instance version
   k8s_exec:
     namespace: "{{ ansible_operator_meta.namespace }}"
@@ -53,7 +59,9 @@
       bash -c "awx-manage --version"
   register: instance_version
   changed_when: false
-  when: awx_web_pod_name != ''
+  when:
+    - awx_web_pod_name != ''
+    - migration_confirmed | default(true) | bool
 
 - name: Update upgradedFrom status
   operator_sdk.util.k8s_status:
@@ -83,6 +91,7 @@
     namespace: "{{ ansible_operator_meta.namespace }}"
     status:
       image: "{{ _custom_image | default(lookup('env', 'RELATED_IMAGE_AWX')) | default(_default_image, true) }}"
+  when: migration_confirmed | default(true) | bool
 
 - block:
     - name: Retrieve route URL

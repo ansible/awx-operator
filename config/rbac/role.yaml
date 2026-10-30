@@ -96,9 +96,15 @@ rules:
       - cronjobs
       - jobs
     verbs:
+      - create
+      # migrate_schema.yml deletes a stale/dead migration Job so it can be
+      # recreated cleanly (Job spec.template is immutable) - without this
+      # verb the delete is rejected with a 403, which fails the whole
+      # reconcile and the AWX/AutomationController CR never reaches
+      # status.conditions[type=Successful].
+      - delete
       - get
       - list
-      - create
       - patch
       - update
       - watch
