@@ -94,6 +94,14 @@
              (migrate_watch_result.resources | default([]) | length) > 0 and
              (migrate_watch_result.resources[0].status.succeeded | default(0) | int) == 1 }}
 
+    - name: Stop reconciliation when the migration is not confirmed successful
+      ansible.builtin.fail:
+        msg: >-
+          Migration Job {{ migration_job_name }} was not confirmed successful.
+          Refusing to continue Django initialization; inspect the Job and its
+          Pod logs before retrying reconciliation.
+      when: not migration_confirmed | bool
+
     - name: Report migration Job outcome
       ansible.builtin.debug:
         msg: >-
