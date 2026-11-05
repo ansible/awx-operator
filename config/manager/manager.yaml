@@ -47,6 +47,8 @@ spec:
           value: explicit
         - name: ANSIBLE_DEBUG_LOGS
           value: 'false'
+        - name: OPERATOR_VERSION
+          value: ""
         - name: WATCH_NAMESPACE
           valueFrom:
             fieldRef:
