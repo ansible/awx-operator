@@ -1,0 +1,19 @@
+---
+- name: Verify backup and restore management pod labels
+  ansible.builtin.include_role:
+    name: "{{ playbook_dir }}/../../roles/common"  # noqa: role-name[path]
+    tasks_from: test_management_pod_labels.yml
+  vars:
+    ansible_operator_meta:
+      name: label-test-resource
+      namespace: molecule
+    deployment_type: awx
+    deployment_name: label-test-awx
+    backup_pvc_namespace: molecule
+    backup_pvc: label-test-pvc
+    _postgres_image: postgres:15
+    image_pull_policy: IfNotPresent
+    db_management_pod_node_selector: ''
+    additional_labels_items:
+      - key: test.example/retained
+        value: retained

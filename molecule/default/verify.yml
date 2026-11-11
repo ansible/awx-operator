@@ -15,6 +15,7 @@
         - name: Import all test files from tasks/
           ansible.builtin.include_tasks: '{{ item }}'
           with_fileglob:
+            - tasks/awx_management_pod_labels_test.yml
             - tasks/awx_test.yml
             - tasks/awx_networkpolicy_test.yml
             - tasks/awx_replicas_test.yml

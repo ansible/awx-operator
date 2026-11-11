@@ -1,0 +1,24 @@
+---
+- name: Render backup and restore management pods
+  ansible.builtin.set_fact:
+    common_backup_management_pod: "{{ lookup('template', '../backup/templates/management-pod.yml.j2') | from_yaml }}"
+    common_restore_management_pod: "{{ lookup('template', '../restore/templates/management-pod.yml.j2') | from_yaml }}"
+
+- name: Assert backup and restore management pod labels
+  ansible.builtin.assert:
+    that:
+      - common_backup_management_pod.metadata.name == ansible_operator_meta.name ~ '-db-management'
+      - common_restore_management_pod.metadata.name == ansible_operator_meta.name ~ '-db-management'
+      - common_backup_management_pod.metadata.labels['app.kubernetes.io/part-of'] == deployment_name
+      - common_restore_management_pod.metadata.labels['app.kubernetes.io/part-of'] == deployment_name
+      - common_backup_management_pod.metadata.labels['app.kubernetes.io/component'] == 'db-management'
+      - common_restore_management_pod.metadata.labels['app.kubernetes.io/component'] == 'db-management'
+      - common_backup_management_pod.metadata.labels['app.kubernetes.io/managed-by'] == 'awx-operator'
+      - common_restore_management_pod.metadata.labels['app.kubernetes.io/managed-by'] == 'awx-operator'
+      - common_backup_management_pod.metadata.labels['app.kubernetes.io/operator-version'] is defined
+      - common_restore_management_pod.metadata.labels['app.kubernetes.io/operator-version'] is defined
+      - common_backup_management_pod.metadata.labels['test.example/retained'] == 'retained'
+      - common_restore_management_pod.metadata.labels['test.example/retained'] == 'retained'
+    fail_msg: >-
+      Backup and restore management pods must use the target AWX name for
+      app.kubernetes.io/part-of while retaining their common and custom labels.

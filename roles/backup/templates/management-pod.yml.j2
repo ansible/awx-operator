@@ -1,12 +1,17 @@
 ---
+{% set db_management_labels = lookup("template", "../common/templates/labels/common.yaml.j2")
+   | from_yaml
+   | combine(dict([
+       ('app.kubernetes.io/part-of', deployment_name),
+       ('app.kubernetes.io/component', 'db-management')
+     ])) %}
 apiVersion: v1
 kind: Pod
 metadata:
   name: {{ ansible_operator_meta.name }}-db-management
   namespace: "{{ backup_pvc_namespace }}"
   labels:
-    {{ lookup("template", "../common/templates/labels/common.yaml.j2") | indent(width=4) | trim }}
-    app.kubernetes.io/component: db-management
+    {{ db_management_labels | to_nice_yaml(indent=2) | indent(width=4) | trim }}
 spec:
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
