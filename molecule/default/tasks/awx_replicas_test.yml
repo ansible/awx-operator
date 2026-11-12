@@ -12,8 +12,8 @@
 
     - include_tasks: _test_case_replicas.yml
       vars:
-        expected_web_replicas: 0
-        expected_task_replicas: 0
+        expected_web_replicas: 1
+        expected_task_replicas: 1
 
 ####
 
@@ -43,8 +43,8 @@
 
     - include_tasks: _test_case_replicas.yml
       vars:
-        expected_web_replicas: 0
-        expected_task_replicas: 0
+        expected_web_replicas: 1
+        expected_task_replicas: 1
 
 ####
 
