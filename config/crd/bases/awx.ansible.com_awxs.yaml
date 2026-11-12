@@ -1902,7 +1902,7 @@ spec:
                 description: Secret where can be found the trusted Certificate Authority Bundle
                 type: string
               projects_persistence:
-                description: Whether or not the /var/lib/projects directory will be persistent
+                description: Whether or not the /var/lib/awx/projects directory will be persistent
                 default: false
                 type: boolean
               projects_use_existing_claim:
@@ -1912,17 +1912,17 @@ spec:
                 - _Yes_
                 - _No_
               projects_existing_claim:
-                description: PersistentVolumeClaim to mount /var/lib/projects directory
+                description: PersistentVolumeClaim to mount /var/lib/awx/projects directory
                 type: string
               projects_storage_class:
-                description: Storage class for the /var/lib/projects PersistentVolumeClaim
+                description: Storage class for the /var/lib/awx/projects PersistentVolumeClaim
                 type: string
               projects_storage_size:
-                description: Size for the /var/lib/projects PersistentVolumeClaim
+                description: Size for the /var/lib/awx/projects PersistentVolumeClaim
                 default: 8Gi
                 type: string
               projects_storage_access_mode:
-                description: AccessMode for the /var/lib/projects PersistentVolumeClaim
+                description: AccessMode for the /var/lib/awx/projects PersistentVolumeClaim
                 default: ReadWriteMany
                 type: string
               csrf_cookie_secure:
