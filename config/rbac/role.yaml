@@ -6,6 +6,13 @@ metadata:
   name: awx-manager-role
 rules:
   - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+      - create
+  - apiGroups:
       - route.openshift.io
     resources:
       - routes
@@ -139,6 +146,12 @@ rules:
     verbs:
       - create
       - get
+  - apiGroups:
+      - ""
+    resources:
+      - serviceaccounts/token
+    verbs:
+      - create
   - apiGroups:
       - apps
     resources:
