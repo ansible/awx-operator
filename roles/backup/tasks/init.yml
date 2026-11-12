@@ -45,6 +45,13 @@
   set_fact:
     backup_pvc: "{{ backup_pvc | default(_default_backup_pvc, true) }}"
 
+- name: Check if backup PVC already exists
+  k8s_info:
+    name: "{{ backup_pvc }}"
+    kind: PersistentVolumeClaim
+    namespace: "{{ backup_pvc_namespace }}"
+  register: _existing_backup_pvc
+
 - block:
     - name: Create PVC for backup
       k8s:
@@ -61,7 +68,8 @@
             namespace: "{{ backup_pvc_namespace }}"
             ownerReferences: null
   when:
-    - (backup_pvc == '' or backup_pvc is not defined) or (create_backup_pvc | bool)
+    - create_backup_pvc | bool
+    - (_existing_backup_pvc.resources | default([])) | length == 0
 
 - name: Set default postgres image
   set_fact:
