@@ -73,6 +73,28 @@
           - np_postgres.resources[0].spec.egress | length > 0
         fail_msg: "postgres NetworkPolicy is missing or misconfigured"
 
+    # The operator may run in a different namespace than the AWX CR (cluster
+    # scoped / AllNamespaces install). A peer with only a podSelector is
+    # implicitly scoped to the policy's own namespace, so the controller-manager
+    # peer must carry namespaceSelector in the SAME list item (an AND). Written
+    # as two separate list items it would be an OR, allowing all ingress.
+    - name: Assert postgres NetworkPolicy allows the operator from any namespace
+      ansible.builtin.assert:
+        that:
+          - cm_peers | length == 1
+          - cm_peers[0].namespaceSelector is defined
+          - cm_peers[0].namespaceSelector == {}
+        fail_msg: >-
+          postgres NetworkPolicy controller-manager peer is missing
+          namespaceSelector; a cluster-scoped operator in another namespace
+          cannot reach the database
+      vars:
+        cm_peers: >-
+          {{ np_postgres.resources[0].spec.ingress
+             | map(attribute='from') | select('defined') | flatten
+             | selectattr('podSelector.matchLabels.control-plane', 'defined')
+             | list }}
+
     - name: Get db-management NetworkPolicy
       k8s_info:
         namespace: '{{ namespace }}'

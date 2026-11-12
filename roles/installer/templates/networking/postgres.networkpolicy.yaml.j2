@@ -22,14 +22,19 @@ spec:
   ingress:
     # Allow connections from this AWX instance's operand pods (web, task,
     # migration jobs, backup/restore) and the operator controller-manager.
+    # The controller-manager pod carries only control-plane: controller-manager
+    # (see config/manager/manager.yaml), not app.kubernetes.io/managed-by --
+    # that label is on operand pods. namespaceSelector: {} + podSelector (same
+    # list item = AND) allows the operator pod to reach the database when it
+    # runs in a separate namespace.
     - from:
         - podSelector:
             matchLabels:
               app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
               app.kubernetes.io/part-of: '{{ ansible_operator_meta.name }}'
-        - podSelector:
+        - namespaceSelector: {}
+          podSelector:
             matchLabels:
-              app.kubernetes.io/managed-by: '{{ deployment_type }}-operator'
               control-plane: controller-manager
       ports:
         - protocol: TCP
