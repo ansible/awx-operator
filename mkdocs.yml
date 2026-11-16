@@ -96,7 +96,6 @@ nav:
   - Contributors Guide:
       - contributors-guide/contributing.md
       - development.md
-      - contributors-guide/release-process.md
       - contributors-guide/author.md
       - contributors-guide/code-of-conduct.md
       - contributors-guide/get-involved.md
