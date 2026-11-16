@@ -139,3 +139,6 @@
 
 - name: Cleanup & Set garbage collection refs
   include_tasks: cleanup.yml
+
+- name: Cleanup secret annotation (AAP-93430)
+  include_tasks: cleanup_secret_annotation.yml
