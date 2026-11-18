@@ -1,30 +1,15 @@
 ---
-- block:
-    - name: Define secrets name
-      set_fact:
-        _admin_password: '{{ admin_password_secret | length | ternary(admin_password_secret, ansible_operator_meta.name + "-admin-password") }}'
-        _secret_key: '{{ secret_key_secret | length | ternary(secret_key_secret, ansible_operator_meta.name + "-secret-key") }}'
-        # yamllint disable-line rule:line-length
-        _broadcast_websocket_secret: '{{ broadcast_websocket_secret | length | ternary(broadcast_websocket_secret, ansible_operator_meta.name + "-broadcast-websocket") }}'  # noqa 204
-        # yamllint disable-line rule:line-length
-        _postgres_configuration: '{{ postgres_configuration_secret | length | ternary(postgres_configuration_secret, ansible_operator_meta.name + "-postgres-configuration") }}'  # noqa 204
-
-    - name: Remove ownerReferences reference
-      k8s:
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: '{{ item }}'
-            namespace: '{{ ansible_operator_meta.namespace }}'
-            ownerReferences: null
-      loop:
-        - '{{ _admin_password }}'
-        - '{{ _secret_key }}'
-        - '{{ _postgres_configuration }}'
-        - '{{ _broadcast_websocket_secret }}'
-        - '{{ ansible_operator_meta.name }}-receptor-ca'
-        - '{{ ansible_operator_meta.name }}-receptor-work-signing'
-      no_log: "{{ no_log }}"
-
+- name: Remove ownerReferences
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: '{{ item }}'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        ownerReferences: null
+  loop:
+    - '{{ ansible_operator_meta.name }}-receptor-ca'
+    - '{{ ansible_operator_meta.name }}-receptor-work-signing'
+  no_log: "{{ no_log }}"
   when: not garbage_collect_secrets | bool
