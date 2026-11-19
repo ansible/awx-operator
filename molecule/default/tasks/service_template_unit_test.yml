@@ -1,0 +1,233 @@
+---
+# Service Template Unit Tests
+# Tests Jinja2 template rendering with different variable combinations
+
+- name: Test service template rendering
+  block:
+    - name: Create temporary directory for test templates
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: service_template_test
+      register: temp_dir
+
+    - name: Copy service template for testing
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../roles/installer/templates/networking/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/service.yaml.j2"
+
+    - name: Test ClusterIP template rendering
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/clusterip_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: ClusterIP
+        service_labels: |
+          app: test-awx
+          environment: test
+        service_annotations: |
+          service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+    - name: Validate ClusterIP rendered template
+      ansible.builtin.slurp:
+        src: "{{ temp_dir.path }}/clusterip_service.yaml"
+      register: clusterip_rendered
+
+    - name: Parse ClusterIP YAML
+      ansible.builtin.set_fact:
+        clusterip_service_yaml: "{{ clusterip_rendered.content | b64decode | from_yaml }}"
+
+    - name: Assert ClusterIP service properties
+      ansible.builtin.assert:
+        that:
+          - clusterip_service_yaml.apiVersion == "v1"
+          - clusterip_service_yaml.kind == "Service"
+          - clusterip_service_yaml.metadata.name == "test-awx-service"
+          - clusterip_service_yaml.metadata.namespace == "test-namespace"
+          - clusterip_service_yaml.spec.type == "ClusterIP"
+          - clusterip_service_yaml.spec.ports[0].port == 80
+          - clusterip_service_yaml.spec.ports[0].targetPort == 8052
+          - clusterip_service_yaml.spec.ports[0].name == "http"
+        fail_msg: "ClusterIP template rendering validation failed"
+
+    - name: Test NodePort template rendering
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/nodeport_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: NodePort
+        nodeport_port: 30080
+
+    - name: Validate NodePort rendered template
+      ansible.builtin.slurp:
+        src: "{{ temp_dir.path }}/nodeport_service.yaml"
+      register: nodeport_rendered
+
+    - name: Parse NodePort YAML
+      ansible.builtin.set_fact:
+        nodeport_service_yaml: "{{ nodeport_rendered.content | b64decode | from_yaml }}"
+
+    - name: Assert NodePort service properties
+      ansible.builtin.assert:
+        that:
+          - nodeport_service_yaml.spec.type == "NodePort"
+          - nodeport_service_yaml.spec.ports[0].port == 80
+          - nodeport_service_yaml.spec.ports[0].targetPort == 8052
+          - nodeport_service_yaml.spec.ports[0].nodePort == 30080
+          - nodeport_service_yaml.spec.ports[0].name == "http"
+        fail_msg: "NodePort template rendering validation failed"
+
+    - name: Test LoadBalancer HTTP template rendering
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/loadbalancer_http_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: LoadBalancer
+        loadbalancer_port: 8080
+        loadbalancer_protocol: http
+        loadbalancer_ip: "192.168.1.100"
+        loadbalancer_class: "nginx"
+
+    - name: Validate LoadBalancer HTTP rendered template
+      ansible.builtin.slurp:
+        src: "{{ temp_dir.path }}/loadbalancer_http_service.yaml"
+      register: lb_http_rendered
+
+    - name: Parse LoadBalancer HTTP YAML
+      ansible.builtin.set_fact:
+        lb_http_service_yaml: "{{ lb_http_rendered.content | b64decode | from_yaml }}"
+
+    - name: Assert LoadBalancer HTTP service properties  
+      ansible.builtin.assert:
+        that:
+          - lb_http_service_yaml.spec.type == "LoadBalancer"
+          - lb_http_service_yaml.spec.ports[0].port == 8080
+          - lb_http_service_yaml.spec.ports[0].targetPort == 8052
+          - lb_http_service_yaml.spec.ports[0].name == "http"
+          - lb_http_service_yaml.spec.loadBalancerIP == "192.168.1.100"  # Test the critical field fix
+          - lb_http_service_yaml.spec.loadBalancerClass == "nginx"
+        fail_msg: "LoadBalancer HTTP template rendering validation failed"
+
+    - name: Test LoadBalancer HTTPS template rendering
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/loadbalancer_https_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: LoadBalancer
+        loadbalancer_port: 8443
+        loadbalancer_protocol: https
+
+    - name: Validate LoadBalancer HTTPS rendered template
+      ansible.builtin.slurp:
+        src: "{{ temp_dir.path }}/loadbalancer_https_service.yaml"
+      register: lb_https_rendered
+
+    - name: Parse LoadBalancer HTTPS YAML
+      ansible.builtin.set_fact:
+        lb_https_service_yaml: "{{ lb_https_rendered.content | b64decode | from_yaml }}"
+
+    - name: Assert LoadBalancer HTTPS service properties
+      ansible.builtin.assert:
+        that:
+          - lb_https_service_yaml.spec.type == "LoadBalancer"
+          - lb_https_service_yaml.spec.ports[0].port == 8443
+          - lb_https_service_yaml.spec.ports[0].targetPort == 8052
+          - lb_https_service_yaml.spec.ports[0].name == "https"
+        fail_msg: "LoadBalancer HTTPS template rendering validation failed"
+
+    - name: Test Route passthrough template rendering
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/route_passthrough_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: ClusterIP
+        ingress_type: route
+        route_tls_termination_mechanism: passthrough
+
+    - name: Validate Route passthrough rendered template
+      ansible.builtin.slurp:
+        src: "{{ temp_dir.path }}/route_passthrough_service.yaml"
+      register: route_passthrough_rendered
+
+    - name: Parse Route passthrough YAML
+      ansible.builtin.set_fact:
+        route_passthrough_service_yaml: "{{ route_passthrough_rendered.content | b64decode | from_yaml }}"
+
+    - name: Assert Route passthrough service has HTTPS port
+      ansible.builtin.assert:
+        that:
+          - route_passthrough_service_yaml.spec.type == "ClusterIP"
+          # Should have HTTPS port for passthrough (443 -> 8053)
+          - route_passthrough_service_yaml.spec.ports | selectattr('port', 'equalto', 443) | list | length == 1
+          - (route_passthrough_service_yaml.spec.ports | selectattr('port', 'equalto', 443) | first).targetPort == 8053
+          - (route_passthrough_service_yaml.spec.ports | selectattr('port', 'equalto', 443) | first).name == "https"
+        fail_msg: "Route passthrough template rendering validation failed"
+
+    # Test validation logic (this should fail template rendering)
+    - name: Test template validation - invalid NodePort range
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2"
+        dest: "{{ temp_dir.path }}/invalid_nodeport_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: NodePort
+        nodeport_port: 25000  # Invalid range
+      register: invalid_nodeport_result
+      failed_when: false
+
+    - name: Assert that invalid NodePort was caught
+      ansible.builtin.assert:
+        that:
+          - invalid_nodeport_result is failed
+          - "'nodeport_port must be between 30000 and 32767' in invalid_nodeport_result.msg"
+        fail_msg: "Template validation should have caught invalid NodePort range"
+
+    - name: Test template validation - missing LoadBalancer port
+      ansible.builtin.template:
+        src: "{{ temp_dir.path }}/service.yaml.j2" 
+        dest: "{{ temp_dir.path }}/missing_lb_port_service.yaml"
+      vars:
+        ansible_operator_meta:
+          name: test-awx
+          namespace: test-namespace
+        deployment_type: awx
+        service_type: LoadBalancer
+        # Missing loadbalancer_port
+      register: missing_lb_port_result
+      failed_when: false
+
+    - name: Assert that missing LoadBalancer port was caught
+      ansible.builtin.assert:
+        that:
+          - missing_lb_port_result is failed
+          - "'loadbalancer_port must be defined when service_type is LoadBalancer' in missing_lb_port_result.msg"
+        fail_msg: "Template validation should have caught missing LoadBalancer port"
+
+  always:
+    - name: Clean up temporary directory
+      ansible.builtin.file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir is defined
