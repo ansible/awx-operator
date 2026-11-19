@@ -22,6 +22,9 @@
 - name: Create Database configuration with new -postgres-{{ supported_pg_version }} hostname
   k8s:
     apply: true
+    server_side_apply:
+      field_manager: "{{ deployment_type }}-operator"
+      force_conflicts: true
     definition: "{{ lookup('template', 'secrets/postgres_upgrade_secret.yaml.j2') }}"
   no_log: "{{ no_log }}"
 
