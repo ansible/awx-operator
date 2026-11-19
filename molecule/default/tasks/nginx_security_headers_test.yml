@@ -1,0 +1,45 @@
+---
+- name: Get the AWX nginx ConfigMap
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: ConfigMap
+    name: example-awx-awx-configmap
+    namespace: '{{ namespace }}'
+  register: nginx_configmap
+
+- name: Assert the AWX nginx ConfigMap exists
+  ansible.builtin.assert:
+    that:
+      - nginx_configmap.resources | length == 1
+    fail_msg: AWX nginx ConfigMap was not created
+
+- name: Verify security headers are configured at the server level and in locations with local add_header directives
+  ansible.builtin.assert:
+    that:
+      - >-
+        (nginx_configmap.resources[0].data['nginx_conf']
+        | regex_findall('add_header Strict-Transport-Security max-age=15768000 always;')
+        | length) == 3
+      - >-
+        (nginx_configmap.resources[0].data['nginx_conf']
+        | regex_findall('add_header X-Frame-Options "DENY" always;')
+        | length) == 3
+      - >-
+        (nginx_configmap.resources[0].data['nginx_conf']
+        | regex_findall('add_header X-Content-Type-Options nosniff always;')
+        | length) == 3
+    fail_msg: >-
+      nginx must set all three security headers with always at the server level and in each
+      location that declares its own add_header directives.
+
+- name: Verify the json_503 location repeats all three security headers
+  ansible.builtin.assert:
+    that:
+      - >-
+        (nginx_configmap.resources[0].data['nginx_conf'].split('location = /json_503')[1]
+        | regex_findall('add_header (Strict-Transport-Security max-age=15768000|X-Frame-Options "DENY"|X-Content-Type-Options nosniff) always;')
+        | length) == 3
+    fail_msg: >-
+      The /json_503 location must repeat all three security headers with always,
+      because nginx does not inherit add_header directives into a location that
+      declares its own.
