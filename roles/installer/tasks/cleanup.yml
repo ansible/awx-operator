@@ -9,15 +9,11 @@
         # yamllint disable-line rule:line-length
         _postgres_configuration: '{{ postgres_configuration_secret | length | ternary(postgres_configuration_secret, ansible_operator_meta.name + "-postgres-configuration") }}'  # noqa 204
 
-    - name: Remove ownerReferences reference
-      k8s:
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: '{{ item }}'
-            namespace: '{{ ansible_operator_meta.namespace }}'
-            ownerReferences: null
+    - name: Read secrets to remove AWX ownerReferences from
+      k8s_info:
+        kind: Secret
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        name: '{{ item }}'
       loop:
         - '{{ _admin_password }}'
         - '{{ _secret_key }}'
@@ -25,6 +21,25 @@
         - '{{ _broadcast_websocket_secret }}'
         - '{{ ansible_operator_meta.name }}-receptor-ca'
         - '{{ ansible_operator_meta.name }}-receptor-work-signing'
+      register: _cleanup_secrets
+      no_log: "{{ no_log }}"
+
+    # Only drop the reference to the AWX CR. A user-provided secret can be
+    # owned by another controller (for example a SealedSecret), and that
+    # controller stops updating the secret once its reference is removed.
+    - name: Remove ownerReferences reference
+      k8s:
+        state: patched
+        merge_type: merge
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: '{{ item.metadata.name }}'
+            namespace: '{{ ansible_operator_meta.namespace }}'
+            ownerReferences: "{{ item.metadata.ownerReferences | rejectattr('kind', 'equalto', 'AWX') | list }}"
+      loop: "{{ _cleanup_secrets.results | map(attribute='resources') | flatten }}"
+      when: item.metadata.ownerReferences | default([]) | selectattr('kind', 'equalto', 'AWX') | list | length > 0
       no_log: "{{ no_log }}"
 
   when: not garbage_collect_secrets | bool
