@@ -1,11 +1,15 @@
 ---
 
-- name: Determine the timestamp
-  set_fact:
-    now: '{{ lookup("pipe", "date +%FT%TZ") }}'
-
 - name: Emit ocp event with error
-  k8s:
-    kind: Event
+  operator_sdk.util.k8s_event:
+    state: present
+    name: "{{ ansible_operator_meta.name }}.restore-error"
     namespace: "{{ ansible_operator_meta.namespace }}"
-    definition: "{{ lookup('template', 'event.yml.j2') }}"
+    reason: RestoreFailed
+    message: "{{ error_msg }}"
+    type: Warning
+    involvedObject:
+      apiVersion: "{{ api_version }}"
+      kind: "{{ kind }}"
+      name: "{{ ansible_operator_meta.name }}"
+      namespace: "{{ ansible_operator_meta.namespace }}"
