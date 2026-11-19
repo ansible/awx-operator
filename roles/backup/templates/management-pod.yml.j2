@@ -13,6 +13,20 @@ metadata:
   labels:
     {{ db_management_labels | to_nice_yaml(indent=2) | indent(width=4) | trim }}
 spec:
+{% if init_container_commands %}
+  initContainers:
+    - name: init
+      image: '{{ _postgres_image }}'
+      command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          {{ init_container_commands | indent(width=14) }}
+      volumeMounts:
+        - name: {{ ansible_operator_meta.name }}-backup
+          mountPath: /backups
+          readOnly: false
+{% endif %}
   containers:
   - name: {{ ansible_operator_meta.name }}-db-management
     image: "{{ _postgres_image }}"
