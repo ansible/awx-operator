@@ -427,7 +427,7 @@ postgres_resource_requirements:
 postgres_priority_class: ''
 
 # Persistence to the AWX project data folder
-# Whether or not the /var/lib/projects directory will be persistent
+# Whether or not the /var/lib/awx/projects directory will be persistent
 projects_persistence: false
 #
 # Define an existing PersistentVolumeClaim to use
