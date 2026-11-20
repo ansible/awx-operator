@@ -124,7 +124,8 @@ data:
         log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                           '$status $body_bytes_sent "$http_referer" '
                           '"$http_user_agent" "$http_x_forwarded_for" '
-                          '$trusted_proxy_present $dab_jwt_present';
+                          '$trusted_proxy_present $dab_jwt_present '
+                          'request_id="$http_x_request_id"';
 
         access_log /dev/stdout main;
         error_log /dev/stderr warn;
@@ -333,6 +334,7 @@ data:
     master-fifo = /var/lib/awx/awxfifo
     max-requests = 1000
     buffer-size = 32768
+    {% raw %}log-format = [pid: %(pid)|app: -|req: -/-] %(addr) (%(user)) {%(vars) vars in %(pktsize) bytes} [%(ctime)] %(method) %(uri) => generated %(rsize) bytes in %(msecs) msecs (%(proto) %(status)) %(headers) headers in %(hsize) bytes (%(switches) switches on core %(core)) x-request-id: %(var.HTTP_X_REQUEST_ID){% endraw %}
 
     harakiri = {{ uwsgi_timeout }}
     harakiri-graceful-timeout = {{ uwsgi_timeout_grace_period }}
