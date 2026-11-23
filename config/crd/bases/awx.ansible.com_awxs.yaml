@@ -1735,6 +1735,9 @@ spec:
               postgres_extra_volume_mounts:
                 description: Specify volume mounts to be added to Postgres container
                 type: string
+              migration_extra_volume_mounts:
+                description: Specify volume mounts to be added to the database migration Job container
+                type: string
               uwsgi_processes:
                 description: Set the number of uwsgi processes to run in a web container
                 type: integer

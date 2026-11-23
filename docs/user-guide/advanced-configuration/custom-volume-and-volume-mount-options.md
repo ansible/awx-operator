@@ -11,9 +11,13 @@ In a scenario where custom volumes and volume mounts are required to either over
 | ee_extra_volume_mounts             | Specify volume mounts to be added to Execution container | ''      |
 | init_container_extra_volume_mounts | Specify volume mounts to be added to Init container      | ''      |
 | init_container_extra_commands      | Specify additional commands for Init container           | ''      |
+| migration_extra_volume_mounts      | Specify volume mounts to be added to DB migration Job    | ''      |
 
 !!! warning
     The `ee_extra_volume_mounts` and `extra_volumes` will only take effect to the globally available Execution Environments. For custom `ee`, please [customize the Pod spec](https://docs.ansible.com/ansible-tower/latest/html/administration/external_execution_envs.html#customize-the-pod-spec).
+
+!!! note
+    The `extra_volumes` are only added to the database migration Job when `migration_extra_volume_mounts` is set. This is useful, for example, to mount a client certificate for an external PostgreSQL database or a custom `/etc/resolv.conf`.
 
 Example configuration for ConfigMap
 

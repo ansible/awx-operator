@@ -64,6 +64,9 @@ spec:
             - name: awx-devel
               mountPath: "/awx_devel"
 {% endif %}
+{% if migration_extra_volume_mounts -%}
+            {{ migration_extra_volume_mounts | indent(width=12, first=True) }}
+{% endif %}
       serviceAccountName: '{{ ansible_operator_meta.name }}'
 {% if image_pull_secret is defined %}
       imagePullSecrets:
@@ -140,6 +143,9 @@ spec:
         - name: awx-devel
           hostPath:
             path: /awx_devel
+{% endif %}
+{% if migration_extra_volume_mounts and extra_volumes -%}
+        {{ extra_volumes | indent(width=8, first=True) }}
 {% endif %}
       dnsPolicy: ClusterFirst
       restartPolicy: Never
