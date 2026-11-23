@@ -19,6 +19,7 @@
             - tasks/awx_test.yml
             - tasks/awx_networkpolicy_test.yml
             - tasks/awx_replicas_test.yml
+            - tasks/nginx_security_headers_test.yml
           tags:
             - always
       rescue:
