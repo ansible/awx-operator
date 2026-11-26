@@ -5,12 +5,14 @@
   kind: AWX
   playbook: playbooks/awx.yml
   snakeCaseParameters: False
+  markUnsafe: true
 
 - version: v1beta1
   group: awx.ansible.com
   kind: AWXBackup
   role: backup
   snakeCaseParameters: False
+  markUnsafe: true
   finalizer:
     name: awx.ansible.com/finalizer
     role: backup
@@ -22,12 +24,14 @@
   kind: AWXRestore
   role: restore
   snakeCaseParameters: False
+  markUnsafe: true
 
 - version: v1alpha1
   group: awx.ansible.com
   kind: AWXMeshIngress
   role: mesh_ingress
   snakeCaseParameters: False
+  markUnsafe: true
   finalizer:
     name: awx.ansible.com/awx-mesh-ingress-finalizer
     role: mesh_ingress
