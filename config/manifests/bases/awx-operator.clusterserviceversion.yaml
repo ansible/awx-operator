@@ -770,7 +770,7 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
-      - displayName: Enable persistence for /var/lib/projects directory?
+      - displayName: Enable persistence for /var/lib/awx/projects directory?
         path: projects_persistence
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
