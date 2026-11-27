@@ -858,6 +858,13 @@ spec:
         x-descriptors:
         - urn:alm:descriptor:com.tectonic.ui:advanced
         - urn:alm:descriptor:com.tectonic.ui:hidden
+      - description: Specify volume mounts to be added to the database migration
+          Job container
+        displayName: Migration Extra Volume Mounts
+        path: migration_extra_volume_mounts
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:advanced
+        - urn:alm:descriptor:com.tectonic.ui:hidden
       - displayName: Web Args
         path: web_args
         x-descriptors:
