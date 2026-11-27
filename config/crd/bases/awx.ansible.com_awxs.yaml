@@ -1691,6 +1691,10 @@ spec:
                 description: Whether or not to preload data upon instance creation
                 default: true
                 type: boolean
+              create_superuser:
+                description: Whether to create the admin superuser during installation. Set to false when deploying as part of AAP where the gateway admin user is used instead.
+                default: true
+                type: boolean
               task_args:
                 type: array
                 items:
